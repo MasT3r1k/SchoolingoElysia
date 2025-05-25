@@ -158,7 +158,7 @@ const elysiaApp = new Elysia()
     }),
     query: t.Object({
         type: t.String({
-            default: ''
+            default: 'basic,groups,timetable'
         }),
         time: t.String({
             default: moment().format("YYYY-MM-DD")
