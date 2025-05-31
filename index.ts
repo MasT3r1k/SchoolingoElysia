@@ -1,51 +1,41 @@
 import swagger from '@elysiajs/swagger';
-import { Elysia } from 'elysia';
+import { Elysia, file } from 'elysia';
 import { ip } from 'elysia-ip';
 import { rateLimit } from 'elysia-rate-limit';
 import { elysiaXSS } from 'elysia-xss';
 import * as fs from 'fs';
 import path from 'path';
 import 'dotenv/config';
+import cors from '@elysiajs/cors';
+import locales from './src/infrastructure/locale';
 
 
 const version = (version: number, build: number) => new Elysia()
   .get('/version', version + ' #' + build);
 
-const userAPI = new Elysia({
-  prefix: "/user"
-})
-  .use(rateLimit({
-    max: 3,
-    duration: 15000,
-    scoping: 'scoped',
-    errorResponse: new Response(JSON.stringify({ message: "rate-limited" }), {
-      status: 429,
-      headers: new Headers({
-        'Content-Type': 'application/json'
-      })
-    })
-  }))
-  .get('/', (ip) => ip);
+const ws = new Elysia()
+  .ws('/ws', {
+      message(ws, message) {
+          ws.send(message)
+      }
+  })
+  .listen(3000)
 
-const getSchool = new Elysia({
-  prefix: "/v1/school"
-})
-  .get('/', () => "Schoolingo API")
-  .get('/info', () => "This is a school API");
 
-const API = new Elysia({
-  prefix: "/api"
+export const app = new Elysia({
+  serve: {
+		// Seconds to timeout idle connections
+    idleTimeout: 30,
+	},
 })
-  .use(getSchool);
-
-export const app = new Elysia()
   .use(ip())
+  .use(cors())
   .use(elysiaXSS({}))
   .use(version(1.1, 15))
-  .use(userAPI)
-  .use(API);
+  .use(locales)
+  .use(ws)
 
-const modulePath: string = path.join(__dirname, '/routes');
+const modulePath: string = path.join(__dirname, '/src/routes');
 
 async function loadFolder(folder: string = modulePath) {
   try {

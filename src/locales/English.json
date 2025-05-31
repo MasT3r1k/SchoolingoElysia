@@ -1,0 +1,43 @@
+{
+    "auth": {
+        "login": {
+            "title": "Login to the school system",
+            "subtitle": ["Using login credentials", "Login using QR code"],
+            "qrcode": "Scan the QR code in the mobile app for quick login",
+            "username": "Username",
+            "username_placeholder": "Username",
+            "password": "Password",
+            "password_placeholder": "Your password",
+            "button": "Log in",
+            "downloadApp": "Download %app% to your phone"
+        },
+        "forgotpass": {
+            "click": "Forgot your password?"
+        },
+        "errors": {
+            "longLoadingQR": "Loading the QR code is taking longer than expected, we apologize for the inconvenience",
+            "429": "Too many login attempts, please try again in a few minutes",
+            "invalid_username": "User not found",
+            "invalid_password": "Incorrect password"
+        }
+    },
+    "form": {
+        "required": "Required",
+        "minLength": "Minimum length %min%",
+        "maxLength": "Maximum length %max%"
+    },
+    "schools": {
+        "errors": {
+            "429": "Too many requests, please try again in a few minutes"
+        }
+    },
+    "themes": {
+        "system": "System theme",
+        "dark": "Dark mode",
+        "light": "Light mode"
+    },
+    "or": "or",
+    "system": {
+        "version": "System version"
+    }
+}

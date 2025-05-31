@@ -1,8 +1,8 @@
 import { Elysia, t } from 'elysia';
-import { db } from "../../../../database"
+import { db } from "../../../../../database"
 import { sql } from 'kysely';
 import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../..';
+import { app } from '../../../../../index';
 
 const titlesBefore = db.selectFrom('persons_degree as pd')
   .innerJoin('degrees as d', 'pd.degree', 'd.degreeID')

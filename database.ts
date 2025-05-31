@@ -1,6 +1,6 @@
 import { Kysely, MysqlDialect } from 'kysely'
 import mysql from 'mysql2'
-import { Database } from './db/schemas'
+import { Database } from './src/db/schemas'
 import 'dotenv/config';
 
 export const db = new Kysely<Database>({

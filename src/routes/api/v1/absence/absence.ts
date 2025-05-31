@@ -1,9 +1,18 @@
 import { Elysia, t } from 'elysia';
-import { db } from "../../../../database"
+import { db } from '../../../../../database'
 import { sql } from 'kysely';
 import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../..';
+import { app } from '../../../../../index';
 import moment from 'moment';
+import { AbsenceType } from '../../../../types/absence.d';
+
+interface lessonInfo {
+    subjectId: number;
+    subject: string;
+    type: number[];
+    absence: number;
+    total_lessons: number;
+}
 
 const titlesBefore = db.selectFrom('persons_degree as pd')
   .innerJoin('degrees as d', 'pd.degree', 'd.degreeID')
@@ -46,14 +55,34 @@ const fullName = sql`
 const elysiaApp = new Elysia()
   .use(rateLimit({
     scoping: "scoped",
-    max: 1,
+    max: 15,
     duration: 1000,
     injectServer: () => app.server
   }))
-  .get('/student/:id', async ({ params: { id }, query }) => {
+  .get('/absence/:id', async ({ params: { id }, query }) => {
     try {
-        let time = moment(query.time);
-        let show = query.type.split(',');
+        let start = moment(query.start);
+        let end = moment(query.end);
+        if (!start.isValid()) {
+          return new Response(JSON.stringify({ error: "Invalid start" }), {
+            status: 404,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+        }
+        
+        if (!end.isValid()) {
+          return new Response(JSON.stringify({ error: "Invalid end" }), {
+            status: 404,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+        }
+
+        const absences: AbsenceType[] = [AbsenceType.EARLY, AbsenceType.LATE, AbsenceType.NON_COUNT];
+
         const [student, groups] = await Promise.all([
           db.selectFrom('students')
             .leftJoin('persons', 'students.personId', 'persons.personId')
@@ -80,10 +109,19 @@ const elysiaApp = new Elysia()
                 'groups.num',
             ])
             .where('student_groups.student', '=', id)
-            .where('sy.start', '<=', time.format("YYYY-MM-DD"))
-            .where('sy.end', '>=', time.format("YYYY-MM-DD"))
+            .where('sy.start', '<=', moment().format("YYYY-MM-DD"))
+            .where('sy.end', '>=', moment().format("YYYY-MM-DD"))
             .execute()
         ]);
+
+        if (!student) {
+          return new Response(JSON.stringify({ error: "Student not found" }), {
+            status: 404,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+        }
 
         let groupNumbers: number[] = [];
         groups.forEach((group) => {
@@ -93,55 +131,76 @@ const elysiaApp = new Elysia()
           groupNumbers = [-1];
         }
 
-        const [timetable, substitution] = await Promise.all([
-            db.selectFrom('timetable')
-            .innerJoin('subjects', 'timetable.subject', 'subjects.subjectId')
-            .leftJoin('persons', 'timetable.teacher', 'persons.personId')
-            .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-            .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
+        const [absence, timetable] = await Promise.all([
+          db.selectFrom('absence')
+            .leftJoin('classbook', 'classbook.cbId', 'absence.lesson')
             .select([
-                sql`(timetable.day + 1) % 7`.as('day'),
-                'timetable.hour',
-                'timetable.type',
-                sql`subjects.label`.as('subjectName'),
-                sql`subjects.shortcut`.as('subjectShortcut'),
-                fullName.as('teacher')
+              sql`COUNT(classbook.subject)`.as('count'),
+              'classbook.subject'
             ])
-            .where('timetable.groupId', 'in', groupNumbers)
+            .where('classbook.date', '>=', start.format("YYYY-MM-DD"))
+            .where('classbook.date', '<=', end.format("YYYY-MM-DD"))
+            .where('absence.student', '=', id)
+            .where('absence.type', 'not in', absences)
             .execute(),
 
-            db.selectFrom('substitution')
-            .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
-            .leftJoin('persons',  'substitution.teacherId', 'persons.personId')
-            .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-            .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
+          db.selectFrom('timetable')
+            .leftJoin('subjects', 'timetable.subject', 'subjects.subjectId')
             .select([
-                'substitution.date',
-                'substitution.hour',
-                sql`subjects.label`.as('subjectName'),
-                sql`subjects.shortcut`.as('subjectShortcut'),
-                fullName.as('teacher')
+                sql`COUNT(timetable.type)`.as('count'),
+                'timetable.type',
+                sql`timetable.subject`.as('subjectId'),
+                sql`TRIM(subjects.label)`.as('subjectName'),
             ])
-            .where('substitution.groupId', 'in', groupNumbers)
-            .where('substitution.date', '>=', time.clone().startOf('isoWeek').format("YYYY-MM-DD"))
-            .where('substitution.date', '<=', time.clone().endOf('isoWeek')  .format("YYYY-MM-DD"))
+            .where('timetable.groupId', 'in', groupNumbers)
+            .groupBy("timetable.subject")
+            .groupBy("timetable.type")
             .execute()
         ])
 
+        let lessons: Record<number, lessonInfo> = {};
+        timetable.forEach((lesson: any) => {
+            let lessonData = lessons[lesson.subjectId];
+            let type: number[] = [];
+            if (lessonData) {
+                type = lessonData.type;
+            }
+            type[lesson.type] = lesson.count;
+            
+            if (!lessonData) {
+                lessons[lesson.subjectId] = {
+                    subjectId: lesson.subjectId,
+                    subject: lesson.subjectName,
+                    type,
+                    absence: 0,
+                    total_lessons: 0
+                }
+            }
+        });
 
-        let obj: any = {};
-        if (show.includes('basic')) {
-          obj = {...student};
-        }
+        let countWeeks = end.diff(start, 'week');
+        let evenWeek = Math.floor((countWeeks + (end.isoWeek() % 2 === 0 ? 1 : 0)) / 2);
+        let oddWeek = countWeeks - evenWeek;
 
-        if (show.includes('groups')) {
-            obj.groups = groups;
-        }
+        Object.values(lessons).forEach((lesson: lessonInfo) => {                
+            let lessonNumber = 1;
+            if (lesson.type[0]) { lessonNumber += countWeeks * lesson.type[0] }
+            if (lesson.type[1]) { lessonNumber += oddWeek * lesson.type[1] }
+            if (lesson.type[2]) { lessonNumber += evenWeek * lesson.type[2] }
+            lesson.total_lessons = lessonNumber;
+        });
 
-        if (show.includes('timetable')) {
-            obj.timetable = timetable;
-            obj.substitution = substitution;
-        }
+        absence.forEach((absence: any) => {
+            let lessonData = lessons[absence.subjectId];
+            if (lessonData) {
+                lessonData.absence = absence.count;
+            }
+        });
+
+        let obj: any = {
+          date: { start: start.format('YYYY-MM-DD'), end: end.format('YYYY-MM-DD') },
+          lessons
+        };
 
         return Response.json(obj);
     } catch (e) {
@@ -154,18 +213,18 @@ const elysiaApp = new Elysia()
     }
   }, {
     params: t.Object({
-        id: t.Number()
+      id: t.Number()
     }),
     query: t.Object({
-        type: t.String({
-            default: 'basic,groups,timetable'
-        }),
-        time: t.String({
-            default: moment().format("YYYY-MM-DD")
-        })
+      start: t.String({
+        default: moment().format("YYYY-MM-DD")
+      }),
+      end: t.String({
+        default: moment().format("YYYY-MM-DD")
+      })
     }),
     detail: {
-      description: "This endpoint is rate-limited: max 1 request per 1 second",
+      description: "This endpoint is rate-limited: max 15 requests per second",
       responses: {
         200: {
           description: "Successful response",

@@ -1,0 +1,109 @@
+{
+    "auth": {
+        "login": {
+            "title": "Přihlášení do školního systému",
+            "subtitle": ["Pomocí přihlašovacích údajů", "se přihlaš pomocí QR kódu"],
+            "qrcode": "Naskejnute QR kód v mobilní aplikaci pro rychlé přihlášení",
+            "username": "Uživatelské jméno",
+            "username_placeholder": "Uživatelské jméno",
+            "password": "Heslo",
+            "password_placeholder": "Vaše heslo",
+            "button": "Přihlásit se",
+            "downloadApp": "Stáhnout %app% do Vašeho telefonu"
+        },
+        "forgotpass": {
+            "click": "Zapomněl jste heslo?"
+        },
+        "errors": {
+            "longLoadingQR": "Načítání QR kódu trvá déle než by mělo, omlouváme se za komplikace",
+            "429": "Přiliš mnoho pokusů o přihlášení, zkuste to znova za pár minut",
+            "invalid_username": "Uživatel nenalezen",
+            "invalid_password": "Špatné heslo"
+        }
+    },
+    "form": {
+        "required": "Povinné",
+        "minLength": "Minimální délka %min%",
+        "maxLength": "Maximální délka %max%"
+    },
+    "schools": {
+        "errors": {
+            "429": "Přiliš mnoho požadavků, zkuste to znova za pár minut"
+        }
+    },
+    "themes": {
+        "system": "Režim podle systému",
+        "dark": "Tmavý režim",
+        "light": "Světlý režím"
+    },
+    "or": "nebo",
+    "system": {
+        "version": "Verze systému"
+    },
+    "roles": {
+        "teacher": "Učitel",
+        "student": "Žák",
+        "parent": "Rodič",
+        "classteacher": "Třídní učitel"
+    },
+    "sidebar": {
+        "main": "Boční panel",
+        "home": "Můj přehled",
+        "account": "Můj účet",
+        "teach": {
+            "main": "Výuka",
+            "timetable": "Rozvrh"
+        },
+        "marks": {
+            "main": "Hodnocení"
+        },
+        "settings": "Nastavení"
+    },
+    "user": {
+        "logout": "Odhlásit se",
+        "personal_information": "Osobní údaje",
+        "parents": "Rodiče",
+        "devices": "Přihlášené zařízení",
+        "login_history": "Historie přihlášení",
+        "notifications": "Notifikace",
+        "connections": "Propojení s jinými účty",
+        "gdpr": "GDPR",
+        "password_authenticator": {
+            "title": "Hesla a ověření",
+            "description": "Heslo je základní bezpečnostní prvek. Doporučujeme pravidelně měnit a používat unikatní heslo."
+        },
+        "app_authenticator": {
+            "title": "Aplikace Autentizátoru",
+            "description": "Přidáním aplikace autentizátoru je dobrá cesta k přidání extra vrstvě k zabezpečení Vašeho účtu, aby jsme zajistili, že pouze Vy se můžeme přihlásit."
+        }
+    },
+    "buttons": {
+        "add_email": "Přidat email",
+        "add_phone": "Přidat telefon",
+        "change_avatar": "Změnit avatara",
+        "change_password": "Změnit heslo",
+        "achievements": "Mé úspěchy",
+        "show_backup_codes": "Zobrazit záložní kódy",
+        "remove_authenticator_app": "Odebrat aplikaci autentizace"
+    },
+    "dropdown": {
+        "child": {
+            "empty": "Nemáte žádné dítě",
+            "label": "Vyberte dítě",
+            "son": "syn",
+            "daughter": "dcera"
+        },
+        "add": {
+            "mark": "Přidat známku",
+            "note": "Přidat osobní poznámku",
+            "message": "Napsat zprávu",
+            "homework": "Zadat domácí úkol",
+            "event": "Vytvořit událost",
+            "anketa": "Vytvořit anketu",
+            "request": "Vytvořit požadavek"
+        }
+    },
+    "modules": {
+        "timetable": "Rozvrh"
+    }
+}
