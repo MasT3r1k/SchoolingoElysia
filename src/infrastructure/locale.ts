@@ -2,6 +2,7 @@ import { Elysia } from 'elysia';
 import * as fs from 'fs';
 import path from 'path';
 import 'dotenv/config';
+import { sleep } from 'bun';
 
 // Absolutní cesta ke složce locales
 const LOCALES_DIR = path.join(__dirname, '../locales');

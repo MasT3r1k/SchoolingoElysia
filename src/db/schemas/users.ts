@@ -16,5 +16,6 @@ export interface UsersTable {
   levels_exp: number
   '2fa': boolean
   '2fa_secret': string | null
+  '2fa_activated': Date
   avatar: string
 }

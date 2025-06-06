@@ -9,22 +9,32 @@
             "password": "Heslo",
             "password_placeholder": "Vaše heslo",
             "button": "Přihlásit se",
+            "login_with_passkey": "Přihlášení pomocí passkey",
             "downloadApp": "Stáhnout %app% do Vašeho telefonu"
         },
         "forgotpass": {
             "click": "Zapomněl jste heslo?"
         },
+        "2fa": {
+            "click": "Jiný způsob přihlášení?",
+            "authentication_code": "Ověřovací kód",
+            "verify_code": "Ověřit kód",
+            "description": "Otevřete aplikaci dvoufaktorového ověřovatele (TOTP) nebo rozšíření prohlížeče a zobrazte svůj ověřovací kód. Případně můžete použít záložní kód."
+        },
         "errors": {
             "longLoadingQR": "Načítání QR kódu trvá déle než by mělo, omlouváme se za komplikace",
             "429": "Přiliš mnoho pokusů o přihlášení, zkuste to znova za pár minut",
             "invalid_username": "Uživatel nenalezen",
-            "invalid_password": "Špatné heslo"
+            "invalid_password": "Špatné heslo",
+            "invalid_tfa": "Špatný kód"
         }
     },
     "form": {
         "required": "Povinné",
         "minLength": "Minimální délka %min%",
-        "maxLength": "Maximální délka %max%"
+        "maxLength": "Maximální délka %max%",
+        "passwords_is_same": "Hesla jsou stejná",
+        "passwords_not_same": "Hesla nejsou stejná"
     },
     "schools": {
         "errors": {
@@ -36,7 +46,20 @@
         "dark": "Tmavý režim",
         "light": "Světlý režím"
     },
+    "weeks": {
+        "even": "Sudý týden",
+        "odd": "Lichý týden"
+    },
+    "days": ["Neděle", "Pondělí", "Úterý", "Středa", "Čtvrtek", "Pátek", "Sobota"],
     "or": "nebo",
+    "selected": "Vybráno",
+    "loading": "Načítání",
+    "cancel": "Zrušit",
+    "close": "Zavřít",
+    "activated": "Aktivováné",
+    "activate": "Aktivovat",
+    "delete": "Smazat",
+    "actions": "Akce",
     "system": {
         "version": "Verze systému"
     },
@@ -46,10 +69,22 @@
         "parent": "Rodič",
         "classteacher": "Třídní učitel"
     },
+    "absence": {
+        "absence": "Absence",
+        "excused": "Omluvená absence",
+        "unexcused": "Neomluvená absence",
+        "non_count": "Nezapočítaná absence",
+        "late": "Pozdní příchod",
+        "early": "Dřívejší odchod",
+        "distance": "Distanční výuka",
+        "trash": "Odebrat absenci"
+    },
     "sidebar": {
         "main": "Boční panel",
         "home": "Můj přehled",
+        "absence": "Absence",
         "account": "Můj účet",
+        "calendar": "Kalendář",
         "teach": {
             "main": "Výuka",
             "timetable": "Rozvrh"
@@ -57,7 +92,15 @@
         "marks": {
             "main": "Hodnocení"
         },
-        "settings": "Nastavení"
+        "settings": "Nastavení",
+        "messages": {
+            "main": "Zprávy",
+            "send": "Poslat zprávu",
+            "received": "Obdržené zprávy",
+            "sent": "Odeslané zprávy",
+            "groups": "Skupiny",
+            "noticeboard": "Nástěnka"
+        }
     },
     "user": {
         "logout": "Odhlásit se",
@@ -84,6 +127,7 @@
         "change_password": "Změnit heslo",
         "achievements": "Mé úspěchy",
         "show_backup_codes": "Zobrazit záložní kódy",
+        "refresh_backup_codes": "Znovu vygenerovat žáložní kódy",
         "remove_authenticator_app": "Odebrat aplikaci autentizace"
     },
     "dropdown": {
@@ -93,6 +137,10 @@
             "son": "syn",
             "daughter": "dcera"
         },
+        "select_timetable": {
+            "my_timetable": "Můj rozvrh",
+            "class_timetable": "Rozvrh mé třídy"
+        },
         "add": {
             "mark": "Přidat známku",
             "note": "Přidat osobní poznámku",
@@ -100,7 +148,94 @@
             "homework": "Zadat domácí úkol",
             "event": "Vytvořit událost",
             "anketa": "Vytvořit anketu",
-            "request": "Vytvořit požadavek"
+            "request": "Vytvořit požadavek",
+            "company": "Přidat firmu do praxí"
+        }
+    },
+    "login_history": {
+        "table": {
+            "attempt": "Pokus",
+            "state": "Stav",
+            "ip": "IP adresa",
+            "created": "Vytvořeno",
+            "system": "Operační systém",
+            "browser": "Prohlížeč",
+            "type": "Druh přihlášení"
+        },
+        "types": {
+            "password": "Pomocí hesla",
+            "passkey": "Pomocí passkey"
+        }
+    },
+    "settings": {
+        "alerts": {
+            "change_password_warning": "Změněním hesla se automaticky odhlásíte ze všech přihlášených zařízení, kromě tohoto zařízení!"
+        },
+        "change_password": "Změnit heslo",
+        "passwords": {
+            "old_password": "Staré heslo",
+            "new_password": "Nové heslo",
+            "again_new_password": "Znova nové heslo",
+            "success_changed": "Heslo bylo úspěšně změněno!",
+            "429": "Přiliš mnoho pokusů o změnu hesla, zkuste to později"
+        },
+        "language": "Jazyk",
+        "languages": {
+            "loading": "Právě probíhá načítání a nastavování nového jazyka"
+        },
+        "theme": "Vzhled",
+        "security": "Zabezpečení",
+        "2fa": {
+            "deactivate": "Odebrat dvoufázové ověřování",
+            "validSince": "Aktivní od %date% v %time%",
+            "methods": {
+                "mobile_app": "Mobilní aplikace"
+            },
+            "title": "Dvoufázové ověřování",
+            "description": "Dvoufázové ověřování slouží k lepšímu zabezpečení Vašeho účtu, při každé kritické akci to bude po Vás vyžadovat ověřovací kód z Vaší authorizační aplikace v telefonu.",
+            "descriptions": {
+                "show_backup_codes": "Zadáním kódu níže si zobrazíte záložní kódy. Kódy nikomu neukazujte ani neposílejte!",
+                "refresh_backup_codes": "Zadáním kódu níže si obnovíte záložní kódy. Stávající kódy budou smazány a vytvoří se nové, ty se Vám následně ukážou, aby jste si je mohli uložit. Nikomu je neukazuj ani neposílej!",
+                "deactivate2FA": "Zadáním kódu níže si deaktivujete dvoufázové ověření. Tudíž nebude již nadále aktivní."
+            }
+        },
+        "passkeys": {
+            "add": "Přidat passkey",
+            "title": "Passkeys",
+            "description": "Passkeys jsou pověření webauthn, která ověřují vaši totožnost pomocí dotyku, rozpoznání obličeje, hesla zařízení nebo kódu PIN. Lze je použít jako náhradu hesla nebo jako metodu 2FA.",
+            "list": "Seznam Vašich passkeys",
+            "alerts": {
+                "not_supported": "Tak to se nepovedlo. Na vašem zařízení Passkeys funkce není podporována."
+            },
+            "edit": {
+                "title": "Upravit %passkey% passkey",
+                "description": "Upravením názvu níže si upravíte pouze označení passkey, které vidíte zde v nastavení. Nemá to žádný vliv na fungování passkey přihlašování.",
+                "form": {
+                    "name": {
+                        "label": "Popis passkey",
+                        "placeholder": "Vyplňte označení passkey"
+                    },
+                    "button": "Upravit passkey"
+                },
+                "success_title": "Passkey aktualizován!",
+                "success_description": "Úspěšně jste upravil název passkey na %passkey%."
+            },
+            "remove": {
+                "title": "Smazat %passkey% passkey?",
+                "description": "Opravdu si přejete smazat passkey? Tato akce nelze vrátit zpět!",
+                "success_title": "Smázano!",
+                "success_description": "Úspěšně jste smazal passkey %passkey%."
+            }
+        }
+    },
+    "timetable": {
+        "this_week": "Tento týden",
+        "next_week": "Příští týden",
+        "permanent": "Stálý rozvrh"
+    },
+    "components": {
+        "datalist": {
+            "no_data": "Žádné data nejsou k zobrazení"
         }
     },
     "modules": {

@@ -1,7 +1,6 @@
 import swagger from '@elysiajs/swagger';
 import { Elysia, file } from 'elysia';
 import { ip } from 'elysia-ip';
-import { rateLimit } from 'elysia-rate-limit';
 import { elysiaXSS } from 'elysia-xss';
 import * as fs from 'fs';
 import path from 'path';

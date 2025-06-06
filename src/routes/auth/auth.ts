@@ -1,4 +1,4 @@
-import { Elysia, t } from 'elysia';
+import { AnyElysia, Elysia, t } from 'elysia';
 import { db } from '../../../database'
 import { sql } from 'kysely';
 import { rateLimit } from 'elysia-rate-limit'
@@ -7,6 +7,92 @@ import moment from 'moment';
 import { ip } from 'elysia-ip';
 import * as OTPAuth from "otpauth";
 import bcrypt from 'bcryptjs';
+import { generateAuthenticationOptions, GenerateAuthenticationOptionsOpts, generateRegistrationOptions, GenerateRegistrationOptionsOpts, VerifiedRegistrationResponse, verifyAuthenticationResponse, verifyRegistrationResponse } from '@simplewebauthn/server';
+import { ElysiaCookie } from 'elysia/dist/cookies';
+
+export async function authenticateUser(userId: number, cookie: any, userAgent: string, ip: string) {
+  try {
+    const user = await db.selectFrom("users")
+      .leftJoin("persons", "persons.personId", "users.person")
+      .innerJoin("passwords", "passwords.passwordId", "users.password")
+      .select([
+        "users.userId",
+        "users.username",
+        "users.2fa",
+        "users.2fa_secret",
+        "persons.firstName",
+        "persons.lastName",
+        "passwords.password",
+        'passwords.passwordId'
+      ])
+      .where('users.userId', '=', userId)
+      .limit(1)
+      .executeTakeFirstOrThrow()
+
+      try {
+      // Generate token
+      let dbToken = '';
+      while (dbToken == '') {
+        const tempToken = await Bun.password.hash(
+          user.username +
+          Bun.randomUUIDv7("hex", new Date().getTime()) +
+          Date.now(),
+          {
+            algorithm: 'bcrypt',
+            cost: 4
+          }
+        );
+
+        const checkToken = await db.selectFrom("tokens")
+          .select([
+            sql`COUNT(*)`.as('count')
+          ])
+          .where('tokens.token', '=', tempToken)
+          .limit(1)
+          .executeTakeFirst()
+        
+
+        if (!checkToken?.count) {
+          dbToken = tempToken;
+        }
+      }
+
+      const expire = moment().add(15, 'minutes');
+      await db.insertInto("tokens")
+      .values({
+        userId: user.userId,
+        token: dbToken,
+        password: user.passwordId,
+        userAgent: userAgent,
+        created: moment().toDate(),
+        expires: expire.toDate(),
+        ip
+      })
+      .execute();
+
+      cookie.token.set({
+        httpOnly: true,
+        secure: true,
+        maxAge: 2592000000,
+        path: '/',
+        value: dbToken
+      })
+
+      return {
+        status: true,
+        username: user.username,
+        expires: expire.toDate()
+      };
+    } catch(e) {
+      return {
+        status: false,
+        error: ['Unknown error']
+      }
+    }
+  } catch (e) {
+    return { status: false, error: ['Invalid username'] };
+  }
+}
 
 const elysiaApp = new Elysia()
   .use(ip())
@@ -33,24 +119,22 @@ const elysiaApp = new Elysia()
 
     try {
       // Check username
-      const [user] = await Promise.all([
-        db.selectFrom("users")
-        .leftJoin("persons", "persons.personId", "users.person")
-        .innerJoin("passwords", "passwords.passwordId", "users.password")
-        .select([
-          "users.userId",
-          "users.username",
-          "users.2fa",
-          "users.2fa_secret",
-          "persons.firstName",
-          "persons.lastName",
-          "passwords.password",
-          'passwords.passwordId'
-        ])
-        .where(sql`LOWER(users.username)`, '=', username.toLowerCase())
-        .limit(1)
-        .executeTakeFirstOrThrow()
-      ]);
+      const user = await db.selectFrom("users")
+      .leftJoin("persons", "persons.personId", "users.person")
+      .innerJoin("passwords", "passwords.passwordId", "users.password")
+      .select([
+        "users.userId",
+        "users.username",
+        "users.2fa",
+        "users.2fa_secret",
+        "persons.firstName",
+        "persons.lastName",
+        "passwords.password",
+        'passwords.passwordId'
+      ])
+      .where(sql`LOWER(users.username)`, '=', username.toLowerCase())
+      .limit(1)
+      .executeTakeFirstOrThrow()
 
       // Check password
       const isPasswordValid = bcrypt.compareSync(
@@ -63,6 +147,7 @@ const elysiaApp = new Elysia()
       .values({
         userId: user.userId,
         success: isPasswordValid,
+        type: 'password',
         ip,
         userAgent: request.headers.get("user-agent") || null
       })
@@ -73,7 +158,7 @@ const elysiaApp = new Elysia()
       }
 
       if (user['2fa'] && user['2fa_secret']) {
-        if (!TFA) {
+        if (!TFA || TFA == "") {
           return Response.json({ error: ["Missing 2FA"] });
         }
 
@@ -118,72 +203,24 @@ const elysiaApp = new Elysia()
         }
       }
 
-      try {
-        // Generate token
-        let dbToken = '';
-        while (dbToken == '') {
-          const tempToken = await Bun.password.hash(
-            user.username +
-            Bun.randomUUIDv7("hex", new Date().getTime()) +
-            Date.now(),
-            {
-              algorithm: 'bcrypt',
-              cost: 4
-            }
-          );
+      const res = await authenticateUser(user.userId, cookie, request.headers.get('user-agent'), ip);
 
-          const checkToken = await db.selectFrom("tokens")
-            .select([
-              sql`COUNT(*)`.as('count')
-            ])
-            .where('tokens.token', '=', tempToken)
-            .limit(1)
-            .executeTakeFirst()
-          
-
-          if (!checkToken?.count) {
-            dbToken = tempToken;
-          }
-        }
-
-        const expire = moment().add(15, 'minutes');
-        await db.insertInto("tokens")
-        .values({
-          userId: user.userId,
-          token: dbToken,
-          password: user.passwordId,
-          userAgent: request.headers.get('user-agent'),
-          created: moment().toDate(),
-          expires: expire.toDate(),
-          ip
-        })
-        .execute();
-
-        cookie.token.set({
-          httpOnly: true,
-          secure: true,
-          maxAge: 2592000000,
-          path: '/',
-          value: dbToken
-        })
-
+      if (res?.status == true) {
         return Response.json({
-          username: user.username,
-          expires: expire.toDate()
+          username: res.username,
+          expires: res.expires
         });
-      } catch(e) {
-        console.log(e)
-        return Response.json({ error: ['Unknown error'] });
+      } else {
+        return Response.json({ error: res.error })
       }
-    } catch (e) {
-      console.log(e)
-      return Response.json({ error: ['Invalid username'] }); 
+    } catch(e) {
+      return Response.json({ error: ['Invalid username'] })
     }
   }, {
     body: t.Object({
       username: t.Optional(t.String()),
       password: t.Optional(t.String()),
-      token: t.Optional(t.String())
+      TFA: t.Optional(t.String())
     }),
     detail: {
       description: "This endpoint is rate-limited: max 5 requests per 5 minutes",
@@ -194,24 +231,7 @@ const elysiaApp = new Elysia()
             "application/json": {
               schema: {
                 type: "object",
-                properties: {
-                  fullName: { type: "string", example: "Ing. Bc. Josef Kosík" },
-                  status: { type: "string", enum: ["active", "archive"] },
-                  startStudy: { type: "string", example: "06. 09. 2021" },
-                  className: { type: "string", example: "B3.I" },
-                  groups: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        groupId: { type: "number", example: 42 },
-                        name: { type: "string", example: "Laboratorní skupina A" },
-                        num: { type: "string", example: "01" },
-                        class: { type: "string", example: "B3.I" }
-                      }
-                    }
-                  }
-                }
+                properties: {}
               }
             }
           }
@@ -247,6 +267,6 @@ const elysiaApp = new Elysia()
         }
       }
     }
-  });
+  })
 
 export default elysiaApp;

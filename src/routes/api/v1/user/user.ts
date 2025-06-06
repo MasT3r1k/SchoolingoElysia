@@ -43,89 +43,98 @@ const fullName = sql`
 `;
 
 const app = new Elysia()
-    .get('/user', async ({ cookie }) => {
-        const token = cookie.token.value;
-        if (!token) {
-            return Response.json({ error: 'no_user', details: 'no_cookie' });
-        }
+  .get('/user', async ({ cookie }) => {
+      const token = cookie.token.value;
+      if (!token) {
+          return Response.json({ error: 'no_user', details: 'no_cookie' });
+      }
 
-        const tokenDB = await db.selectFrom("tokens")
-            .innerJoin('users', 'users.userId', 'tokens.userId')
-            .leftJoin('persons', 'persons.personId', 'users.person')
-            .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-            .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
-            .select([
-                'persons.personId',
-                fullName.as('fullName'),
-                'persons.birthday',
-                'persons.gender',
-                'tokens.expires',
-                'users.username',
-                'users.avatar',
-                'users.locale',
-                'users.levels_exp',
-                'users.theme'
-            ])
-            .where('tokens.token', '=', token)
-            .where('tokens.expires', '>=', moment().toDate())
-            .limit(1)
-            .executeTakeFirst()
-
-        if (!tokenDB) {
-            return Response.json({ error: 'no_user', details: 'no_db' });
-        }
-
-        const perms = await db.selectFrom("tokens")
-        .leftJoin('users', 'users.userId', 'tokens.userId')
-        .leftJoin('students', 'students.personId', 'users.person')
-        .leftJoin('teachers', 'teachers.personId', 'users.person')
-        .leftJoin('family_relations', 'family_relations.source', 'users.person')
-        .select([
-          sql`students.personId`.as('student'),
-          sql`teachers.personId`.as('teacher'),
-          sql`family_relations.source`.as('parent')
-        ])
-        .where('tokens.token', '=', token)
-        .limit(1)
-        .executeTakeFirst()
-
-        let userType: 'student' | 'teacher' | 'parent' | null = null;
-        if (perms) {
-            if (perms.student !== null) {
-                userType = "student";
-            }
-            if (perms.teacher !== null) {
-                userType = "teacher";
-            } 
-            if (perms.parent !== null) {
-                userType = "parent";
-            }
-        }
-
-        let user: any = tokenDB;
-        user.role = userType;
-        user.avatar = JSON.parse(tokenDB.avatar);
-        user.level = calculateLevelFromXP(tokenDB.levels_exp);
-        user.xp = tokenDB.levels_exp - calculatestartXPFromLevel(user.level);
-        user.requiredXP = calculateXPForNextLevel(user.level);
-        user.children = [];
-        if (userType == "parent") {
-          const children = db.selectFrom("family_relations")
-          .innerJoin("persons", "family_relations.target", "persons.personId")
+      const tokenDB = await db.selectFrom("tokens")
+          .innerJoin('users', 'users.userId', 'tokens.userId')
+          .leftJoin('persons', 'persons.personId', 'users.person')
+          .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
+          .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
           .select([
-            sql`persons.personId`.as('childId'),
-            "persons.firstName",
-            "persons.lastName",
-            "persons.gender"
+              'persons.personId',
+              fullName.as('fullName'),
+              'persons.birthday',
+              'persons.gender',
+              'tokens.expires',
+              'users.username',
+              'users.avatar',
+              'users.locale',
+              'users.levels_exp',
+              'users.theme'
           ])
-          .where("persons.personId", "=", tokenDB.personId)
-          .execute();
-          user.children = children;
-        }
+          .where('tokens.token', '=', token)
+          .where('tokens.expires', '>=', moment().toDate())
+          .limit(1)
+          .executeTakeFirst()
 
-        delete user.levels_exp;
+      if (!tokenDB) {
+          return Response.json({ error: 'no_user', details: 'no_db' });
+      }
 
-        return Response.json(user);
-    })
+      const perms = await db.selectFrom("tokens")
+      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .leftJoin('students', 'students.personId', 'users.person')
+      .leftJoin('teachers', 'teachers.personId', 'users.person')
+      .leftJoin('family_relations', 'family_relations.source', 'users.person')
+      .select([
+        sql`students.personId`.as('student'),
+        sql`teachers.personId`.as('teacher'),
+        sql`family_relations.source`.as('parent')
+      ])
+      .where('tokens.token', '=', token)
+      .limit(1)
+      .executeTakeFirst()
+
+      let userType: 'student' | 'teacher' | 'parent' | null = null;
+      if (perms) {
+          if (perms.student !== null) {
+              userType = "student";
+          }
+          if (perms.teacher !== null) {
+              userType = "teacher";
+          } 
+          if (perms.parent !== null) {
+              userType = "parent";
+          }
+      }
+
+      let user: any = tokenDB;
+      user.role = userType;
+      user.avatar = JSON.parse(tokenDB.avatar);
+      user.level = calculateLevelFromXP(tokenDB.levels_exp);
+      user.xp = tokenDB.levels_exp - calculatestartXPFromLevel(user.level);
+      user.requiredXP = calculateXPForNextLevel(user.level);
+      user.children = await db.selectFrom("family_relations")
+      .innerJoin("persons", "family_relations.target", "persons.personId")
+      .select([
+        sql`persons.personId`.as('childId'),
+        "persons.firstName",
+        "persons.lastName",
+        "persons.gender"
+      ])
+      .where("family_relations.source", "=", tokenDB.personId)
+      .execute();
+      user.classes = await db.selectFrom("classes")
+      .leftJoin('school_years as sy', 'sy.syId', 'classes.yearId')
+      .leftJoin('scopes', 'classes.scopeId', 'scopes.scopeId')
+      .leftJoin('students', 'students.class', 'classes.classId')
+      .select([
+        'classes.classId',
+        sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, sy.start, CURDATE()) + 1, classes.suffix)`.as('className'),
+        sql`COUNT(students.class)`.as('students')
+      ])
+      .where('classes.teacher', '=', tokenDB.personId)
+      .where(sql`DATE_ADD(sy.start, INTERVAL scopes.years YEAR)`, '>=', sql`CURDATE()`)
+      .groupBy('classes.classId')
+      .execute()
+
+      delete user.levels_exp;
+
+      return Response.json(user);
+  })
 
 export default app;

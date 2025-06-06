@@ -73,6 +73,8 @@ import { Traineeship_weeksTable } from './traineeship_weeks'
 import { UsersTable } from './users'
 import { Users_backup_codesTable } from './users_backup_codes'
 import { EventsTable } from './events'
+import { Users_credentialsTable } from './user_credentials'
+import { webauthn_challengesTable } from './webauthn_challenges'
 
 export interface Database {
   absence: AbsenceTable
@@ -150,4 +152,6 @@ export interface Database {
   traineeship_weeks: Traineeship_weeksTable
   users: UsersTable
   users_backup_codes: Users_backup_codesTable
+  users_credentials: Users_credentialsTable,
+  webauthn_challenges: webauthn_challengesTable
 }
