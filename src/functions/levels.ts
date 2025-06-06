@@ -1,4 +1,4 @@
-import { LevelConfig } from "../configs/level.config";
+import { LevelConfig } from "../config/level.config";
 
 export function calculateXPForNextLevel(currentLevel: number): number {
     if (currentLevel < 1) {

@@ -217,11 +217,11 @@ const elysiaApp = new Elysia()
       return Response.json({ error: ['Invalid username'] })
     }
   }, {
-    body: t.Object({
+    body: t.Optional(t.Object({
       username: t.Optional(t.String()),
       password: t.Optional(t.String()),
       TFA: t.Optional(t.String())
-    }),
+    })),
     detail: {
       description: "This endpoint is rate-limited: max 5 requests per 5 minutes",
       responses: {

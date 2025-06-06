@@ -1,17 +1,46 @@
 import { Kysely, MysqlDialect } from 'kysely'
-import mysql from 'mysql2'
+import { createPool } from 'mysql2'
 import { Database } from './src/db/schemas'
-import 'dotenv/config';
+import { config } from './src/config/app.config'
+import { InternalServerError } from './src/utils/errors'
+
+const pool = createPool({
+    host: config.DB_HOST,
+    port: parseInt(config.DB_PORT),
+    user: config.DB_USER,
+    password: config.DB_PASS,
+    database: config.DB_NAME,
+    connectionLimit: parseInt(config.DB_CONNECTION_LIMIT),
+    waitForConnections: true,
+    queueLimit: 0,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0,
+})
+
+// Add connection error handling
+pool.on('error', (err) => {
+    console.error('Database connection error:', err)
+    throw new InternalServerError('Database connection error')
+})
+
+// Add connection success logging
+pool.on('connection', () => {
+    console.log('[📦 Database]: New connection established')
+})
+
+const dialect = new MysqlDialect({ pool })
 
 export const db = new Kysely<Database>({
-    dialect: new MysqlDialect({
-        pool: mysql.createPool({
-            host: process.env['DB_HOST'] || 'localhost',
-            port: Number(process.env['DB_PORT']) || 3306,
-            user: process.env['DB_USER'] || 'root',
-            password: process.env['DB_PASS'] || 'root',
-            database: process.env['DB_NAME'] || 'schoolingo',
-            connectionLimit: process.env['DB_CONNECTION_LIMIT'] ? Number(process.env['DB_CONNECTION_LIMIT']) : 10,
-        })
+    dialect,
+    // Add query logging in development
+    ...(config.NODE_ENV === 'development' && {
+        log: (event) => {
+            if (event.level === 'query') {
+                console.log('[\uD83D\uDCE6 Database]:', event.query.sql, event.query.parameters)
+            }
+            if (event.level === 'error') {
+                console.error('[\uD83D\uDCE6 Database Error]:', event.error)
+            }
+        }
     })
 })
