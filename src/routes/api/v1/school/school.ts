@@ -3,7 +3,7 @@ import { db } from '../../../../../database'
 import { rateLimit } from 'elysia-rate-limit'
 import { app } from '../../../../../index';
 import { ip } from 'elysia-ip';
-
+import moment from 'moment';
 
 const elysiaApp = new Elysia()
   .use(ip())
@@ -14,7 +14,9 @@ const elysiaApp = new Elysia()
     injectServer: () => app.server
   }))
   .get('/school/', async () => {
-    const [school, breaks] = await Promise.all([
+    const now = moment().format("YYYY-MM-DD");
+
+    const [school, breaks, year] = await Promise.all([
         db.selectFrom("schools")
         .innerJoin('districts', 'districts.districtId', 'schools.district')
         .select([
@@ -38,10 +40,19 @@ const elysiaApp = new Elysia()
             "school_breaks.hour",
             "school_breaks.minutes"
         ])
-        .execute()
+        .execute(),
+        db.selectFrom("school_years")
+        .select([
+          'school_years.start',
+          'school_years.midterm',
+          'school_years.end'
+        ])
+        .where('school_years.start', '<=', now)
+        .where('school_years.end', '>=', now)
+        .executeTakeFirst()
     ])
 
-    return Response.json({...school, breaks, loginExpires: 15});
+    return Response.json({...school, year, breaks, loginExpires: 15000});
   }, {
     detail: {
       description: "This endpoint is rate-limited: max 5 requests per 5 minutes",

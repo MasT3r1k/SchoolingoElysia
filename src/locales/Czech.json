@@ -1,5 +1,18 @@
 {
     "auth": {
+        "install_app": {
+            "title": "Nainstalovat aplikaci",
+            "android": {
+              "step1": "Otevřete Google Play Store na vašem Android zařízení",
+              "step2": "Vyhledejte aplikaci Schoolingo",
+              "step3": "Klikněte na tlačítko 'Instalovat' nebo použijte tlačítko níže"
+            },
+            "ios": {
+              "step1": "Otevřete App Store na vašem iOS zařízení",
+              "step2": "Vyhledejte aplikaci Schoolingo",
+              "step3": "Klikněte na tlačítko 'Získat' nebo použijte tlačítko níže"
+            }
+        },
         "login": {
             "title": "Přihlášení do školního systému",
             "subtitle": ["Pomocí přihlašovacích údajů", "se přihlaš pomocí QR kódu"],
@@ -87,7 +100,8 @@
         "calendar": "Kalendář",
         "teach": {
             "main": "Výuka",
-            "timetable": "Rozvrh"
+            "timetable": "Rozvrh",
+            "homeworks": "Domácí úkoly"
         },
         "marks": {
             "main": "Hodnocení"
@@ -162,10 +176,94 @@
             "browser": "Prohlížeč",
             "type": "Druh přihlášení"
         },
+        "state": {
+            "success": "Úspěšné",
+            "invalid_password": "Špatné heslo",
+            "invalid_2fa": "Špatný kód",
+            "error": "Chyba"
+        },
         "types": {
             "password": "Pomocí hesla",
             "passkey": "Pomocí passkey"
+        },
+        "buttons": {
+            "details": "Podrobnosti"
         }
+    },
+    "homeworks": {
+        "homework": "Domácí úkol",
+        "no_homework_to_submit": "Nemátě žádný úkol k odevzdání"
+    },
+    "messages": {
+        "privacy": "Zprávy poslané přes aplikaci %app% se nedají považovat za soukromé. K zprávům mají přístup včetně přijemců i ředistelství školy a správci systému.",
+        "excuse_message": "Tento druh zprávy se posílá přímo do omluvenek třídnímu učiteli.",
+        "type": "Typ zprávy",
+        "write_message_on_noticeboard": "Napsat zprávu na nástěnku",
+        "message": "Zpráva",
+        "messages": "zprávy",
+        "message_placeholder": "Zde zadejte vzkaz Vaší zprávy",
+        "topic": "Titulek",
+        "receiver": "Příjemce zprávy",
+        "student": "Žák",
+        "search": "Vyhledat podle autora",
+        "findreceiver": "Vyhledejte jméno přijemce",
+        "findstudent": "Vyhledejte jméno žáka",
+        "no_selected": "Nevybrali jste žádného příjemce",
+        "attachments": "Přiložené soubory",
+        "suppress": "Potlačit",
+        "excuse_label": "Omluvit žáka na",
+        "confirm_read": "Potvrdit přečtení",
+        "no_type_available": "Nemáš k dispozici žádné možnosti",
+        "no_type_access": "Nemáte oprávnění poslat tento druh zprávy",
+        "child": "Dítě",
+        "no_child_selected": "Nevybrali jste žádné dítě",
+        "rating": {
+        "main": "Ohodnocení",
+        "positive": "Pochvala",
+        "negative": "Napomenutí"
+        },
+
+        "homeworks": {
+        "empty": "Nemáte žádné domácí úkoly"
+        },
+
+        "receivers": {
+        "all_selected_noticeboard": "Zpráva se zobrazí na nástěnce všem"
+        },
+
+        "tags": {
+        "main": "Označení",
+        "require_confirmation": "Vyžaduje potvrzení",
+        "important": "Důležité"
+        },
+
+        "copy_classteacher": "Kopie třídnímu učiteli",
+        "copy_parents": "Kopie rodičům",
+        "as_principal": "Jako ředitel",
+        "to_all": "Všem",
+
+        "sus_error": "Nastala nějaká podivná chyba, klikni pro obnovení na základní typ",
+
+        "from": "Od",
+        "to": "Do",
+        "excuse": "Omluvit",
+        "excuse_myself": "Omluvit sám sebe",
+
+        "types": {
+            "message": "Klasická zpráva",
+            "homework": "Odevzdání úkolu",
+            "excusestudent": "Omluvenka",
+            "ratestudent": "Ohodnocení žáka",
+            "noticeboard": "Zpráva na nástěnku",
+            "system": "Systém",
+            "error": "No message types found"
+        },
+
+        "buttons": {
+            "send_message": "Poslat zprávu"
+        },
+
+        "classic_message": "Přímá zpráva"
     },
     "settings": {
         "alerts": {

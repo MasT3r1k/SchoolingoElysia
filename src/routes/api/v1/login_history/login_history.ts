@@ -51,6 +51,7 @@ const elysiaApp = new Elysia()
                 'login_history.success',
                 'login_history.ip',
                 'login_history.userAgent',
+                'login_history.error',
                 'login_history.created'
             ])
             .limit(query.limit)

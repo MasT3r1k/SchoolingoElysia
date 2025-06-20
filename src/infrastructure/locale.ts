@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import path from 'path';
 import 'dotenv/config';
 import { sleep } from 'bun';
+import { config } from '../config/app.config';
 
 // Absolutní cesta ke složce locales
 const LOCALES_DIR = path.join(__dirname, '../locales');
@@ -23,8 +24,8 @@ const locales = new Elysia({ prefix: "/locales" })
   for (const file of files) {
     if (file.endsWith('.json')) continue;
 
-    // Cache kontrola
-    if (moduleCache.has(file)) {
+    // Cache kontrola pouze v production režimu
+    if (config.NODE_ENV === 'production' && moduleCache.has(file)) {
       fileList.push(moduleCache.get(file));
       continue;
     }
@@ -33,7 +34,9 @@ const locales = new Elysia({ prefix: "/locales" })
     try {
       let content = (await import(modulePath)).default;
       content.file = file.replace('.ts', '');
-      moduleCache.set(file, content);
+      if (config.NODE_ENV === 'production') {
+        moduleCache.set(file, content);
+      }
       fileList.push(content);
     } catch (err) {
       console.error(`Chyba při načítání ${file}:`, err);
@@ -57,19 +60,23 @@ const locales = new Elysia({ prefix: "/locales" })
     });
   }
 
-//   // Cache hit
-//   if (jsonCache.has(languageFile)) {
-//     return new Response(jsonCache.get(languageFile)!, {
-//       headers: { 'Content-Type': 'application/json' }
-//     });
-//   }
+  // Cache hit pouze v production režimu
+  if (config.NODE_ENV === 'production' && jsonCache.has(languageFile)) {
+    return new Response(jsonCache.get(languageFile)!, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 
   const filePath = path.join(LOCALES_DIR, languageFile);
 
   try {
     await fs.promises.access(filePath, fs.constants.F_OK);
-    const content =JSON.stringify(await fs.promises.readFile(filePath, 'utf-8')).replace(/\\r\\n/g, '').replace(/\\"/g, '"').replace(/  /g, '').slice(1, -1);
-    jsonCache.set(languageFile, content);
+    const content = JSON.stringify(await fs.promises.readFile(filePath, 'utf-8')).replace(/\\r\\n/g, '').replace(/\\"/g, '"').replace(/  /g, '').slice(1, -1);
+    
+    // Uložení do cache pouze v production režimu
+    if (config.NODE_ENV === 'production') {
+      jsonCache.set(languageFile, content);
+    }
 
     return new Response(content, {
       headers: { 'Content-Type': 'application/json' }

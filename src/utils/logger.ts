@@ -1,20 +1,33 @@
+import { Elysia } from 'elysia';
+import * as fs from 'fs';
+import path from 'path';
 import { config } from '../config/app.config';
 
-type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-
-interface LogMessage {
-  level: LogLevel;
-  message: string;
-  timestamp: string;
-  [key: string]: any;
+// Vytvoření složky pro logy, pokud neexistuje
+const LOG_DIR = path.join(process.cwd(), 'logs');
+if (!fs.existsSync(LOG_DIR)) {
+  fs.mkdirSync(LOG_DIR);
 }
 
+// Cesta k log souboru
+const LOG_FILE = path.join(LOG_DIR, 'app.log');
+
+// Funkce pro zápis do souboru
+const writeToFile = (message: string) => {
+  fs.appendFileSync(LOG_FILE, message + '\n');
+};
+
+// Singleton instance loggeru
 class Logger {
   private static instance: Logger;
-  private isDevelopment: boolean;
+  private isProduction: boolean;
 
   private constructor() {
-    this.isDevelopment = config.NODE_ENV === 'development';
+    this.isProduction = config.NODE_ENV === 'production';
+    // Přidání oddělovače při startu aplikace
+    const timestamp = new Date().toISOString();
+    const separator = `\n[${timestamp}] ----- NEW START --------\n`;
+    writeToFile(separator);
   }
 
   public static getInstance(): Logger {
@@ -24,43 +37,37 @@ class Logger {
     return Logger.instance;
   }
 
-  private formatMessage(level: LogLevel, message: string, meta?: any): LogMessage {
-    return {
-      level,
-      message,
-      timestamp: new Date().toISOString(),
-      ...meta,
-    };
-  }
-
-  private log(level: LogLevel, message: string, meta?: any) {
-    const logMessage = this.formatMessage(level, message, meta);
+  public log(message: string) {
+    const timestamp = new Date().toISOString();
+    const logMessage = `[${timestamp}] ${message}`;
     
-    if (this.isDevelopment) {
-      console.log(JSON.stringify(logMessage, null, 2));
+    // V production režimu logujeme pouze do souboru
+    if (this.isProduction) {
+      writeToFile(logMessage);
     } else {
-      // In production, you might want to send logs to a service like CloudWatch, etc.
-      console.log(JSON.stringify(logMessage));
+      // V development režimu logujeme do konzole i do souboru
+      console.log(logMessage);
+      writeToFile(logMessage);
     }
-  }
-
-  public debug(message: string, meta?: any) {
-    if (this.isDevelopment) {
-      this.log('debug', message, meta);
-    }
-  }
-
-  public info(message: string, meta?: any) {
-    this.log('info', message, meta);
-  }
-
-  public warn(message: string, meta?: any) {
-    this.log('warn', message, meta);
-  }
-
-  public error(message: string, meta?: any) {
-    this.log('error', message, meta);
   }
 }
 
-export const logger = Logger.getInstance(); 
+// Export singleton instance
+export const logger = Logger.getInstance();
+
+// Elysia middleware pro request logging
+export const requestLogger = new Elysia()
+  .derive(({ request }) => {
+    const start = Date.now();
+    const { method, url } = request;
+    const userAgent = request.headers.get('user-agent') || 'unknown';
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+
+    return {
+      logRequest: (message: string) => {
+        const duration = Date.now() - start;
+        const logMessage = `${method} ${url} - ${duration}ms - ${userAgent} - ${ip} - ${message}`;
+        logger.log(logMessage);
+      }
+    };
+  }); 

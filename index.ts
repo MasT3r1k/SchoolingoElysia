@@ -98,7 +98,7 @@ async function loadFolder(folder: string = modulePath) {
 (async () => {
   try {
     // Initialize database tables
-    logger.info('Database tables initialized successfully');
+    logger.log('Database tables initialized successfully');
 
     await loadFolder(modulePath);
     
@@ -124,10 +124,10 @@ async function loadFolder(folder: string = modulePath) {
 
     const port = parseInt(config.PORT);
     await app.listen(port);
-    logger.info(`[🦊 Elysia]: Running at http://${app.server?.hostname}:${port}`);
-    logger.info(`[🌍 Environment]: ${config.NODE_ENV}`);
+    logger.log(`[🦊 Elysia]: Running at http://${app.server?.hostname}:${port}`);
+    logger.log(`[🌍 Environment]: ${config.NODE_ENV}`);
   } catch (error) {
-    logger.error('Failed to start application:', error);
+    logger.log('Failed to start application:' + error);
     process.exit(1);
   }
 })();

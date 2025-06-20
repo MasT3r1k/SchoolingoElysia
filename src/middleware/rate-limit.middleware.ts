@@ -29,7 +29,7 @@ export const rateLimit = new Elysia()
 
     return { rateLimitInfo };
   })
-  .onRequest(({ rateLimitInfo, set }) => {
+  .onRequest(({ rateLimitInfo, set }: any) => {
     if (rateLimitInfo && rateLimitInfo.count > max) {
       set.status = 429;
       throw new Error('Too many requests');

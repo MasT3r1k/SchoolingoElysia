@@ -7,8 +7,6 @@ import moment from 'moment';
 import { ip } from 'elysia-ip';
 import * as OTPAuth from "otpauth";
 import bcrypt from 'bcryptjs';
-import { generateAuthenticationOptions, GenerateAuthenticationOptionsOpts, generateRegistrationOptions, GenerateRegistrationOptionsOpts, VerifiedRegistrationResponse, verifyAuthenticationResponse, verifyRegistrationResponse } from '@simplewebauthn/server';
-import { ElysiaCookie } from 'elysia/dist/cookies';
 
 export async function authenticateUser(userId: number, cookie: any, userAgent: string, ip: string) {
   try {
@@ -142,18 +140,19 @@ const elysiaApp = new Elysia()
         user.password
       );
       const { ip } = store;
-      // Log user history
-      db.insertInto("login_history")
-      .values({
-        userId: user.userId,
-        success: isPasswordValid,
-        type: 'password',
-        ip,
-        userAgent: request.headers.get("user-agent") || null
-      })
-      .execute()
+
 
       if (!isPasswordValid) {
+        await db.insertInto("login_history")
+        .values({
+          userId: user.userId,
+          success: false,
+          type: 'password',
+          ip,
+          userAgent: request.headers.get("user-agent") || null,
+          error: 'invalid_password'
+        })
+        .execute()
         return Response.json({ error: ["Invalid password"] });
       }
 
@@ -199,13 +198,39 @@ const elysiaApp = new Elysia()
         }
 
         if (!isApproved2FA) {
+          // Log invalid 2FA attempt
+          await db.insertInto("login_history")
+          .values({
+            userId: user.userId,
+            success: false,
+            type: 'password',
+            ip,
+            userAgent: request.headers.get("user-agent") || null,
+            error: 'invalid_2fa'
+          })
+          .execute()
+
           return Response.json({ error: ['Invalid 2FA'] });
         }
       }
 
+
+
       const res = await authenticateUser(user.userId, cookie, request.headers.get('user-agent'), ip);
 
       if (res?.status == true) {
+        // Log user history with error information
+        await db.insertInto("login_history")
+        .values({
+          userId: user.userId,
+          success: true,
+          type: 'password',
+          ip,
+          userAgent: request.headers.get("user-agent") || null,
+          error: null
+        })
+        .execute()
+
         return Response.json({
           username: res.username,
           expires: res.expires
