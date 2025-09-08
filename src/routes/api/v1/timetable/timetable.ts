@@ -113,25 +113,38 @@ const elysiaApp = new Elysia()
                   .execute(),
 
               db.selectFrom('substitution')
-                  .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
-                  .leftJoin('persons',  'substitution.teacherId', 'persons.personId')
-                  .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-                  .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
-                  .select([
-                      'substitution.date',
-                      'substitution.hour',
-                      sql`subjects.label`.as('subjectName'),
-                      sql`subjects.shortcut`.as('subjectShortcut'),
-                      sql`persons.lastName`.as('lastName'),
-                      fullName.as('teacher')
+                .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
+                .leftJoin('persons',  'substitution.teacherId', 'persons.personId')
+                .leftJoin('events', 'substitution.event_id', 'events.event_id')
+                .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
+                .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
+                .select([
+                  'substitution.start_date',
+                  'substitution.start_hour',
+                  'substitution.end_date',
+                  'substitution.end_hour',
+                  'substitution.type',
+                  'events.event_name',
+                  'events.event_description',
+                  sql`subjects.label`.as('subjectName'),
+                  sql`subjects.shortcut`.as('subjectShortcut'),
+                  sql`persons.lastName`.as('lastName'),
+                  fullName.as('teacher')
+                ])
+                .where((eb) =>
+                  eb.and([
+                    eb.or([
+                      eb('substitution.groupId', 'in', groupNumbers),
+                      eb('substitution.groupId', 'is', null)
+                    ]),
+                    eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').format('YYYY-MM-DD')),
+                    eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').format('YYYY-MM-DD'))
                   ])
-                  .where('substitution.groupId', 'in', groupNumbers)
-                  .where('substitution.date', '>=', time.clone().startOf('isoWeek').format("YYYY-MM-DD"))
-                  .where('substitution.date', '<=', time.clone().endOf('isoWeek')  .format("YYYY-MM-DD"))
-                  .execute()
+                )
+                .execute()
           ])
 
-          return Response.json({...timetable, ...substitution});
+          return Response.json({timetable, substitution});
       } else if (perms?.teacher) {
         if (type == "person") {
           const [timetable, substitution] = await Promise.all([
@@ -151,33 +164,46 @@ const elysiaApp = new Elysia()
                       sql`subjects.shortcut`.as('subjectShortcut'),
                       sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, syClass.start, CURDATE()) + 1, classes.suffix)`.as('className')
                   ])
-                  .where('timetable.teacher', '=', id)
-                  .where('syGroup.start', '<=',  time.clone().format("YYYY-MM-DD"))
-                  .where('syGroup.end', '>=',    time.clone().format("YYYY-MM-DD"))
+                  .where((eb) =>
+                    eb.and([
+                      eb('timetable.teacher', '=', id),
+                      eb('syGroup.start', '<=',  time.clone().format("YYYY-MM-DD")),
+                      eb('syGroup.end', '>=',    time.clone().format("YYYY-MM-DD"))
+                    ])
+                  )
                   .execute(),
 
               db.selectFrom('substitution')
-                  .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
-                  .leftJoin('groups', 'groups.groupId', 'substitution.groupId')
-                  .leftJoin('classes', 'groups.class', 'classes.classId')
-                  .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
-                  .leftJoin('persons',  'substitution.teacherId', 'persons.personId')
-                  .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-                  .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
-                  .select([
-                      'substitution.date',
-                      'substitution.hour',
-                      sql`subjects.label`.as('subjectName'),
-                      sql`subjects.shortcut`.as('subjectShortcut'),
-                      sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
+                .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
+                .leftJoin('groups', 'groups.groupId', 'substitution.groupId')
+                .leftJoin('classes', 'groups.class', 'classes.classId')
+                .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
+                .leftJoin('persons',  'substitution.teacherId', 'persons.personId')
+                .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
+                .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
+                .select([
+                  'substitution.start_date',
+                  'substitution.start_hour',
+                  'substitution.end_date',
+                  'substitution.end_hour',
+                  sql`subjects.label`.as('subjectName'),
+                  sql`subjects.shortcut`.as('subjectShortcut'),
+                  sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
+                ])
+                .where((eb) =>
+                  eb.and([
+                    eb.or([
+                      eb('substitution.teacherId', '=', id),
+                      eb('substitution.groupId', 'is', null)
+                    ]),
+                    eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').format('YYYY-MM-DD')),
+                    eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').format('YYYY-MM-DD'))
                   ])
-                  .where('substitution.teacherId', '=', id)
-                  .where('substitution.date', '>=', time.clone().startOf('isoWeek').format("YYYY-MM-DD"))
-                  .where('substitution.date', '<=', time.clone().endOf('isoWeek')  .format("YYYY-MM-DD"))
-                  .execute()
+                )
+                .execute()
           ])
 
-          return Response.json({...timetable, ...substitution});
+          return Response.json({timetable, substitution});
         }
         else if (type == "class") {
           const [timetable, substitution] = await Promise.all([
@@ -205,25 +231,34 @@ const elysiaApp = new Elysia()
                   .execute(),
 
               db.selectFrom('substitution')
-                  .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
-                  .leftJoin('groups', 'groups.groupId', 'substitution.groupId')
-                  .leftJoin('persons',  'substitution.teacherId', 'persons.personId')
-                  .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-                  .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
-                  .select([
-                      'substitution.date',
-                      'substitution.hour',
-                      sql`subjects.label`.as('subjectName'),
-                      sql`subjects.shortcut`.as('subjectShortcut'),
-                      fullName.as('teacher')
+                .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
+                .leftJoin('groups', 'groups.groupId', 'substitution.groupId')
+                .leftJoin('persons', 'substitution.teacherId', 'persons.personId')
+                .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
+                .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
+                .select([
+                  'substitution.start_date',
+                  'substitution.start_hour',
+                  'substitution.end_date',
+                  'substitution.end_hour',
+                  sql`subjects.label`.as('subjectName'),
+                  sql`subjects.shortcut`.as('subjectShortcut'),
+                  fullName.as('teacher')
+                ])
+                .where((eb) =>
+                  eb.and([
+                    eb.or([
+                      eb('groups.class', '=', id),
+                      eb('substitution.groupId', '=', null)
+                    ]),
+                    eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').format('YYYY-MM-DD')),
+                    eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').format('YYYY-MM-DD'))
                   ])
-                  .where('groups.class', '=', id)
-                  .where('substitution.date', '>=', time.clone().startOf('isoWeek').format("YYYY-MM-DD"))
-                  .where('substitution.date', '<=', time.clone().endOf('isoWeek')  .format("YYYY-MM-DD"))
-                  .execute()
+                )
+                .execute()
           ])
 
-          return Response.json({...timetable, ...substitution});
+          return Response.json({timetable, substitution});
         }
       }
     } catch (e) {

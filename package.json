@@ -21,12 +21,14 @@
   "dependencies": {
     "@elysiajs/cors": "latest",
     "@elysiajs/swagger": "latest",
-    "@elysiajs/xss": "latest",
+    "@simplewebauthn/server": "^13.1.1",
+    "bcryptjs": "^3.0.2",
     "dotenv": "latest",
     "elysia": "latest",
     "elysia-ip": "latest",
     "kysely": "latest",
     "mysql2": "latest",
+    "otpauth": "^9.4.0",
     "zod": "latest"
   },
   "devDependencies": {

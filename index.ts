@@ -33,7 +33,7 @@ export const app = new Elysia({
 })
   .use(ip())
   .use(cors({
-    origin: ['http://localhost:4200', config.CORS_ORIGIN],
+    origin: ['http://localhost:4200'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

@@ -63,8 +63,34 @@
         "even": "Sudý týden",
         "odd": "Lichý týden"
     },
-    "days": ["Neděle", "Pondělí", "Úterý", "Středa", "Čtvrtek", "Pátek", "Sobota"],
+    "days": [
+        "Neděle",
+        "Pondělí",
+        "Úterý",
+        "Středa",
+        "Čtvrtek",
+        "Pátek",
+        "Sobota"
+    ],
+    "months": [
+        "Leden",
+        "Únor",
+        "Březen",
+        "Duben",
+        "Květen",
+        "Červen",
+        "Červenec",
+        "Srpen",
+        "Září",
+        "Říjen",
+        "Listopad",
+        "Prosinec"
+    ],
+    "date": "Datum",
+    "total": "Celkem",
     "or": "nebo",
+    "subject": "Předmět",
+    "subjects": "Předměty",
     "selected": "Vybráno",
     "loading": "Načítání",
     "cancel": "Zrušit",
@@ -75,6 +101,15 @@
     "actions": "Akce",
     "system": {
         "version": "Verze systému"
+    },
+    "time": {
+        "week": "Týden",
+        "month": "Měsíc",
+        "to_today": "K dnešku",
+        "first_term": "1. pololetí",
+        "second_term": "2. pololetí",
+        "school_year": "Školní rok",
+        "older": "Starší"
     },
     "roles": {
         "teacher": "Učitel",
@@ -90,7 +125,8 @@
         "late": "Pozdní příchod",
         "early": "Dřívejší odchod",
         "distance": "Distanční výuka",
-        "trash": "Odebrat absenci"
+        "trash": "Odebrat absenci",
+        "overview_absence": "Přehled absence"
     },
     "sidebar": {
         "main": "Boční panel",
@@ -101,10 +137,17 @@
         "teach": {
             "main": "Výuka",
             "timetable": "Rozvrh",
-            "homeworks": "Domácí úkoly"
+            "homeworks": "Domácí úkoly",
+            "substitution": "Suplování",
+            "tutoring": "Doučování",
+            "subjects": "Přehled předmětů",
+            "rewards": "Odměny"
         },
         "marks": {
-            "main": "Hodnocení"
+            "main": "Hodnocení",
+            "interm": "Průběžná klasifikace",
+            "midterm": "Pololetní klasifikace",
+            "education_measures": "Výchovná opatření"
         },
         "settings": "Nastavení",
         "messages": {
@@ -142,7 +185,8 @@
         "achievements": "Mé úspěchy",
         "show_backup_codes": "Zobrazit záložní kódy",
         "refresh_backup_codes": "Znovu vygenerovat žáložní kódy",
-        "remove_authenticator_app": "Odebrat aplikaci autentizace"
+        "remove_authenticator_app": "Odebrat aplikaci autentizace",
+        "upload_files": "Nahrát soubory"
     },
     "dropdown": {
         "child": {
@@ -161,6 +205,7 @@
             "message": "Napsat zprávu",
             "homework": "Zadat domácí úkol",
             "event": "Vytvořit událost",
+            "excuse": "Omluvit absenci",
             "anketa": "Vytvořit anketu",
             "request": "Vytvořit požadavek",
             "company": "Přidat firmu do praxí"
@@ -184,7 +229,9 @@
         },
         "types": {
             "password": "Pomocí hesla",
-            "passkey": "Pomocí passkey"
+            "passkey": "Pomocí passkey",
+            "qrcode": "Pomocí QR kódu",
+            "unknown": "Neznámý přihlášení"
         },
         "buttons": {
             "details": "Podrobnosti"
@@ -218,23 +265,23 @@
         "child": "Dítě",
         "no_child_selected": "Nevybrali jste žádné dítě",
         "rating": {
-        "main": "Ohodnocení",
-        "positive": "Pochvala",
-        "negative": "Napomenutí"
+            "main": "Ohodnocení",
+            "positive": "Pochvala",
+            "negative": "Napomenutí"
         },
 
         "homeworks": {
-        "empty": "Nemáte žádné domácí úkoly"
+            "empty": "Nemáte žádné domácí úkoly"
         },
 
         "receivers": {
-        "all_selected_noticeboard": "Zpráva se zobrazí na nástěnce všem"
+            "all_selected_noticeboard": "Zpráva se zobrazí na nástěnce všem"
         },
 
         "tags": {
-        "main": "Označení",
-        "require_confirmation": "Vyžaduje potvrzení",
-        "important": "Důležité"
+            "main": "Označení",
+            "require_confirmation": "Vyžaduje potvrzení",
+            "important": "Důležité"
         },
 
         "copy_classteacher": "Kopie třídnímu učiteli",
@@ -302,6 +349,7 @@
             "title": "Passkeys",
             "description": "Passkeys jsou pověření webauthn, která ověřují vaši totožnost pomocí dotyku, rozpoznání obličeje, hesla zařízení nebo kódu PIN. Lze je použít jako náhradu hesla nebo jako metodu 2FA.",
             "list": "Seznam Vašich passkeys",
+            "empty": "Nemáte vytvořené žádné passkeys.",
             "alerts": {
                 "not_supported": "Tak to se nepovedlo. Na vašem zařízení Passkeys funkce není podporována."
             },
