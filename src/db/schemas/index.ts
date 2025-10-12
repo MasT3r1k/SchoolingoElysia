@@ -75,6 +75,7 @@ import { Users_backup_codesTable } from './users_backup_codes'
 import { EventsTable } from './events'
 import { Users_credentialsTable } from './user_credentials'
 import { webauthn_challengesTable } from './webauthn_challenges'
+import { Users_resetpasswordTable } from './users_resetpassword'
 
 export interface Database {
   absence: AbsenceTable
@@ -153,5 +154,6 @@ export interface Database {
   users: UsersTable
   users_backup_codes: Users_backup_codesTable
   users_credentials: Users_credentialsTable,
+  users_resetpassword: Users_resetpasswordTable,
   webauthn_challenges: webauthn_challengesTable
 }

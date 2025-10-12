@@ -23,10 +23,26 @@
             "password_placeholder": "Vaše heslo",
             "button": "Přihlásit se",
             "login_with_passkey": "Přihlášení pomocí passkey",
-            "downloadApp": "Stáhnout %app% do Vašeho telefonu"
+            "downloadApp": "Stáhnout %app% do Vašeho telefonu",
+            "back_to_login": "Zpátky na přihlášení"
         },
         "forgotpass": {
-            "click": "Zapomněl jste heslo?"
+            "click": "Zapomněl jste heslo?",
+            "title": "Žádost o reset hesla",
+            "not_available": "Zapomenuté heslo není k dispozici, pro nové heslo kontaktujte třídního učitele nebo správce.",
+            "email_not_found": "Email nebyl nalezen",
+            "no_emails": "Nebyly nalezeny žádné ověřené emaily, požádejte třídního učitele či správce o nové heslo",
+            "email_sent": "Email s instrukcemi byl odeslán",
+            "select_email": "Vyberte email, na který máme poslat kód",
+            "email_error": "Nastala chyba při odesílání emailu",
+            "http_error": "Nepodařilo se požádat o nové heslo",
+            "send_email": "Poslat email s kódem",
+            "token_expired": "Doba pro resetování hesla vypršela",
+            "missing_selected_email": "Musíte vybrat email, na který chcete poslat kód",
+            "invalid_selected_email": "Neplatný email, vyberte platný email",
+            "set_email_failed": "Nepodařilo se vybrat email",
+            "code_from_email": "Zadejte kód, který jsme Vám poslali na email.",
+            "verify_code": "Ověřit kód"
         },
         "2fa": {
             "click": "Jiný způsob přihlášení?",

@@ -246,52 +246,7 @@ const elysiaApp = new Elysia()
       username: t.Optional(t.String()),
       password: t.Optional(t.String()),
       TFA: t.Optional(t.String())
-    })),
-    detail: {
-      description: "This endpoint is rate-limited: max 5 requests per 5 minutes",
-      responses: {
-        200: {
-          description: "Successful response",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {}
-              }
-            }
-          }
-        },
-        404: {
-          description: "Invalid student",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  error: { type: "string", example: "Student not found" }
-                }
-              }
-            }
-          }
-        },
-        429: {
-          description: "Rate limit exceeded",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    example: "rate-limited"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    }))
   })
 
 export default elysiaApp;

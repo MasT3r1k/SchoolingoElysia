@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1
--- Vytvořeno: Pon 08. zář 2025, 06:48
+-- Vytvořeno: Ned 12. říj 2025, 23:36
 -- Verze serveru: 11.7.1-MariaDB
 -- Verze PHP: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Databáze: `schoolingo`
+-- Databáze: `schoolingo_old`
 --
 
 -- --------------------------------------------------------
@@ -835,16 +835,17 @@ INSERT INTO `districts` (`districtId`, `district`) VALUES
 CREATE TABLE `emails` (
   `email` text NOT NULL,
   `personId` int(11) NOT NULL,
-  `description` text DEFAULT NULL
+  `description` text DEFAULT NULL,
+  `is_verified` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Vypisuji data pro tabulku `emails`
 --
 
-INSERT INTO `emails` (`email`, `personId`, `description`) VALUES
-('jkosik@sps-pi.cz', 1, NULL),
-('jkosik@sps-pi.com', 1, NULL);
+INSERT INTO `emails` (`email`, `personId`, `description`, `is_verified`) VALUES
+('jkosik@sps-pi.cz', 1, NULL, 1),
+('jkosik@sps-pi.com', 1, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -2095,7 +2096,10 @@ INSERT INTO `login_history` (`lhId`, `userId`, `type`, `success`, `error`, `ip`,
 (753, 1, 'password', 1, NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0', '2025-08-30 10:30:13.039696'),
 (754, 1, 'password', 1, NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0', '2025-08-30 11:18:29.833863'),
 (755, 1, 'password', 1, NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0', '2025-09-01 18:10:10.658396'),
-(756, 1, 'password', 1, NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0', '2025-09-01 18:47:57.890895');
+(756, 1, 'password', 1, NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0', '2025-09-01 18:47:57.890895'),
+(757, 4, 'password', 1, NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-10-12 16:22:00.727181'),
+(758, 1, 'password', 1, NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-10-12 18:16:49.287050'),
+(759, 1, 'password', 1, NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-10-12 18:20:57.166988');
 
 -- --------------------------------------------------------
 
@@ -2411,7 +2415,7 @@ CREATE TABLE `schools` (
 --
 
 INSERT INTO `schools` (`schoolId`, `name`, `shortName`, `district`, `code`, `owner`, `apiToken`, `license`, `created`, `startHour`, `startMinute`, `lessonHour`, `breakTime`, `resetPasswordWithEmail`, `warningAbsencePercent`, `fastLogin`, `modules`, `studentsLimit`, `gdpr_firstname`, `gdpr_lastname`, `gdpr_phone`, `gdpr_email`, `gdpr_mobile`, `gdpr_databox`, `gdpr_web`) VALUES
-(1, 'Střední průmyslová a Vyšší odborná škola v Písku', 'SPŠ Písek', 63, 'SPS-PI', 1, '24Q7TZDGAEYGUN1H0DMJDHLZROCA76UF77UY1DK5R01VQ120Q4RS45LVU5JIGBV4', '8COVTPDXLTLVEQ744IICNJMK4GYGDDZUM6SBA2QD493GKQ7PVOOBNIYVWR594AZU', '2024-09-29 17:39:02', 8, 0, 45, 5, 0, 20, 1, '-1', -1, 'GDPR', 'ZVAS', '389822501', NULL, '608057836', '3cdj5ts', 'zvas.cz');
+(1, 'Střední průmyslová a Vyšší odborná škola v Písku', 'SPŠ Písek', 63, 'SPS-PI', 1, '24Q7TZDGAEYGUN1H0DMJDHLZROCA76UF77UY1DK5R01VQ120Q4RS45LVU5JIGBV4', '8COVTPDXLTLVEQ744IICNJMK4GYGDDZUM6SBA2QD493GKQ7PVOOBNIYVWR594AZU', '2024-09-29 17:39:02', 8, 0, 45, 5, 1, 20, 0, '-1', -1, 'GDPR', 'ZVAS', '389822501', NULL, '608057836', '3cdj5ts', 'zvas.cz');
 
 -- --------------------------------------------------------
 
@@ -3026,7 +3030,10 @@ INSERT INTO `tokens` (`tokenId`, `token`, `password`, `userAgent`, `expires`, `c
 (733, '$2b$04$eQmXWYv1SnnjqPWjTvhOLubOa3GIiEnZmmicN0/uwiozhwN1QDNHW', 8, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0', '2025-08-30 12:45:13.034000', '2025-08-30 12:30:13.034000', 1, NULL, NULL),
 (734, '$2b$04$E4OMcZytXrDMVvWieKez5.weNoS8mT2W9jPTslrlZBLgIw./Iyxmi', 8, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0', '2025-08-30 13:33:29.816000', '2025-08-30 13:18:29.817000', 1, NULL, NULL),
 (735, '$2b$04$NCy.8XWYHE8Shu9EgEvueOgMA/ZeLQNM9RujyS59.538QsiaLshYe', 8, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0', '2025-09-01 20:25:10.650000', '2025-09-01 20:10:10.651000', 1, NULL, NULL),
-(736, '$2b$04$/FLjvRxPu7Geof/YqfDm5OQL6aQ.goObShFHs/uj8NX/Uw2PQVHOy', 8, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0', '2025-09-01 21:02:57.883000', '2025-09-01 20:47:57.884000', 1, NULL, NULL);
+(736, '$2b$04$/FLjvRxPu7Geof/YqfDm5OQL6aQ.goObShFHs/uj8NX/Uw2PQVHOy', 8, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0', '2025-09-01 21:02:57.883000', '2025-09-01 20:47:57.884000', 1, NULL, NULL),
+(737, '$2b$04$PWfLqmCEed5G4gje8cmk7.31T6DNCs4GtRqybr5hEEG9.tWieQYg6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-10-12 18:37:00.721000', '2025-10-12 18:22:00.722000', 4, NULL, NULL),
+(738, '$2b$04$3dZOwoFHAwhqgwtXYdU/u.pt6NXNVR0zIKkLNcyvQvb5wRqwXx0Qq', 8, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-10-12 20:31:49.279000', '2025-10-12 20:16:49.280000', 1, NULL, NULL),
+(739, '$2b$04$A0OH39YvlMHDgv88l44p1.OtPtMC9FtOYeWjlIB6S2YIyXCSh9xA.', 8, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-10-12 20:35:57.162000', '2025-10-12 20:20:57.162000', 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -3293,6 +3300,42 @@ CREATE TABLE `users_credentials` (
   `last_used` timestamp NULL DEFAULT NULL,
   `backed_up` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `users_resetpassword`
+--
+
+CREATE TABLE `users_resetpassword` (
+  `user_resetpassword_id` int(11) NOT NULL,
+  `email_token` text NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `email` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `expires_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `otp_code` text DEFAULT NULL,
+  `ip` text DEFAULT NULL,
+  `user_agent` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+--
+-- Vypisuji data pro tabulku `users_resetpassword`
+--
+
+INSERT INTO `users_resetpassword` (`user_resetpassword_id`, `email_token`, `user_id`, `email`, `created_at`, `expires_at`, `otp_code`, `ip`, `user_agent`) VALUES
+(1, '631f37c0-4d32-4a98-b5e8-e45f1d35021e', 1, NULL, '2025-10-12 19:23:00', '2025-10-12 19:38:00', NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0'),
+(2, '7f995015-6f19-4950-8dbc-0edc49ce8852', 1, NULL, '2025-10-12 19:25:43', '2025-10-12 19:40:43', NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0'),
+(3, '9e8d8a22-2783-482c-a8e3-0415e9781f84', 1, NULL, '2025-10-12 19:32:56', '2025-10-12 19:47:56', NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0'),
+(4, '396bcb2f-0b75-46f7-ae19-d8f4b4be3e8d', 1, NULL, '2025-10-12 19:35:31', '2025-10-12 19:50:31', NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0'),
+(5, '212d6f24-b769-4a2f-a39f-66c120bb4f58', 1, NULL, '2025-10-12 19:36:10', '2025-10-12 19:51:10', NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0'),
+(6, '2a759c26-ab72-417e-80f2-f6ac28d43e15', 1, NULL, '2025-10-12 19:36:13', '2025-10-12 19:51:13', NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0'),
+(7, 'debab124-43b2-4c6f-9cdf-a255543719f3', 1, NULL, '2025-10-12 19:37:53', '2025-10-12 19:52:53', NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0'),
+(8, 'fbf7bd6d-0711-4145-b623-fad8e57cc650', 1, NULL, '2025-10-12 19:37:54', '2025-10-12 19:52:54', NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0'),
+(9, '6ad3626b-39f2-4646-a8bc-9d8091b25c1c', 1, NULL, '2025-10-12 19:37:55', '2025-10-12 19:52:55', NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0'),
+(10, 'f9d0c971-c2b3-4342-8ad2-f1ee27185d03', 1, 'jkosik@sps-pi.com', '2025-10-12 20:27:23', '2025-10-12 20:42:23', NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0'),
+(11, 'ee02bcdc-ccfe-40dc-a10e-e089247860eb', 1, NULL, '2025-10-12 20:54:43', '2025-10-12 21:09:43', NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0'),
+(12, '3bb84135-dc6e-4f43-95aa-83588c234066', 1, NULL, '2025-10-12 21:12:30', '2025-10-12 21:27:30', NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0');
 
 -- --------------------------------------------------------
 
@@ -3906,6 +3949,12 @@ ALTER TABLE `users_credentials`
   ADD KEY `userId` (`userId`);
 
 --
+-- Indexy pro tabulku `users_resetpassword`
+--
+ALTER TABLE `users_resetpassword`
+  ADD PRIMARY KEY (`user_resetpassword_id`);
+
+--
 -- Indexy pro tabulku `webauthn_challenges`
 --
 ALTER TABLE `webauthn_challenges`
@@ -4124,7 +4173,7 @@ ALTER TABLE `library_reservations`
 -- AUTO_INCREMENT pro tabulku `login_history`
 --
 ALTER TABLE `login_history`
-  MODIFY `lhId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=757;
+  MODIFY `lhId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=760;
 
 --
 -- AUTO_INCREMENT pro tabulku `messages`
@@ -4214,7 +4263,7 @@ ALTER TABLE `timetable`
 -- AUTO_INCREMENT pro tabulku `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=737;
+  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=740;
 
 --
 -- AUTO_INCREMENT pro tabulku `traineeship_companies`
@@ -4269,6 +4318,12 @@ ALTER TABLE `users_backup_codes`
 --
 ALTER TABLE `users_credentials`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pro tabulku `users_resetpassword`
+--
+ALTER TABLE `users_resetpassword`
+  MODIFY `user_resetpassword_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Omezení pro exportované tabulky
