@@ -1,174 +1,295 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../database'
+import { db } from '../../../database';
 import { sql } from 'kysely';
-import { rateLimit } from 'elysia-rate-limit'
+import { rateLimit } from 'elysia-rate-limit';
 import { app } from '../../../index';
 import moment from 'moment';
 import { ip } from 'elysia-ip';
 import { maskEmail } from '../../functions/mask_email';
 import { SecurityConfig } from '../../config/security.config';
-import { error } from 'console';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
+import { verify_TFA } from '../../functions/verify_TFA';
+import bcrypt from 'bcryptjs';
+import { verify_password } from '../../functions/verify_password';
+
+// 🔹 Globální proměnná pro testovací transporter
+const transporter = nodemailer.createTransport({
+  host: 'smtp.ethereal.email',
+  port: 587,
+  auth: {
+    user: 'jensen68@ethereal.email',
+    pass: 'B3DryQvm8pVbDWW9SN',
+  },
+});
+
+// Inicializace testovacího maileru při startu aplikace
+// (async () => {
+//   try {
+//     const testAccount = await nodemailer.createTestAccount();
+//     transporter = nodemailer.createTransport({
+//       host: 'smtp.ethereal.email',
+//       port: 587,
+//       secure: false,
+//       auth: {
+//         user: testAccount.user,
+//         pass: testAccount.pass
+//       }
+//     });
+
+//     console.log('✅ Test SMTP account created (Ethereal)');
+//     console.log('📧 Login:', testAccount.user);
+//     console.log('🔑 Password:', testAccount.pass);
+//     console.log('🌐 Ethereal webmail:', 'https://ethereal.email/login');
+//   } catch (err) {
+//     console.error('❌ Failed to create Ethereal test account:', err);
+//   }
+// })();
+
+// Pomocná funkce na generování 8místného alfanumerického kódu
+function generateOTP(length = 8) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+}
 
 const elysiaApp = new Elysia()
   .use(ip())
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 25,
-    duration: 5 * 60 * 1000,
-    injectServer: () => app.server
-  }))
-  .post('/forgot-pass', async ({ body, store, request, cookie }: any) => {
-    const { username, token, selectedEmail, emailCode, newPassword, TFA } = body;
-    let err = [];
-    // First initial request - check username, create token, send token with masked emails
-    if (!token) {
-        if (!username || username == "") {
-        err.push('Missing username');
+  .use(
+    rateLimit({
+      scoping: 'scoped',
+      max: 25,
+      duration: 5 * 60 * 1000,
+      injectServer: () => app.server,
+    })
+  )
+  .post(
+    '/forgot-pass',
+    async ({ body, store, request }: any) => {
+      const { username, token, selectedEmail, emailCode, newPassword, TFA } = body;
+
+      if (!transporter) {
+        console.error('❌ Email transporter not initialized');
+        return Response.json({ error: ['Mail system not ready, please try again later'] });
+      }
+
+      try {
+        // ------------------------------
+        // 1️⃣ Požadavek o reset – vytvoření tokenu a odeslání e-mailu
+        // ------------------------------
+        if (!token) {
+          if (!username?.trim()) return Response.json({ error: ['Missing username'] });
+
+          const user = await db
+            .selectFrom('users')
+            .select(['userId', 'username', 'person', '2fa'])
+            .where(sql`LOWER(username)`, '=', username.toLowerCase())
+            .executeTakeFirst();
+
+          if (!user) return Response.json({ error: ['Invalid username'] });
+
+          const emails = await db
+            .selectFrom('emails')
+            .select(['email'])
+            .where('personId', '=', user.person)
+            .where('is_verified', '=', true)
+            .orderBy('email', 'asc')
+            .execute();
+
+          if (emails.length === 0)
+            return Response.json({ error: ['No verified email found for this user'] });
+
+          const email_token = crypto.randomUUID();
+          const otp_code = generateOTP();
+          const expires_at = moment()
+            .add(SecurityConfig.RESET_PASSWORD_EXPIRES_MINUTES, 'minutes')
+            .toDate();
+
+          await db
+            .insertInto('users_resetpassword')
+            .values({
+              user_id: user.userId,
+              email: emails.length === 1 ? emails[0].email : null,
+              email_token,
+              created_at: moment().toDate(),
+              expires_at,
+              otp_code,
+              ip: store.ip,
+              user_agent: request.headers.get('user-agent') || 'unknown',
+            })
+            .execute();
+
+          // pokud má více e-mailů
+          if (emails.length > 1 && (selectedEmail === undefined || selectedEmail === -1)) {
+            return Response.json({
+              stage: 'email_select',
+              error: ['Multiple verified emails found, please select one'],
+              emails: emails.map((e) => maskEmail(e.email)),
+              token: email_token,
+              expires_at,
+            });
+          }
+
+          // pošle OTP
+          const email = emails.length === 1 ? emails[0].email : emails[selectedEmail].email;
+
+          const info = await transporter.sendMail({
+            to: email,
+            subject: 'Password Reset Verification Code',
+            html: `
+            <div style="font-family:sans-serif;text-align:center;">
+              <h2>Password Reset</h2>
+              <p>Your verification code:</p>
+              <div style="font-size:24px;font-weight:bold;letter-spacing:2px;margin:10px 0;">${otp_code}</div>
+              <p>This code expires in ${SecurityConfig.RESET_PASSWORD_EXPIRES_MINUTES} minutes.</p>
+            </div>
+          `,
+          });
+
+          console.log('📬 Email sent (Ethereal preview):', nodemailer.getTestMessageUrl(info));
+
+          return Response.json({
+            stage: 'verify_code',
+            email: maskEmail(email),
+            token: email_token,
+            expires_at,
+          });
         }
 
-        if (err.length) {
-        return Response.json({ error: err });
+        // ------------------------------
+        // 2️⃣ Vyhledání tokenu (druhá fáze)
+        // ------------------------------
+        const resetRecord = await db
+          .selectFrom('users_resetpassword')
+          .select(['user_id', 'email', 'expires_at', 'otp_code'])
+          .where('email_token', '=', token)
+          .executeTakeFirst();
+
+        if (!resetRecord) return Response.json({ error: ['Invalid reset token'] });
+
+        if (resetRecord.expires_at < new Date())
+          return Response.json({ error: ['Reset token expired'] });
+
+        // ------------------------------
+        // 3️⃣ Pokud není e-mail vybraný
+        // ------------------------------
+        if (!resetRecord.email) {
+          if (selectedEmail === undefined || selectedEmail === -1)
+            return Response.json({ error: ['Missing selectedEmail'] });
+
+          const emails = await db
+            .selectFrom('emails')
+            .select(['email'])
+            .where('personId', '=', resetRecord.user_id)
+            .where('is_verified', '=', true)
+            .orderBy('email', 'asc')
+            .execute();
+
+          if (!emails[selectedEmail]) return Response.json({ error: ['Invalid selectedEmail'] });
+
+          const chosenEmail = emails[selectedEmail].email;
+          const newOtp = generateOTP();
+
+          await db
+            .updateTable('users_resetpassword')
+            .set({ email: chosenEmail, otp_code: newOtp })
+            .where('email_token', '=', token)
+            .executeTakeFirst();
+
+          await transporter.sendMail({
+            to: chosenEmail,
+            subject: 'Password Reset Verification Code',
+            html: `
+            <div style="font-family:sans-serif;text-align:center;">
+              <h2>Password Reset</h2>
+              <p>Your verification code:</p>
+              <div style="font-size:24px;font-weight:bold;letter-spacing:2px;margin:10px 0;">${newOtp}</div>
+              <p>This code expires in ${SecurityConfig.RESET_PASSWORD_EXPIRES_MINUTES} minutes.</p>
+            </div>
+          `,
+          });
+
+          return Response.json({
+            stage: 'verify_code',
+            error: ['Selected email set, input emailCode'],
+          });
         }
 
-        try {
-            // Check username
-            const user = await db.selectFrom("users")
-            .select([
-                "users.userId",
-                "users.username",
-                "users.person"
-            ])
-            .where(sql`LOWER(users.username)`, '=', username.toLowerCase())
-            .limit(1)
-            .executeTakeFirstOrThrow()
+        // ------------------------------
+        // 4️⃣ Ověření OTP
+        // ------------------------------
+        if (!emailCode) return Response.json({ error: ['Missing verification code (emailCode)'] });
 
-            // Get user's emails
-            const emails = await db.selectFrom("emails")
-            .select([
-                "emails.email"
-            ])
-            .where('emails.personId', '=', user.person)
-            .where('emails.is_verified', '=', true)
-            .orderBy('emails.email', 'asc')
-            .execute()
+        if (emailCode !== resetRecord.otp_code)
+          return Response.json({ error: ['Invalid verification code'] });
 
-            // Check if any email found
-            if (emails.length == 0) {
-                return Response.json({ error: ['No verified email found in the system for this user'] })
-            }
+        // ------------------------------
+        // 5️⃣ Ověření 2FA + změna hesla
+        // ------------------------------
+        const user = await db
+          .selectFrom('users')
+          .select(['userId', '2fa', '2fa_secret', 'username'])
+          .where('userId', '=', resetRecord.user_id)
+          .executeTakeFirstOrThrow();
 
-            const email_token = crypto.randomUUID();
-            const email_expires_at = moment().add(SecurityConfig.RESET_PASSWORD_EXPIRES_MINUTES, 'minutes').toDate();
+        if (!newPassword) return Response.json({ error: ['Missing password'], stage: 'new_password' });
+        if (!verify_password(newPassword)) return Response.json({ error: ['Invalid password'] });
 
-            await db.insertInto('users_resetpassword').values({
-                user_id: user.userId,
-                email: emails.length === 1 ? emails[0].email : null,
-                email_token,
-                created_at: moment().toDate(),
-                expires_at: email_expires_at,
-                otp_code: null,
-                ip: store.ip,
-                user_agent: request.headers.get('user-agent') || 'unknown'
-            }).execute()
+        if (user['2fa'] && user['2fa_secret']) {
+          if (!TFA) return Response.json({ error: ['TFA code required'], stage: 'tfa_required' });
 
-
-            // If multiple emails, check if selectedEmail is valid
-            if (emails.length > 1 && (selectedEmail == -1 || !emails[selectedEmail])) {
-                return Response.json({
-                    error: ['Multiple verified emails found, please select one'],
-                    emails: emails.map(e => maskEmail(e.email)),
-                    token: email_token,
-                    expires_at: email_expires_at
-                });
-            }
-
-            // Send reset email
-            if (emails.length === 1 || emails.length > 1 && emails[selectedEmail]) {
-                const email = emails.length === 1 ? emails[0].email : emails[selectedEmail].email;
-                return Response.json({
-                    error: ['Sent email with code'],
-                    email: maskEmail(email),
-                    token: email_token,
-                    expires_at: email_expires_at
-                });
-            }
-
-        } catch(e) {
-            return Response.json({ error: ['Invalid username'] })
+          const tfaValid = await verify_TFA(TFA, user["userId"]);
+          if (!tfaValid) return Response.json({ error: ['Invalid TFA code'] });
         }
+
+        // vytvoří nový záznam v passwords
+        const encryptedPassword = bcrypt.hashSync(newPassword, 12);
+        //- Generate password id
+        const passwordQuery = await db
+          .insertInto('passwords')
+          .values({ password: encryptedPassword })
+          .executeTakeFirst();
+
+        const passwordId = parseInt(passwordQuery.insertId?.toString()!);
+
+        db.updateTable('users')
+          .set('users.password', passwordId)
+          .set('users.passwordChanged', sql`NOW()`)
+          .set('users.recommendChangePassword', false)
+          .where('users.userId', '=', user.userId)
+          .limit(1)
+          .execute();
+
+        // aktualizuje usera
+        await db
+          .updateTable('users')
+          .set({ password: passwordId })
+          .where('userId', '=', user.userId)
+          .executeTakeFirst();
+
+        // smaže reset token
+        await db
+          .deleteFrom('users_resetpassword')
+          .where('email_token', '=', token)
+          .executeTakeFirst();
+
+        return Response.json({ stage: 'done', success: true });
+      } catch (e) {
+        console.error(e);
+        return Response.json({ error: ['Unexpected error occurred'] });
+      }
+    },
+    {
+      body: t.Optional(
+        t.Object({
+          username: t.Optional(t.String()),
+          token: t.Optional(t.String()),
+          selectedEmail: t.Optional(t.Number()),
+          emailCode: t.Optional(t.String()),
+          newPassword: t.Optional(t.String()),
+          TFA: t.Optional(t.String()),
+        })
+      ),
     }
-
-    // Second request - verify token, emailCode, TFA and change password
-    else {
-        try {
-            // Verify token
-            const getEmailPasswordReset = await db.selectFrom("users_resetpassword")
-            .select([
-                "users_resetpassword.email",
-                "users_resetpassword.user_id",
-                "users_resetpassword.expires_at",
-                "users_resetpassword.otp_code"
-            ])
-            .where('users_resetpassword.email_token', '=', token)
-            .limit(1)
-            .executeTakeFirstOrThrow()
-
-            // Check if selected email
-            if (getEmailPasswordReset.expires_at < new Date()) {
-                return Response.json({ error: ['Reset password token expired'] })
-            }
-
-            if (getEmailPasswordReset.email === null) {
-                if (selectedEmail == undefined || selectedEmail == -1) {
-                    return Response.json({ error: ['Missing selectedEmail'] })
-                }
-
-                // Get user's emails
-                const emails = await db.selectFrom("emails")
-                .select([
-                    "emails.email"
-                ])
-                .where('emails.personId', '=', getEmailPasswordReset.user_id)
-                .where('emails.is_verified', '=', true)
-                .orderBy('emails.email', 'asc')
-                .execute()
-
-                // Check if any email found
-                if (emails.length == 0) {
-                    return Response.json({ error: ['No verified email found in the system for this user'] })
-                }
-                if (!emails[selectedEmail]) {
-                    return Response.json({ error: ['Invalid selectedEmail'] })
-                }
-                getEmailPasswordReset.email = emails[selectedEmail].email;
-                try {
-                    await db.updateTable('users_resetpassword')
-                    .set({ email: getEmailPasswordReset.email })
-                    .where('users_resetpassword.email_token', '=', token)
-                    .limit(1)
-                    .executeTakeFirst()
-
-                    return Response.json({ error: ['Selected email set, input emailCode'] })
-                } catch(e) {
-                    return Response.json({ error: ['Failed to set selected email, please try again'] })
-                }
-            }
-
-
-
-        } catch(e) {
-            return Response.json({ error: ['Invalid reset password token'] })
-        }
-    }
-  }, {
-    body: t.Optional(t.Object({
-      username: t.Optional(t.String()),
-      token: t.Optional(t.String()),
-      selectedEmail: t.Optional(t.Number()),
-      emailCode: t.Optional(t.String()),
-      newPassword: t.Optional(t.String()),
-      TFA: t.Optional(t.String())
-    }))
-  })
+  );
 
 export default elysiaApp;

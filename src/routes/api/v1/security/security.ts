@@ -1,9 +1,10 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
-import { sql } from 'kysely';
 import moment from 'moment';
-import { sleep } from 'bun';
-import * as OTPAuth from "otpauth";
+import { verify_TFA } from '../../../../functions/verify_TFA';
+import { authenticator } from 'otplib';
+import * as OTPAuth from 'otpauth'
+import { SecurityConfig } from '../../../../config/security.config';
 
 const app = new Elysia()
     .get('/security', async ({ cookie }) => {
@@ -75,45 +76,45 @@ const app = new Elysia()
       if (!method || method == "") return Response.json({ error: 'no_method' });
 
       switch(method) {
-        case "GET_BACKUP_CODES":
-            if (user['2fa'] == false || !user['2fa_secret']) return Response.json({ error: 'Not activated TFA' });
-            if (!TFA || TFA == "") return Response.json({ error: 'Invalid TFA' });
-
-            let isApproved2FA = false;
-
-            // Validate 2FA
-            const [backupCodes] = await Promise.all([
-                db.selectFrom("users_backup_codes")
-                .select("users_backup_codes.used")
-                .where("users_backup_codes.userId", '=', user.userId)
-                .where("users_backup_codes.code", '=', TFA)
-                .where("users_backup_codes.used", '=', false)
-                .execute()
-            ])
-
-            if (backupCodes.length) {
-                db.updateTable("users_backup_codes")
-                .set("used", true)
-                .where("users_backup_codes.userId", '=', user.userId)
-                .where("users_backup_codes.code", '=', TFA)
-                .limit(1)
-                .executeTakeFirst()
-                isApproved2FA = true;
-            }
-
-            // Verify token with TOTP
+        case "GET_QRCODE_FOR_TFA":
+            if (user['2fa']) return Response.json({ error: ['Already activated 2FA'] });
+            const secret = authenticator.generateSecret();
             let totp = new OTPAuth.TOTP({
                 issuer: "Schoolingo",
-                label: user.username,
+                label: user.username, // Editnout na zkratku školy + jméno uživatele
                 algorithm: "SHA1",
-                digits: 6,
-                secret: user['2fa_secret']
+                digits: SecurityConfig.TFA_TOKEN_LENGTH,
+                secret,
             });
+            await db.updateTable("users")
+            .set("2fa_secret", secret)
+            .where("userId", "=", user.userId)
+            .limit(1)
+            .execute();
 
-            let delta = totp.validate({ token: TFA });
-            if (delta !== null) {
-                isApproved2FA = true;
-            }
+            return Response.json({ qrcode: totp.toString() });
+
+        case "ACTIVATE_2FA":
+            if (user['2fa']) return Response.json({ error: ['Already activated 2FA'] });
+            if (!TFA || TFA == "") return Response.json({ error: ['Invalid TFA'] });
+
+            const isTrue2FA = await verify_TFA(TFA, user.userId, false, false);
+            if (!isTrue2FA) return Response.json({ error: ['Invalid TFA'] });
+
+            await db.updateTable("users")
+            .set("2fa", true)
+            .set("2fa_activated", new Date())
+            .where("userId", "=", user.userId)
+            .limit(1)
+            .execute();
+            return Response.json({ status: true })
+
+        case "GET_BACKUP_CODES":
+            if (user['2fa'] == false || !user['2fa_secret']) return Response.json({ error: ['Not activated TFA'] });
+            if (!TFA || TFA == "") return Response.json({ error: ['Invalid TFA'] });
+
+            // Verify TFA
+            const isApproved2FA = await verify_TFA(TFA, user["userId"]);
 
             if (!isApproved2FA) {
                 return Response.json({ error: ['Invalid 2FA'] });
@@ -127,7 +128,6 @@ const app = new Elysia()
             .where('users_backup_codes.userId', '=', user.userId)
             .execute()
             return Response.json({codes});
-            break;
         }
 
       return Response.json(user);

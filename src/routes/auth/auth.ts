@@ -7,6 +7,7 @@ import moment from 'moment';
 import { ip } from 'elysia-ip';
 import * as OTPAuth from "otpauth";
 import bcrypt from 'bcryptjs';
+import { verify_TFA } from '../../functions/verify_TFA';
 
 export async function authenticateUser(userId: number, cookie: any, userAgent: string, ip: string) {
   try {
@@ -161,42 +162,9 @@ const elysiaApp = new Elysia()
           return Response.json({ error: ["Missing 2FA"] });
         }
 
-        let isApproved2FA = false;
-
         // Validate 2FA
-        const [backupCodes] = await Promise.all([
-          db.selectFrom("users_backup_codes")
-          .select("users_backup_codes.used")
-          .where("users_backup_codes.userId", '=', user.userId)
-          .where("users_backup_codes.code", '=', TFA)
-          .where("users_backup_codes.used", '=', false)
-          .execute()
-        ])
-
-        if (backupCodes.length) {
-          db.updateTable("users_backup_codes")
-          .set("used", true)
-          .where("users_backup_codes.userId", '=', user.userId)
-          .where("users_backup_codes.code", '=', TFA)
-          .limit(1)
-          .executeTakeFirst()
-          isApproved2FA = true;
-        }
-
-        // Verify token with TOTP
-        let totp = new OTPAuth.TOTP({
-            issuer: "Schoolingo",
-            label: user.username,
-            algorithm: "SHA1",
-            digits: 6,
-            secret: user['2fa_secret']
-        });
-
-        let delta = totp.validate({ token: TFA });
-        if (delta !== null) {
-          isApproved2FA = true;
-        }
-
+        const isApproved2FA = await verify_TFA(TFA, user["userId"])
+        
         if (!isApproved2FA) {
           // Log invalid 2FA attempt
           await db.insertInto("login_history")

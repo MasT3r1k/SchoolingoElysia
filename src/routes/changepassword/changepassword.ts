@@ -7,6 +7,7 @@ import moment from 'moment';
 import { ip } from 'elysia-ip';
 import * as OTPAuth from "otpauth";
 import bcrypt from 'bcryptjs';
+import { verify_password } from '../../functions/verify_password';
 
 const elysiaApp = new Elysia()
   .use(ip())
@@ -68,6 +69,10 @@ const elysiaApp = new Elysia()
 
       if (!isPasswordValid) {
         return Response.json({ error: ["Invalid old password"] });
+      }
+
+      if (!verify_password(password)) {
+        return Response.json({ error: ['Invalid password'] });
       }
 
       if (user['2fa'] && user['2fa_secret']) {

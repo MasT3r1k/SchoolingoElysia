@@ -42,13 +42,20 @@
             "invalid_selected_email": "Neplatný email, vyberte platný email",
             "set_email_failed": "Nepodařilo se vybrat email",
             "code_from_email": "Zadejte kód, který jsme Vám poslali na email.",
-            "verify_code": "Ověřit kód"
+            "verify_code": "Ověřit kód",
+            "invalid_code": "Neplatný kód",
+            "new_password": "Zadejte nové heslo, pokud máte dvoufázové ověření, bude potřeba zadat i kód z mobilní aplikace",
+            "request_new_password": "Změnit heslo",
+            "require_tfa": "Tento účet má aktivní dvoufázové ověření, zadejte kód z mobilní aplikace.",
+            "done": "Heslo bylo úspěšně resetováno. Nyní se můžete přihlásit."
         },
         "2fa": {
             "click": "Jiný způsob přihlášení?",
             "authentication_code": "Ověřovací kód",
             "verify_code": "Ověřit kód",
-            "description": "Otevřete aplikaci dvoufaktorového ověřovatele (TOTP) nebo rozšíření prohlížeče a zobrazte svůj ověřovací kód. Případně můžete použít záložní kód."
+            "verify_code_action": "Probíhá ověřování kódu",
+            "description": "Otevřete aplikaci dvoufaktorového ověřovatele (TOTP) nebo rozšíření prohlížeče a zobrazte svůj ověřovací kód. Případně můžete použít záložní kód.",
+            "note": "Zadejte kód z mobilní aplikace"
         },
         "errors": {
             "longLoadingQR": "Načítání QR kódu trvá déle než by mělo, omlouváme se za komplikace",
@@ -338,6 +345,7 @@
             "new_password": "Nové heslo",
             "again_new_password": "Znova nové heslo",
             "success_changed": "Heslo bylo úspěšně změněno!",
+            "invalid_new_password": "Nemůžete zvolit tohle heslo",
             "429": "Přiliš mnoho pokusů o změnu hesla, zkuste to později"
         },
         "language": "Jazyk",
@@ -347,6 +355,8 @@
         "theme": "Vzhled",
         "security": "Zabezpečení",
         "2fa": {
+            "already_activated": "Dvoufázové ověření máte již aktivované!",
+            "successful_activated": "Dvoufázové ověření bylo úspěšně aktivováno.",
             "deactivate": "Odebrat dvoufázové ověřování",
             "validSince": "Aktivní od %date% v %time%",
             "methods": {
@@ -357,7 +367,8 @@
             "descriptions": {
                 "show_backup_codes": "Zadáním kódu níže si zobrazíte záložní kódy. Kódy nikomu neukazujte ani neposílejte!",
                 "refresh_backup_codes": "Zadáním kódu níže si obnovíte záložní kódy. Stávající kódy budou smazány a vytvoří se nové, ty se Vám následně ukážou, aby jste si je mohli uložit. Nikomu je neukazuj ani neposílej!",
-                "deactivate2FA": "Zadáním kódu níže si deaktivujete dvoufázové ověření. Tudíž nebude již nadále aktivní."
+                "deactivate2FA": "Zadáním kódu níže si deaktivujete dvoufázové ověření. Tudíž nebude již nadále aktivní.",
+                "add_to_phone": "Naskenujte QR kód v mobilní aplikaci a zadejte ověřovací kód z mobilní aplikace."
             }
         },
         "passkeys": {
