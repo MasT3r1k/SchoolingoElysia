@@ -2,6 +2,9 @@ export namespace SecurityConfig {
     // === TFA ===
     export const TFA_TOKEN_LENGTH = 6;
 
+    // === TFA: Backup codes ===
+    export const TFA_BACKUP_CODES_COUNT = 6;
+
     // === PASSWORD ===
     export const PASSWORD_MIN_LENGTH = 8;
     export const PASSWORD_MAX_LENGTH = 64;

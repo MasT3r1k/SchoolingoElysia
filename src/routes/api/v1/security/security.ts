@@ -1,10 +1,11 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import moment from 'moment';
-import { verify_TFA } from '../../../../functions/verify_TFA';
+import { verifyTFA } from '../../../../functions/verifyTFA';
 import { authenticator } from 'otplib';
 import * as OTPAuth from 'otpauth'
 import { SecurityConfig } from '../../../../config/security.config';
+import { generateNewBackupCodes } from '../../../../functions/generateNewBackupCodes';
 
 const app = new Elysia()
     .get('/security', async ({ cookie }) => {
@@ -75,60 +76,100 @@ const app = new Elysia()
       const { method, TFA } = body;
       if (!method || method == "") return Response.json({ error: 'no_method' });
 
-      switch(method) {
-        case "GET_QRCODE_FOR_TFA":
-            if (user['2fa']) return Response.json({ error: ['Already activated 2FA'] });
-            const secret = authenticator.generateSecret();
-            let totp = new OTPAuth.TOTP({
-                issuer: "Schoolingo",
-                label: user.username, // Editnout na zkratku školy + jméno uživatele
-                algorithm: "SHA1",
-                digits: SecurityConfig.TFA_TOKEN_LENGTH,
-                secret,
-            });
-            await db.updateTable("users")
-            .set("2fa_secret", secret)
-            .where("userId", "=", user.userId)
-            .limit(1)
-            .execute();
+        switch(method) {
+            case "GET_QRCODE_FOR_TFA":
+                if (user['2fa']) return Response.json({ error: ['Already activated 2FA'] });
+                const secret = authenticator.generateSecret();
+                let totp = new OTPAuth.TOTP({
+                    issuer: "Schoolingo",
+                    label: user.username, // Editnout na zkratku školy + jméno uživatele
+                    algorithm: "SHA1",
+                    digits: SecurityConfig.TFA_TOKEN_LENGTH,
+                    secret,
+                });
+                await db.updateTable("users")
+                .set("2fa_secret", secret)
+                .where("userId", "=", user.userId)
+                .limit(1)
+                .execute();
 
-            return Response.json({ qrcode: totp.toString() });
+                return Response.json({ qrcode: totp.toString() });
 
-        case "ACTIVATE_2FA":
-            if (user['2fa']) return Response.json({ error: ['Already activated 2FA'] });
-            if (!TFA || TFA == "") return Response.json({ error: ['Invalid TFA'] });
+            case "ACTIVATE_2FA":
+                if (user['2fa']) return Response.json({ error: ['Already activated 2FA'] });
+                if (!TFA || TFA == "") return Response.json({ error: ['Invalid TFA'] });
 
-            const isTrue2FA = await verify_TFA(TFA, user.userId, false, false);
-            if (!isTrue2FA) return Response.json({ error: ['Invalid TFA'] });
+                const isTrue2FA = await verifyTFA(TFA, user.userId, false, false);
+                if (!isTrue2FA) return Response.json({ error: ['Invalid TFA'] });
 
-            await db.updateTable("users")
-            .set("2fa", true)
-            .set("2fa_activated", new Date())
-            .where("userId", "=", user.userId)
-            .limit(1)
-            .execute();
-            return Response.json({ status: true })
+                await db.updateTable("users")
+                .set("2fa", true)
+                .set("2fa_activated", new Date())
+                .where("userId", "=", user.userId)
+                .limit(1)
+                .execute();
 
-        case "GET_BACKUP_CODES":
-            if (user['2fa'] == false || !user['2fa_secret']) return Response.json({ error: ['Not activated TFA'] });
-            if (!TFA || TFA == "") return Response.json({ error: ['Invalid TFA'] });
+                // Generate new backup codes
+                generateNewBackupCodes(user.userId);
 
-            // Verify TFA
-            const isApproved2FA = await verify_TFA(TFA, user["userId"]);
+                return Response.json({ status: true });
 
-            if (!isApproved2FA) {
-                return Response.json({ error: ['Invalid 2FA'] });
-            }
+            case "DEACTIVATE_2FA":
+                if (!user['2fa']) return Response.json({ error: ['Already deactivated 2FA'] });
+                if (!TFA || TFA == "") return Response.json({ error: ['Invalid TFA'] });
 
-            const codes = await db.selectFrom("users_backup_codes")
-            .select([
-                'users_backup_codes.code',
-                'users_backup_codes.used'
-            ])
-            .where('users_backup_codes.userId', '=', user.userId)
-            .execute()
-            return Response.json({codes});
+                const isValid2FA = await verifyTFA(TFA, user.userId);
+                if (!isValid2FA) return Response.json({ error: ['Invalid TFA'] });
+
+                // Update 2FA status
+                await db.updateTable("users")
+                .set("2fa", false)
+                .set("2fa_activated", null)
+                .where("userId", "=", user.userId)
+                .limit(1)
+                .execute();
+
+                // Remove all backup codes
+                await db.deleteFrom("users_backup_codes")
+                .where("userId", "=", user.userId)
+                .execute();
+
+                return Response.json({ status: true })
+
+            case "GET_BACKUP_CODES":
+                if (user['2fa'] == false || !user['2fa_secret']) return Response.json({ error: ['Not activated TFA'] });
+                if (!TFA || TFA == "") return Response.json({ error: ['Invalid TFA'] });
+
+                // Verify TFA
+                const isApproved2FA = await verifyTFA(TFA, user["userId"]);
+
+                if (!isApproved2FA) {
+                    return Response.json({ error: ['Invalid 2FA'] });
+                }
+
+                const codes = await db.selectFrom("users_backup_codes")
+                .select([
+                    'users_backup_codes.code',
+                    'users_backup_codes.used'
+                ])
+                .where('users_backup_codes.userId', '=', user.userId)
+                .execute()
+                return Response.json({ codes });
+            case "GENERATE_BACKUP_CODES":
+                if (user['2fa'] == false || !user['2fa_secret']) return Response.json({ error: ['Not activated TFA'] });
+                if (!TFA || TFA == "") return Response.json({ error: ['Invalid TFA'] });
+
+                // Verify TFA
+                const isRight2FA = await verifyTFA(TFA, user["userId"]);
+
+                if (!isRight2FA) {
+                    return Response.json({ error: ['Invalid 2FA'] });
+                }
+
+                const backupCodes = await generateNewBackupCodes(user.userId);
+                return Response.json({ status: true, codes: backupCodes });
         }
+
 
       return Response.json(user);
     }, {

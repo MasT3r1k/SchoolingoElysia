@@ -9,7 +9,7 @@ import { maskEmail } from '../../functions/mask_email';
 import { SecurityConfig } from '../../config/security.config';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
-import { verify_TFA } from '../../functions/verify_TFA';
+import { verifyTFA } from '../../functions/verifyTFA';
 import bcrypt from 'bcryptjs';
 import { verify_password } from '../../functions/verify_password';
 
@@ -237,7 +237,7 @@ const elysiaApp = new Elysia()
         if (user['2fa'] && user['2fa_secret']) {
           if (!TFA) return Response.json({ error: ['TFA code required'], stage: 'tfa_required' });
 
-          const tfaValid = await verify_TFA(TFA, user["userId"]);
+          const tfaValid = await verifyTFA(TFA, user["userId"]);
           if (!tfaValid) return Response.json({ error: ['Invalid TFA code'] });
         }
 

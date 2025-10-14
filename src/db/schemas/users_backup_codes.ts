@@ -1,7 +1,11 @@
+import { Generated } from "kysely"
 
 export interface Users_backup_codesTable {
-  ubcId: number
+  ubcId: Generated<number>
   userId: number
   code: string
   used: boolean
+  used_at: Date | null
+  used_ip: string | null
+  created_at: Generated<Date>
 }

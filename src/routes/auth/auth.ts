@@ -7,7 +7,7 @@ import moment from 'moment';
 import { ip } from 'elysia-ip';
 import * as OTPAuth from "otpauth";
 import bcrypt from 'bcryptjs';
-import { verify_TFA } from '../../functions/verify_TFA';
+import { verifyTFA } from '../../functions/verifyTFA';
 
 export async function authenticateUser(userId: number, cookie: any, userAgent: string, ip: string) {
   try {
@@ -163,7 +163,7 @@ const elysiaApp = new Elysia()
         }
 
         // Validate 2FA
-        const isApproved2FA = await verify_TFA(TFA, user["userId"])
+        const isApproved2FA = await verifyTFA(TFA, user["userId"])
         
         if (!isApproved2FA) {
           // Log invalid 2FA attempt
