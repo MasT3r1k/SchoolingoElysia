@@ -287,6 +287,9 @@
         "no_type_access": "Nemáte oprávnění poslat tento druh zprávy",
         "child": "Dítě",
         "no_child_selected": "Nevybrali jste žádné dítě",
+        "hide_selected_receivers": "Vybrat další příjemce (%count%)",
+        "show_selected_receivers": "Zobrazit vybrané příjemce (%count%)",
+        "file_limit_info": "Máte vybráno %count% souborů z %limit%.",
         "rating": {
             "main": "Ohodnocení",
             "positive": "Pochvala",
