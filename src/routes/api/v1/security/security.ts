@@ -153,6 +153,7 @@ const app = new Elysia()
                     'users_backup_codes.used'
                 ])
                 .where('users_backup_codes.userId', '=', user.userId)
+                .orderBy('users_backup_codes.ubcId', 'asc')
                 .execute()
                 return Response.json({ codes });
             case "GENERATE_BACKUP_CODES":
@@ -161,7 +162,6 @@ const app = new Elysia()
 
                 // Verify TFA
                 const isRight2FA = await verifyTFA(TFA, user["userId"]);
-
                 if (!isRight2FA) {
                     return Response.json({ error: ['Invalid 2FA'] });
                 }

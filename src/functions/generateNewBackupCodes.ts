@@ -6,7 +6,7 @@ const CHARSET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // Bez O, I, L, 0, 1
 
 function randomCodePart(): string {
     let s = "";
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 4; i++) {
         const idx = crypto.randomInt(0, CHARSET.length);
         s += CHARSET[idx];
     }

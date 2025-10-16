@@ -38,6 +38,7 @@ export async function verifyTFA(code: string, user_id: number, allow_backup_code
     if (!isApproved2FA && backupCodes.length && allow_backup_codes) {
         await db.updateTable("users_backup_codes")
         .set("used", true)
+        .set("used_at", new Date())
         .where("userId", "=", user_id)
         .where("code", "=", code)
         .limit(1)

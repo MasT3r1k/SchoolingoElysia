@@ -357,6 +357,7 @@
         "2fa": {
             "already_activated": "Dvoufázové ověření máte již aktivované!",
             "successful_activated": "Dvoufázové ověření bylo úspěšně aktivováno.",
+            "successful_deactivated": "Dvoufázové ověření bylo úspěšně deaktivováno.",
             "deactivate": "Odebrat dvoufázové ověřování",
             "validSince": "Aktivní od %date% v %time%",
             "methods": {
@@ -369,6 +370,16 @@
                 "refresh_backup_codes": "Zadáním kódu níže si obnovíte záložní kódy. Stávající kódy budou smazány a vytvoří se nové, ty se Vám následně ukážou, aby jste si je mohli uložit. Nikomu je neukazuj ani neposílej!",
                 "deactivate2FA": "Zadáním kódu níže si deaktivujete dvoufázové ověření. Tudíž nebude již nadále aktivní.",
                 "add_to_phone": "Naskenujte QR kód v mobilní aplikaci a zadejte ověřovací kód z mobilní aplikace."
+            },
+            "backup_codes": {
+                "title": "🔐 Záložní kódy",
+                "description": "Tyto kódy použijte, pokud ztratíte přístup k mobilní aplikaci. Tlačítkem níže si je stáhněte a někam bezpečně uložte.",
+                "note": "Máte %remain% zbývající záložní kódy z %all% celkových.",
+                "used": "Použitý",
+                "download_backup_codes": "Stáhnout záložní kódy",
+                "file_header": "Platné záložní kódy pro Schoolingo:",
+                "generate_new_codes": "Vygenerovat nové kódy",
+                "empty": "Nemáte vytvořený žádný záložní kód."
             }
         },
         "passkeys": {
