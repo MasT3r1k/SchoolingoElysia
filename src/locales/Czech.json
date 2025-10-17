@@ -287,6 +287,9 @@
         "no_type_access": "Nemáte oprávnění poslat tento druh zprávy",
         "child": "Dítě",
         "no_child_selected": "Nevybrali jste žádné dítě",
+        "search_receiver": "Vyhledávat příjemce",
+        "selected_receivers": "Vybraní příjemci:",
+        "no_selected_receivers": "Nemáte žádné vybrané příjemce.",
         "hide_selected_receivers": "Vybrat další příjemce (%count%)",
         "show_selected_receivers": "Zobrazit vybrané příjemce (%count%)",
         "file_limit_info": "Máte vybráno %count% souborů z %limit%.",
@@ -297,11 +300,14 @@
         },
 
         "homeworks": {
-            "empty": "Nemáte žádné domácí úkoly"
+            "empty": "Nemáte žádné domácí úkoly",
+            "not_selected": "Není vybraný žádný domácí úkol. Nejprve prosím vyberte úkol, abychom mohli zobrazit příjemce zprávy."
         },
 
         "receivers": {
-            "all_selected_noticeboard": "Zpráva se zobrazí na nástěnce všem"
+            "all_selected_noticeboard": "Zpráva se zobrazí na nástěnce všem",
+            "from_class": "z %class%",
+            "from_child": "žáka %child%"
         },
 
         "tags": {

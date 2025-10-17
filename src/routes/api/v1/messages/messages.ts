@@ -37,7 +37,6 @@ const app = new Elysia()
 
     // MySQL with Kysely: get inserted id via lastInsertId
     const messageId = (inserted as any).insertId as number | undefined;
-
     if (!messageId) {
       return Response.json({ error: 'insert_failed' });
     }

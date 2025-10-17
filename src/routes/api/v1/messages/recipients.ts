@@ -2,6 +2,29 @@ import { Elysia, t } from 'elysia';
 import moment from 'moment';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
+import { format_person } from '../../../../functions/format_person';
+
+// Typ pro jednotlivou osobu (učitel, rodič, dítě)
+export interface PersonReference {
+  id: number;
+  name: string;
+  degree: string | null;
+}
+
+// Typ pro příjemce zprávy
+export interface Recipient {
+  id: number;
+  name: string;
+  degree: string | null;
+  role: 'student' | 'teacher' | 'parent' | 'user';
+  class?: string; // jen pro studenty
+  classTeacher?: PersonReference[]; // jen pro studenty
+  parents?: PersonReference[];      // jen pro studenty
+  children?: PersonReference[];     // jen pro rodiče
+}
+
+// Typ pro výsledek API
+export type RecipientsResponse = Recipient[];
 
 const app = new Elysia()
   .get(
@@ -33,7 +56,6 @@ const app = new Elysia()
       if (!current)
         return Response.json({ error: 'no_user', details: 'no_db' });
 
-      // Základní dotaz – všichni lidé ve stejné škole
       let q = db
         .selectFrom('users')
         .innerJoin('persons', 'persons.personId', 'users.person')
@@ -41,20 +63,95 @@ const app = new Elysia()
         .leftJoin('teachers', 'teachers.personId', 'persons.personId')
         .leftJoin('classes', 'classes.classId', 'students.class')
         .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
+
+        // třídní učitel
+        .leftJoin('teachers as class_teachers', 'class_teachers.personId', 'classes.teacher')
+        .leftJoin('persons as class_teacher_persons', 'class_teacher_persons.personId', 'class_teachers.personId')
+
+        // rodiče
+        .leftJoin('family_relations', 'family_relations.target', 'students.personId')
+        .leftJoin('persons as parent_persons', 'parent_persons.personId', 'family_relations.source')
+
+        // děti (pro rodiče)
+        .leftJoin('family_relations as parent_links', 'parent_links.source', 'persons.personId')
+        .leftJoin('students as children_students', 'children_students.personId', 'parent_links.target')
+        .leftJoin('persons as children_persons', 'children_persons.personId', 'children_students.personId')
+
         .select([
           sql`persons.personId`.as('id'),
           sql`concat(persons.firstName, ' ', persons.lastName)`.as('name'),
+
+          // Tituly aktuální osoby
+          sql`(
+              SELECT GROUP_CONCAT(DISTINCT d.degree SEPARATOR ' ')
+              FROM persons_degree d
+              WHERE d.person = persons.personId
+            )`.as('degree'),
+
           sql`CASE 
                 WHEN teachers.personId IS NOT NULL THEN 'teacher'
                 WHEN students.personId IS NOT NULL THEN 'student'
                 ELSE 'user'
               END`.as('role'),
+
           sql`CASE 
                 WHEN students.personId IS NOT NULL THEN CONCAT(classes.prefix, (TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1), classes.suffix)
                 ELSE NULL
               END`.as('class'),
+
+          // Třídní učitel (JSON objekt, vynechá NULL)
+          sql`JSON_ARRAYAGG(
+                CASE 
+                  WHEN class_teacher_persons.personId IS NOT NULL THEN 
+                    JSON_OBJECT(
+                      'id', class_teacher_persons.personId,
+                      'degree', (
+                        SELECT GROUP_CONCAT(DISTINCT d.degree SEPARATOR ' ')
+                        FROM persons_degree d
+                        WHERE d.person = class_teacher_persons.personId
+                      ),
+                      'name', CONCAT(class_teacher_persons.firstName, ' ', class_teacher_persons.lastName)
+                    )
+                  ELSE NULL
+                END
+              )`.as('class_teacher'),
+
+          // Rodiče (JSON pole, vynechá NULL)
+          sql`JSON_ARRAYAGG(
+                CASE 
+                  WHEN parent_persons.personId IS NOT NULL THEN 
+                    JSON_OBJECT(
+                      'id', parent_persons.personId,
+                      'degree', (
+                        SELECT GROUP_CONCAT(DISTINCT d.degree SEPARATOR ' ')
+                        FROM persons_degree d
+                        WHERE d.person = parent_persons.personId
+                      ),
+                      'name', CONCAT(parent_persons.firstName, ' ', parent_persons.lastName)
+                    )
+                  ELSE NULL
+                END
+              )`.as('parents'),
+
+          // Děti (JSON pole, vynechá NULL)
+          sql`JSON_ARRAYAGG(
+                CASE 
+                  WHEN children_persons.personId IS NOT NULL THEN 
+                    JSON_OBJECT(
+                      'id', children_persons.personId,
+                      'degree', (
+                        SELECT GROUP_CONCAT(DISTINCT d.degree SEPARATOR ' ')
+                        FROM persons_degree d
+                        WHERE d.person = children_persons.personId
+                      ),
+                      'name', CONCAT(children_persons.firstName, ' ', children_persons.lastName)
+                    )
+                  ELSE NULL
+                END
+              )`.as('children'),
         ])
         .where('users.school', '=', current.school)
+        .groupBy('persons.personId')
         .orderBy('persons.lastName', 'asc')
         .orderBy('persons.firstName', 'asc')
         .limit(query.limit!)
@@ -64,23 +161,18 @@ const app = new Elysia()
       q = q.where((eb) => {
         switch (current.role) {
           case 'student':
-            // studenti vidí pouze učitele
             return eb('teachers.personId', 'is not', null);
           case 'teacher':
-            // učitelé vidí žáky a jiné učitele
             return eb.or([
               eb('students.personId', 'is not', null),
               eb.and([
                 eb('teachers.personId', 'is not', null),
-                // ale ne sebe
                 eb('users.person', '!=', current.person),
               ]),
             ]);
           case 'parent':
-            // rodiče vidí jen učitele
             return eb('teachers.personId', 'is not', null);
           default:
-            // jiní uživatelé zatím nevidí nikoho
             return eb.val(false);
         }
       });
@@ -96,31 +188,63 @@ const app = new Elysia()
         );
       }
 
-      const rows = await q.execute();
+      const rows: RecipientsResponse = await q.execute() as RecipientsResponse;
 
       // ✳️ Úprava výstupu podle role
-      const result = rows.map((r) => {
-        if (r.role === 'teacher') {
-          return {
-            id: r.id,
-            name: r.name,
-            role: 'teacher',
+      const result = await Promise.all(
+        rows.map(async (r) => {
+          const clean = async (v: string | null) => {
+            if (!v) return [];
+            try {
+              const arr = JSON.parse(v);
+              return Array.isArray(arr)
+                ? await Promise.all(
+                    arr
+                      .filter((x) => x && x.id !== null && x.name !== null)
+                      .map(async (x) => ({
+                        id: x.id,
+                        name: await format_person(x.name, x.degree ? x.degree.split(" ") : [])
+                      }))
+                  )
+                : [];
+            } catch {
+              return [];
+            }
           };
-        } else if (r.role === 'student') {
-          return {
+
+          const base = {
             id: r.id,
-            name: r.name,
-            role: 'student',
-            class: r.class ?? '',
+            name: await format_person(r.name, r.degree ? r.degree.split(" ") : [])
           };
-        } else {
-          return {
-            id: r.id,
-            name: r.name,
-            role: 'user',
-          };
-        }
-      });
+
+          if (r.role === 'teacher') {
+            return {
+              ...base,
+              role: 'teacher',
+            };
+          } else if (r.role === 'student') {
+            return {
+              ...base,
+              role: 'student',
+              class: r.class ?? '',
+              classTeacher: await clean(r.class_teacher),
+              parents: await clean(r.parents),
+            };
+          } else if (r.role === 'parent') {
+            return {
+              ...base,
+              role: 'parent',
+              children: await clean(r.children),
+            };
+          } else {
+            return {
+              ...base,
+              role: 'user',
+            };
+          }
+        })
+      );
+
 
       return Response.json(result);
     },
