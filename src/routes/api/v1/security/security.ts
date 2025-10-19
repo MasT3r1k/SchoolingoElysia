@@ -6,8 +6,10 @@ import { authenticator } from 'otplib';
 import * as OTPAuth from 'otpauth'
 import { SecurityConfig } from '../../../../config/security.config';
 import { generateNewBackupCodes } from '../../../../functions/generateNewBackupCodes';
+import { ip } from 'elysia-ip';
 
 const app = new Elysia()
+    .use(ip())
     .get('/security', async ({ cookie }) => {
         const token = cookie.token.value;
         if (!token) {
@@ -47,7 +49,9 @@ const app = new Elysia()
         return Response.json({...user, passkeys});
     })
 
-    .post('/security', async ({ cookie, body }) => {
+    .post('/security', async ({ cookie, body, store }: any) => {
+        const { ip } = store;
+
       const token = cookie.token.value;
       if (!token) {
         return Response.json({ error: 'no_user', details: 'no_cookie' });
@@ -109,6 +113,16 @@ const app = new Elysia()
                 .limit(1)
                 .execute();
 
+
+                await db.insertInto("auditlog")
+                .values({
+                    userId: user.userId,
+                    type: "activated_2FA",
+                    data: {},
+                    ip
+                })
+                .execute()
+
                 // Generate new backup codes
                 generateNewBackupCodes(user.userId);
 
@@ -128,6 +142,15 @@ const app = new Elysia()
                 .where("userId", "=", user.userId)
                 .limit(1)
                 .execute();
+
+                await db.insertInto("auditlog")
+                .values({
+                    userId: user.userId,
+                    type: "deactivated_2FA",
+                    data: {},
+                    ip
+                })
+                .execute()
 
                 // Remove all backup codes
                 await db.deleteFrom("users_backup_codes")
@@ -167,6 +190,14 @@ const app = new Elysia()
                 }
 
                 const backupCodes = await generateNewBackupCodes(user.userId);
+                await db.insertInto("auditlog")
+                .values({
+                    userId: user.userId,
+                    type: "refresh_backup_codes",
+                    data: {},
+                    ip
+                })
+                .execute()
                 return Response.json({ status: true, codes: backupCodes });
         }
 

@@ -365,6 +365,22 @@
             "loading": "Právě probíhá načítání a nastavování nového jazyka"
         },
         "theme": "Vzhled",
+        "themes": {
+            "selector": {
+                "description": "Vyberte preferovaný režim. Vzhled se automaticky uloží."
+            },
+            "preview": {
+                "title": "Náhled",
+                "description": "Jak bude vypadat aplikace v aktuálním tématu."
+            },
+            "sample": {
+                "title": "Ukázková karta",
+                "description": "Toto je náhled textu a tlačítek — slouží k rychlé kontrole čitelnosti a kontrastu.",
+                "actions": ["Hlavní akce", "Druhá akce"],
+                "contrast": "Kontrast (text / povrch): 15.4:1 — doporučeno (≥4.5)",
+                "footer": "Tip: Doporučeno kontrolovat kontrast mezi pozadím a textem, zejména pro starší uživatele nebo při použití na mobilním telefonu."
+            }
+        },
         "themes_description": {
             "system": "Automaticky použije tmavý/světlý vzhled podle OS.",
             "dark": "Nižší jas pro noční použití, úspora energie na OLED.",

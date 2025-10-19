@@ -1,11 +1,10 @@
-import { AnyElysia, Elysia, t } from 'elysia';
+import { Elysia, t } from 'elysia';
 import { db } from '../../../database'
 import { sql } from 'kysely';
 import { rateLimit } from 'elysia-rate-limit'
 import { app } from '../../../index';
 import moment from 'moment';
 import { ip } from 'elysia-ip';
-import * as OTPAuth from "otpauth";
 import bcrypt from 'bcryptjs';
 import { verifyTFA } from '../../functions/verifyTFA';
 
