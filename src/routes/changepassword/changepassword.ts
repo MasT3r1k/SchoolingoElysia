@@ -8,6 +8,7 @@ import { ip } from 'elysia-ip';
 import * as OTPAuth from "otpauth";
 import bcrypt from 'bcryptjs';
 import { verify_password } from '../../functions/verify_password';
+import { verifyTFA } from '../../functions/verifyTFA';
 
 const elysiaApp = new Elysia()
   .use(ip())
@@ -80,45 +81,8 @@ const elysiaApp = new Elysia()
           return Response.json({ error: ["Missing 2FA"] });
         }
 
-        let isApproved2FA = false;
-
-        // Validate 2FA
-        const [backupCodes] = await Promise.all([
-          db.selectFrom("users_backup_codes")
-          .select("users_backup_codes.used")
-          .where("users_backup_codes.userId", '=', user.userId)
-          .where("users_backup_codes.code", '=', TFA)
-          .where("users_backup_codes.used", '=', false)
-          .execute()
-        ])
-
-        if (backupCodes.length) {
-          db.updateTable("users_backup_codes")
-          .set("used", true)
-          .where("users_backup_codes.userId", '=', user.userId)
-          .where("users_backup_codes.code", '=', TFA)
-          .limit(1)
-          .executeTakeFirst()
-          isApproved2FA = true;
-        }
-
-        // Verify token with TOTP
-        let totp = new OTPAuth.TOTP({
-            issuer: "Schoolingo",
-            label: user.username,
-            algorithm: "SHA1",
-            digits: 6,
-            secret: user['2fa_secret']
-        });
-
-        let delta = totp.validate({ token: TFA });
-        if (delta !== null) {
-          isApproved2FA = true;
-        }
-
-        if (!isApproved2FA) {
-          return Response.json({ error: ['Invalid 2FA'] });
-        }
+        const isApproved2FA = await verifyTFA(TFA, user.userId);
+        if (!isApproved2FA) return Response.json({ error: ['Invalid TFA code'] });
       }
 
       try {
@@ -139,6 +103,13 @@ const elysiaApp = new Elysia()
         .where('users.userId', '=', user.userId)
         .limit(1)
         .execute();
+
+        db.insertInto("auditlog")
+        .values({
+          userId: user.userId,
+          type: 'change_password',
+          data: {}
+        });
 
         db.updateTable("tokens")
         .set("tokens.password", passwordId)

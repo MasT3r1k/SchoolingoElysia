@@ -132,6 +132,15 @@ const elysiaApp = new Elysia()
           // pošle OTP
           const email = emails.length === 1 ? emails[0].email : emails[selectedEmail].email;
 
+          await db.insertInto("auditlog")
+          .values({
+              userId: user.userId,
+              type: "reset_password",
+              data: {},
+              ip: store.ip
+          })
+          .execute()
+
           const info = await transporter.sendMail({
             to: email,
             subject: 'Password Reset Verification Code',
@@ -266,6 +275,15 @@ const elysiaApp = new Elysia()
           .where('userId', '=', user.userId)
           .executeTakeFirst();
 
+        await db.insertInto("auditlog")
+        .values({
+            userId: user.userId,
+            type: "change_password",
+            data: {},
+            ip: store.ip
+        })
+        .execute()
+        
         // smaže reset token
         await db
           .deleteFrom('users_resetpassword')

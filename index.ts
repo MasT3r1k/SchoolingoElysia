@@ -9,7 +9,7 @@ import cors from '@elysiajs/cors';
 import { config } from './src/config/app.config';
 import { errorHandler } from './src/middleware/error.middleware';
 import { rateLimit } from './src/middleware/rate-limit.middleware';
-import { logger } from './src/utils/logger';
+import { logger, requestLogger } from './src/utils/logger';
 import locales from './src/infrastructure/locale';
 
 const version = (version: number, build: number) => new Elysia()
@@ -40,6 +40,7 @@ export const app = new Elysia({
   }))
   .use(elysiaXSS({}))
   .use(errorHandler)
+  .use(requestLogger)
   .use(rateLimit)
   .use(version(1.1, 15))
   .use(ws)

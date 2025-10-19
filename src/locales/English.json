@@ -1,4 +1,7 @@
 {
+    "languages": {
+        "cs": "Czech"
+    },
     "auth": {
         "login": {
             "title": "Login to the school system",

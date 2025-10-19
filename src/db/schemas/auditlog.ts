@@ -1,9 +1,20 @@
-import { ColumnType } from "kysely"
+import { ColumnType, Generated } from 'kysely';
 
 export interface AuditlogTable {
-  auditId: number
-  admin: number | null
-  type: string // Enum('') – POZOR: původní enum je prázdný
-  message: string
-  created: ColumnType<Date, string | undefined, never>
+  auditId: Generated<number>;
+  userId: number;
+  type:
+    | 'reset_password'
+    | 'change_password'
+    | 'activated_2FA'
+    | 'deactivated_2FA'
+    | 'refresh_backup_codes'
+    | 'added_passkey'
+    | 'removed_passkey'
+    | 'created_group'
+    | 'removed_group'
+    | 'edited_group'
+  data: { [key: string]: string };
+  ip: string | null;
+  created: ColumnType<Date, string | undefined, never>;
 }

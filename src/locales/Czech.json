@@ -1,4 +1,7 @@
 {
+    "languages": {
+        "en-US": "Angličtina (USA)"
+    },
     "auth": {
         "install_app": {
             "title": "Nainstalovat aplikaci",
@@ -289,7 +292,7 @@
         "no_child_selected": "Nevybrali jste žádné dítě",
         "search_receiver": "Vyhledávat příjemce",
         "selected_receivers": "Vybraní příjemci:",
-        "no_selected_receivers": "Nemáte žádné vybrané příjemce.",
+        "no_selected_receivers": "Nemáte vybrané žádné příjemce.",
         "hide_selected_receivers": "Vybrat další příjemce (%count%)",
         "show_selected_receivers": "Zobrazit vybrané příjemce (%count%)",
         "file_limit_info": "Máte vybráno %count% souborů z %limit%.",
@@ -362,6 +365,27 @@
             "loading": "Právě probíhá načítání a nastavování nového jazyka"
         },
         "theme": "Vzhled",
+        "themes": {
+            "selector": {
+                "description": "Vyberte preferovaný režim. Vzhled se automaticky uloží."
+            },
+            "preview": {
+                "title": "Náhled",
+                "description": "Jak bude vypadat aplikace v aktuálním tématu."
+            },
+            "sample": {
+                "title": "Ukázková karta",
+                "description": "Toto je náhled textu a tlačítek — slouží k rychlé kontrole čitelnosti a kontrastu.",
+                "actions": ["Hlavní akce", "Druhá akce"],
+                "contrast": "Kontrast (text / povrch): 15.4:1 — doporučeno (≥4.5)",
+                "footer": "Tip: Doporučeno kontrolovat kontrast mezi pozadím a textem, zejména pro starší uživatele nebo při použití na mobilním telefonu."
+            }
+        },
+        "themes_description": {
+            "system": "Automaticky použije tmavý/světlý vzhled podle OS.",
+            "dark": "Nižší jas pro noční použití, úspora energie na OLED.",
+            "light": "Jasné pozadí, tradiční světlé barvy."
+        },
         "security": "Zabezpečení",
         "2fa": {
             "already_activated": "Dvoufázové ověření máte již aktivované!",
@@ -428,7 +452,8 @@
     },
     "components": {
         "datalist": {
-            "no_data": "Žádné data nejsou k zobrazení"
+            "no_data": "Žádné data nejsou k zobrazení",
+            "info": "Zobrazeno %start% až %end% (celkem %rows%), stránka %page% z %max_pages%"
         }
     },
     "modules": {
