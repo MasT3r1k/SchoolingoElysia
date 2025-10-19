@@ -53,69 +53,6 @@ const elysiaApp = new Elysia()
     ])
 
     return Response.json({...school, year, breaks, loginExpires: 15000});
-  }, {
-    detail: {
-      description: "This endpoint is rate-limited: max 5 requests per 5 minutes",
-      responses: {
-        200: {
-          description: "Successful response",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  fullName: { type: "string", example: "Ing. Bc. Josef Kosík" },
-                  status: { type: "string", enum: ["active", "archive"] },
-                  startStudy: { type: "string", example: "06. 09. 2021" },
-                  className: { type: "string", example: "B3.I" },
-                  groups: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        groupId: { type: "number", example: 42 },
-                        name: { type: "string", example: "Laboratorní skupina A" },
-                        num: { type: "string", example: "01" },
-                        class: { type: "string", example: "B3.I" }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        404: {
-          description: "Invalid student",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  error: { type: "string", example: "Student not found" }
-                }
-              }
-            }
-          }
-        },
-        429: {
-          description: "Rate limit exceeded",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    example: "rate-limited"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
   });
 
 export default elysiaApp;

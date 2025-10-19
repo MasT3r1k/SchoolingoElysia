@@ -76,7 +76,7 @@ async function loadFolder(folder: string = modulePath) {
           prefix = "/api/" + route.split('\\')[2];
         }
 
-        const wrapper = new Elysia({ prefix }).use(routeApp);
+        const wrapper = new Elysia({ prefix }).use(requestLogger).use(routeApp);
         app.use(wrapper);
 
         const end = Date.now();

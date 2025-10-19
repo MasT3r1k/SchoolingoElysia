@@ -199,10 +199,9 @@ const app = new Elysia()
                 })
                 .execute()
                 return Response.json({ status: true, codes: backupCodes });
+            default:
+                return Response.json({ error: 'no_method' });
         }
-
-
-      return Response.json(user);
     }, {
         body: t.Object({
             method: t.Optional(t.String()),

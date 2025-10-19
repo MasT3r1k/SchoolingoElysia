@@ -212,6 +212,7 @@
         "show_backup_codes": "Zobrazit záložní kódy",
         "refresh_backup_codes": "Znovu vygenerovat žáložní kódy",
         "remove_authenticator_app": "Odebrat aplikaci autentizace",
+        "jump_to_2FA_settings": "Přejít do nastavení 2FA",
         "upload_files": "Nahrát soubory"
     },
     "dropdown": {
@@ -362,10 +363,13 @@
         },
         "language": "Jazyk",
         "languages": {
-            "loading": "Právě probíhá načítání a nastavování nového jazyka"
+            "loading": "Právě probíhá načítání a nastavování nového jazyka",
+            "error": "Chyba"
         },
         "theme": "Vzhled",
         "themes": {
+            "saving": "Ukládání",
+            "error": "Chyba",
             "selector": {
                 "description": "Vyberte preferovaný režim. Vzhled se automaticky uloží."
             },
