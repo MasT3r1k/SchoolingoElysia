@@ -1,9 +1,13 @@
 import { Generated } from "kysely";
 
 export interface grades_columnsTable {
-  columnId: Generated<number>;
+  gcId: Generated<number>;
+  groupId: number;
   subjectId: number;
-  name: string;
+  columnIndex: number;
   weight: number;
-  created_at: Generated<Date>;
+  type: number;
+  topic: string;
+  created: Generated<Date>;
+  status: 'active' | 'deleted'
 }
