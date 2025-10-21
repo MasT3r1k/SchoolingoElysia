@@ -268,6 +268,29 @@
         "homework": "Domácí úkol",
         "no_homework_to_submit": "Nemátě žádný úkol k odevzdání"
     },
+    "marks": {
+        "mark": "Známka",
+        "topic": "Titulek",
+        "weight": "Váha",
+        "description": "Popisek",
+        "interm": {
+            "by_subjects": "Podle předmětů",
+            "chronologically": "Chronologicky",
+            "predictor": "Předvídač"
+        },
+        "predictor": {
+            "title": "Předvídač známek",
+            "old_average": "Starý průměr",
+            "new_average": "Nový průměr",
+            "add_mark": "Přidat známku",
+            "edit_mark": "Upravit známku",
+            "stop_edit_mark": "Zrušit editování",
+            "reset": "Obnovit předvídač",
+            "edit": "Upravit",
+            "remove": "Smazat",
+            "no_subjects": "Nemáte žádnou známku z jakýhokoliv předmětu. Nelze použít předvídač!"
+        }
+    },
     "messages": {
         "privacy": "Zprávy poslané přes aplikaci %app% se nedají považovat za soukromé. K zprávům mají přístup včetně přijemců i ředistelství školy a správci systému.",
         "excuse_message": "Tento druh zprávy se posílá přímo do omluvenek třídnímu učiteli.",

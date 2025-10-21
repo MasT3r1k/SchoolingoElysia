@@ -116,15 +116,17 @@ const elysiaApp = new Elysia()
             .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
             .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
             .select([
-                'substitution.date',
-                'substitution.hour',
+                'substitution.start_date',
+                'substitution.start_hour',
+                'substitution.end_date',
+                'substitution.end_hour',
                 sql`subjects.label`.as('subjectName'),
                 sql`subjects.shortcut`.as('subjectShortcut'),
                 fullName.as('teacher')
             ])
             .where('substitution.groupId', 'in', groupNumbers)
-            .where('substitution.date', '>=', time.clone().startOf('isoWeek').format("YYYY-MM-DD"))
-            .where('substitution.date', '<=', time.clone().endOf('isoWeek')  .format("YYYY-MM-DD"))
+            .where('substitution.start_date', '>=', time.clone().startOf('isoWeek').format("YYYY-MM-DD"))
+            .where('substitution.end_date', '<=', time.clone().endOf('isoWeek')  .format("YYYY-MM-DD"))
             .execute()
         ])
 

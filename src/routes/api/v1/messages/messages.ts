@@ -21,7 +21,7 @@ const app = new Elysia()
       return Response.json({ error: 'no_user', details: 'no_db' });
     }
 
-    const { content, receivers } = body as { content: string; receivers: number[] };
+    const { content, receivers } = body;
     if (!content || typeof content !== 'string' || content.trim() === '') {
       return Response.json({ error: 'invalid_content' });
     }
