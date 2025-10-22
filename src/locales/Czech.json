@@ -115,6 +115,8 @@
     "date": "Datum",
     "total": "Celkem",
     "or": "nebo",
+    "yes": "Ano",
+    "no": "Ne",
     "subject": "Předmět",
     "subjects": "Předměty",
     "selected": "Vybráno",
@@ -270,8 +272,23 @@
         "no_homework_to_submit": "Nemátě žádný úkol k odevzdání"
     },
     "marks": {
+        "title": "Titulek",
+        "title_placeholder": "Vyplňte titulek známky",
         "mark": "Známka",
+        "edit_column": "Upravit sloupec",
         "topic": "Titulek",
+        "type": "Druh známkování",
+        "types": {
+            "marks": "Pomocí známek",
+            "points": "Pomocí bodů"
+        },
+        "max_points": "Maximální počet bodů",
+        "max_points_placeholder": "Vyplňte maximální počet bodů, co lze získat",
+        "include_in_grade_even_if_no_points": "Započítat do známky i bez zapsání bodů",
+        "prefill": "Předvyplnění známky",
+        "prefill_placeholder": "Například: ?, N",
+        "planned_mark": "Naplánovaná klasifikace",
+        "create_column": "Vytvořit sloupec",
         "weight": "Váha",
         "description": "Popisek",
         "interm": {
