@@ -172,6 +172,7 @@
         "marks": {
             "main": "Hodnocení",
             "interm": "Průběžná klasifikace",
+            "interm_record": "Zápis průběžné klasifikace",
             "midterm": "Pololetní klasifikace",
             "education_measures": "Výchovná opatření"
         },
@@ -277,6 +278,12 @@
             "by_subjects": "Podle předmětů",
             "chronologically": "Chronologicky",
             "predictor": "Předvídač"
+        },
+        "interm_record": {
+            "select_group": "Vyber skupinu pro zápis známek",
+            "group": "Skupina",
+            "student_count": "%count% studentů",
+            "no_group": "Nemáte dostupné žádné skupiny!"
         },
         "predictor": {
             "title": "Předvídač známek",
