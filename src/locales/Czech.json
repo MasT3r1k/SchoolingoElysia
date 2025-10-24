@@ -72,6 +72,7 @@
         "required": "Povinné",
         "minLength": "Minimální délka %min%",
         "maxLength": "Maximální délka %max%",
+        "invalid": "Neplatné",
         "passwords_is_same": "Hesla jsou stejná",
         "passwords_not_same": "Hesla nejsou stejná"
     },
@@ -313,6 +314,9 @@
             "edit": "Upravit",
             "remove": "Smazat",
             "no_subjects": "Nemáte žádnou známku z jakýhokoliv předmětu. Nelze použít předvídač!"
+        },
+        "alerts": {
+            "empty_topic": "Prázdné"
         }
     },
     "messages": {
