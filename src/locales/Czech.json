@@ -71,7 +71,9 @@
     "form": {
         "required": "Povinné",
         "minLength": "Minimální délka %min%",
+        "minValue": "Minimální hodnota %min%",
         "maxLength": "Maximální délka %max%",
+        "maxValue": "Maximální hodnota %max%",
         "invalid": "Neplatné",
         "passwords_is_same": "Hesla jsou stejná",
         "passwords_not_same": "Hesla nejsou stejná"
@@ -98,6 +100,15 @@
         "Čtvrtek",
         "Pátek",
         "Sobota"
+    ],
+    "short_days": [
+        "Ne",
+        "Po",
+        "Út",
+        "St",
+        "Čt",
+        "Pá",
+        "So"
     ],
     "months": [
         "Leden",
@@ -130,6 +141,13 @@
     "actions": "Akce",
     "system": {
         "version": "Verze systému"
+    },
+    "calendar": {
+        "title": "%month%, %year%",
+        "date": "Termín",
+        "placeholder": "Vyberte datum a čas",
+        "from": "Od",
+        "to": "Do"
     },
     "time": {
         "week": "Týden",
@@ -217,7 +235,9 @@
         "refresh_backup_codes": "Znovu vygenerovat žáložní kódy",
         "remove_authenticator_app": "Odebrat aplikaci autentizace",
         "jump_to_2FA_settings": "Přejít do nastavení 2FA",
-        "upload_files": "Nahrát soubory"
+        "upload_files": "Nahrát soubory",
+        "save": "Uložit",
+        "reset": "Obnovit"
     },
     "dropdown": {
         "child": {
@@ -378,8 +398,6 @@
 
         "sus_error": "Nastala nějaká podivná chyba, klikni pro obnovení na základní typ",
 
-        "from": "Od",
-        "to": "Do",
         "excuse": "Omluvit",
         "excuse_myself": "Omluvit sám sebe",
 

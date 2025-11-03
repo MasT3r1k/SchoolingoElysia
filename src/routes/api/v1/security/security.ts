@@ -118,7 +118,7 @@ const app = new Elysia()
                 .values({
                     userId: user.userId,
                     type: "activated_2FA",
-                    data: {},
+                    data: JSON.stringify({}),
                     ip
                 })
                 .execute()
@@ -147,7 +147,7 @@ const app = new Elysia()
                 .values({
                     userId: user.userId,
                     type: "deactivated_2FA",
-                    data: {},
+                    data: JSON.stringify({}),
                     ip
                 })
                 .execute()
@@ -194,7 +194,7 @@ const app = new Elysia()
                 .values({
                     userId: user.userId,
                     type: "refresh_backup_codes",
-                    data: {},
+                    data: JSON.stringify({}),
                     ip
                 })
                 .execute()

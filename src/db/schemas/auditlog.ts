@@ -14,7 +14,7 @@ export interface AuditlogTable {
     | 'created_group'
     | 'removed_group'
     | 'edited_group'
-  data: { [key: string]: string };
+  data: string;
   ip: string | null;
   created: ColumnType<Date, string | undefined, never>;
 }

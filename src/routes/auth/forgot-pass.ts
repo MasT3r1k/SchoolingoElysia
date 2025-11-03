@@ -136,7 +136,7 @@ const elysiaApp = new Elysia()
           .values({
               userId: user.userId,
               type: "reset_password",
-              data: {},
+              data: JSON.stringify({}),
               ip: store.ip
           })
           .execute()
@@ -279,7 +279,7 @@ const elysiaApp = new Elysia()
         .values({
             userId: user.userId,
             type: "change_password",
-            data: {},
+            data: JSON.stringify({}),
             ip: store.ip
         })
         .execute()
