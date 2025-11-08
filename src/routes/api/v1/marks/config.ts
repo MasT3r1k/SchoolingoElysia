@@ -13,6 +13,7 @@ const app = new Elysia()
       min_weight: MainConfig.MARK_MIN_WEIGHT,
       mark_display: MainConfig.MARK_DISPLAY,
       mark_ids: MainConfig.ALLOWED_MARKS,
+      mark_actions: MainConfig.MARK_ACTIONS,
       max_points: MainConfig.MAX_POINTS,
       min_points: MainConfig.MIN_POINTS,
       max_topic_length: MainConfig.MARK_MAX_TOPIC_LENGTH,

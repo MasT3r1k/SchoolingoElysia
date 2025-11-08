@@ -139,6 +139,7 @@
     "activate": "Aktivovat",
     "delete": "Smazat",
     "actions": "Akce",
+    "unknown": "Neznámé",
     "system": {
         "version": "Verze systému"
     },
@@ -163,6 +164,11 @@
         "student": "Žák",
         "parent": "Rodič",
         "classteacher": "Třídní učitel"
+    },
+    "person": {
+        "first_name": "Křestní jméno",
+        "last_name": "Přijmení",
+        "full_name": "Jméno"
     },
     "absence": {
         "absence": "Absence",
@@ -205,6 +211,20 @@
             "sent": "Odeslané zprávy",
             "groups": "Skupiny",
             "noticeboard": "Nástěnka"
+        },
+        "traineeship": {
+            "overview": "Můj přehled",
+            "main": "Odborná praxe",
+            "companies": "Seznam firem",
+            "diary": "Seznam deníků",
+            "manage": "Správa praxí",
+            "settings": "Nastavení modulu praxí"
+        },
+        "tools": {
+            "main": "Správa systému",
+            "settings": "Nastavení systému",
+            "manage_users": "Správa uživatelů",
+            "auditlog": "Auditlog"
         }
     },
     "user": {
@@ -236,7 +256,10 @@
         "remove_authenticator_app": "Odebrat aplikaci autentizace",
         "jump_to_2FA_settings": "Přejít do nastavení 2FA",
         "upload_files": "Nahrát soubory",
+        "back": "Zpátky",
+        "cancel": "Zrušit",
         "save": "Uložit",
+        "save_changes": "Uložit změny",
         "reset": "Obnovit"
     },
     "dropdown": {
@@ -288,6 +311,165 @@
             "details": "Podrobnosti"
         }
     },
+    "traineeship": {
+        "country": "Země sídla firmy",
+        "company_name": "Název firmy",
+        "selected_company": "Vybraná firma",
+        "office_address": "Adresa pobočky",
+        "trainee_address": "Adresa praxe",
+        "CIN": "IČO firmy",
+        "DIC": "DIČ firmy",
+        "description": "Popis",
+        "activity": "Aktivity ve firmě",
+        "equipment": "Věci potřebné pro práci",
+        "search": "Vyhledávejte firmu podle názvu",
+        "note": "Poznámka",
+        "settings": "Nastavení",
+        "request_add_company": "Požádat o přidání firmy",
+        "add_company": "Přidat firmu",
+        "adding_company": "Firma se přidává",
+        "no_CIN": "Žádné IČO nebylo zadáno",
+        "no_rating": "Žádné hodnocení",
+        "city": "Město",
+        "web": "Webová stránka",
+        "phone": "Telefon",
+        "email": "Emailová adresa",
+        "no_web": "Webová stránka nenastavena",
+        "no_email": "Email nenastaven",
+        "no_phone": "Telefon nenastaven",
+        "no_mark": "Neoznámkováno",
+        "no_description": "Žádný popis",
+        "no_activity": "Žádné aktivity",
+        "no_equipment": "Žádné věci nejsou potřeba",
+        "no_note":"Bez poznámky",
+        "day": "den",
+        "number_of_days": "Počet dní",
+        "number_of_days_value": "%days% dní",
+        "working_hours": "Pracovní doba",
+        "select_dairy": "Výběr období",
+        "no_dairy_selected": "Období nevybráno",
+        "final_write": "Finální souhrn",
+        "company_info": "Informace o firmě",
+        "back_to_list": "Zpátky na seznam",
+        "average_rate": "Průměrné hodnocení",
+        "rate": "Hodnocení",
+        "company_rating": "Hodnocení firmy",
+        "anon_student": "Anonymní student",
+        "no_review": "Žádné slovní hodnocení",
+        "register_to_company": "Zapsat se u firmy",
+        "request_company": "Žádost o přidání nový firmy",
+        "scopes": "Vhodné pro obory",
+        "click_to_select_scopes": "Klikni pro vybrání oborů",
+        "added_in": "Přidán",
+        "no_scopes": "Firma nemá určené vhodné obory",
+        "scopes_suitable": "Vhodné",
+        "scopes_inappropriate": "Nevhodné",
+        "responsible_person": "Zodpovědná osoba",
+        "instructor": "Instruktor",
+        "new_instructor": "Nový instruktor",
+        "no_instructor_selected": "Instruktor nevybrán",
+        "instructors": "Instruktoři",
+        "dont_know_instructor": "Instruktora ještě nevím",
+        "no_ínstructors": "Žádní instruktoři",
+        "edit_company": "Upravit firmu",
+        "remove_company": "Odebrat firmu",
+        "not_requested_from_student": "Nebylo požádáno o přidání firmy",
+        "add_instructor": "Přidat instruktora",
+        "requested": "Podána žádost o přidání",
+        "created": "Přidáno do seznamu",
+        "only_working_days": "Pouze pracovní dny",
+        "only_weekend": "Pouze o víkendu",
+        "approved_company": "Schválená firma",
+        "recommend": "Doporučuje",
+        "not_recommend": "Nedoporučuje",
+        "status_company": {
+            "main": "Stav firmy",
+            "request": "Čeká na schválení",
+            "acceptable": "Akceptovatelné",
+            "approved": "Schválené",
+            "deleted": "V archivu"
+        },
+        "select_company": {
+            "bottom_information": "Firma i instruktor lze kdykoliv později změnit"
+        },
+        "overview": {
+            "nearest_diary": "Nebližší deník",
+            "diary_help": "Plánování a průběh odborné praxe",
+            "diary_week": "Praxe od %start% do %end%",
+            "no_next_dairy": "Žádné nasledující praxe",
+            "boxes": {
+                "companies": "Počet schválených firem",
+                "weeks": "Celkem období praxí",
+                "scopes": "Celkem oborů na škole",
+                "company_waiting": "Firem čekájící na schválení"
+            }
+        },
+        "diary": {
+            "main": "Deník",
+            "description": "Od %start% do %end%",
+            "wanna_change_company": "Pokud chcete změnit firmu, musíte do seznamu firem.",
+            "status": {
+                "planned": "Plánovaná praxe",
+                "ongoing": "Probíhající praxe",
+                "finished": "Dokončená praxe",
+                "canceled": "Zrušená praxe"
+            }
+        },
+        "write_diary": {
+            "main": "Zapsat deník (%day%)"
+        },
+        "manage": {
+            "title": "Praxe ve školním roce %year%",
+            "new_traineeship": "Nové praxe",
+            "enrolled_students": "Zapsaní studenti",
+            "done_students": "Vyřízeno studentů",
+            "total_students": "Celkem studentů"
+        },
+        "alerts": {
+            "week_info": "Období od %start% do %end% máte tuhle firmu zapsanou %instructor%",
+            "success_updated_instructor": "Aktualizoval jste instruktora u firmy %companyName% na %instructor%",
+            "success_selected_company": "Zapsal ses u firmy %companyName% %instructor%",
+            "success_selected_company_no_instructor": "bez instruktora",
+            "success_selected_company_with_instructor": "s instruktorem: %instructorName%",
+            "no_company": "Nemáte vybranou firmu.",
+            "first_select_company": "❌ Nejdříve si musíte vybrat firmu, aby jste mohli vytisknout smlouvu",
+            "no_traineeship": "Nemáte vybrané období praxí.",
+            "no_instructor": "Nemáte vybraného instruktora",
+            "selected_company": "Máte vybranou firmu %companyName% %instructor%",
+            "already_selected": "Již máte tohle vybrané",
+            "too_many_students_in_company": "❌ Tato firma ve vybraném období má již maximální počet studentů",
+            "company_not_suitable_for_you": "❌ Tato firma není označena jako vhodná praxe pro váš obor",
+            "no_traineeship_found": "Období odborných praxí nebylo nalezeno",
+            "no_error_found": "Nastala neznámá chyba",
+            "company_found_title": "Firma byla nalezena",
+            "company_found_description": "Firma %companyName% byla nalezena. Přejete si vyplnit údaje do formuláře?",
+            "company_found_agree": "Ano, doplnit",
+            "company_found_cancel": "Ne, doplním ručně",
+            "company_found_notFound": "Firma nebyla nalezena",
+            "remove_company_title": "Přejete si odstranit tuto firmu ze seznamu?",
+            "remove_company_description": "Firma bude označena jako smazaná, studenti si již nebudou moct vybrat na praxi. Správci praxí ji budou moct kdykoliv zase zpřístupnit.",
+            "remove_company_description_warning": "Tuto firmu mají aktuálně vybranou někteří studenti.\nPokud ji odeberete, studenti ji již neuvidí a nebudou ji moci dále používat. Učitelé k ní ale budou mít stále přístup a mohou firmu kdykoliv obnovit."
+        },
+        "buttons": {
+            "print_contract": "Tisk smlouvy",
+            "print_guide": "Tisk průvodky",
+            "select_company": "Vybrat firmu",
+            "select_instructor": "Vybrat instruktora",
+            "change_instructor": "Změnit instruktora",
+            "save_changes": "Uložit změny"
+        },
+        "tabs": {
+            "detail_company": {
+                "main": "Základní informace",
+                "activity": "Aktivita"
+            }
+        },
+        "status": {
+            "main": "Stav",
+            "unlisted": "Nezapsáno",
+            "filed": "Zapsáno"
+        }
+    },
     "homeworks": {
         "homework": "Domácí úkol",
         "no_homework_to_submit": "Nemátě žádný úkol k odevzdání"
@@ -296,26 +478,52 @@
         "title": "Titulek",
         "title_placeholder": "Vyplňte titulek známky",
         "mark": "Známka",
+        "percentage": "Procenta %",
+        "mark_placeholder": "Známka, např.: 1, 1.5=1-, 2, 2-, 4, .., 5",
         "edit_column": "Upravit sloupec",
+        "create_column": "Vytvořit sloupec",
+        "edit_mark": "Upravit známku",
+        "create_mark": "Vytvořit známku",
         "topic": "Titulek",
         "type": "Druh známkování",
         "types": {
             "marks": "Pomocí známek",
             "points": "Pomocí bodů"
         },
+        "cant_edit_after_creation": "Nelze upravovat po vytvoření",
         "max_points": "Maximální počet bodů",
         "max_points_placeholder": "Vyplňte maximální počet bodů, co lze získat",
         "include_in_grade_even_if_no_points": "Započítat do známky i bez zapsání bodů",
         "prefill": "Předvyplnění známky",
         "prefill_placeholder": "Například: ?, N",
         "planned_mark": "Naplánovaná klasifikace",
-        "create_column": "Vytvořit sloupec",
         "weight": "Váha",
         "description": "Popisek",
+        "no_subjects": "Žádné známky",
         "interm": {
             "by_subjects": "Podle předmětů",
             "chronologically": "Chronologicky",
             "predictor": "Předvídač"
+        },
+        "edit_marking_scale": {
+            "title": "Upravit tabulku hodnocení",
+            "table": "Tabulka hodnocení",
+            "name_table": "Název tabulky",
+            "edit_table": "Upravit tabulku",
+            "default_name": "Výchozí tabulka",
+            "change_table": "Změnit tabulku",
+            "save_table": "Uložit tabulku",
+            "new_table": "Nová tabulka",
+            "create_table": "Vytvořit tabulku",
+            "usage_count": "Využito",
+            "description": "Zde můžete nastavit převod bodového hodnocení na známky podle procentuální úspěšnosti.",
+            "auto_update": "Po změně se automaticky aktualizují známky studentů",
+            "subject_auto_complete": "Předmět se doplní automaticky",
+            "badges": {
+                "default": "Výchozí",
+                "active": "Používáno"
+            },
+            "last_updated": "Poslední změna"
         },
         "interm_record": {
             "select_group": "Vyber skupinu pro zápis známek",
@@ -333,10 +541,13 @@
             "reset": "Obnovit předvídač",
             "edit": "Upravit",
             "remove": "Smazat",
-            "no_subjects": "Nemáte žádnou známku z jakýhokoliv předmětu. Nelze použít předvídač!"
+            "no_subjects": "Nemáte žádnou známku z jakýhokoliv předmětu. Nelze použít předvídač!",
+            "already_editing_mark": "Nemůžete odebrat známku, kterou aktuálně upravujete."
         },
         "alerts": {
-            "empty_topic": "Prázdné"
+            "empty_topic": "Prázdné",
+            "too_long_name": "Příliš dlouhý název tabulky",
+            "invalid_grades": "Neplatný procenta u známek"
         }
     },
     "messages": {

@@ -52,7 +52,12 @@ const elysiaApp = new Elysia()
         .executeTakeFirst()
     ])
 
-    return Response.json({...school, year, breaks, loginExpires: 15000});
+    return Response.json({
+      ...school,
+      year,
+      breaks,
+      loginExpires: 15000
+    });
   });
 
 export default elysiaApp;

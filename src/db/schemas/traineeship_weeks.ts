@@ -1,7 +1,11 @@
+import { Generated } from "kysely";
+
 export interface Traineeship_weeksTable {
-  trWeekId: number
+  trWeekId: Generated<number>
   groupId: number
-  start: string // date
-  end: string // date
+  name: string;
+  start: Date
+  end: Date
   ignoredDays: string | null
+  state: 'active' | 'canceled'
 }

@@ -8,12 +8,15 @@ export const MainConfigSchema = z.object({
   MAX_MARK: z.number().min(0).max(5),
   ALLOWED_MARKS: z.array(z.number()),
   MARK_DISPLAY: z.array(z.string()),
+  MARK_ACTIONS: z.array(z.string()),
 
   MAX_POINTS: z.number().min(0).max(100),
   MIN_POINTS: z.number().min(0).max(100),
 
   MARK_MAX_TOPIC_LENGTH: z.number().min(0).max(999),
-  MARK_MIN_TOPIC_LENGTH: z.number().min(0).max(10)
+  MARK_MIN_TOPIC_LENGTH: z.number().min(0).max(10),
+
+  MARKING_SCALE: z.array(z.number().min(0).max(100))
 })
 .refine(d => d.MARK_MAX_WEIGHT >= d.MARK_MIN_WEIGHT, {
   message: "MARK_MAX_WEIGHT cannot be smaller than MARK_MIN_WEIGHT",
@@ -34,12 +37,15 @@ export const MainConfig = MainConfigSchema.parse({
 
   MIN_MARK: 0.8,
   MAX_MARK: 5,
-  ALLOWED_MARKS: [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5],
-  MARK_DISPLAY: ["1", "1-", "2", "2-", "3", "3-", "4", "4-", "5"],
+  ALLOWED_MARKS: [ 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5 ],
+  MARK_DISPLAY: [ "1", "1-", "2", "2-", "3", "3-", "4", "4-", "5" ],
+  MARK_ACTIONS: [ "A", "N", "O", "P", "?" ],
 
   MAX_POINTS: 100,
   MIN_POINTS: 1,
 
   MARK_MAX_TOPIC_LENGTH: 64,
   MARK_MIN_TOPIC_LENGTH: 2,
+
+  MARKING_SCALE: [ 90, 75, 60, 45 ]
 });

@@ -76,6 +76,8 @@ import { EventsTable } from './events'
 import { Users_credentialsTable } from './user_credentials'
 import { webauthn_challengesTable } from './webauthn_challenges'
 import { Users_resetpasswordTable } from './users_resetpassword'
+import { marking_scalesTable } from './marking_scales'
+import { marking_scales_groupsTable } from './marking_scales_groups'
 
 export interface Database {
   absence: AbsenceTable
@@ -117,6 +119,8 @@ export interface Database {
   library_loans: library_loansTable
   library_reservations: library_reservationsTable
   login_history: login_historyTable
+  marking_scales: marking_scalesTable
+  marking_scales_groups: marking_scales_groupsTable
   messages: messagesTable
   messages_receivers: messages_receiversTable
   passwords: passwordsTable

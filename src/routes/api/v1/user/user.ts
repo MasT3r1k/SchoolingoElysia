@@ -62,6 +62,7 @@ const app = new Elysia()
               'tokens.expires',
               'users.username',
               'users.avatar',
+              'users.manager',
               'users.locale',
               'users.levels_exp',
               'users.theme'
@@ -124,10 +125,16 @@ const app = new Elysia()
       .leftJoin('students', 'students.class', 'classes.classId')
       .select([
         'classes.classId',
+        'classes.scopeId',
         sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, sy.start, CURDATE()) + 1, classes.suffix)`.as('className'),
         sql`COUNT(students.class)`.as('students')
       ])
-      .where('classes.teacher', '=', tokenDB.personId)
+      .where((eb) =>
+        eb.or([
+          eb('classes.teacher', '=', tokenDB.personId),
+          eb('students.personId', '=', tokenDB.personId)
+        ])
+      )
       .where(sql`DATE_ADD(sy.start, INTERVAL scopes.years YEAR)`, '>=', sql`CURDATE()`)
       .groupBy('classes.classId')
       .execute()
