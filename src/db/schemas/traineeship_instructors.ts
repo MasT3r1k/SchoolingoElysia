@@ -1,8 +1,15 @@
+import { Generated } from "kysely";
 
 export interface Traineeship_instructorsTable {
-  personId: number
+  instructorId: Generated<number>
   companyId: number
-  created: string // timestamp
-  addedBy: number | null
+  firstname: string;
+  lastname: string;
+  email: string | null
+  phone: string | null
+  role: string | null
   status: 'active' | 'deleted'
+  addedBy: number | null
+  created: Date;
+  last_updated: Date;
 }

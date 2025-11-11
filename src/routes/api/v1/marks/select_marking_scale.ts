@@ -2,24 +2,19 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 
 const app = new Elysia()
-  .post('/marks/teacher/marking_scale', async ({ cookie, body }) => {
+  .post('/marks/teacher/marking_scale_select', async ({ cookie, body }) => {
     const token = cookie.token?.value;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
-    const { ms_id, name, grades } = body;
+    const { ms_id, subject_id, group_id } = body;
     if (ms_id == undefined) return { error: 'invalid_marking_scale_id' };
 
-    if (!grades || grades.length != 5) {
-        return { error: 'invalid_grades' };
+    if (subject_id == undefined) {
+      return { error: 'invalid_subject_id' };
     }
 
-    if (!(
-            grades[0] > grades[1]
-        &&  grades[1] > grades[2]
-        &&  grades[2] > grades[3]
-        &&  grades[3] > grades[4]
-    )) {
-        return { error: 'invalid_grades' };
+    if (group_id == undefined) {
+      return { error: 'invalid_group_id' };
     }
 
     // validace tokenu → získání teacher.personId
@@ -54,24 +49,19 @@ const app = new Elysia()
     try {
         const updated_at = new Date();
 
-        const update_marking_scale = await db.updateTable("marking_scales")
+        const update_marking_scale = await db.updateTable("marking_scales_groups")
         .set({
-            name,
-            grade_1_min: grades[0],
-            grade_2_min: grades[1],
-            grade_3_min: grades[2],
-            grade_4_min: grades[3],
-            updated_at
+          ms_id,
+          updated_at
         })
-        .where('ms_id', '=', ms_id)
+        .where('group_id', '=', group_id)
+        .where('subject_id', '=', subject_id)
         .limit(1)
         .execute()
 
         return {
             status: true,
             ms_id,
-            name,
-            grades: grades.map((grade) => Number(grade)),
             updated_at
         }
     } catch(e) {
@@ -82,8 +72,8 @@ const app = new Elysia()
   }, {
     body: t.Object({
       ms_id: t.Optional(t.Number()),
-      name: t.Optional(t.Nullable(t.String())),
-      grades: t.Optional(t.Array(t.Number({ minimum: 0, maximum: 100 }))),
+      subject_id: t.Optional(t.Number()),
+      group_id: t.Optional(t.Number()),
     })
   });
 

@@ -57,14 +57,16 @@ const app = new Elysia()
         )
         .leftJoin('addresses as a', 'a.addressId', 'c.addressOffice')
         .leftJoin('cities as ci', 'ci.cityId', 'a.cityId')
-        .leftJoin('persons as in', 'in.personId', 'ts.instructor')
+        .leftJoin('traineeship_instructors as in', 'in.instructorId', 'ts.instructor')
         .select((eb) => [
           'tw.trWeekId as traineeship',
+          'tw.name',
           'tw.start',
           'tw.end',
           'tw.ignoredDays',
-          'in.firstName as instructorFirstName',
-          'in.lastName as instructorLastName',
+          'in.instructorId',
+          'in.firstname as instructorFirstName',
+          'in.lastname as instructorLastName',
           'c.name as companyName',
           'c.companyId',
           'c.status',

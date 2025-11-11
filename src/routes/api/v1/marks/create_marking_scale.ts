@@ -30,7 +30,7 @@ const app = new Elysia()
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth) return { error: 'no_user', details: 'no_db' };
 
     const teacher = await db
       .selectFrom('teachers')
@@ -46,9 +46,9 @@ const app = new Elysia()
 
       const new_marking_scale = await db.insertInto("marking_scales")
       .values({
-        teacher_id: auth.person!,
+        teacher_id: auth.person || null,
         is_default: false,
-        name,
+        name: name == "" ? null : name,
         grade_1_min: grades[0],
         grade_2_min: grades[1],
         grade_3_min: grades[2],
@@ -60,9 +60,9 @@ const app = new Elysia()
       return {
         status: true,
         marking_scale: {
-          ms_id: new_marking_scale.insertId as unknown as number,
-          name,
-          grades: grades.map((grade) => Number(grade)),
+          ms_id: Number(new_marking_scale.insertId),
+          name: name == "" ? null : name,
+          grades,
           is_default: false,
           last_updated: updated_at
         }

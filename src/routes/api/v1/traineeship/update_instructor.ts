@@ -1,0 +1,74 @@
+import { Elysia, t } from 'elysia';
+import { db } from '../../../../../database';
+
+const app = new Elysia()
+  .post('/traineeship/instructor_update', async ({ cookie, body }) => {
+    const token = cookie.token?.value;
+    if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+    const { instructor_id, firstname, lastname, email, phone, role} = body;
+    if (instructor_id == undefined) return { error: 'invalid_instructor_id' }
+
+    // validace tokenu → získání teacher.personId
+    const auth = await db
+      .selectFrom('tokens')
+      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .select(['tokens.userId', 'users.person'])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', new Date())
+      .executeTakeFirst();
+
+    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+
+    const teacher = await db
+      .selectFrom('teachers')
+      .select(['teachers.personId'])
+      .where('teachers.personId', '=', auth.person)
+      .executeTakeFirst();
+
+    if (!teacher) return { error: 'no_permission' };
+
+    try {
+        const last_updated = new Date();
+
+        const update_instructor = await db.updateTable("traineeship_instructors")
+        .set({
+            firstname: firstname ?? '',
+            lastname: lastname ?? '',
+            email: email ?? null,
+            phone: phone ?? null,
+            role: role ?? null,
+            last_updated: last_updated,
+        })
+        .where('instructorId', '=', instructor_id)
+        .limit(1)
+        .executeTakeFirst();
+
+        return {
+            status: true,
+            instructor: {
+                instructor_id,
+                name: `${firstname} ${lastname}`,
+                firstname,
+                lastname,
+                email,
+                phone,
+                role
+            },
+            last_updated
+        };
+    } catch(e) {
+        return { status: false };
+    }
+  }, {
+    body: t.Object({
+      instructor_id: t.Optional(t.Number()),
+      firstname: t.Optional(t.String()),
+      lastname: t.Optional(t.String()),
+      email: t.Optional(t.Nullable(t.String())),
+      phone: t.Optional(t.Nullable(t.String())),
+      role: t.Optional(t.Nullable(t.String()))
+    })
+  });
+
+export default app;

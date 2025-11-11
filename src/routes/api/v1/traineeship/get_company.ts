@@ -91,11 +91,16 @@ const app = new Elysia()
       // Načti instruktory
       const instructors = await db
         .selectFrom('traineeship_instructors')
-        .leftJoin('persons', 'persons.personId', 'traineeship_instructors.personId')
         .select([
-          'persons.personId',
-          'firstName',
-          'lastName'
+          'traineeship_instructors.instructorId',
+          'traineeship_instructors.firstname',
+          'traineeship_instructors.lastname',
+          'traineeship_instructors.email',
+          'traineeship_instructors.phone',
+          'traineeship_instructors.role',
+          'traineeship_instructors.status',
+          'traineeship_instructors.created',
+          'traineeship_instructors.last_updated'
         ])
         .where('companyId', '=', companyId)
         .execute();
@@ -105,8 +110,16 @@ const app = new Elysia()
       return Response.json({
         ...company,
         instructors: instructors.map((instructor) => ({
-          instructorId: instructor.personId,
-          name: `${instructor.firstName} ${instructor.lastName}`
+          instructorId: instructor.instructorId,
+          name: `${instructor.firstname} ${instructor.lastname}`,
+          firstname: instructor.firstname,
+          lastname: instructor.lastname,
+          email: instructor.email,
+          phone: instructor.phone,
+          role: instructor.role,
+          status: instructor.status,
+          created: instructor.created,
+          last_updated: instructor.last_updated
         }))
       });
     },

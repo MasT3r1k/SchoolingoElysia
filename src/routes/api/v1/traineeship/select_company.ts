@@ -77,16 +77,15 @@ const app = new Elysia()
         if (instructorId != undefined && instructorId != null) {
             instructorExists = await db
                 .selectFrom('traineeship_instructors')
-                .leftJoin('persons', 'persons.personId', 'traineeship_instructors.personId')
                 .select(
-                    ({ fn }) => fn.count<number>('traineeship_instructors.personId').as('count')
+                    ({ fn }) => fn.count<number>('traineeship_instructors.instructorId').as('count')
                 )
                 .select([
-                    'persons.firstName',
-                    'persons.lastName'
+                    'traineeship_instructors.firstname',
+                    'traineeship_instructors.lastname'
                 ])
                 .where('traineeship_instructors.companyId', '=', companyId)
-                .where('traineeship_instructors.personId', '=', instructorId)
+                .where('traineeship_instructors.instructorId', '=', instructorId)
                 .executeTakeFirst();
 
             if (!instructorExists || instructorExists.count === 0) {
@@ -128,7 +127,7 @@ const app = new Elysia()
                 status: 'success',
                 traineeship: traineeship,
                 companyId: companyId,
-                instructor: instructorExists ? `${instructorExists.firstName} ${instructorExists.lastName}` : null
+                instructor: instructorExists ? `${instructorExists.firstname} ${instructorExists.lastname}` : null
             });
         } catch(e) {
             return Response.json({
