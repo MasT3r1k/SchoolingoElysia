@@ -187,6 +187,7 @@
         "absence": "Absence",
         "account": "Můj účet",
         "calendar": "Kalendář",
+        "schedule_builder": "Tvorba rozvrhu",
         "teach": {
             "main": "Výuka",
             "timetable": "Rozvrh",
@@ -283,6 +284,47 @@
             "anketa": "Vytvořit anketu",
             "request": "Vytvořit požadavek",
             "company": "Přidat firmu do praxí"
+        }
+    },
+    "schedule": {
+        "builder": {
+            "creation": "Tvorba",
+            "substitution": "Suplování",
+            "add_event": "Přidat událost",
+            "add_subject": "Přidat předmět",
+            "clear_timetable": "Vymazat rozvrh",
+            "settings": "Nastavení",
+            "export": "Export",
+            "import": "Import",
+            "print": "Vytisknout",
+            "week_hours": "Hodin v týdnu",
+            "occupied_hours": "Obsazené pole",
+            "substitution_week": "Suplování v týdnu",
+            "available_subjects": "Dostupné předměty",
+            "add_subject_modal": {
+                "name_subject": "Název předmětu",
+                "short_subject": "Zkratka předmětu",
+                "subject_placeholder": "Klikni pro vybrání předmětu",
+                "choose_subject": "Vybrat předmět",
+                "search_subject": "Vyhledávat předměty",
+                "no_subjects": "Žádné předměty",
+                "no_subjects_description": "Tato škola nemá ještě vytvořené žádné předměty. Nejdříve je vytvoř.",
+                "no_search_description": "Nebyly nalezeny žádné výsledky vyhledávání.",
+                "new_subject": "Nový předmět",
+                "teachers": "Vyučující (můžete přidat více)",
+                "choose_teacher": "Vybrat učitele",
+                "search_teacher": "Vyhledávat učitele",
+                "no_teachers": "Žádní učitelé",
+                "no_teachers_description": "Žádný učitel nemá přiřazený tento předmět. Přiřaďte nějakému učiteli tento předmět.",
+                "assign_teacher": "Přiřadit učitele",
+                "hours_per_week": "Počet hodin/týden",
+                "exercise_hours": "Cvičný hodiny",
+                "default_room": "Výchozí učebna",
+                "color_subject": "Barva předmětu",
+                "assign_subject": "Přiřadit předmět",
+                "scope": "Obor třídy",
+                "grade_level": "Ročník třídy"
+            }
         }
     },
     "login_history": {

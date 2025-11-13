@@ -78,6 +78,7 @@ import { webauthn_challengesTable } from './webauthn_challenges'
 import { Users_resetpasswordTable } from './users_resetpassword'
 import { marking_scalesTable } from './marking_scales'
 import { marking_scales_groupsTable } from './marking_scales_groups'
+import { scopes_subjectsTable } from './scopes_subjects'
 
 export interface Database {
   absence: AbsenceTable
@@ -136,6 +137,7 @@ export interface Database {
   school_domains: school_domainsTable
   school_years: school_yearsTable
   scopes: ScopesTable
+  scopes_subjects: scopes_subjectsTable
   students: StudentsTable
   student_groups: Student_groupsTable
   student_homeworks: Student_homeworksTable

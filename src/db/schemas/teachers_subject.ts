@@ -1,4 +1,4 @@
 export interface Teachers_subjectTable {
-  teacher: number
-  subject: number
+  teacher_id: number
+  subject_id: number
 }
