@@ -119,6 +119,26 @@ const app = new Elysia()
       ])
       .where("family_relations.source", "=", tokenDB.personId)
       .execute();
+
+      user.emails = await db.selectFrom("emails")
+      .select([
+        'emails.email',
+        'emails.is_verified',
+        'emails.description'
+      ])
+      .where('emails.personId', '=', tokenDB.personId)
+      .execute();
+
+      user.phones = await db.selectFrom("phone_numbers")
+      .select([
+        'phone_numbers.code',
+        'phone_numbers.number',
+        'phone_numbers.description',
+        'phone_numbers.is_verified'
+      ])
+      .where('phone_numbers.personId', '=', tokenDB.personId)
+      .execute()
+
       user.classes = await db.selectFrom("classes")
       .leftJoin('school_years as sy', 'sy.syId', 'classes.yearId')
       .leftJoin('scopes', 'classes.scopeId', 'scopes.scopeId')
