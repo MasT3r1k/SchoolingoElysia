@@ -234,16 +234,21 @@
         "parents": "Rodiče",
         "devices": "Přihlášené zařízení",
         "login_history": "Historie přihlášení",
+        "login_history_description": "Sledujte přihlášení na Váš účet včetně zobrazení informací ohledně příhlášení jako je systém, prohlížeč, ip adresa, ...",
+        "login_history_action": "Zobrazit historii",
+        "logins_for_7days": "Přihlášení za posledních 7 dní",
+        "failed_logins_for_7days": "Nepovedené přihlášení za posledních 7 dní",
         "notifications": "Notifikace",
         "connections": "Propojení s jinými účty",
         "gdpr": "GDPR",
+        "security": "Zabezpečení",
         "password_authenticator": {
-            "title": "Hesla a ověření",
-            "description": "Heslo je základní bezpečnostní prvek. Doporučujeme pravidelně měnit a používat unikatní heslo."
+            "title": "Zabezpečení heslem",
+            "description": "Heslo je základní bezpečnostní prvek. Doporučujeme pravidelně měnit a používat unikatní heslo.",
+            "last_updated": "Poslední změna hesla: %time%"
         },
         "app_authenticator": {
-            "title": "Aplikace Autentizátoru",
-            "description": "Přidáním aplikace autentizátoru je dobrá cesta k přidání extra vrstvě k zabezpečení Vašeho účtu, aby jsme zajistili, že pouze Vy se můžeme přihlásit."
+            "description": "Přidání dvoufázového ověřování je dobrá cesta k přidání extra vrstvě k zabezpečení Vašeho účtu, aby jsme zajistili, že pouze Vy se můžeme přihlásit."
         }
     },
     "buttons": {
@@ -707,6 +712,16 @@
         "languages": {
             "loading": "Právě probíhá načítání a nastavování nového jazyka",
             "error": "Chyba"
+        },
+        "emails": {
+            "title": "Vaše emailové adresy",
+            "empty": "Žádný email",
+            "empty_description": "Nemáš přiřazený žádný email."
+        },
+        "phones": {
+            "title": "Vaše telefonní čísla",
+            "empty": "Žádný telefon",
+            "empty_description": "Nemáš přiřazený žádný telefonní číslo."
         },
         "theme": "Vzhled",
         "themes": {

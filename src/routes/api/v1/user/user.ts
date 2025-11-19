@@ -56,12 +56,14 @@ const app = new Elysia()
           .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
           .select([
               'persons.personId',
+              'users.userId',
               fullName.as('fullName'),
               'persons.birthday',
               'persons.gender',
               'tokens.expires',
               'users.username',
               'users.avatar',
+              'users.passwordChanged',
               'users.manager',
               'users.locale',
               'users.levels_exp',
@@ -109,59 +111,75 @@ const app = new Elysia()
       user.level = calculateLevelFromXP(tokenDB.levels_exp);
       user.xp = tokenDB.levels_exp - calculatestartXPFromLevel(user.level);
       user.requiredXP = calculateXPForNextLevel(user.level);
-      user.children = await db.selectFrom("family_relations")
-      .innerJoin("persons", "family_relations.target", "persons.personId")
-      .select([
-        sql`persons.personId`.as('childId'),
-        "persons.firstName",
-        "persons.lastName",
-        "persons.gender"
+      user.lastLogins7Days = await db
+  .selectFrom('login_history')
+  .select(sql`COUNT(*)`.as('count'))
+  .where('userId', '=', tokenDB.userId)
+  .where('created', '>=', sql`NOW() - INTERVAL 7 DAY`)
+  .where('login_history.success', '=', true)
+  .executeTakeFirst()
+  .then(r => Number(r?.count ?? 0));
+      user.failedLogins7Days = await db
+  .selectFrom('login_history')
+  .select(sql`COUNT(*)`.as('count'))
+  .where('userId', '=', tokenDB.userId)
+  .where('created', '>=', sql`NOW() - INTERVAL 7 DAY`)
+  .where('login_history.success', '=', false)
+  .executeTakeFirst()
+  .then(r => Number(r?.count ?? 0));
+    user.children = await db.selectFrom("family_relations")
+    .innerJoin("persons", "family_relations.target", "persons.personId")
+    .select([
+      sql`persons.personId`.as('childId'),
+      "persons.firstName",
+      "persons.lastName",
+      "persons.gender"
+    ])
+    .where("family_relations.source", "=", tokenDB.personId)
+    .execute();
+
+    user.emails = await db.selectFrom("emails")
+    .select([
+      'emails.email',
+      'emails.is_verified',
+      'emails.description'
+    ])
+    .where('emails.personId', '=', tokenDB.personId)
+    .execute();
+
+    user.phones = await db.selectFrom("phone_numbers")
+    .select([
+      'phone_numbers.code',
+      'phone_numbers.number',
+      'phone_numbers.description',
+      'phone_numbers.is_verified'
+    ])
+    .where('phone_numbers.personId', '=', tokenDB.personId)
+    .execute()
+
+    user.classes = await db.selectFrom("classes")
+    .leftJoin('school_years as sy', 'sy.syId', 'classes.yearId')
+    .leftJoin('scopes', 'classes.scopeId', 'scopes.scopeId')
+    .leftJoin('students', 'students.class', 'classes.classId')
+    .select([
+      'classes.classId',
+      'classes.scopeId',
+      sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, sy.start, CURDATE()) + 1, classes.suffix)`.as('className'),
+      sql`COUNT(students.class)`.as('students')
+    ])
+    .where((eb) =>
+      eb.or([
+        eb('classes.teacher', '=', tokenDB.personId),
+        eb('students.personId', '=', tokenDB.personId)
       ])
-      .where("family_relations.source", "=", tokenDB.personId)
-      .execute();
+    )
+    .where(sql`DATE_ADD(sy.start, INTERVAL scopes.years YEAR)`, '>=', sql`CURDATE()`)
+    .groupBy('classes.classId')
+    .execute()
 
-      user.emails = await db.selectFrom("emails")
-      .select([
-        'emails.email',
-        'emails.is_verified',
-        'emails.description'
-      ])
-      .where('emails.personId', '=', tokenDB.personId)
-      .execute();
+    delete user.levels_exp;
 
-      user.phones = await db.selectFrom("phone_numbers")
-      .select([
-        'phone_numbers.code',
-        'phone_numbers.number',
-        'phone_numbers.description',
-        'phone_numbers.is_verified'
-      ])
-      .where('phone_numbers.personId', '=', tokenDB.personId)
-      .execute()
-
-      user.classes = await db.selectFrom("classes")
-      .leftJoin('school_years as sy', 'sy.syId', 'classes.yearId')
-      .leftJoin('scopes', 'classes.scopeId', 'scopes.scopeId')
-      .leftJoin('students', 'students.class', 'classes.classId')
-      .select([
-        'classes.classId',
-        'classes.scopeId',
-        sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, sy.start, CURDATE()) + 1, classes.suffix)`.as('className'),
-        sql`COUNT(students.class)`.as('students')
-      ])
-      .where((eb) =>
-        eb.or([
-          eb('classes.teacher', '=', tokenDB.personId),
-          eb('students.personId', '=', tokenDB.personId)
-        ])
-      )
-      .where(sql`DATE_ADD(sy.start, INTERVAL scopes.years YEAR)`, '>=', sql`CURDATE()`)
-      .groupBy('classes.classId')
-      .execute()
-
-      delete user.levels_exp;
-
-      return Response.json(user);
+    return Response.json(user);
   })
 
 export default app;
