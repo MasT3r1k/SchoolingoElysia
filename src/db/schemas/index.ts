@@ -27,7 +27,7 @@ import { fleetvehicles_vignette_cacheTable } from './fleetvehicles_vignette_cach
 import { gradesTable } from './grades'
 import { grades_columnsTable } from './grades_columns'
 import { groupsTable } from './groups'
-import { homeworksTable } from './homeworks'
+import { homeworkTable } from './homework'
 import { insurance_companiesTable } from './insurance_companies'
 import { library_booksTable } from './library_books'
 import { library_book_authorsTable } from './library_book_authors'
@@ -111,7 +111,7 @@ export interface Database {
   grades: gradesTable
   grades_columns: grades_columnsTable
   groups: groupsTable
-  homeworks: homeworksTable
+  homework: homeworkTable
   insurance_companies: insurance_companiesTable
   library_books: library_booksTable
   library_book_authors: library_book_authorsTable

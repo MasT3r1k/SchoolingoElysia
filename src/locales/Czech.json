@@ -237,8 +237,10 @@
         "login_history": "Historie přihlášení",
         "login_history_description": "Sledujte přihlášení na Váš účet včetně zobrazení informací ohledně příhlášení jako je systém, prohlížeč, ip adresa, ...",
         "login_history_action": "Zobrazit historii",
+        "show_logged_devices": "Zobrazit přihlášené zařízení",
         "logins_for_7days": "Přihlášení za posledních 7 dní",
         "failed_logins_for_7days": "Nepovedené přihlášení za posledních 7 dní",
+        "unknown_login": "Neznámé přihlášení",
         "notifications": "Notifikace",
         "connections": "Propojení s jinými účty",
         "gdpr": "GDPR",
@@ -332,6 +334,31 @@
                 "grade_level": "Ročník třídy"
             }
         }
+    },
+    "classbook": {
+        "class_service": "Pořádková služba",
+        "write_lesson": "Zápis hodiny",
+        "absence": "Docházka",
+        "notes": "Poznámky",
+
+        "lesson_number": "Číslo hodiny",
+        "placeholder_number": "Pro vložení čísla hodiny klikněte na šipku napravo od tohoto pole",
+        "lesson_topic": "Téma hodiny",
+        "placeholder_topic": "Napište téma hodiny",
+        "lesson_note": "Poznámka k hodině",
+        "placeholder_note": "Napište poznámku k hodině (nepovinné)",
+        "lesson_teacher_note": "Učitelská poznámka k hodině",
+        "placeholder_teacher_note": "Napište učitelskou poznámku k hodině (nepovinné)",
+        "lesson_teacher_note_note": "Tato poznámka není zobrazena studentům.",
+        "save_lesson": "Zapsat hodinu",
+        "last_lesson": "Minulá hodina",
+        "total_students": "Celkem studentů",
+        "present_students": "Přítomní",
+        "missing_students": "Chybějící",
+        "copy_from_previous_lesson": "Kopírovat z přechozí hodiny",
+        "add_homework": "Přidat domácí úkol",
+        "homework_timeline": "Zadáno: %start% | Odevzdat do: %end% | Odevzdalo: %submitted%/%total%",
+        "add_note": "Přidat poznámku"
     },
     "login_history": {
         "table": {

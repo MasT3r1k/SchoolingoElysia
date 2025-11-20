@@ -2,7 +2,7 @@ import { Generated } from "kysely";
 
 export interface ClassbookTable {
   cbId: Generated<number>;
-  date: string; // date string "YYYY-MM-DD"
+  date: string;
   dayHour: number;
   subject: number | null;
   teacher: number | null;
