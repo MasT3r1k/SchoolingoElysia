@@ -351,6 +351,7 @@
         "placeholder_teacher_note": "Napište učitelskou poznámku k hodině (nepovinné)",
         "lesson_teacher_note_note": "Tato poznámka není zobrazena studentům.",
         "save_lesson": "Zapsat hodinu",
+        "save_absence": "Zapsat absenci",
         "last_lesson": "Minulá hodina",
         "total_students": "Celkem studentů",
         "present_students": "Přítomní",
@@ -358,7 +359,37 @@
         "copy_from_previous_lesson": "Kopírovat z přechozí hodiny",
         "add_homework": "Přidat domácí úkol",
         "homework_timeline": "Zadáno: %start% | Odevzdat do: %end% | Odevzdalo: %submitted%/%total%",
-        "add_note": "Přidat poznámku"
+        "add_note": "Přidat poznámku",
+        "add_absence": {
+            "title": "Podrobnosti absence žáka",
+            "minutes": "Počet minut",
+            "type": "Druh absence",
+            "reason": "Odůvodnění",
+            "unknown_error": "Nastala neznámá chyba",
+            "no_perm": "Nemáte oprávnění na úpravu této absence",
+            "no_delete_perm": "Nemáte oprávnění k odebrání této absence",
+            "minutes_cant_be_smaller_than_1": "Počet minut nemůže být menší než 1",
+            "minutes_cant_be_grater_than_lesson": "Počet minut nemůže být větší než délka hodiny",
+            "no_classbook_found": "Záznam v třídní knize nebyl nalezen",
+            "is_same": "Nebyla nalezena žádná změna",
+            "student_not_found": "Žák nebyl nalezen",
+            "already_set": "Tato absence je již nastavená",
+            "descriptions": {
+                "late_arrival": "Příchod v %time%",
+                "early_departure": "Odchod v %time%"
+            },
+            "reasons": {
+                "illness": "Nemoc",
+                "family": "Rodinné důvody",
+                "doctor": "Návštěva lékaře",
+                "oversleep": "Zaspal",
+                "connection": "Dopravní spojení",
+                "school_event": "Školní akce",
+                "hospitalization": "Hospitalizace",
+                "other": "Jiné (viz poznámka)",
+                "unknown": "Vyberte odůvodnění nepřítomnosti"
+            }
+        }
     },
     "login_history": {
         "table": {

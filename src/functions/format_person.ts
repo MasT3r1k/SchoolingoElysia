@@ -1,11 +1,5 @@
 import { db } from "../../database";
-
-export interface degree {
-    degree: string;
-    shortcut: string;
-    isBefore: boolean;
-    weight: number;
-}
+import { degree } from "./format_person_by_id";
 
 export async function format_person(name: string, degree_ids: (string | number)[] = []): Promise<string> {
     // Převod všech ID na number

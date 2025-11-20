@@ -4,6 +4,9 @@ import { sql } from 'kysely';
 import { rateLimit } from 'elysia-rate-limit';
 import { app } from '../../../../../index';
 import moment from 'moment';
+import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { get_classbook_lesson_number } from '../../../../functions/get_classbook_lesson_number';
+import { get_total_lessons } from '../../../../functions/get_total_lessons';
 
 const elysiaApp = new Elysia()
   .use(rateLimit({
@@ -43,8 +46,8 @@ const elysiaApp = new Elysia()
     if (!perm) return { error: 'no_permission' };
 
     // === VALIDACE QUERY ===
-    const { date, hour, groupId } = query;
-    if (!date || !hour || !groupId) return { error: 'bad_query' };
+    const { date, hour, groupId, subjectId } = query;
+    if (date == undefined || hour == undefined || groupId == undefined || subjectId == undefined) return { error: 'bad_query' };
 
     // === NAČTENÍ NEBO VYTVOŘENÍ ZÁPISU ===
     let classbook = await db.selectFrom('classbook')
@@ -66,129 +69,131 @@ const elysiaApp = new Elysia()
       .where('classbook.groupId', '=', groupId)
       .executeTakeFirst();
 
-      console.log(classbook)
-
-    // === AUTOMATICKÉ VYTVOŘENÍ ZÁPISU ===
     if (!classbook) {
-      const inserted = await db
-        .insertInto('classbook')
-        .values({
-          date: moment(date).format('YYYY-MM-DD'),
-          dayHour: hour,
-          groupId,
-          subject: null,
-          topic: '',
-          note: '',
-          internalNote: '',
-          room: null
-        })
-        .returning([
-          'cbId as classbookId',
-          'date',
-          'dayHour',
-          'groupId',
-          'topic',
-          'note',
-          'internalNote',
-          'room'
-        ])
-        .executeTakeFirst();
-
-      classbook = { ...inserted, classbookId: Number(inserted!.classbookId), subjectId: null, subjectName: null };
+      await db.insertInto('classbook')
+      .values({
+        date: moment(date).format('YYYY-MM-DD'),
+        dayHour: hour,
+        groupId,
+        subject: subjectId
+      })
+      .execute();
     }
 
-    if (!classbook) return;
-
-    // === Služba třídy ===
-    const classService = await db.selectFrom('class_service')
-      .innerJoin('students', 'students.personId', 'class_service.student')
-      .select([
-        'class_service.csId',
-        'class_service.student',
-        'class_service.start',
-        'class_service.end',
-        'students.class'
-      ])
-      .where('students.class', '=', groupId)
-      .where('class_service.start', '<=', date)
-      .where('class_service.end', '>=', date)
-      .execute();
-
-    // === SEZNAM STUDENTŮ ===
-    const students = await db.selectFrom('students')
-      .leftJoin('student_groups', 'student_groups.student', 'students.personId')
-      .select([
-        'students.personId',
-        'students.class'
-      ])
-      .where('student_groups.groupId', '=', groupId)
-      .orderBy('students.personId')
-      .execute();
-
-    // === ABSENCE ===
-    const absences = await db.selectFrom('absence')
-      .select([
-        'absence.student',
-        'absence.type',
-        'absence.minutes',
-        'absence.reason',
-        'absence.note'
-      ])
-      .where('absence.lesson', '=', classbook.classbookId)
-      .execute();
-
-    // === MINULÁ HODINA ===
-    const previousLesson = await db.selectFrom('classbook')
+    classbook = await db.selectFrom('classbook')
       .leftJoin('subjects', 'subjects.subjectId', 'classbook.subject')
       .select([
         'classbook.cbId as classbookId',
         'classbook.date',
         'classbook.dayHour',
-        'classbook.topic',
+        'classbook.groupId',
+        'classbook.internalNote',
         'classbook.note',
-        'subjects.label as subjectName'
-      ])
-      .where('classbook.groupId', '=', groupId)
-      .where('classbook.date', '<=', moment(date).format('YYYY-MM-DD'))
-      .where(sql`(classbook.date < ${date} OR classbook.dayHour < ${hour})`)
-      .orderBy('classbook.date', 'desc')
-      .orderBy('classbook.dayHour', 'desc')
-      .limit(1)
-      .executeTakeFirst();
-
-    // === VŠECHNY HODINY DNE ===
-    const fullDay = await db.selectFrom('classbook')
-      .leftJoin('subjects', 'subjects.subjectId', 'classbook.subject')
-      .select([
-        'classbook.cbId',
-        'classbook.dayHour',
+        'classbook.topic',
+        'subjects.subjectId',
         'subjects.label as subjectName',
-        'classbook.topic'
+        'classbook.room'
       ])
       .where('classbook.date', '=', moment(date).format('YYYY-MM-DD'))
+      .where('classbook.dayHour', '=', hour)
       .where('classbook.groupId', '=', groupId)
-      .orderBy('classbook.dayHour')
+      .executeTakeFirst();
+
+    if (!classbook) return { error: 'invalid_classbook' };
+
+    // === Získání seznamu studentů ===
+    const studentsDB = await db.selectFrom('student_groups')
+      .leftJoin('persons', 'persons.personId', 'student_groups.student')
+      .select([
+        'student_groups.student',
+        'persons.firstName',
+        'persons.lastName'
+      ])
+      .where('student_groups.groupId', '=', groupId)
       .execute();
 
-    // === AUTO-POZNÁMKA UČITELE – doplňuješ později ===
-    const autoTeacherNote = `Auto-generated: ${students.length} studentů, absence: ${absences.length}`;
+    const studentAbsence = await db.selectFrom('absence')
+    .leftJoin('classbook', 'classbook.cbId', 'absence.lesson')
+    .select([
+      'absence.student',
+      'classbook.dayHour',
+      'absence.type',
+      'absence.minutes',
+      'absence.reason',
+      'absence.note'
+    ])
+    .where('classbook.date', '=', classbook.date)
+    .where('absence.student', 'in', studentsDB.map((student) => student.student))
+    .execute();
 
-    return {
-      classbook,
-      subject: {
-        id: classbook.subjectId,
-        name: classbook.subjectName
-      },
-      classService,
-      students,
-      absences,
-      previousLesson,
-      fullDay,
-      autoTeacherNote
-    };
+    const studentTotalAbsence = await db
+      .selectFrom('absence')
+      .leftJoin('classbook', 'classbook.cbId', 'absence.lesson')
+      .select([
+        'absence.student',
+        db.fn.count('classbook.dayHour').as('total_hours')
+      ])
+      .where('classbook.groupId', '=', classbook.groupId)
+      .where('classbook.subject', '=', classbook.subjectId)
+      .where('absence.student', 'in', studentsDB.map((student) => student.student))
+      .groupBy('absence.student')
+      .execute();
+
+    const studentFullNames = await format_people_by_ids(studentsDB.map((s) => s.student));
+
+    const students = studentsDB
+    .map((student, index) => {
+      const absForStudent = studentAbsence.filter(a => a.student === student.student);
+
+      // Převést na array s indexem dle dayHour
+      const absenceIndexed: any[] = [];
+
+      absForStudent.forEach((abs: any) => {
+        absenceIndexed[abs.dayHour] = abs;  // index = denní hodina
+      });
+
+      return {
+        student_id: student.student,
+        first_name: student.firstName || '',
+        last_name: student.lastName || '',
+        full_name: studentFullNames[index] || '',
+        total_absence: studentTotalAbsence.find(s => s.student == student.student)?.total_hours || 0,
+        absence: absenceIndexed
+      };
+    })
+    .sort((a, b) => {
+      const ln = a.last_name.localeCompare(b.last_name, 'cs');
+      if (ln !== 0) return ln;
+      return a.first_name.localeCompare(b.first_name, 'cs');
+    });
+
+    // === Získání školního roku ===
+    const school_year = await db.selectFrom('school_years')
+    .select([
+      'school_years.start',
+      'school_years.midterm',
+      'school_years.end'
+    ])
+    .where('start', '<=', classbook.date as Date)
+    .where('end', '>=', classbook.date as Date)
+    .executeTakeFirst();
+
+    if (!school_year) return { error: 'invalid_year' };
+
+    // === Automatický výpočet čísla hodiny ===
+    const lessonNumber = await get_classbook_lesson_number(classbook.classbookId);
+    let lessonTotal = 0;
+    if (moment(classbook.date).isSameOrBefore(school_year.midterm)) {
+      lessonTotal = await get_total_lessons(moment(school_year.start), moment(school_year.midterm), classbook.groupId, classbook.subjectId!);
+    } else {
+      lessonTotal = await get_total_lessons(moment(school_year.midterm), moment(school_year.end), classbook.groupId, classbook.subjectId!);
+    }
+
+    return { classbook, students, lessonNumber, lessonTotal }
   }, {
     query: t.Object({
       groupId: t.Optional(t.Number()),
+      subjectId: t.Optional(t.Number()),
       date: t.Optional(t.Date()),
       hour: t.Optional(t.Number())
     })
