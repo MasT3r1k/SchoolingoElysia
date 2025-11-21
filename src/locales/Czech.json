@@ -357,14 +357,20 @@
         "present_students": "Přítomní",
         "missing_students": "Chybějící",
         "copy_from_previous_lesson": "Kopírovat z přechozí hodiny",
-        "add_homework": "Přidat domácí úkol",
+        "add_homework_btn": "Přidat domácí úkol",
         "homework_timeline": "Zadáno: %start% | Odevzdat do: %end% | Odevzdalo: %submitted%/%total%",
         "add_note": "Přidat poznámku",
+        "last_lesson_not_written": "Minulá hodina ještě není zapsána.",
+        "add_homework": {
+            "title": "Nový domácí úkol"
+
+        },
         "add_absence": {
             "title": "Podrobnosti absence žáka",
             "minutes": "Počet minut",
             "type": "Druh absence",
             "reason": "Odůvodnění",
+            "note": "Poznámka k absenci",
             "unknown_error": "Nastala neznámá chyba",
             "no_perm": "Nemáte oprávnění na úpravu této absence",
             "no_delete_perm": "Nemáte oprávnění k odebrání této absence",
