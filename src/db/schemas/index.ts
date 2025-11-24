@@ -80,6 +80,7 @@ import { marking_scalesTable } from './marking_scales'
 import { marking_scales_groupsTable } from './marking_scales_groups'
 import { scopes_subjectsTable } from './scopes_subjects'
 import { ClassbookNotesTable } from './classbook_notes'
+import { documentsTable } from './documents'
 
 export interface Database {
   absence: AbsenceTable
@@ -96,6 +97,7 @@ export interface Database {
   classes: ClassesTable
   class_service: Class_serviceTable
   countries: CountriesTable
+  documents: documentsTable
   degrees: DegreesTable
   districts: DistrictsTable
   emails: emailsTable

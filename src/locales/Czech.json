@@ -154,13 +154,16 @@
 
     "system": {
         "section_main": "Hlavní nabídka",
+        "system_settings": "Nastavení systému",
         "school_settings": "Nastavení školy",
         "list_scopes": "Seznam oborů",
         "list_subjects": "Seznam předmětů",
         "section_modules": "Nastavení modulů",
+
         "version": "Verze systému",
         "system_is_up_to_date": "Systém je aktuální!",
         "system_has_update": "Systém má dostupnou novou aktualizaci!",
+        "system_update_loading": "Načítám informace o nejnovější verzi.",
         "system_error_loading_version": "Nastala nečekaná chyba při načítání verze systému.",
         "system_has_valid_license": "Škola má platnou licenci systému!",
         "activated": "Aktivováno",
@@ -427,6 +430,16 @@
                 "grade_level": "Ročník třídy"
             }
         }
+    },
+    "documents": {
+        "folders": "Složky",
+        "create_folder": "Nová složka",
+        "name_folder": "Název složky",
+        "new_folder": "Vytvořit složku",
+        "all_files": "Všechny soubory",
+        "search_files": "Hledat soubory..",
+        "upload": "Nahrát",
+        "upload_files": "Nahrát soubory"
     },
     "classbook": {
         "class_service": "Pořádková služba",
