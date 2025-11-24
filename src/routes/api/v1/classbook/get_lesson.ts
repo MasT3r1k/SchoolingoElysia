@@ -46,30 +46,37 @@ const elysiaApp = new Elysia()
     if (!perm) return { error: 'no_permission' };
 
     // === VALIDACE QUERY ===
-    const { date, hour, groupId, subjectId } = query;
-    if (date == undefined || hour == undefined || groupId == undefined || subjectId == undefined) return { error: 'bad_query' };
+    const { date, hour, groupId } = query;
+    if (date == undefined || hour == undefined || groupId == undefined) return { error: 'bad_query' };
+
+    // === NAČÍST PŘEDMĚT ===
+    const subject = await db.selectFrom('timetable')
+    .select([
+      'timetable.subject'
+    ])
+    .where('timetable.day', '=', moment(date).isoWeekday() - 1)
+    .where('timetable.hour', '=', hour + 1)
+    .where('timetable.groupId', '=', groupId)
+    .executeTakeFirst();
+
+    if (!subject) {
+      return { error: 'invalid_subject' };
+    }
+
+    const subjectId = subject.subject;
 
     // === NAČTENÍ NEBO VYTVOŘENÍ ZÁPISU ===
-    let classbook = await db.selectFrom('classbook')
+    const isExistClassbook = await db.selectFrom('classbook')
       .leftJoin('subjects', 'subjects.subjectId', 'classbook.subject')
       .select([
-        'classbook.cbId as classbookId',
-        'classbook.date',
-        'classbook.dayHour',
-        'classbook.groupId',
-        'classbook.internalNote',
-        'classbook.note',
-        'classbook.topic',
-        'subjects.subjectId',
-        'subjects.label as subjectName',
-        'classbook.room'
+        'classbook.cbId as classbookId'
       ])
       .where('classbook.date', '=', moment(date).format('YYYY-MM-DD'))
       .where('classbook.dayHour', '=', hour)
       .where('classbook.groupId', '=', groupId)
       .executeTakeFirst();
 
-    if (!classbook) {
+    if (!isExistClassbook) {
       await db.insertInto('classbook')
       .values({
         date: moment(date).format('YYYY-MM-DD'),
@@ -80,8 +87,12 @@ const elysiaApp = new Elysia()
       .execute();
     }
 
-    classbook = await db.selectFrom('classbook')
+    const classbook = await db.selectFrom('classbook')
       .leftJoin('subjects', 'subjects.subjectId', 'classbook.subject')
+      .leftJoin('groups', 'groups.groupId', 'classbook.groupId')
+      .leftJoin('classes', 'groups.class', 'classes.classId')
+      .leftJoin('school_years as syClass', 'syClass.syId', 'classes.yearId')
+
       .select([
         'classbook.cbId as classbookId',
         'classbook.date',
@@ -92,7 +103,8 @@ const elysiaApp = new Elysia()
         'classbook.topic',
         'subjects.subjectId',
         'subjects.label as subjectName',
-        'classbook.room'
+        'classbook.room',
+        sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, syClass.start, CURDATE()) + 1, classes.suffix)`.as('className')
       ])
       .where('classbook.date', '=', moment(date).format('YYYY-MM-DD'))
       .where('classbook.dayHour', '=', hour)
@@ -189,11 +201,23 @@ const elysiaApp = new Elysia()
       lessonTotal = await get_total_lessons(moment(school_year.midterm), moment(school_year.end), classbook.groupId, classbook.subjectId!);
     }
 
-    return { classbook, students, lessonNumber, lessonTotal }
+    // === Služba třídy ===
+    const class_serviceDB = await db.selectFrom('class_service')
+    .leftJoin('student_groups', 'student_groups.student', 'class_service.student')
+    .select([
+      'class_service.student'
+    ])
+    .where('class_service.start', '<=', date)
+    .where('class_service.end', '>=', date)
+    .where('student_groups.groupId', '=', groupId)
+    .execute();
+
+    const classService = await format_people_by_ids(class_serviceDB.map((student) => (student.student)));
+
+    return { classbook, students, lessonNumber, lessonTotal, classService }
   }, {
     query: t.Object({
       groupId: t.Optional(t.Number()),
-      subjectId: t.Optional(t.Number()),
       date: t.Optional(t.Date()),
       hour: t.Optional(t.Number())
     })

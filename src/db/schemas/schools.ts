@@ -8,7 +8,8 @@ export interface schoolsTable {
   code: string
   owner: number
   apiToken: string
-  license: string
+  license_type: 'FREE' | 'BASIC' | 'PRO' | 'DEV';
+  license_until: Generated<Date | null>
   created: Generated<Date>
   startHour: number
   startMinute: number

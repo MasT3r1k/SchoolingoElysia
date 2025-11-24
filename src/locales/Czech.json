@@ -131,6 +131,10 @@
     "no": "Ne",
     "subject": "Předmět",
     "subjects": "Předměty",
+    "subject_translations": {
+        "maths": "Matematika",
+        "history": "Dějepis"
+    },
     "selected": "Vybráno",
     "loading": "Načítání",
     "cancel": "Zrušit",
@@ -141,7 +145,51 @@
     "actions": "Akce",
     "unknown": "Neznámé",
     "system": {
-        "version": "Verze systému"
+        "section_main": "Hlavní nabídka",
+        "school_settings": "Nastavení školy",
+        "list_scopes": "Seznam oborů",
+        "list_subjects": "Seznam předmětů",
+        "section_modules": "Nastavení modulů",
+        "version": "Verze systému",
+        "system_is_up_to_date": "Systém je aktuální!",
+        "system_has_update": "Systém má dostupnou novou aktualizaci!",
+        "system_error_loading_version": "Nastala nečekaná chyba při načítání verze systému.",
+        "system_has_valid_license": "Škola má platnou licenci systému!",
+        "activated": "Aktivováno",
+        "deactivated": "Deaktivováno",
+
+        "school_name": "Název školy",
+        "school_short_name": "Zkratka školy",
+        "school_code": "Kód školy",
+        "school_district": "Okres školy",
+        "school_start": "Počátek vyučování",
+        "school_lesson_length": "Délka vyučovací hodiny",
+        "school_break_length": "Výchozí délka přestavky",
+        "school_fastlogin": "Přihlášování pomocí QR kódu",
+        "school_reset_password_with_email": "Resetování hesla pomocí emailové adresy",
+        "warn_above_absence": "Varovat při absenci vyšší než (v %)",
+        "save_school_info": "Uložit nastavení školy",
+
+        "scope_details": "Máte přidaných %scopes% oborů na této škole.",
+        "table_subjects": "Tabulka předmětů",
+        "add_scope": "Nový",
+        "search_scopes": "Hledat podle názvu, zkratky nebo kódu…",
+        "scope_years": "%years% roky",
+        "scope_name": "Název oboru",
+        "scope_shortcut": "Zkratka oboru",
+        "scope_code": "Kód oboru",
+        "scope_number_years_study": "Počet let studia",
+        "scope_capacity_students_in_one_class": "Kapacita studentů v 1 třídě",
+        "scope_count_classes_in_year": "Počet tříd za 1 rok",
+
+        "add_subject": "Nový",
+        "subject_details": "Máte přidaných %subjects% předmětů na této škole.",
+        "search_subjects": "Hledat podle názvu",
+        "subject_name": "Název předmětu",
+        "subject_shortcut": "Zkratka předmětu",
+        "subject_traslate": "Překlad pro předmět",
+        "subject_traslate_note": "Přidejte podporu pro více jazyků, automaticky se použije překlad předmětu, pokud se nenajde, bude použitý klasický název předmětu.",
+        "add_teacher": "Přidat učitele"
     },
     "calendar": {
         "title": "%month%, %year%",
@@ -163,7 +211,10 @@
         "teacher": "Učitel",
         "student": "Žák",
         "parent": "Rodič",
-        "classteacher": "Třídní učitel"
+        "classteacher": "Třídní učitel",
+        "system": "Systém",
+        "unknown": "Neznámé",
+        "undefined": "Neznámé"
     },
     "person": {
         "first_name": "Křestní jméno",
@@ -222,7 +273,7 @@
             "manage": "Správa praxí",
             "settings": "Nastavení modulu praxí"
         },
-        "tools": {
+        "system": {
             "main": "Správa systému",
             "settings": "Nastavení systému",
             "manage_users": "Správa uživatelů",
@@ -252,7 +303,20 @@
         },
         "app_authenticator": {
             "description": "Přidání dvoufázového ověřování je dobrá cesta k přidání extra vrstvě k zabezpečení Vašeho účtu, aby jsme zajistili, že pouze Vy se můžeme přihlásit."
+        },
+        "generator_password": {
+            "title": "Generátor hesel",
+            "description": "Tento nástroj ti automaticky vygeneruje silné a náhodné heslo splňující všechny bezpečnostní požadavky. Můžeš si poté heslo jednoduše zkopírovat a vložit do formuláře.",
+            "generated_password": "Navrhované heslo",
+            "generated_password_placeholder": "Klikněte na 'Navrhnout heslo' pro zobrazení hesla.",
+            "generate_password": "Navrhnout heslo",
+            "put_in_input": "Vložit do inputu hesla"
         }
+    },
+    "devices": {
+        "current_device": "Aktuální připojení",
+        "active_now": "Právě aktivní",
+        "logout_all_other": "Odhlásit všechny"
     },
     "buttons": {
         "add_email": "Přidat email",
@@ -305,6 +369,9 @@
             "export": "Export",
             "import": "Import",
             "print": "Vytisknout",
+            "stats": "Statistika",
+            "select_class": "Vybrat třídu",
+            "class": "Třída",
             "week_hours": "Hodin v týdnu",
             "occupied_hours": "Obsazené pole",
             "substitution_week": "Suplování v týdnu",
@@ -359,11 +426,33 @@
         "copy_from_previous_lesson": "Kopírovat z přechozí hodiny",
         "add_homework_btn": "Přidat domácí úkol",
         "homework_timeline": "Zadáno: %start% | Odevzdat do: %end% | Odevzdalo: %submitted%/%total%",
-        "add_note": "Přidat poznámku",
+        "add_note_btn": "Přidat poznámku",
         "last_lesson_not_written": "Minulá hodina ještě není zapsána.",
         "add_homework": {
-            "title": "Nový domácí úkol"
-
+            "title": "Nový domácí úkol",
+            "homework_title": "Titulek úkolu",
+            "assignment": "Text úkolu",
+            "note": "Poznámka pro učitele",
+            "assign_at": "Zadáno",
+            "submit_at": "Odevzdat",
+            "type": "Druh úkolu",
+            "types": {
+                "info": "Informativní",
+                "submit": "S evidencí vypracování"
+            },
+            "types_submit": {
+                "at_school": "Odevzdat ve škole",
+                "electrically": "Elektrické odevzdání"
+            },
+            "mark_as_finished": "Označit domácí úkol jako uzavřený",
+            "save_homework": "Uložit domácí úkol"
+        },
+        "add_note": {
+            "title": "Nová poznámka",
+            "no_title": "Bez titulky",
+            "note_title": "Titulek poznámky",
+            "note": "Poznámka",
+            "save_note": "Uložit poznámku"
         },
         "add_absence": {
             "title": "Podrobnosti absence žáka",
@@ -690,10 +779,14 @@
         "message": "Zpráva",
         "messages": "zprávy",
         "message_placeholder": "Zde zadejte vzkaz Vaší zprávy",
+        "send_description": "Posílejte zprávy mezi uživateli systému Schoolingo – studenty, učiteli, rodiči i dalšími členy školy – jednoduše a na jednom místě.",
+        "select_message": "Žádná zpráva není vybrána",
+        "select_message_desc": "Zvolte některou z příchozích zpráv vlevo a zobrazí se zde její obsah.",
+        "no_messages": "Žádné zprávy nebyly nalezeny.",
         "topic": "Titulek",
         "receiver": "Příjemce zprávy",
         "student": "Žák",
-        "search": "Vyhledat podle autora",
+        "search_messages": "Vyhledat podle autora",
         "findreceiver": "Vyhledejte jméno přijemce",
         "findstudent": "Vyhledejte jméno žáka",
         "no_selected": "Nevybrali jste žádného příjemce",

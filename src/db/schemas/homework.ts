@@ -7,6 +7,8 @@ export interface homeworkTable {
   teacherId: number;
   assigned_at: Generated<Date>;
   due_date: Date | null;
+  headline: string | null;
   homework: string;
+  note: string | null;
   type: number;
 }

@@ -1,4 +1,3 @@
-import swagger from '@elysiajs/swagger';
 import { Elysia } from 'elysia';
 import { ip } from 'elysia-ip';
 import { elysiaXSS } from 'elysia-xss';
@@ -11,13 +10,37 @@ import { errorHandler } from './src/middleware/error.middleware';
 import { rateLimit } from './src/middleware/rate-limit.middleware';
 import { logger, requestLogger } from './src/utils/logger';
 import locales from './src/infrastructure/locale';
+import { exec, execSync } from 'child_process';
+import { gitService, version } from './version';
 
-const version = (version: number, build: number) => new Elysia()
-  .get('/version', () => ({
-    version: version,
-    build: build,
-    timestamp: new Date().toISOString()
-  }));
+function getLocalCommit(): string {
+    try {
+        return execSync("git rev-parse HEAD").toString().trim();
+    } catch (err) {
+        console.error("Failed to get local commit:", err);
+        return "unknown";
+    }
+}
+
+function fetchRemoteCommit(): Promise<string> {
+    return new Promise((resolve) => {
+        exec("git fetch origin main --quiet", (err) => {
+            if (err) {
+                console.error("Failed to fetch remote:", err);
+                return resolve("unknown");
+            }
+
+            exec("git rev-parse origin/main", (err2, stdout) => {
+                if (err2) {
+                    console.error("Failed to get remote commit:", err2);
+                    return resolve("unknown");
+                }
+
+                resolve(stdout.toString().trim());
+            });
+        });
+    });
+}
 
 const ws = new Elysia()
   .ws('/ws', {
@@ -33,7 +56,7 @@ export const app = new Elysia({
 })
   .use(ip())
   .use(cors({
-    origin: ['http://localhost:4200'],
+    origin: ['http://localhost:4200', 'http://192.168.1.102:4200'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -42,7 +65,7 @@ export const app = new Elysia({
   .use(errorHandler)
   .use(requestLogger)
   .use(rateLimit)
-  .use(version(1.1, 15))
+  .use(version)
   .use(ws)
   .use(locales);
 
@@ -102,27 +125,6 @@ async function loadFolder(folder: string = modulePath) {
     logger.log('Database tables initialized successfully');
 
     await loadFolder(modulePath);
-    
-    if (config.NODE_ENV === 'development') {
-      const docs = new Elysia()
-        .use(swagger({
-          path: '/swagger',
-          documentation: {
-            info: {
-              title: 'Schoolingo API',
-              version: '1.0.0',
-              description: 'API documentation for Schoolingo application'
-            },
-            tags: [
-              { name: 'auth', description: 'Authentication endpoints' },
-              { name: 'users', description: 'User management endpoints' },
-              { name: 'schools', description: 'School management endpoints' }
-            ]
-          }
-        }));
-      await app.use(docs);
-    }
-
     const port = parseInt(config.PORT);
     await app.listen(port);
     logger.log(`[🦊 Elysia]: Running at http://${app.server?.hostname}:${port}`);

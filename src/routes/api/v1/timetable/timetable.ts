@@ -104,6 +104,7 @@ const elysiaApp = new Elysia()
                       'timetable.hour',
                       'timetable.type',
                       sql`building_rooms.name`.as('room'),
+                      'subjects.subjectId',
                       sql`subjects.label`.as('subjectName'),
                       sql`subjects.shortcut`.as('subjectShortcut'),
                       sql`persons.lastName`.as('lastName'),
@@ -159,7 +160,9 @@ const elysiaApp = new Elysia()
                       sql`(timetable.day + 1) % 7`.as('day'),
                       'timetable.hour',
                       'timetable.type',
+                      'timetable.groupId',
                       sql`building_rooms.name`.as('room'),
+                      'subjects.subjectId',
                       sql`subjects.label`.as('subjectName'),
                       sql`subjects.shortcut`.as('subjectShortcut'),
                       sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, syClass.start, CURDATE()) + 1, classes.suffix)`.as('className')
@@ -186,6 +189,7 @@ const elysiaApp = new Elysia()
                   'substitution.start_hour',
                   'substitution.end_date',
                   'substitution.end_hour',
+                  'subjects.subjectId',
                   sql`subjects.label`.as('subjectName'),
                   sql`subjects.shortcut`.as('subjectShortcut'),
                   sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
@@ -220,6 +224,7 @@ const elysiaApp = new Elysia()
                       'timetable.hour',
                       'timetable.type',
                       sql`building_rooms.name`.as('room'),
+                      'subjects.subjectId',
                       sql`subjects.label`.as('subjectName'),
                       sql`subjects.shortcut`.as('subjectShortcut'),
                       sql`persons.lastName`.as('lastName'),
@@ -241,6 +246,7 @@ const elysiaApp = new Elysia()
                   'substitution.start_hour',
                   'substitution.end_date',
                   'substitution.end_hour',
+                  'subjects.subjectId',
                   sql`subjects.label`.as('subjectName'),
                   sql`subjects.shortcut`.as('subjectShortcut'),
                   fullName.as('teacher')

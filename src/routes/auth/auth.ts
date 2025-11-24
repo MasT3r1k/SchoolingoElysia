@@ -7,6 +7,7 @@ import moment from 'moment';
 import { ip } from 'elysia-ip';
 import bcrypt from 'bcryptjs';
 import { verifyTFA } from '../../functions/verifyTFA';
+import { getIPData } from '../../functions/get_ip_data';
 
 export async function authenticateUser(userId: number, cookie: any, userAgent: string, ip: string) {
   try {
@@ -56,7 +57,7 @@ export async function authenticateUser(userId: number, cookie: any, userAgent: s
       }
 
       const expire = moment().add(15, 'minutes');
-      await db.insertInto("tokens")
+      const tokenDB = await db.insertInto("tokens")
       .values({
         userId: user.userId,
         token: dbToken,
@@ -66,11 +67,11 @@ export async function authenticateUser(userId: number, cookie: any, userAgent: s
         expires: expire.toDate(),
         ip
       })
-      .execute();
+      .executeTakeFirst();
 
       cookie.token.set({
         httpOnly: true,
-        secure: true,
+        // secure: true,
         maxAge: 2592000000,
         path: '/',
         value: dbToken
@@ -79,6 +80,7 @@ export async function authenticateUser(userId: number, cookie: any, userAgent: s
       return {
         status: true,
         username: user.username,
+        token_id: Number(tokenDB.insertId),
         expires: expire.toDate()
       };
     } catch(e) {
@@ -103,100 +105,116 @@ const elysiaApp = new Elysia()
   .post('/auth', async ({ body, store, request, cookie }: any) => {
     const { username, password, TFA } = body;
     let err = [];
-    if (!username || username == "") {
-      err.push('Missing username');
-    }
 
-    if (!password || password == "") {
-      err.push('Missing password');
-    }
+    if (!username) err.push('Missing username');
+    if (!password) err.push('Missing password');
 
-    if (err.length) {
-      return Response.json({ error: err });
-    }
+    if (err.length) return Response.json({ error: err });
 
     try {
-      // Check username
       const user = await db.selectFrom("users")
-      .leftJoin("persons", "persons.personId", "users.person")
-      .innerJoin("passwords", "passwords.passwordId", "users.password")
-      .select([
-        "users.userId",
-        "users.username",
-        "users.2fa",
-        "users.2fa_secret",
-        "persons.firstName",
-        "persons.lastName",
-        "passwords.password",
-        'passwords.passwordId'
-      ])
-      .where(sql`LOWER(users.username)`, '=', username.toLowerCase())
-      .limit(1)
-      .executeTakeFirstOrThrow()
+        .leftJoin("persons", "persons.personId", "users.person")
+        .innerJoin("passwords", "passwords.passwordId", "users.password")
+        .select([
+          "users.userId",
+          "users.username",
+          "users.2fa",
+          "users.2fa_secret",
+          "persons.firstName",
+          "persons.lastName",
+          "passwords.password",
+          'passwords.passwordId'
+        ])
+        .where(sql`LOWER(users.username)`, '=', username.toLowerCase())
+        .limit(1)
+        .executeTakeFirst()
 
-      // Check password
-      const isPasswordValid = bcrypt.compareSync(
-        password,
-        user.password
-      );
+        if (!user) {
+          return Response.json({ error: ['Invalid username'] })
+        }
+
       const { ip } = store;
+      const userAgent = request.headers.get("user-agent") || null;
 
+      // ---- IP Lookup ----
+      const ipData = await getIPData(ip);
+
+      // Validate password
+      const isPasswordValid = bcrypt.compareSync(password, user.password);
 
       if (!isPasswordValid) {
         await db.insertInto("login_history")
-        .values({
-          userId: user.userId,
-          success: false,
-          type: 'password',
-          ip,
-          userAgent: request.headers.get("user-agent") || null,
-          error: 'invalid_password'
-        })
-        .execute()
-        return Response.json({ error: ["Invalid password"] });
-      }
-
-      if (user['2fa'] && user['2fa_secret']) {
-        if (!TFA || TFA == "") {
-          return Response.json({ error: ["Missing 2FA"] });
-        }
-
-        // Validate 2FA
-        const isApproved2FA = await verifyTFA(TFA, user["userId"])
-        
-        if (!isApproved2FA) {
-          // Log invalid 2FA attempt
-          await db.insertInto("login_history")
           .values({
             userId: user.userId,
             success: false,
             type: 'password',
-            ip,
-            userAgent: request.headers.get("user-agent") || null,
-            error: 'invalid_2fa'
+            ip: ipData?.ip ?? ip,
+            userAgent,
+            error: 'invalid_password',
+            city: ipData?.city ?? null,
+            zip_code: ipData?.zip_code ?? null,
+            region_name: ipData?.region_name ?? null,
+            country: ipData?.country ?? null,
+            country_code: ipData?.country_code ?? null,
+            continent: ipData?.continent ?? null,
+            continent_code: ipData?.continent_code ?? null,
           })
-          .execute()
+          .execute();
+
+        return Response.json({ error: ["Invalid password"] });
+      }
+
+      // 2FA check
+      if (user['2fa'] && user['2fa_secret']) {
+        if (!TFA) return Response.json({ error: ["Missing 2FA"] });
+
+        const isApproved2FA = await verifyTFA(TFA, user["userId"]);
+
+        if (!isApproved2FA) {
+          await db.insertInto("login_history")
+            .values({
+              userId: user.userId,
+              success: false,
+              type: 'password',
+              ip: ipData?.ip ?? ip,
+              userAgent,
+              error: 'invalid_2fa',
+              city: ipData?.city ?? null,
+              zip_code: ipData?.zip_code ?? null,
+              region_name: ipData?.region_name ?? null,
+              country: ipData?.country ?? null,
+              country_code: ipData?.country_code ?? null,
+              continent: ipData?.continent ?? null,
+              continent_code: ipData?.continent_code ?? null,
+            })
+            .execute();
 
           return Response.json({ error: ['Invalid 2FA'] });
         }
       }
 
+      // Authenticate user (existing logic)
+      const res = await authenticateUser(user.userId, cookie, userAgent, ipData?.ip ?? ip);
 
-
-      const res = await authenticateUser(user.userId, cookie, request.headers.get('user-agent'), ip);
-
-      if (res?.status == true) {
-        // Log user history with error information
+      if (res?.status === true) {
         await db.insertInto("login_history")
-        .values({
-          userId: user.userId,
-          success: true,
-          type: 'password',
-          ip,
-          userAgent: request.headers.get("user-agent") || null,
-          error: null
-        })
-        .execute()
+          .values({
+            userId: user.userId,
+            success: true,
+            type: 'password',
+            ip: ipData?.ip ?? ip,
+            token_id: res.token_id ?? null,
+            userAgent,
+            error: null,
+            city: ipData?.city ?? null,
+            zip_code: ipData?.zip_code ?? null,
+            region_name: ipData?.region_name ?? null,
+            country: ipData?.country ?? null,
+            country_code: ipData?.country_code ?? null,
+            continent: ipData?.continent ?? null,
+            continent_code: ipData?.continent_code ?? null,
+          })
+          .execute();
 
         return Response.json({
           username: res.username,
@@ -205,8 +223,8 @@ const elysiaApp = new Elysia()
       } else {
         return Response.json({ error: res.error })
       }
-    } catch(e) {
-      return Response.json({ error: ['Invalid username'] })
+    } catch (e) {
+      return Response.json({ error: ['SQL error'] })
     }
   }, {
     body: t.Optional(t.Object({
