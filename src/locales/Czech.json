@@ -144,6 +144,14 @@
     "delete": "Smazat",
     "actions": "Akce",
     "unknown": "Neznámé",
+
+    "cookies": {
+        "title": "Používáme cookies – ale v přátelském duchu!",
+        "description": "Na tomto webu používáme cookies a další identifikátory, které mohou obsahovat osobní údaje. Slouží k provozu, zlepšování a vývoji našich služeb. Pro některé účely potřebujeme váš souhlas – udělíte jej volbou „Souhlasím se vším“.",
+        "consent": "Souhlasím se vším",
+        "only_necessary": "Pouze nezbytné"
+    },
+
     "system": {
         "section_main": "Hlavní nabídka",
         "school_settings": "Nastavení školy",
@@ -255,6 +263,7 @@
         "absence": "Absence",
         "account": "Můj účet",
         "calendar": "Kalendář",
+        "documents": "Dokumenty",
         "schedule_builder": "Tvorba rozvrhu",
         "teach": {
             "main": "Výuka",
