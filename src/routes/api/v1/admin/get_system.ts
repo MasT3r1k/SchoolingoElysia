@@ -45,6 +45,7 @@ const app = new Elysia()
         'districts.districtId',
         'districts.district'
     ])
+    .orderBy('district', 'asc')
     .execute();
 
     const student_count = await db.selectFrom('students')
@@ -74,6 +75,7 @@ const app = new Elysia()
         'scopes.number_of_classes',
         'scopes.students_per_class'
     ])
+    .orderBy('scopes.name', 'asc')
     .execute();
 
     return {

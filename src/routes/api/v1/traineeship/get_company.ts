@@ -105,8 +105,6 @@ const app = new Elysia()
         .where('companyId', '=', companyId)
         .execute();
 
-      // Načti osoby instruktorů
-
       return Response.json({
         ...company,
         instructors: instructors.map((instructor) => ({
