@@ -803,6 +803,12 @@
             "student_count": "%count% studentů",
             "no_group": "Nemáte dostupné žádné skupiny!"
         },
+        "midterm": {
+            "tabs": {
+                "marks": "Známky",
+                "reports": "Přehledy"
+            }
+        },
         "predictor": {
             "title": "Předvídač známek",
             "old_average": "Starý průměr",

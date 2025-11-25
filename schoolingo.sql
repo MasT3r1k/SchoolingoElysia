@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1
--- Vytvořeno: Úte 25. lis 2025, 06:44
+-- Vytvořeno: Úte 25. lis 2025, 23:39
 -- Verze serveru: 12.0.2-MariaDB
 -- Verze PHP: 8.2.12
 
@@ -382,7 +382,8 @@ INSERT INTO `classbook` (`cbId`, `date`, `dayHour`, `subject`, `teacher`, `group
 (125, '2025-11-18', 1, 33, NULL, 9, NULL, NULL, NULL, NULL),
 (126, '2025-11-18', 2, 31, NULL, 9, NULL, NULL, NULL, NULL),
 (127, '2025-11-18', 3, 31, NULL, 9, NULL, NULL, NULL, NULL),
-(128, '2025-11-25', 0, 33, NULL, 9, NULL, NULL, NULL, NULL);
+(128, '2025-11-25', 0, 33, NULL, 9, NULL, NULL, NULL, NULL),
+(129, '2025-11-25', 1, 33, NULL, 9, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2659,7 +2660,15 @@ INSERT INTO `login_history` (`lhId`, `userId`, `type`, `success`, `error`, `ip`,
 (1205, 4, 'password', 1, NULL, '109.164.51.14', 1166, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-24 22:26:48.758937', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1206, 4, 'password', 1, NULL, '109.164.51.14', 1167, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-24 22:54:38.588239', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1207, 4, 'password', 1, NULL, '109.164.51.14', 1168, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-24 23:14:48.830800', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
-(1208, 4, 'password', 1, NULL, '109.164.51.14', 1169, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-24 23:31:20.935380', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL);
+(1208, 4, 'password', 1, NULL, '109.164.51.14', 1169, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-24 23:31:20.935380', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1209, 4, 'password', 1, NULL, '109.164.51.14', 1170, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 20:54:47.962170', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1210, 1, 'password', 0, 'invalid_password', '109.164.51.14', NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 21:16:16.827310', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1211, 1, 'password', 0, 'invalid_password', '109.164.51.14', NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 21:16:20.509016', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1212, 1, 'password', 1, NULL, '109.164.51.14', 1171, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 21:16:42.610596', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1213, 4, 'password', 1, NULL, '109.164.51.14', 1172, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 21:52:10.997319', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1214, 1, 'password', 1, NULL, '109.164.51.14', 1173, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 21:52:17.366514', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1215, 1, 'password', 1, NULL, '109.164.51.14', 1174, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 22:13:52.345773', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1216, 1, 'password', 1, NULL, '109.164.51.14', 1175, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 22:29:58.816968', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2762,7 +2771,7 @@ INSERT INTO `messages_receivers` (`message_id`, `receiver_id`, `read_at`, `confi
 (3, 2, NULL, NULL),
 (3, 4, '2025-11-23 13:05:17', NULL),
 (4, 4, '2025-11-23 13:05:18', NULL),
-(5, 1, NULL, NULL),
+(5, 1, '2025-11-25 22:31:25', NULL),
 (5, 4, '2025-11-23 13:05:18', NULL),
 (5, 25, NULL, NULL),
 (5, 31, NULL, NULL);
@@ -3151,6 +3160,26 @@ CREATE TABLE `scopes_subjects` (
 INSERT INTO `scopes_subjects` (`ss_id`, `scope_id`, `year`, `subject_id`, `hours_per_week`, `exercise`, `is_mandatory`, `default_room`, `color`) VALUES
 (1, 2, 4, 2, 3, 0, 1, 0, NULL),
 (2, 2, 4, 1, 2, 2, 1, 0, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `semester_grades`
+--
+
+CREATE TABLE `semester_grades` (
+  `id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `subject_id` int(11) NOT NULL,
+  `year` int(11) NOT NULL,
+  `semester` smallint(6) NOT NULL CHECK (`semester` in (1,2)),
+  `grade` varchar(5) DEFAULT NULL,
+  `verbal_assessment` text DEFAULT NULL,
+  `teacher_id` int(11) DEFAULT NULL,
+  `finalized` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -4125,7 +4154,13 @@ INSERT INTO `tokens` (`tokenId`, `token`, `password`, `userAgent`, `expires`, `c
 (1166, '$2b$04$8CC7fmvQecQrPa9znAVBBu7TRN7aAe4LDhO1iEF847NslhB/DOK4C', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-24 23:41:48.754000', '2025-11-24 23:26:48.755000', 4, NULL, '109.164.51.14'),
 (1167, '$2b$04$bezQFtYPseEvu1XuSksTyuq1g6f8UBRGvDIxnVxK/fkdCMipN.53O', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 00:09:38.582000', '2025-11-24 23:54:38.585000', 4, NULL, '109.164.51.14'),
 (1168, '$2b$04$cAP2RFxUcBOL8HqMlVLKrOscOCOipUoYLcBSTFhqWdn2I3USqS2LK', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 00:29:48.828000', '2025-11-25 00:14:48.829000', 4, NULL, '109.164.51.14'),
-(1169, '$2b$04$rg8qHP05DALofU7kAo5xgeVvzo/xRTjDEAlM1tZ4bYR.b0KReWpQ6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 00:46:20.932000', '2025-11-25 00:31:20.933000', 4, NULL, '109.164.51.14');
+(1169, '$2b$04$rg8qHP05DALofU7kAo5xgeVvzo/xRTjDEAlM1tZ4bYR.b0KReWpQ6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 00:46:20.932000', '2025-11-25 00:31:20.933000', 4, NULL, '109.164.51.14'),
+(1170, '$2b$04$Cw1OI.TMjuzT1T2ZpjvbJO2VoQFtDeggsgwbANTxu1PkR7fPQkzC6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 22:16:11.940000', '2025-11-25 21:54:47.955000', 4, NULL, '109.164.51.14'),
+(1171, '$2b$04$Cak1S42wUQszn1sH4kd9POVnCLjofVP3nkDsi3IGo5/8y2EmDKwG2', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 22:31:42.606000', '2025-11-25 22:16:42.606000', 1, NULL, '109.164.51.14'),
+(1172, '$2b$04$/SD8XUeCjVYxdfR/Ke1M1emEOcHGnu4/sylPOmTYXZlSi3bDOxPrO', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 22:52:14.299000', '2025-11-25 22:52:10.993000', 4, NULL, '109.164.51.14'),
+(1173, '$2b$04$XTbl7bHZy/63iwyiA5oY/Or8LcVPm/x6JQetcgLwQ4lUAu19tfgFu', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 23:07:17.365000', '2025-11-25 22:52:17.365000', 1, NULL, '109.164.51.14'),
+(1174, '$2b$04$53KT1voV5rcbSh7FLj1Ll.n/rLKOjrFLD4egz79CUH1dDIHkkiBMK', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 23:28:52.341000', '2025-11-25 23:13:52.341000', 1, NULL, '109.164.51.14'),
+(1175, '$2b$04$FkUsdP8jJcWqm.YF5mqVZu.OjoJ2tR9FiyDHJS12Sc9NZzhNLQkxy', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-25 23:44:58.811000', '2025-11-25 23:29:58.811000', 1, NULL, '109.164.51.14');
 
 -- --------------------------------------------------------
 
@@ -4367,7 +4402,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`userId`, `person`, `username`, `password`, `manager`, `principal`, `theme`, `locale`, `passwordChanged`, `recommendChangePassword`, `cookies`, `school`, `autoSelectNextWeek`, `fastlogin`, `levels_exp`, `2fa`, `2fa_secret`, `2fa_activated`, `avatar`) VALUES
-(1, 1, 'kosik', 14, 0, 0, 1, 'cs', '2025-10-14', 0, 1, 1, 1, 1, 745, 0, 'NZPHEHZSNRUROPQX', '2025-10-14 09:35:04', '{\"seed\":\"iyGs1BUjIryJVZDk\",\"type\":\"avataaarsNeutral\",\"eyebrows\":\"default\",\"eyes\":\"default\",\"mouth\":\"default\"}'),
+(1, 1, 'kosik', 1, 0, 0, 1, 'cs', '2025-10-14', 0, 1, 1, 1, 1, 745, 0, 'NZPHEHZSNRUROPQX', '2025-10-14 09:35:04', '{\"seed\":\"iyGs1BUjIryJVZDk\",\"type\":\"avataaarsNeutral\",\"eyebrows\":\"default\",\"eyes\":\"default\",\"mouth\":\"default\"}'),
 (2, 2, 'pizinger', 1, 0, 0, 0, 'cs', NULL, 0, 1, 1, 1, 1, 0, 0, 'HEGBKGSXDNISYF3B', '2025-06-27 14:33:48', '{\"seed\":\"A7jrlqXppJ5pO0u7\",\"type\":\"avataaarsNeutral\",\"eyebrows\":\"default\",\"eyes\":\"default\",\"mouth\":\"default\"}'),
 (3, 33, 'testrodic', 1, 0, 0, 0, 'cs', NULL, 0, 0, 1, 1, 1, 0, 0, NULL, '2025-06-27 14:33:48', '{}'),
 (4, 4, 'admin', 1, -1, 1, 1, 'cs', '2025-11-22', 0, 0, 1, 1, 1, 0, 0, 'MUDBUJIRD5YS4YID', '2025-10-17 06:45:31', '{}'),
@@ -4951,6 +4986,15 @@ ALTER TABLE `scopes_subjects`
   ADD KEY `subject_id` (`subject_id`);
 
 --
+-- Indexy pro tabulku `semester_grades`
+--
+ALTER TABLE `semester_grades`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `student_id` (`student_id`),
+  ADD KEY `subject_id` (`subject_id`),
+  ADD KEY `teacher_id` (`teacher_id`);
+
+--
 -- Indexy pro tabulku `students`
 --
 ALTER TABLE `students`
@@ -5193,7 +5237,7 @@ ALTER TABLE `cities`
 -- AUTO_INCREMENT pro tabulku `classbook`
 --
 ALTER TABLE `classbook`
-  MODIFY `cbId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=129;
+  MODIFY `cbId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=130;
 
 --
 -- AUTO_INCREMENT pro tabulku `classbook_notes`
@@ -5361,7 +5405,7 @@ ALTER TABLE `library_reservations`
 -- AUTO_INCREMENT pro tabulku `login_history`
 --
 ALTER TABLE `login_history`
-  MODIFY `lhId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1209;
+  MODIFY `lhId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1217;
 
 --
 -- AUTO_INCREMENT pro tabulku `marking_scales`
@@ -5469,7 +5513,7 @@ ALTER TABLE `timetable`
 -- AUTO_INCREMENT pro tabulku `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1170;
+  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1176;
 
 --
 -- AUTO_INCREMENT pro tabulku `traineeship_companies`
@@ -5851,6 +5895,14 @@ ALTER TABLE `school_domains`
 ALTER TABLE `scopes_subjects`
   ADD CONSTRAINT `scopes_subjects_ibfk_1` FOREIGN KEY (`scope_id`) REFERENCES `scopes` (`scopeId`),
   ADD CONSTRAINT `scopes_subjects_ibfk_2` FOREIGN KEY (`subject_id`) REFERENCES `subjects` (`subjectId`);
+
+--
+-- Omezení pro tabulku `semester_grades`
+--
+ALTER TABLE `semester_grades`
+  ADD CONSTRAINT `semester_grades_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`personId`),
+  ADD CONSTRAINT `semester_grades_ibfk_2` FOREIGN KEY (`subject_id`) REFERENCES `subjects` (`subjectId`),
+  ADD CONSTRAINT `semester_grades_ibfk_3` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`personId`);
 
 --
 -- Omezení pro tabulku `students`
