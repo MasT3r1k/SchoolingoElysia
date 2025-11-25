@@ -55,8 +55,6 @@ const elysiaApp = new Elysia()
             'documents.last_accessed_at',
             'documents.modified_at',
             'documents.created_at',
-
-            // SUBQUERY: spočítá počet dětí
             eb.selectFrom('documents as d2')
                 .whereRef('d2.parent_id', '=', 'documents.file_id')
                 .select((eb2) => eb2.fn.countAll().as('files_count'))

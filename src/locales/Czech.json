@@ -439,7 +439,19 @@
         "all_files": "Všechny soubory",
         "search_files": "Hledat soubory..",
         "upload": "Nahrát",
-        "upload_files": "Nahrát soubory"
+        "upload_files": "Nahrát soubory",
+        "folder_already_created": "Složka už existuje",
+        "folder_empty": "Tato složka je prázdná",
+        "file_details": "Podrobnosti",
+        "file_name": "Název",
+        "file_type": "Typ",
+        "file_size": "Velikost",
+        "file_modified": "Změněno",
+        "file_created": "Vytvořeno",
+        "open_folder": "Otevřít složku",
+        "rename_file": "Přejmenovat",
+        "permissions_file": "Oprávnění",
+        "delete_file": "Smazat"
     },
     "classbook": {
         "class_service": "Pořádková služba",

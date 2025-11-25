@@ -1,6 +1,7 @@
 import { Elysia, t } from 'elysia';
 import moment from 'moment';
 import { db } from '../../../../../database';
+import { sql } from 'kysely';
 
 const app = new Elysia().post(
   '/documents/new_folder',
@@ -37,6 +38,14 @@ const app = new Elysia().post(
     if (name == undefined) {
       return Response.json({ error: 'invalid_body' });
     }
+
+    // Check if folder name is already exist
+    const isExist = await db.selectFrom('documents')
+    .select(['documents.file_id'])
+    .where('parent_id', 'is', parent_id)
+    .where(sql`LOWER(name)`, '=', name.toLowerCase())
+    .executeTakeFirst();
+    if (isExist) return { error: 'folder_already_created' }
 
     try {
         const newFolder = await db.insertInto('documents')
