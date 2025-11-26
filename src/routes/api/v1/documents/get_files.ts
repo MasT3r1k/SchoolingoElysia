@@ -61,7 +61,7 @@ const elysiaApp = new Elysia()
                 .as('files_count')
         ])
         .where('documents.is_deleted', '=', false)
-        .where('documents.parent_id', 'is', body.parent_id ?? null)
+        .where('documents.parent_id', body.parent_id == null ? 'is' : '=', body.parent_id ?? null)
         .execute();
 
 
