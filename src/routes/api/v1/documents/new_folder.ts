@@ -42,7 +42,7 @@ const app = new Elysia().post(
     // Check if folder name is already exist
     const isExist = await db.selectFrom('documents')
     .select(['documents.file_id'])
-    .where('parent_id', 'is', parent_id)
+    .where('documents.parent_id', parent_id == null ? 'is' : '=', parent_id ?? null)
     .where(sql`LOWER(name)`, '=', name.toLowerCase())
     .executeTakeFirst();
     if (isExist) return { error: 'folder_already_created' }

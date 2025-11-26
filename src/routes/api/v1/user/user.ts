@@ -164,6 +164,8 @@ const app = new Elysia()
     .select([
       'classes.classId',
       'classes.scopeId',
+      'scopes.name as scopeName',
+      'scopes.years as scopeYears',
       sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, sy.start, CURDATE()) + 1, classes.suffix)`.as('className'),
       sql`COUNT(students.class)`.as('students')
     ])

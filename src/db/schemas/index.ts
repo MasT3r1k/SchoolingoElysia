@@ -81,6 +81,7 @@ import { marking_scales_groupsTable } from './marking_scales_groups'
 import { scopes_subjectsTable } from './scopes_subjects'
 import { ClassbookNotesTable } from './classbook_notes'
 import { documentsTable } from './documents'
+import { semester_gradesTable } from './semester_grades'
 
 export interface Database {
   absence: AbsenceTable
@@ -136,6 +137,7 @@ export interface Database {
   persons_degree: persons_degreeTable
   phone_numbers: phone_numbersTable
   qrlogin: qrloginTable
+  semester_grades: semester_gradesTable
   schools: schoolsTable
   school_breaks: school_breaksTable
   school_domains: school_domainsTable

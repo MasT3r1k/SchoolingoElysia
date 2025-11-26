@@ -438,10 +438,12 @@
         },
         "folders": "Složky",
         "create_folder": "Nová složka",
+        "create_file": "Nový soubor",
         "name_folder": "Název složky",
         "new_folder": "Vytvořit složku",
+        "new_file": "Vytvořit soubor",
         "all_files": "Všechny soubory",
-        "search_files": "Hledat soubory..",
+        "search_files": "Hledat soubory v této složce..",
         "upload": "Nahrát",
         "upload_files": "Nahrát soubory",
         "folder_already_created": "Složka už existuje",
@@ -811,7 +813,11 @@
             "tabs": {
                 "marks": "Známky",
                 "reports": "Přehledy"
-            }
+            },
+            "years": ["První", "Druhý", "Třetí", "Čtvrtý", "Pátý", "Šestý", "Sedmý", "Osmý", "Devátý"],
+            "year": "%year% rok",
+            "mandatory_subjects": "Povinné předměty",
+            "optional_subjects": "Nepovinné předměty"
         },
         "predictor": {
             "title": "Předvídač známek",

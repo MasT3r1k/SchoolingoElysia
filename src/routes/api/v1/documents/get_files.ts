@@ -73,7 +73,7 @@ const elysiaApp = new Elysia()
     }
   }, {
     body: t.Object({
-        parent_id: t.Nullable(t.Number())
+      parent_id: t.Nullable(t.Number())
     })
   });
 
