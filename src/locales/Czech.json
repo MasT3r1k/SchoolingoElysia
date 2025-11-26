@@ -432,6 +432,10 @@
         }
     },
     "documents": {
+        "types": {
+            "folder": "Složka",
+            "file": "Soubor"
+        },
         "folders": "Složky",
         "create_folder": "Nová složka",
         "name_folder": "Název složky",
