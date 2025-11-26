@@ -53,7 +53,7 @@ import { school_yearsTable } from './school_years'
 import { ScopesTable } from './scopes'
 import { StudentsTable } from './students'
 import { Student_groupsTable } from './student_groups'
-import { Student_homeworksTable } from './student_homeworks'
+import { Student_homeworkTable } from './student_homework'
 import { Student_rewardsTable } from './student_rewards'
 import { SubjectsTable } from './subjects'
 import { SubstitutionTable } from './substitution'
@@ -146,7 +146,7 @@ export interface Database {
   scopes_subjects: scopes_subjectsTable
   students: StudentsTable
   student_groups: Student_groupsTable
-  student_homeworks: Student_homeworksTable
+  student_homework: Student_homeworkTable
   student_rewards: Student_rewardsTable
   subjects: SubjectsTable
   substitution: SubstitutionTable

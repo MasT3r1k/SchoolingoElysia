@@ -748,7 +748,9 @@
             "filed": "Zapsáno"
         }
     },
-    "homeworks": {
+    "homework": {
+        "active": "Aktivní",
+        "all": "Všechny",
         "homework": "Domácí úkol",
         "no_homework_to_submit": "Nemátě žádný úkol k odevzdání"
     },

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1
--- Vytvořeno: Stř 26. lis 2025, 21:17
+-- Vytvořeno: Stř 26. lis 2025, 23:57
 -- Verze serveru: 12.0.2-MariaDB
 -- Verze PHP: 8.2.12
 
@@ -1248,13 +1248,13 @@ CREATE TABLE `homework` (
 --
 
 INSERT INTO `homework` (`homeworkId`, `subjectId`, `groupId`, `teacherId`, `assigned_at`, `due_date`, `headline`, `homework`, `note`, `type`) VALUES
-(1, 0, 0, 0, '2025-11-20 13:20:37', '2024-02-01 23:00:00.000000', NULL, 'T', NULL, 0),
+(1, 0, 0, 0, '2025-11-20 13:20:37', '2024-02-01 23:00:00.000000', 'Udělejte úkol', 'T', NULL, 0),
 (2, 0, 0, 0, '2025-11-20 13:20:37', '2024-02-01 23:00:00.000000', NULL, 'T', NULL, 0),
 (3, 0, 0, 0, '2025-11-20 13:20:37', '2024-02-01 23:00:00.000000', NULL, 'T', NULL, 0),
 (4, 0, 0, 0, '2025-11-20 13:20:37', '2024-02-01 23:00:00.000000', NULL, 'T', NULL, 0),
 (5, 0, 0, 0, '2025-11-20 13:20:37', '2024-02-01 23:00:00.000000', NULL, 'T', NULL, 0),
 (6, 0, 0, 0, '2025-11-20 13:20:37', '2024-02-01 23:00:00.000000', NULL, 'T', NULL, 0),
-(7, 0, 0, 0, '2025-11-20 13:20:37', '2024-02-01 23:00:00.000000', NULL, 'T', NULL, 0),
+(7, 1, 0, 0, '2025-11-20 13:20:37', '2024-02-01 23:00:00.000000', 'Udělejte úkol', 'Vypracujte příklady ze strany 56, cvičení 4–9. Dbejte na postup a přesné výsledky', NULL, 0),
 (8, 0, 0, 0, '2025-11-20 13:20:37', '2024-02-01 23:00:00.000000', NULL, 'T', NULL, 0),
 (9, 0, 0, 0, '2025-11-20 13:20:37', '2024-02-01 23:00:00.000000', NULL, 'T', NULL, 0),
 (10, 0, 0, 0, '2025-11-20 13:20:37', '2024-02-01 23:00:00.000000', NULL, 'T', NULL, 0),
@@ -2684,7 +2684,15 @@ INSERT INTO `login_history` (`lhId`, `userId`, `type`, `success`, `error`, `ip`,
 (1228, 4, 'password', 1, NULL, '195.113.101.227', 1187, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-26 12:41:49.821967', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1229, 1, 'password', 1, NULL, '195.113.101.227', 1188, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-26 12:59:29.095082', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1230, 1, 'password', 1, NULL, '195.113.101.227', 1189, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-26 13:18:10.013272', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
-(1231, 1, 'password', 1, NULL, '195.113.101.227', 1190, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-26 13:38:34.684521', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL);
+(1231, 1, 'password', 1, NULL, '195.113.101.227', 1190, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-26 13:38:34.684521', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1232, 4, 'password', 1, NULL, '109.164.51.14', 1191, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 21:53:30.418414', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1233, 1, 'password', 1, NULL, '109.164.51.14', 1192, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 22:01:55.526247', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1234, 4, 'password', 1, NULL, '109.164.51.14', 1193, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 22:03:20.199289', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1235, 1, 'password', 1, NULL, '109.164.51.14', 1194, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 22:08:20.687893', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1236, 1, 'password', 1, NULL, '109.164.51.14', 1195, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 22:24:29.155707', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1237, 1, 'password', 1, NULL, '109.164.51.14', 1196, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 22:40:37.519911', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1238, 1, 'password', 1, NULL, '109.164.51.14', 1197, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 22:40:44.282874', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1239, 1, 'password', 1, NULL, '109.164.51.14', 1198, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 22:40:49.032828', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -3289,10 +3297,10 @@ INSERT INTO `student_groups` (`student`, `groupId`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktura tabulky `student_homeworks`
+-- Struktura tabulky `student_homework`
 --
 
-CREATE TABLE `student_homeworks` (
+CREATE TABLE `student_homework` (
   `student` int(11) NOT NULL,
   `homework` int(11) NOT NULL,
   `submitted` tinyint(1) NOT NULL DEFAULT 0,
@@ -3300,10 +3308,10 @@ CREATE TABLE `student_homeworks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Vypisuji data pro tabulku `student_homeworks`
+-- Vypisuji data pro tabulku `student_homework`
 --
 
-INSERT INTO `student_homeworks` (`student`, `homework`, `submitted`, `finished`) VALUES
+INSERT INTO `student_homework` (`student`, `homework`, `submitted`, `finished`) VALUES
 (1, 7, 0, 0),
 (1, 8, 0, 0),
 (1, 9, 0, 0),
@@ -4191,7 +4199,15 @@ INSERT INTO `tokens` (`tokenId`, `token`, `password`, `userAgent`, `expires`, `c
 (1187, '$2b$04$wbMbKXmqicP2sa8GxPVGWutijM.cBUBOLwRRu62L0N.tDwvBfS6j6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-26 13:59:25.359000', '2025-11-26 13:41:49.710000', 4, NULL, '195.113.101.227'),
 (1188, '$2b$04$VTksslOIfRTujCiKvlG2puEtvDTHF5S.DGx7O3Z9SkpXGfiVKiPrK', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-26 14:14:29.051000', '2025-11-26 13:59:29.054000', 1, NULL, '195.113.101.227'),
 (1189, '$2b$04$1JWuftvEOTCowaKnjrSTEerpK6VWOFsb5LgYGcn.p.Wi79uMC99Pa', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-26 14:33:09.946000', '2025-11-26 14:18:09.957000', 1, NULL, '195.113.101.227'),
-(1190, '$2b$04$5q7k4iP/RTKhKS0ws3RH4OAXwoCmY0XGrFPLg3/xv7RX7KzaZQJc6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-26 14:53:34.632000', '2025-11-26 14:38:34.646000', 1, NULL, '195.113.101.227');
+(1190, '$2b$04$5q7k4iP/RTKhKS0ws3RH4OAXwoCmY0XGrFPLg3/xv7RX7KzaZQJc6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-26 14:53:34.632000', '2025-11-26 14:38:34.646000', 1, NULL, '195.113.101.227'),
+(1191, '$2b$04$kxpDYAWyXd05arbsNyzPKeVPNGKLy8VRcUD8FjNSJct3yYRnleplS', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 23:01:52.290000', '2025-11-26 22:53:30.417000', 4, NULL, '109.164.51.14'),
+(1192, '$2b$04$KBRrdV4fRlfKE6m2D1DKJutD/gnV2n2/LUjgfTLueian4mwFA0WRO', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 23:03:17.723000', '2025-11-26 23:01:55.524000', 1, NULL, '109.164.51.14'),
+(1193, '$2b$04$9OChI.ptrLloQH7RPOw6wO8IxLWicjKS0JpvuZJu.y3yPO1yhPMb6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 23:08:17.121000', '2025-11-26 23:03:20.198000', 4, NULL, '109.164.51.14'),
+(1194, '$2b$04$iluLprUVrrJYMwCjLKVXK.KI5a1AMWADA3GmT6Z7766JCEiTeRfS6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 23:23:20.686000', '2025-11-26 23:08:20.689000', 1, NULL, '109.164.51.14'),
+(1195, '$2b$04$XapCW231Ku4Q0cQB/9T71uuLU4Fe2508kN.Z7J7v3O04fJNeJQzL.', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 23:39:29.151000', '2025-11-26 23:24:29.151000', 1, NULL, '109.164.51.14'),
+(1196, '$2b$04$fbTOmOr4/bSV6tBjmIeJcO6yHjYfUFUFc0FPeKTp6UvSsxEbegEt6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 23:55:37.516000', '2025-11-26 23:40:37.517000', 1, NULL, '109.164.51.14'),
+(1197, '$2b$04$/3rORq5BXNZU1TQKYANwR.tfd3k0LoIroHKucYevo1jf/ZRIwoDCa', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 23:55:44.281000', '2025-11-26 23:40:44.281000', 1, NULL, '109.164.51.14'),
+(1198, '$2b$04$QKEEfGrstzClV17b3pDf1.PFdGT.n3Yk7qwvqcjXwlTTb3XDe.3Wq', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-11-26 23:55:49.029000', '2025-11-26 23:40:49.030000', 1, NULL, '109.164.51.14');
 
 -- --------------------------------------------------------
 
@@ -5040,9 +5056,9 @@ ALTER TABLE `student_groups`
   ADD KEY `groupId` (`groupId`);
 
 --
--- Indexy pro tabulku `student_homeworks`
+-- Indexy pro tabulku `student_homework`
 --
-ALTER TABLE `student_homeworks`
+ALTER TABLE `student_homework`
   ADD UNIQUE KEY `student-homework` (`student`,`homework`) USING BTREE,
   ADD KEY `homework` (`homework`);
 
@@ -5436,7 +5452,7 @@ ALTER TABLE `library_reservations`
 -- AUTO_INCREMENT pro tabulku `login_history`
 --
 ALTER TABLE `login_history`
-  MODIFY `lhId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1232;
+  MODIFY `lhId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1240;
 
 --
 -- AUTO_INCREMENT pro tabulku `marking_scales`
@@ -5544,7 +5560,7 @@ ALTER TABLE `timetable`
 -- AUTO_INCREMENT pro tabulku `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1191;
+  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1199;
 
 --
 -- AUTO_INCREMENT pro tabulku `traineeship_companies`
@@ -5950,11 +5966,11 @@ ALTER TABLE `student_groups`
   ADD CONSTRAINT `student_groups_ibfk_2` FOREIGN KEY (`student`) REFERENCES `students` (`personId`);
 
 --
--- Omezení pro tabulku `student_homeworks`
+-- Omezení pro tabulku `student_homework`
 --
-ALTER TABLE `student_homeworks`
-  ADD CONSTRAINT `student_homeworks_ibfk_1` FOREIGN KEY (`student`) REFERENCES `students` (`personId`),
-  ADD CONSTRAINT `student_homeworks_ibfk_2` FOREIGN KEY (`homework`) REFERENCES `homework` (`homeworkId`);
+ALTER TABLE `student_homework`
+  ADD CONSTRAINT `student_homework_ibfk_1` FOREIGN KEY (`student`) REFERENCES `students` (`personId`),
+  ADD CONSTRAINT `student_homework_ibfk_2` FOREIGN KEY (`homework`) REFERENCES `homework` (`homeworkId`);
 
 --
 -- Omezení pro tabulku `student_rewards`

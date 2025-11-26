@@ -1,4 +1,4 @@
-export interface Student_homeworksTable {
+export interface Student_homeworkTable {
   student: number
   homework: number
   submitted: boolean
