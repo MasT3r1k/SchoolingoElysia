@@ -456,11 +456,14 @@
         "file_modified": "Změněno",
         "file_created": "Vytvořeno",
         "open_folder": "Otevřít složku",
-        "rename_file": "Přejmenovat",
+        "rename_file": "Přejmenovat soubor",
+        "rename_folder": "Přejmenovat složku",
         "permissions_file": "Oprávnění",
         "delete": "Smazat",
         "delete_file": "Smazat soubor",
-        "delete_folder": "Smazat složku"
+        "delete_folder": "Smazat složku",
+        "save_file": "Uložit soubor",
+        "save_folder": "Uložit složku"
     },
     "classbook": {
         "class_service": "Pořádková služba",
@@ -1048,6 +1051,8 @@
         }
     },
     "modules": {
-        "timetable": "Rozvrh"
+        "timetable": "Rozvrh",
+        "marks": "Přehled známek",
+        "announcements": "Oznámení"
     }
 }
