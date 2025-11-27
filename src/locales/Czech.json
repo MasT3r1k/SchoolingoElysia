@@ -440,6 +440,7 @@
         "create_folder": "Nová složka",
         "create_file": "Nový soubor",
         "name_folder": "Název složky",
+        "name_file": "Název souboru",
         "new_folder": "Vytvořit složku",
         "new_file": "Vytvořit soubor",
         "all_files": "Všechny soubory",
@@ -457,7 +458,9 @@
         "open_folder": "Otevřít složku",
         "rename_file": "Přejmenovat",
         "permissions_file": "Oprávnění",
-        "delete_file": "Smazat"
+        "delete": "Smazat",
+        "delete_file": "Smazat soubor",
+        "delete_folder": "Smazat složku"
     },
     "classbook": {
         "class_service": "Pořádková služba",
