@@ -925,8 +925,7 @@
         "buttons": {
             "send_message": "Poslat zprávu"
         },
-
-        "classic_message": "Přímá zpráva"
+        "new_announcement": "Nová zpráva na nástěnku"
     },
     "settings": {
         "alerts": {
@@ -1042,7 +1041,11 @@
     "timetable": {
         "this_week": "Tento týden",
         "next_week": "Příští týden",
-        "permanent": "Stálý rozvrh"
+        "permanent": "Stálý rozvrh",
+        "free_time": "Volná hodina",
+        "end_class": "Konec vyučování",
+        "no_class": "Žádná výuka",
+        "no_class_desc": "Tento den není důvod chodit do školy."
     },
     "components": {
         "datalist": {
