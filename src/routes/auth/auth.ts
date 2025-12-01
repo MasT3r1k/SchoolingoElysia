@@ -8,6 +8,7 @@ import { ip } from 'elysia-ip';
 import bcrypt from 'bcryptjs';
 import { verifyTFA } from '../../functions/verifyTFA';
 import { getIPData } from '../../functions/get_ip_data';
+import { SecurityConfig } from '../../config/security.config';
 
 export async function authenticateUser(userId: number, cookie: any, userAgent: string, ip: string) {
   try {
@@ -56,7 +57,7 @@ export async function authenticateUser(userId: number, cookie: any, userAgent: s
         }
       }
 
-      const expire = moment().add(15, 'minutes');
+      const expire = moment().add(SecurityConfig.RESET_PASSWORD_EXPIRES_MINUTES, 'minutes');
       const tokenDB = await db.insertInto("tokens")
       .values({
         userId: user.userId,

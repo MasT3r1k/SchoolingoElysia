@@ -12,6 +12,10 @@ import { logger, requestLogger } from './src/utils/logger';
 import locales from './src/infrastructure/locale';
 import { exec, execSync } from 'child_process';
 import { gitService, version } from './version';
+import { sessionMiddleware } from './src/middleware/session-expand.middleware';
+import { db } from './database';
+import moment from 'moment';
+import { SecurityConfig } from './src/config/security.config';
 
 function getLocalCommit(): string {
     try {
@@ -50,10 +54,58 @@ const ws = new Elysia()
   });
 
 export const app = new Elysia({
-  serve: {
-    idleTimeout: 30,
-  },
-})
+    serve: {
+      idleTimeout: 30,
+    },
+  })
+  .onBeforeHandle(async ({ cookie }) => {
+    const token = cookie?.token?.value;
+    if (!token) return;
+
+    // 1) Najdi session
+    const session = await db
+      .selectFrom('tokens')
+      .select(['tokens.expires'])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', new Date())
+      .executeTakeFirst();
+
+    if (!session) return;
+
+    const now = Date.now();
+    const exp = new Date(session.expires).getTime();
+    const remaining = exp - now;
+
+    // 2) Expired session
+    if (remaining <= 0) {
+      cookie.token.set({
+        httpOnly: true,
+        secure: false,
+        value: '',
+        path: '/',
+        maxAge: 0
+      });
+      return;
+    }
+
+    // 3) Sliding session — vždy prodluž
+    const newExpires = moment().add(SecurityConfig.RESET_PASSWORD_EXPIRES_MINUTES, 'minutes');
+
+    await db
+      .updateTable('tokens')
+      .set({ expires: newExpires.toDate() })
+      .where('tokens.token', '=', token)
+      .executeTakeFirst();
+
+    cookie.token.set({
+      httpOnly: true,
+      secure: false,
+      value: token,
+      path: '/',
+      maxAge: 2592000000, // 30 dní v cookie
+      expires: newExpires.toDate()
+    })
+  })
   .use(ip())
   .use(cors({
     origin: ['http://localhost:4200', 'http://192.168.1.102:4200'],
@@ -99,7 +151,9 @@ async function loadFolder(folder: string = modulePath) {
           prefix = "/api/" + route.split('\\')[2];
         }
 
-        const wrapper = new Elysia({ prefix }).use(requestLogger).use(routeApp);
+        const wrapper = new Elysia({ prefix })
+        .use(requestLogger)
+        .use(routeApp);
         app.use(wrapper);
 
         const end = Date.now();
@@ -109,6 +163,7 @@ async function loadFolder(folder: string = modulePath) {
         await loadFolder(folderPath);
       }
     }
+
   } catch (err: any) {
     if (err?.code === 'ENOENT') {
       await fs.promises.mkdir(folder, { recursive: true });

@@ -155,7 +155,10 @@
     "system": {
         "section_main": "Hlavní nabídka",
         "system_settings": "Nastavení systému",
+        "login_settings": "Nastavení přihlášení",
+        "ldap_settings": "Nastavení protokolu LDAP",
         "school_settings": "Nastavení školy",
+        "email_settings": "Nastavení elektronické pošty",
         "list_scopes": "Seznam oborů",
         "list_subjects": "Seznam předmětů",
         "section_modules": "Nastavení modulů",
@@ -168,6 +171,11 @@
         "system_has_valid_license": "Škola má platnou licenci systému!",
         "activated": "Aktivováno",
         "deactivated": "Deaktivováno",
+
+        "email_types": {
+            "basic_smtp_server": "SMTP Server - přihlášení pomocí jména a hesla",
+            "google_smtp_server": "Google SMTP Server - přihlášení pomocí oAuth2 autentizace"
+        },
 
         "school_name": "Název školy",
         "school_short_name": "Zkratka školy",
@@ -226,8 +234,11 @@
         "to": "Do"
     },
     "time": {
+        "daily": "Denně",
         "week": "Týden",
+        "weekly": "Týdně",
         "month": "Měsíc",
+        "monthly": "Měsíčně",
         "to_today": "K dnešku",
         "first_term": "1. pololetí",
         "second_term": "2. pololetí",
@@ -340,6 +351,18 @@
             "generated_password_placeholder": "Klikněte na 'Navrhnout heslo' pro zobrazení hesla.",
             "generate_password": "Navrhnout heslo",
             "put_in_input": "Vložit do inputu hesla"
+        },
+        "add_email": {
+            "title": "Přidání emailu k Vašemu účtu",
+            "email": "Emailová adresa",
+            "type": "Druh emailu",
+            "types": {
+                "personal": "Osobní email",
+                "school": "Školní email",
+                "work": "Pracovní email",
+                "other": "Jiný"
+            },
+            "save_email": "Zapsat email"
         }
     },
     "devices": {
@@ -566,13 +589,13 @@
             "error": "Chyba"
         },
         "types": {
-            "password": "Pomocí hesla",
-            "passkey": "Pomocí passkey",
-            "qrcode": "Pomocí QR kódu",
+            "password": "Přihlášeno pomocí hesla",
+            "passkey": "Přihlášeno pomocí passkey",
+            "qrcode": "Přihlášeno pomocí QR kódu",
             "unknown": "Neznámý přihlášení"
         },
         "buttons": {
-            "details": "Podrobnosti"
+            "details": "Detaily"
         }
     },
     "traineeship": {
@@ -925,7 +948,10 @@
         "buttons": {
             "send_message": "Poslat zprávu"
         },
-        "new_announcement": "Nová zpráva na nástěnku"
+        "noticeboard_description": "Aktuální oznámení, zprávy a upomínky",
+        "new_announcement": "Nová zpráva na nástěnku",
+        "mark_as_read": "Označit jako přečtené",
+        "marked_as_read": "Přečteno"
     },
     "settings": {
         "alerts": {

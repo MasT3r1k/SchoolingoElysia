@@ -4,6 +4,7 @@ import { sql } from 'kysely';
 import { rateLimit } from 'elysia-rate-limit'
 import { app } from '../../../../../index';
 import moment from 'moment';
+import { SecurityConfig } from '../../../../config/security.config';
 
 const elysiaApp = new Elysia()
   .use(rateLimit({
@@ -12,7 +13,7 @@ const elysiaApp = new Elysia()
     duration: 1000,
     injectServer: () => app.server
   }))
-  .get('/login_history', async ({ cookie, query }) => {
+  .get('/sessionexpand', async ({ cookie, query }) => {
     const token = cookie.token.value;
     if (!token) {
         return Response.json({ error: 'no_user', details: 'no_cookie' });
@@ -38,43 +39,23 @@ const elysiaApp = new Elysia()
     }
 
     try {
-        const count = await db.selectFrom("login_history")
-            .select([
-                sql`COUNT(*)`.as('count')
-            ])
-            .where('login_history.userId', '=', user.userId)
-            .executeTakeFirst();
+      const expires = moment().add(SecurityConfig.RESET_PASSWORD_EXPIRES_MINUTES, 'minutes');
 
-        const login_history = await db.selectFrom("login_history")
-            .select([
-              'login_history.loginId',
-              'login_history.type',
-              'login_history.success',
-              'login_history.ip',
-              'login_history.userAgent',
-              'login_history.error',
-              'login_history.created'
-            ])
-            .limit(query.limit)
-            .offset(query.offset)
-            .orderBy('login_history.created', 'desc')
-            .where('login_history.userId', '=', user.userId)
-            .execute();
+      await db.updateTable('tokens')
+      .set({
+        expires: expires.toDate()
+      })
+      .where('tokens.token', '=', token);
 
-        return Response.json({ count: count?.count, data: login_history });
+      return Response.json({ success: true, expires: expires.toDate() });
     } catch (e) {
-      return new Response(JSON.stringify({ error: "Failed load data", e }), {
+      return new Response(JSON.stringify({ error: "Failed expand session" }), {
         status: 404,
         headers: {
           'Content-Type': 'application/json'
         }
       });
     }
-  }, {
-    query: t.Object({
-        limit: t.Number({ default: 10, maximum: 100, minimum: 1 }),
-        offset: t.Number({ default: 0, minimum: 0 })
-    })
   });
 
 export default elysiaApp;
