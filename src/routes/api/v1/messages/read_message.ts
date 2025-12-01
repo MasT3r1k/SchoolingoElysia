@@ -1,7 +1,5 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
-import { sql } from 'kysely';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
   .post('/messages/update', async ({ cookie, body }) => {
@@ -30,14 +28,30 @@ const app = new Elysia()
         updateMessage.confirm = new Date();
       }
 
-      const messageRead = await db.updateTable('messages_receivers')
-      .set(updateMessage)
-      .where('message_id', '=', message_id)
+      const message_receiver = await db.selectFrom('messages_receivers')
+      .select(['message_id'])
+      .where('messages_receivers.message_id', '=', message_id)
       .where('messages_receivers.receiver_id', '=', auth.person)
-      .limit(1)
-      .execute();
+      .executeTakeFirst();
 
-      return { success: true };
+      if (message_receiver) {
+        const messageRead = await db.updateTable('messages_receivers')
+        .set(updateMessage)
+        .where('message_id', '=', message_id)
+        .where('messages_receivers.receiver_id', '=', auth.person)
+        .limit(1)
+        .executeTakeFirst();
+      } else {
+        await db.insertInto('messages_receivers')
+        .values({
+          message_id,
+          receiver_id: auth.person,
+          read_at: updateMessage.read_at
+        })
+        .execute();
+      }
+
+      return { success: true, message_id, read_at: updateMessage.read_at };
     } catch(e) {
       return { success: false };
     }

@@ -6,6 +6,10 @@ const app = new Elysia()
     const token = cookie.token?.value;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
+    if (query.student_id == undefined) {
+      return Response.json({ error: 'invalid_query' }, { status: 400 })
+    }
+
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
@@ -24,7 +28,16 @@ const app = new Elysia()
       .where('students.personId', '=', auth.person)
       .executeTakeFirst();
 
-    if (!student) return { error: 'no_permission' };
+    const parent = await db
+    .selectFrom('family_relations')
+    .select([
+      'family_relations.frId'
+    ])
+    .where('family_relations.source', '=', auth.person)
+    .where('family_relations.target', '=', query.student_id)
+    .executeTakeFirst();
+
+    if (!student && !parent) return { error: 'no_permission' };
 
     const homework = await db.selectFrom('student_homework')
     .leftJoin('homework', 'homework.homeworkId', 'student_homework.homework')
@@ -42,11 +55,12 @@ const app = new Elysia()
         'student_homework.submitted',
         'student_homework.finished',
     ])
-    .where('student_homework.student', '=', student.personId)
+    .where('student_homework.student', '=', query.student_id)
     .execute();
 
     return homework;
-
-  });
+  }, { query: t.Object({
+    student_id: t.Optional(t.Number())
+  })});
 
 export default app;

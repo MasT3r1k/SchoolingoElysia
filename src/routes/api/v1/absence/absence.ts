@@ -64,7 +64,9 @@ const elysiaApp = new Elysia()
         let start = moment(query.start);
         let end = moment(query.end);
         if (!start.isValid()) {
-          return new Response(JSON.stringify({ error: "Invalid start" }), {
+          return new Response(JSON.stringify({
+            error: "Invalid start"
+          }), {
             status: 404,
             headers: {
               'Content-Type': 'application/json'
@@ -73,7 +75,9 @@ const elysiaApp = new Elysia()
         }
         
         if (!end.isValid()) {
-          return new Response(JSON.stringify({ error: "Invalid end" }), {
+          return new Response(JSON.stringify({
+            error: "Invalid end"
+          }), {
             status: 404,
             headers: {
               'Content-Type': 'application/json'
@@ -81,7 +85,11 @@ const elysiaApp = new Elysia()
           });
         }
 
-        const absences: AbsenceType[] = [AbsenceType.EARLY, AbsenceType.LATE, AbsenceType.NON_COUNT];
+        const absences: AbsenceType[] = [
+          AbsenceType.EARLY,
+          AbsenceType.LATE,
+          AbsenceType.NON_COUNT
+        ];
 
         const [student, groups] = await Promise.all([
           db.selectFrom('students')
@@ -222,69 +230,7 @@ const elysiaApp = new Elysia()
       end: t.String({
         default: moment().format("YYYY-MM-DD")
       })
-    }),
-    detail: {
-      description: "This endpoint is rate-limited: max 15 requests per second",
-      responses: {
-        200: {
-          description: "Successful response",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  fullName: { type: "string", example: "Ing. Bc. Josef Kosík" },
-                  status: { type: "string", enum: ["active", "archive"] },
-                  startStudy: { type: "string", example: "06. 09. 2021" },
-                  className: { type: "string", example: "B3.I" },
-                  groups: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        groupId: { type: "number", example: 42 },
-                        name: { type: "string", example: "Laboratorní skupina A" },
-                        num: { type: "string", example: "01" },
-                        class: { type: "string", example: "B3.I" }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        404: {
-          description: "Invalid student",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  error: { type: "string", example: "Student not found" }
-                }
-              }
-            }
-          }
-        },
-        429: {
-          description: "Rate limit exceeded",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    example: "rate-limited"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    })
   });
 
 export default elysiaApp;

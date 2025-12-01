@@ -138,6 +138,27 @@ const app = new Elysia()
     .where("family_relations.source", "=", tokenDB.personId)
     .execute();
 
+    if (user.children) {
+      for(let i = 0;i < user.children.length;i++) {
+      user.children[i].classes = await db.selectFrom("classes")
+        .leftJoin('school_years as sy', 'sy.syId', 'classes.yearId')
+        .leftJoin('scopes', 'classes.scopeId', 'scopes.scopeId')
+        .leftJoin('students', 'students.class', 'classes.classId')
+        .select([
+          'classes.classId',
+          'classes.scopeId',
+          'scopes.name as scopeName',
+          'scopes.years as scopeYears',
+          sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, sy.start, CURDATE()) + 1, classes.suffix)`.as('className'),
+          sql`COUNT(students.class)`.as('students')
+        ])
+        .where('students.personId', '=', user.children[i].childId)
+        .where(sql`DATE_ADD(sy.start, INTERVAL scopes.years YEAR)`, '>=', sql`CURDATE()`)
+        .groupBy('classes.classId')
+        .execute()
+      }
+    }
+
     user.emails = await db.selectFrom("emails")
     .select([
       'emails.email',

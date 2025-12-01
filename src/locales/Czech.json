@@ -1044,7 +1044,7 @@
                 "not_supported": "Tak to se nepovedlo. Na vašem zařízení Passkeys funkce není podporována."
             },
             "edit": {
-                "title": "Upravit %passkey% passkey",
+                "title": "Upravujete passkey",
                 "description": "Upravením názvu níže si upravíte pouze označení passkey, které vidíte zde v nastavení. Nemá to žádný vliv na fungování passkey přihlašování.",
                 "form": {
                     "name": {
