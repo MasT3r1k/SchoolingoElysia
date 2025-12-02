@@ -33,8 +33,11 @@ const app = new Elysia()
     const students = await db
       .selectFrom('student_groups')
       .leftJoin('users', 'users.person', 'student_groups.student')
+      .leftJoin('persons', 'persons.personId', 'users.person')
       .select(['student_groups.student'])
       .where('student_groups.groupId', '=', body.group_id)
+      .orderBy('persons.lastName', 'asc')
+      .orderBy('persons.firstName', 'asc')
       .execute();
 
     const gradeColumns = await db
