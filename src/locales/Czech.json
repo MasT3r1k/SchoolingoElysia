@@ -423,8 +423,14 @@
             "print": "Vytisknout",
             "stats": "Statistika",
             "select_class": "Vybrat třídu",
+            "edit_lesson": "Úprava hodiny",
             "class": "Třída",
+            "room": "Místnost",
             "week_hours": "Hodin v týdnu",
+            "week": "Týden",
+            "week_both": "Oba týdny",
+            "week_odd": "Lichý týden",
+            "week_even": "Sudý týden",
             "occupied_hours": "Obsazené pole",
             "substitution_week": "Suplování v týdnu",
             "available_subjects": "Dostupné předměty",
@@ -451,6 +457,14 @@
                 "assign_subject": "Přiřadit předmět",
                 "scope": "Obor třídy",
                 "grade_level": "Ročník třídy"
+            }
+        },
+        "edit_lesson": {
+            "types": {
+                "substitution": "Suplování",
+                "cancel": "Zrušit hodinu",
+                "classroom_lesson": "Třídnická hodina",
+                "change_timetable": "Změna rozvrhu"
             }
         }
     },

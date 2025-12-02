@@ -42,7 +42,14 @@ const app = new Elysia()
 
     const gradeColumns = await db
       .selectFrom('grades_columns')
-      .select(['columnIndex', 'gcId', 'topic', 'type', 'weight', 'created'])
+      .select([
+        'columnIndex',
+        'gcId',
+        'topic',
+        'type',
+        'weight',
+        'created'
+      ])
       .where('grades_columns.groupId', '=', body.group_id)
       .where('grades_columns.subjectId', '=', body.subject_id)
       .orderBy('columnIndex')
@@ -59,6 +66,7 @@ const app = new Elysia()
 
     // Připravíme strukturu pro výsledky
     const columns = gradeColumns.map((c: any) => ({
+      columnId: c.gcId,
       topic: c.topic,
       type: c.type,
       weight: c.weight,

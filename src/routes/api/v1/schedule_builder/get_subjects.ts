@@ -45,7 +45,7 @@ const elysiaApp = new Elysia()
     .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
     .select([
         'classes.scopeId',
-        sql`TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1`.as('classIndex')
+        sql`TIMESTAMPDIFF(YEAR, school_years.start, CURDATE())`.as('classIndex')
 
     ])
     .where('classes.classId', '=', classId)
@@ -79,6 +79,8 @@ const elysiaApp = new Elysia()
     ])
     .where('scopes_subjects.scope_id', '=', classData.scopeId)
     .where('scopes_subjects.year', '=', classData.classIndex as number)
+    .where('scopes_subjects.hours_per_week', '>=', 1)
+    .orderBy('subjectName', 'asc')
     .execute();
 
     return { classData, groups, subjects };

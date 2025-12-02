@@ -96,10 +96,15 @@ const elysiaApp = new Elysia()
               db.selectFrom('timetable')
                   .innerJoin('subjects', 'timetable.subject', 'subjects.subjectId')
                   .leftJoin('persons', 'timetable.teacher', 'persons.personId')
+                  .leftJoin('groups', 'groups.groupId', 'timetable.groupId')
                   .leftJoin('building_rooms', 'building_rooms.br_id', 'timetable.room')
+                  .leftJoin('classes', 'classes.classId', 'groups.class')
+                  .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
                   .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                   .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
                   .select([
+                      'groups.name as groupName',
+                      'groups.num as groupNum',
                       sql`(timetable.day + 1) % 7`.as('day'),
                       'timetable.hour',
                       'timetable.type',
@@ -108,7 +113,8 @@ const elysiaApp = new Elysia()
                       sql`subjects.label`.as('subjectName'),
                       sql`subjects.shortcut`.as('subjectShortcut'),
                       sql`persons.lastName`.as('lastName'),
-                      fullName.as('teacher')
+                      fullName.as('teacher'),
+                      sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
                   ])
                   .where('timetable.groupId', 'in', groupNumbers)
                   .execute(),
@@ -117,9 +123,14 @@ const elysiaApp = new Elysia()
                 .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
                 .leftJoin('persons',  'substitution.teacherId', 'persons.personId')
                 .leftJoin('events', 'substitution.event_id', 'events.event_id')
+                .leftJoin('groups', 'groups.groupId', 'substitution.groupId')
+                .leftJoin('classes', 'classes.classId', 'groups.class')
+                .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
                 .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                 .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
                 .select([
+                  'groups.name as groupName',
+                  'groups.num as groupNum',
                   'substitution.start_date',
                   'substitution.start_hour',
                   'substitution.end_date',
@@ -130,7 +141,8 @@ const elysiaApp = new Elysia()
                   sql`subjects.label`.as('subjectName'),
                   sql`subjects.shortcut`.as('subjectShortcut'),
                   sql`persons.lastName`.as('lastName'),
-                  fullName.as('teacher')
+                  fullName.as('teacher'),
+                  sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
                 ])
                 .where((eb) =>
                   eb.and([
@@ -157,15 +169,17 @@ const elysiaApp = new Elysia()
                   .leftJoin('school_years as syClass', 'syClass.syId', 'classes.yearId')
                   .leftJoin('school_years as syGroup', 'syGroup.syId', 'groups.year')
                   .select([
-                      sql`(timetable.day + 1) % 7`.as('day'),
-                      'timetable.hour',
-                      'timetable.type',
-                      'timetable.groupId',
-                      sql`building_rooms.name`.as('room'),
-                      'subjects.subjectId',
-                      sql`subjects.label`.as('subjectName'),
-                      sql`subjects.shortcut`.as('subjectShortcut'),
-                      sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, syClass.start, CURDATE()) + 1, classes.suffix)`.as('className')
+                    'groups.name as groupName',
+                    'groups.num as groupNum',
+                    sql`(timetable.day + 1) % 7`.as('day'),
+                    'timetable.hour',
+                    'timetable.type',
+                    'timetable.groupId',
+                    sql`building_rooms.name`.as('room'),
+                    'subjects.subjectId',
+                    sql`subjects.label`.as('subjectName'),
+                    sql`subjects.shortcut`.as('subjectShortcut'),
+                    sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, syClass.start, CURDATE()) + 1, classes.suffix)`.as('className')
                   ])
                   .where((eb) =>
                     eb.and([
@@ -185,6 +199,8 @@ const elysiaApp = new Elysia()
                 .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                 .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
                 .select([
+                  'groups.name as groupName',
+                  'groups.num as groupNum',
                   'substitution.start_date',
                   'substitution.start_hour',
                   'substitution.end_date',
@@ -214,21 +230,25 @@ const elysiaApp = new Elysia()
               db.selectFrom('timetable')
                   .innerJoin('subjects', 'timetable.subject', 'subjects.subjectId')
                   .leftJoin('groups', 'groups.groupId', 'timetable.groupId')
+                  .leftJoin('classes', 'classes.classId', 'groups.class')
                   .leftJoin('building_rooms', 'building_rooms.br_id', 'timetable.room')
-                  .leftJoin('school_years as syGroup', 'syGroup.syId', 'groups.year')
+                  .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
                   .leftJoin('persons', 'timetable.teacher', 'persons.personId')
                   .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                   .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
                   .select([
-                      sql`(timetable.day + 1) % 7`.as('day'),
-                      'timetable.hour',
-                      'timetable.type',
-                      sql`building_rooms.name`.as('room'),
-                      'subjects.subjectId',
-                      sql`subjects.label`.as('subjectName'),
-                      sql`subjects.shortcut`.as('subjectShortcut'),
-                      sql`persons.lastName`.as('lastName'),
-                      fullName.as('teacher')
+                    'groups.name as groupName',
+                    'groups.num as groupNum',
+                    sql`(timetable.day + 1) % 7`.as('day'),
+                    'timetable.hour',
+                    'timetable.type',
+                    sql`building_rooms.name`.as('room'),
+                    'subjects.subjectId',
+                    sql`subjects.label`.as('subjectName'),
+                    sql`subjects.shortcut`.as('subjectShortcut'),
+                    sql`persons.lastName`.as('lastName'),
+                    sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className'),
+                    fullName.as('teacher')
                   ])
                   .where('groups.class', '=', id)
                   .where('syGroup.start', '<=',  time.clone().format("YYYY-MM-DD"))
@@ -238,7 +258,9 @@ const elysiaApp = new Elysia()
               db.selectFrom('substitution')
                 .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
                 .leftJoin('groups', 'groups.groupId', 'substitution.groupId')
+                .leftJoin('classes', 'classes.classId', 'groups.class')
                 .leftJoin('persons', 'substitution.teacherId', 'persons.personId')
+                .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
                 .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                 .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
                 .select([
@@ -249,7 +271,8 @@ const elysiaApp = new Elysia()
                   'subjects.subjectId',
                   sql`subjects.label`.as('subjectName'),
                   sql`subjects.shortcut`.as('subjectShortcut'),
-                  fullName.as('teacher')
+                  fullName.as('teacher'),
+                  sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
                 ])
                 .where((eb) =>
                   eb.and([
