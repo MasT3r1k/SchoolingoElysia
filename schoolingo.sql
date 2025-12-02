@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1
--- Vytvořeno: Úte 02. pro 2025, 01:31
+-- Vytvořeno: Úte 02. pro 2025, 16:16
 -- Verze serveru: 12.0.2-MariaDB
 -- Verze PHP: 8.2.12
 
@@ -2760,7 +2760,13 @@ INSERT INTO `login_history` (`loginId`, `userId`, `type`, `success`, `error`, `i
 (1300, 4, 'password', 1, NULL, '109.164.51.14', 1259, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-01 22:14:36.292228', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1301, 1, 'password', 1, NULL, '109.164.51.14', 1260, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-01 23:17:11.693498', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1302, 3, 'password', 1, NULL, '109.164.51.14', 1261, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-01 23:17:27.074815', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
-(1303, 4, 'password', 1, NULL, '109.164.51.14', 1262, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-02 00:10:01.478977', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL);
+(1303, 4, 'password', 1, NULL, '109.164.51.14', 1262, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-02 00:10:01.478977', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1304, 4, 'password', 1, NULL, '195.113.101.227', 1263, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 07:07:19.772648', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1305, 1, 'password', 1, NULL, '195.113.101.227', 1264, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 07:46:31.186370', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1306, 4, 'password', 1, NULL, '195.113.101.227', 1265, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 08:11:42.933950', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1307, 4, 'password', 1, NULL, '195.113.101.227', 1266, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 10:02:38.392278', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1308, 4, 'password', 1, NULL, '195.113.101.227', 1267, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 10:50:03.742308', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1309, 4, 'password', 1, NULL, '195.113.101.227', 1268, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 12:27:53.930299', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2973,7 +2979,7 @@ INSERT INTO `persons` (`personId`, `lastName`, `firstName`, `gender`, `birthday`
 (1, 'Kosík', 'Josef', 0, '2006-08-14', '', 0, 1, 0, 201),
 (2, 'Pizinger', 'Jakub', 0, '1995-01-19', '', 0, 1, 0, NULL),
 (3, 'Bakala', 'Břetislav', 0, '1994-01-21', '', 0, 1, 0, NULL),
-(4, 'Bartuška', 'Martin\n', 0, '1994-01-21', '', 0, 1, 0, NULL),
+(4, 'Bartuška', 'Martin', 0, '1994-01-21', '', 0, 1, 0, NULL),
 (5, 'Benedikt', 'Miloš', 0, '1994-01-21', '', 0, 1, 0, NULL),
 (6, 'Brůžek', 'Petr', 0, '1994-01-21', '', 0, 1, 0, NULL),
 (7, 'Burger', 'Michal', 0, '1998-01-14', '', 0, 1, 0, NULL),
@@ -3245,9 +3251,9 @@ CREATE TABLE `scopes_subjects` (
   `year` int(11) NOT NULL,
   `subject_id` int(11) NOT NULL,
   `hours_per_week` int(11) NOT NULL,
-  `exercise` int(11) NOT NULL,
+  `exercise` int(11) NOT NULL DEFAULT 0,
   `is_mandatory` tinyint(1) NOT NULL DEFAULT 1,
-  `default_room` int(11) NOT NULL,
+  `default_room` int(11) DEFAULT NULL,
   `color` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
@@ -3256,8 +3262,201 @@ CREATE TABLE `scopes_subjects` (
 --
 
 INSERT INTO `scopes_subjects` (`ss_id`, `scope_id`, `year`, `subject_id`, `hours_per_week`, `exercise`, `is_mandatory`, `default_room`, `color`) VALUES
-(1, 2, 4, 2, 3, 0, 1, 0, NULL),
-(2, 2, 4, 1, 2, 2, 1, 0, NULL);
+(783, 2, 0, 1, 3, 0, 1, NULL, NULL),
+(784, 2, 1, 1, 3, 0, 1, NULL, NULL),
+(785, 2, 2, 1, 2, 0, 1, NULL, NULL),
+(786, 2, 3, 1, 2, 0, 1, NULL, NULL),
+(787, 2, 4, 1, 0, 0, 1, NULL, NULL),
+(788, 2, 0, 2, 3, 0, 1, NULL, NULL),
+(789, 2, 1, 2, 3, 0, 1, NULL, NULL),
+(790, 2, 2, 2, 3, 0, 1, NULL, NULL),
+(791, 2, 3, 2, 3, 0, 1, NULL, NULL),
+(792, 2, 4, 2, 0, 0, 1, NULL, NULL),
+(793, 2, 0, 3, 2, 0, 1, NULL, NULL),
+(794, 2, 1, 3, 2, 0, 1, NULL, NULL),
+(795, 2, 2, 3, 0, 0, 1, NULL, NULL),
+(796, 2, 3, 3, 0, 0, 1, NULL, NULL),
+(797, 2, 4, 3, 0, 0, 1, NULL, NULL),
+(798, 2, 0, 4, 0, 0, 1, NULL, NULL),
+(799, 2, 1, 4, 1, 0, 1, NULL, NULL),
+(800, 2, 2, 4, 1, 0, 1, NULL, NULL),
+(801, 2, 3, 4, 1, 0, 1, NULL, NULL),
+(802, 2, 4, 4, 0, 0, 1, NULL, NULL),
+(803, 2, 0, 5, 2, 0, 1, NULL, NULL),
+(804, 2, 1, 5, 0, 0, 1, NULL, NULL),
+(805, 2, 2, 5, 0, 0, 1, NULL, NULL),
+(806, 2, 3, 5, 0, 0, 1, NULL, NULL),
+(807, 2, 4, 5, 0, 0, 1, NULL, NULL),
+(808, 2, 0, 6, 4, 0, 1, NULL, NULL),
+(809, 2, 1, 6, 4, 0, 1, NULL, NULL),
+(810, 2, 2, 6, 3, 0, 1, NULL, NULL),
+(811, 2, 3, 6, 3, 0, 1, NULL, NULL),
+(812, 2, 4, 6, 0, 0, 1, NULL, NULL),
+(813, 2, 0, 7, 2, 0, 1, NULL, NULL),
+(814, 2, 1, 7, 2, 0, 1, NULL, NULL),
+(815, 2, 2, 7, 2, 0, 1, NULL, NULL),
+(816, 2, 3, 7, 2, 0, 1, NULL, NULL),
+(817, 2, 4, 7, 0, 0, 1, NULL, NULL),
+(818, 2, 0, 8, 1, 0, 1, NULL, NULL),
+(819, 2, 1, 8, 0, 0, 1, NULL, NULL),
+(820, 2, 2, 8, 0, 0, 1, NULL, NULL),
+(821, 2, 3, 8, 0, 0, 1, NULL, NULL),
+(822, 2, 4, 8, 0, 0, 1, NULL, NULL),
+(823, 2, 0, 9, 1, 0, 1, NULL, NULL),
+(824, 2, 1, 9, 0, 0, 1, NULL, NULL),
+(825, 2, 2, 9, 0, 0, 1, NULL, NULL),
+(826, 2, 3, 9, 0, 0, 1, NULL, NULL),
+(827, 2, 4, 9, 0, 0, 1, NULL, NULL),
+(828, 2, 0, 10, 0, 0, 1, NULL, NULL),
+(829, 2, 1, 10, 0, 0, 1, NULL, NULL),
+(830, 2, 2, 10, 2, 0, 1, NULL, NULL),
+(831, 2, 3, 10, 3, 0, 1, NULL, NULL),
+(832, 2, 4, 10, 0, 0, 1, NULL, NULL),
+(833, 2, 0, 11, 3, 0, 1, NULL, NULL),
+(834, 2, 1, 11, 2, 0, 1, NULL, NULL),
+(835, 2, 2, 11, 0, 0, 1, NULL, NULL),
+(836, 2, 3, 11, 0, 0, 1, NULL, NULL),
+(837, 2, 4, 11, 0, 0, 1, NULL, NULL),
+(838, 2, 0, 12, 2, 0, 1, NULL, NULL),
+(839, 2, 1, 12, 2, 0, 1, NULL, NULL),
+(840, 2, 2, 12, 2, 0, 1, NULL, NULL),
+(841, 2, 3, 12, 2, 0, 1, NULL, NULL),
+(842, 2, 4, 12, 0, 0, 1, NULL, NULL),
+(843, 2, 0, 13, 0, 0, 1, NULL, NULL),
+(844, 2, 1, 13, 0, 0, 1, NULL, NULL),
+(845, 2, 2, 13, 0, 0, 1, NULL, NULL),
+(846, 2, 3, 13, 0, 0, 1, NULL, NULL),
+(847, 2, 4, 13, 0, 0, 1, NULL, NULL),
+(848, 2, 0, 14, 0, 0, 1, NULL, NULL),
+(849, 2, 1, 14, 0, 0, 1, NULL, NULL),
+(850, 2, 2, 14, 0, 0, 1, NULL, NULL),
+(851, 2, 3, 14, 0, 0, 1, NULL, NULL),
+(852, 2, 4, 14, 0, 0, 1, NULL, NULL),
+(853, 2, 0, 15, 0, 0, 1, NULL, NULL),
+(854, 2, 1, 15, 0, 0, 1, NULL, NULL),
+(855, 2, 2, 15, 0, 0, 1, NULL, NULL),
+(856, 2, 3, 15, 0, 0, 1, NULL, NULL),
+(857, 2, 4, 15, 0, 0, 1, NULL, NULL),
+(858, 2, 0, 16, 0, 0, 1, NULL, NULL),
+(859, 2, 1, 16, 0, 0, 1, NULL, NULL),
+(860, 2, 2, 16, 0, 0, 1, NULL, NULL),
+(861, 2, 3, 16, 0, 0, 1, NULL, NULL),
+(862, 2, 4, 16, 0, 0, 1, NULL, NULL),
+(863, 2, 0, 17, 0, 0, 1, NULL, NULL),
+(864, 2, 1, 17, 0, 0, 1, NULL, NULL),
+(865, 2, 2, 17, 0, 0, 1, NULL, NULL),
+(866, 2, 3, 17, 0, 0, 1, NULL, NULL),
+(867, 2, 4, 17, 0, 0, 1, NULL, NULL),
+(868, 2, 0, 18, 0, 0, 1, NULL, NULL),
+(869, 2, 1, 18, 0, 0, 1, NULL, NULL),
+(870, 2, 2, 18, 0, 0, 1, NULL, NULL),
+(871, 2, 3, 18, 0, 0, 1, NULL, NULL),
+(872, 2, 4, 18, 0, 0, 1, NULL, NULL),
+(873, 2, 0, 19, 0, 0, 1, NULL, NULL),
+(874, 2, 1, 19, 0, 0, 1, NULL, NULL),
+(875, 2, 2, 19, 0, 0, 1, NULL, NULL),
+(876, 2, 3, 19, 0, 0, 1, NULL, NULL),
+(877, 2, 4, 19, 0, 0, 1, NULL, NULL),
+(878, 2, 0, 20, 0, 0, 1, NULL, NULL),
+(879, 2, 1, 20, 0, 0, 1, NULL, NULL),
+(880, 2, 2, 20, 0, 0, 1, NULL, NULL),
+(881, 2, 3, 20, 0, 0, 1, NULL, NULL),
+(882, 2, 4, 20, 0, 0, 1, NULL, NULL),
+(883, 2, 0, 21, 0, 0, 1, NULL, NULL),
+(884, 2, 1, 21, 0, 0, 1, NULL, NULL),
+(885, 2, 2, 21, 0, 0, 1, NULL, NULL),
+(886, 2, 3, 21, 0, 0, 1, NULL, NULL),
+(887, 2, 4, 21, 0, 0, 1, NULL, NULL),
+(888, 2, 0, 22, 0, 0, 1, NULL, NULL),
+(889, 2, 1, 22, 0, 0, 1, NULL, NULL),
+(890, 2, 2, 22, 0, 0, 1, NULL, NULL),
+(891, 2, 3, 22, 0, 0, 1, NULL, NULL),
+(892, 2, 4, 22, 0, 0, 1, NULL, NULL),
+(893, 2, 0, 23, 0, 0, 1, NULL, NULL),
+(894, 2, 1, 23, 0, 0, 1, NULL, NULL),
+(895, 2, 2, 23, 0, 0, 1, NULL, NULL),
+(896, 2, 3, 23, 0, 0, 1, NULL, NULL),
+(897, 2, 4, 23, 0, 0, 1, NULL, NULL),
+(898, 2, 0, 24, 0, 0, 1, NULL, NULL),
+(899, 2, 1, 24, 0, 0, 1, NULL, NULL),
+(900, 2, 2, 24, 0, 0, 1, NULL, NULL),
+(901, 2, 3, 24, 0, 0, 1, NULL, NULL),
+(902, 2, 4, 24, 0, 0, 1, NULL, NULL),
+(903, 2, 0, 25, 0, 0, 1, NULL, NULL),
+(904, 2, 1, 25, 0, 0, 1, NULL, NULL),
+(905, 2, 2, 25, 0, 0, 1, NULL, NULL),
+(906, 2, 3, 25, 0, 0, 1, NULL, NULL),
+(907, 2, 4, 25, 0, 0, 1, NULL, NULL),
+(908, 2, 0, 26, 0, 0, 1, NULL, NULL),
+(909, 2, 1, 26, 0, 0, 1, NULL, NULL),
+(910, 2, 2, 26, 0, 0, 1, NULL, NULL),
+(911, 2, 3, 26, 0, 0, 1, NULL, NULL),
+(912, 2, 4, 26, 0, 0, 1, NULL, NULL),
+(913, 2, 0, 27, 0, 0, 1, NULL, NULL),
+(914, 2, 1, 27, 0, 0, 1, NULL, NULL),
+(915, 2, 2, 27, 2, 0, 1, NULL, NULL),
+(916, 2, 3, 27, 0, 0, 1, NULL, NULL),
+(917, 2, 4, 27, 0, 0, 1, NULL, NULL),
+(918, 2, 0, 28, 0, 0, 1, NULL, NULL),
+(919, 2, 1, 28, 0, 0, 1, NULL, NULL),
+(920, 2, 2, 28, 0, 0, 1, NULL, NULL),
+(921, 2, 3, 28, 0, 0, 1, NULL, NULL),
+(922, 2, 4, 28, 0, 0, 1, NULL, NULL),
+(923, 2, 0, 29, 2, 0, 1, NULL, NULL),
+(924, 2, 1, 29, 2, 0, 1, NULL, NULL),
+(925, 2, 2, 29, 2, 0, 1, NULL, NULL),
+(926, 2, 3, 29, 2, 0, 1, NULL, NULL),
+(927, 2, 4, 29, 0, 0, 1, NULL, NULL),
+(928, 2, 0, 30, 2, 0, 1, NULL, NULL),
+(929, 2, 1, 30, 3, 0, 1, NULL, NULL),
+(930, 2, 2, 30, 3, 0, 1, NULL, NULL),
+(931, 2, 3, 30, 3, 0, 1, NULL, NULL),
+(932, 2, 4, 30, 0, 0, 1, NULL, NULL),
+(933, 2, 0, 31, 2, 0, 1, NULL, NULL),
+(934, 2, 1, 31, 3, 0, 1, NULL, NULL),
+(935, 2, 2, 31, 2, 0, 1, NULL, NULL),
+(936, 2, 3, 31, 2, 0, 1, NULL, NULL),
+(937, 2, 4, 31, 0, 0, 1, NULL, NULL),
+(938, 2, 0, 32, 2, 0, 1, NULL, NULL),
+(939, 2, 1, 32, 1, 0, 1, NULL, NULL),
+(940, 2, 2, 32, 3, 0, 1, NULL, NULL),
+(941, 2, 3, 32, 2, 0, 1, NULL, NULL),
+(942, 2, 4, 32, 0, 0, 1, NULL, NULL),
+(943, 2, 0, 33, 0, 0, 1, NULL, NULL),
+(944, 2, 1, 33, 2, 0, 1, NULL, NULL),
+(945, 2, 2, 33, 2, 0, 1, NULL, NULL),
+(946, 2, 3, 33, 2, 0, 1, NULL, NULL),
+(947, 2, 4, 33, 0, 0, 1, NULL, NULL),
+(948, 2, 0, 34, 2, 0, 1, NULL, NULL),
+(949, 2, 1, 34, 2, 0, 1, NULL, NULL),
+(950, 2, 2, 34, 2, 0, 1, NULL, NULL),
+(951, 2, 3, 34, 2, 0, 1, NULL, NULL),
+(952, 2, 4, 34, 0, 0, 1, NULL, NULL),
+(953, 2, 0, 35, 0, 0, 1, NULL, NULL),
+(954, 2, 1, 35, 0, 0, 1, NULL, NULL),
+(955, 2, 2, 35, 2, 0, 1, NULL, NULL),
+(956, 2, 3, 35, 2, 0, 1, NULL, NULL),
+(957, 2, 4, 35, 0, 0, 1, NULL, NULL),
+(958, 2, 0, 36, 0, 0, 1, NULL, NULL),
+(959, 2, 1, 36, 0, 0, 1, NULL, NULL),
+(960, 2, 2, 36, 1, 0, 1, NULL, NULL),
+(961, 2, 3, 36, 1, 0, 1, NULL, NULL),
+(962, 2, 4, 36, 0, 0, 1, NULL, NULL),
+(963, 2, 0, 37, 0, 0, 1, NULL, NULL),
+(964, 2, 1, 37, 0, 0, 1, NULL, NULL),
+(965, 2, 2, 37, 0, 0, 1, NULL, NULL),
+(966, 2, 3, 37, 0, 0, 1, NULL, NULL),
+(967, 2, 4, 37, 0, 0, 1, NULL, NULL),
+(968, 2, 0, 38, 0, 0, 1, NULL, NULL),
+(969, 2, 1, 38, 0, 0, 1, NULL, NULL),
+(970, 2, 2, 38, 0, 0, 1, NULL, NULL),
+(971, 2, 3, 38, 0, 0, 1, NULL, NULL),
+(972, 2, 4, 38, 0, 0, 1, NULL, NULL),
+(973, 2, 0, 39, 0, 0, 1, NULL, NULL),
+(974, 2, 1, 39, 0, 0, 1, NULL, NULL),
+(975, 2, 2, 39, 0, 0, 1, NULL, NULL),
+(976, 2, 3, 39, 0, 0, 1, NULL, NULL),
+(977, 2, 4, 39, 0, 0, 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -4346,6 +4545,13 @@ INSERT INTO `tokens` (`tokenId`, `token`, `password`, `userAgent`, `expires`, `c
 (1260, '$2b$04$uPl2ZRwDlodZowjphBO9POeQ/AXyLGEA.71V6wIoujAUw0Sec47wS', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-02 00:17:23.008000', '2025-12-02 00:17:11.690000', 1, NULL, '109.164.51.14'),
 (1261, '$2b$04$Wxc4SeSTcGF1TKQ1eZNvmOVIhLLVNHzYokOzOxJ/A8Werv.I8Gp7C', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-02 00:32:31.284000', '2025-12-02 00:17:27.071000', 3, NULL, '109.164.51.14'),
 (1262, '$2b$04$PUXu9aOUYSJVyEfYbrH.OezsZMu.3FBrrgbSEwR5R7VZEGTxHi0aa', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-02 01:25:06.558000', '2025-12-02 01:10:01.476000', 4, NULL, '109.164.51.14');
+INSERT INTO `tokens` (`tokenId`, `token`, `password`, `userAgent`, `expires`, `created`, `userId`, `socket`, `ip`) VALUES
+(1263, '$2b$04$HfSYs.CaBfPhp/6pJOSZhes/uMxm6/GFnxxZLf7LqiEFaXumYTPW2', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 08:46:28.104000', '2025-12-02 08:07:19.760000', 4, NULL, '195.113.101.227'),
+(1264, '$2b$04$jdHb10YKALl1K7q/MyBLmOKKkj8xAZj8K2qVuACuC6jEwiGlkXQpe', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 09:11:40.403000', '2025-12-02 08:46:31.171000', 1, NULL, '195.113.101.227'),
+(1265, '$2b$04$PhDnKewpD3iP9chYlzKiguc9hxvb5Js29jWRBQV8Croh8xd3Eze.K', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 10:40:59.555000', '2025-12-02 09:11:42.893000', 4, NULL, '195.113.101.227'),
+(1266, '$2b$04$djFwY7boaPU9rhOk3GxDv.fIir/aTKsClKK6YBdFbwaHKsEjzXpDm', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 11:33:30.966000', '2025-12-02 11:02:38.332000', 4, NULL, '195.113.101.227'),
+(1267, '$2b$04$OG2k85OmnojsLiD7P3J1VOv1qTDose3eW4h2.oj7kDHmxMDkFGwQO', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 12:35:09.683000', '2025-12-02 11:50:03.694000', 4, NULL, '195.113.101.227'),
+(1268, '$2b$04$T4hUF1Uup4Q95.oQdyg0W.iR3FTDzirEy8PLNx8cEuM.OLQp7Ypsy', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 14:23:38.319000', '2025-12-02 13:27:53.874000', 4, NULL, '195.113.101.227');
 
 -- --------------------------------------------------------
 
@@ -5590,7 +5796,7 @@ ALTER TABLE `library_reservations`
 -- AUTO_INCREMENT pro tabulku `login_history`
 --
 ALTER TABLE `login_history`
-  MODIFY `loginId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1304;
+  MODIFY `loginId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1310;
 
 --
 -- AUTO_INCREMENT pro tabulku `marking_scales`
@@ -5674,7 +5880,7 @@ ALTER TABLE `scopes`
 -- AUTO_INCREMENT pro tabulku `scopes_subjects`
 --
 ALTER TABLE `scopes_subjects`
-  MODIFY `ss_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ss_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=978;
 
 --
 -- AUTO_INCREMENT pro tabulku `subjects`
@@ -5698,7 +5904,7 @@ ALTER TABLE `timetable`
 -- AUTO_INCREMENT pro tabulku `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1263;
+  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1269;
 
 --
 -- AUTO_INCREMENT pro tabulku `traineeship_companies`
