@@ -114,6 +114,7 @@ const elysiaApp = new Elysia()
                       sql`subjects.shortcut`.as('subjectShortcut'),
                       sql`persons.lastName`.as('lastName'),
                       fullName.as('teacher'),
+                      'timetable.teacher as teacherId',
                       sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
                   ])
                   .where('timetable.groupId', 'in', groupNumbers)
@@ -142,6 +143,7 @@ const elysiaApp = new Elysia()
                   sql`subjects.shortcut`.as('subjectShortcut'),
                   sql`persons.lastName`.as('lastName'),
                   fullName.as('teacher'),
+                  'substitution.teacherId',
                   sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
                 ])
                 .where((eb) =>
@@ -164,6 +166,7 @@ const elysiaApp = new Elysia()
               db.selectFrom('timetable')
                   .innerJoin('subjects', 'timetable.subject', 'subjects.subjectId')
                   .leftJoin('groups', 'groups.groupId', 'timetable.groupId')
+                  .leftJoin('persons', 'persons.personId', 'timetable.teacher')
                   .leftJoin('classes', 'groups.class', 'classes.classId')
                   .leftJoin('building_rooms', 'building_rooms.br_id', 'timetable.room')
                   .leftJoin('school_years as syClass', 'syClass.syId', 'classes.yearId')
@@ -177,6 +180,7 @@ const elysiaApp = new Elysia()
                     'timetable.groupId',
                     sql`building_rooms.name`.as('room'),
                     'subjects.subjectId',
+                    'timetable.teacher as teacherId',
                     sql`subjects.label`.as('subjectName'),
                     sql`subjects.shortcut`.as('subjectShortcut'),
                     sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, syClass.start, CURDATE()) + 1, classes.suffix)`.as('className')
@@ -206,6 +210,7 @@ const elysiaApp = new Elysia()
                   'substitution.end_date',
                   'substitution.end_hour',
                   'subjects.subjectId',
+                  'substitution.teacherId',
                   sql`subjects.label`.as('subjectName'),
                   sql`subjects.shortcut`.as('subjectShortcut'),
                   sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
@@ -247,6 +252,7 @@ const elysiaApp = new Elysia()
                     sql`subjects.label`.as('subjectName'),
                     sql`subjects.shortcut`.as('subjectShortcut'),
                     sql`persons.lastName`.as('lastName'),
+                    'timetable.teacher as teacherId',
                     sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className'),
                     fullName.as('teacher')
                   ])
@@ -269,6 +275,7 @@ const elysiaApp = new Elysia()
                   'substitution.end_date',
                   'substitution.end_hour',
                   'subjects.subjectId',
+                  'substitution.teacherId',
                   sql`subjects.label`.as('subjectName'),
                   sql`subjects.shortcut`.as('subjectShortcut'),
                   fullName.as('teacher'),
