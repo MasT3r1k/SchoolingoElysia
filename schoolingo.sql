@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1
--- Vytvořeno: Úte 02. pro 2025, 16:16
+-- Vytvořeno: Stř 03. pro 2025, 15:59
 -- Verze serveru: 12.0.2-MariaDB
 -- Verze PHP: 8.2.12
 
@@ -2766,7 +2766,18 @@ INSERT INTO `login_history` (`loginId`, `userId`, `type`, `success`, `error`, `i
 (1306, 4, 'password', 1, NULL, '195.113.101.227', 1265, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 08:11:42.933950', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1307, 4, 'password', 1, NULL, '195.113.101.227', 1266, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 10:02:38.392278', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1308, 4, 'password', 1, NULL, '195.113.101.227', 1267, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 10:50:03.742308', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
-(1309, 4, 'password', 1, NULL, '195.113.101.227', 1268, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 12:27:53.930299', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL);
+(1309, 4, 'password', 1, NULL, '195.113.101.227', 1268, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 12:27:53.930299', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1310, 4, 'password', 1, NULL, '195.113.101.227', 1269, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 08:10:07.049945', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1311, 4, 'password', 1, NULL, '195.113.101.227', 1270, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 09:10:24.388902', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1312, 4, 'password', 1, NULL, '195.113.101.227', 1271, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 10:00:46.228039', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1313, 1, 'password', 1, NULL, '195.113.101.227', 1272, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 10:08:42.210696', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1314, 4, 'password', 1, NULL, '195.113.101.227', 1273, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 10:34:02.943858', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1315, 3, 'password', 1, NULL, '195.113.101.227', 1274, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 10:34:33.356547', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1316, 4, 'password', 1, NULL, '195.113.101.227', 1275, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 10:34:58.155372', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1317, 4, 'password', 1, NULL, '185.184.192.200', 1276, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 11:11:44.208924', 'Naaldwijk', '2671', 'South Holland', 'The Netherlands', 'NL', NULL, NULL),
+(1318, 4, 'password', 1, NULL, '185.184.192.200', 1277, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 11:20:10.509186', 'Naaldwijk', '2671', 'South Holland', 'The Netherlands', 'NL', NULL, NULL),
+(1319, 4, 'password', 1, NULL, '195.113.101.227', 1278, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 13:15:45.859065', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1320, 4, 'password', 1, NULL, '195.113.101.227', 1279, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 13:40:59.321382', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2879,6 +2890,23 @@ INSERT INTO `messages_receivers` (`message_id`, `receiver_id`, `read_at`, `confi
 (5, 25, NULL, NULL),
 (5, 31, NULL, NULL),
 (6, 4, '2025-11-30 23:51:21', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `notifications`
+--
+
+CREATE TABLE `notifications` (
+  `notification_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `type` text NOT NULL,
+  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`data`)),
+  `action` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`action`)),
+  `read_at` timestamp NULL DEFAULT NULL,
+  `confirmed_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -3757,7 +3785,8 @@ INSERT INTO `substitution` (`substitutionId`, `groupId`, `start_date`, `start_ho
 (1, 10, '2024-11-20', -1, '2024-11-20', 0, NULL, NULL, 2, '2024-11-18 18:47:32', NULL),
 (2, 10, '2024-11-21', 2, '2024-11-21', 0, NULL, 33, NULL, '2024-11-18 20:41:11', NULL),
 (3, 9, '2024-11-19', -1, '2024-11-19', 0, NULL, NULL, NULL, '2024-11-18 20:41:11', NULL),
-(4, NULL, '2025-06-28', -1, '2025-08-31', -1, 'holiday', NULL, NULL, '2025-06-30 16:56:09', 1);
+(4, NULL, '2026-06-28', -1, '2026-08-31', -1, 'holiday', NULL, NULL, '2025-06-30 16:56:09', 1),
+(6, 9, '2025-12-01', 1, '2025-12-01', 1, NULL, 1, 15, '2025-12-03 13:53:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -4551,7 +4580,18 @@ INSERT INTO `tokens` (`tokenId`, `token`, `password`, `userAgent`, `expires`, `c
 (1265, '$2b$04$PhDnKewpD3iP9chYlzKiguc9hxvb5Js29jWRBQV8Croh8xd3Eze.K', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 10:40:59.555000', '2025-12-02 09:11:42.893000', 4, NULL, '195.113.101.227'),
 (1266, '$2b$04$djFwY7boaPU9rhOk3GxDv.fIir/aTKsClKK6YBdFbwaHKsEjzXpDm', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 11:33:30.966000', '2025-12-02 11:02:38.332000', 4, NULL, '195.113.101.227'),
 (1267, '$2b$04$OG2k85OmnojsLiD7P3J1VOv1qTDose3eW4h2.oj7kDHmxMDkFGwQO', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 12:35:09.683000', '2025-12-02 11:50:03.694000', 4, NULL, '195.113.101.227'),
-(1268, '$2b$04$T4hUF1Uup4Q95.oQdyg0W.iR3FTDzirEy8PLNx8cEuM.OLQp7Ypsy', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 14:23:38.319000', '2025-12-02 13:27:53.874000', 4, NULL, '195.113.101.227');
+(1268, '$2b$04$T4hUF1Uup4Q95.oQdyg0W.iR3FTDzirEy8PLNx8cEuM.OLQp7Ypsy', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-02 14:23:38.319000', '2025-12-02 13:27:53.874000', 4, NULL, '195.113.101.227'),
+(1269, '$2b$04$SM7jKLtrIT7EOSf3j/nIFujeb.jTW43XjD00TcuXDO9..Rq5ebX2e', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 10:10:18.275000', '2025-12-03 09:10:07.005000', 4, NULL, '195.113.101.227'),
+(1270, '$2b$04$I3EOu6eschYONmlmfuHjgeQkiEAW4wkg/G03c2u0.zuGFRs1LaMSC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 10:43:27.451000', '2025-12-03 10:10:24.357000', 4, NULL, '195.113.101.227'),
+(1271, '$2b$04$UaDyOt1F9eDFyweLbVoe8.B9OuVaqsjsAsueZupVsa1hmTf1Fgg1K', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 11:08:38.211000', '2025-12-03 11:00:46.201000', 4, NULL, '195.113.101.227'),
+(1272, '$2b$04$Zf1KOqj/m.C53iDSdWbdf.m2IenMRJ4GATR.ZULNULmpO/fZKgQ1O', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 11:33:59.018000', '2025-12-03 11:08:42.161000', 1, NULL, '195.113.101.227'),
+(1273, '$2b$04$1CMZpMEAwFvCx7rb/kcMZuvqrzsbBaLWe2XiMzxblsw1/q2oBsWji', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 11:34:07.301000', '2025-12-03 11:34:02.922000', 4, NULL, '195.113.101.227'),
+(1274, '$2b$04$JZ4XoGjlVf/aPhgWmv0oO.m2vrjGHWCFl.fduX090lO.ku8W/iT3i', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 11:34:54.495000', '2025-12-03 11:34:33.331000', 3, NULL, '195.113.101.227'),
+(1275, '$2b$04$BZQ0y1WTKYvZ3CZuoztsOeH6zHWC9AosbS07aYuvO7TSpDsD0knDS', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 12:03:27.767000', '2025-12-03 11:34:58.146000', 4, NULL, '195.113.101.227'),
+(1276, '$2b$04$EPlbph782tdlegbd7oNTJu3O2kKSN/hCFskqDCVBvi/5C/mdbqSLq', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 12:20:07.881000', '2025-12-03 12:11:44.147000', 4, NULL, '185.184.192.200'),
+(1277, '$2b$04$635s8o/6dOprhbKbuOiFyuX4LV3twh/ygh3B38AUkRkYAsTs1upF2', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 12:44:55.851000', '2025-12-03 12:20:10.475000', 4, NULL, '185.184.192.200'),
+(1278, '$2b$04$ZYJ7EByP68I8SiUO/ctO.eOVLsFtcsvEwXOxRmdeAByp5T681o8Rm', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 14:38:32.281000', '2025-12-03 14:15:45.838000', 4, NULL, '195.113.101.227'),
+(1279, '$2b$04$whFNKeFN59aMGPohbbgPKOCN.qe5txxZZ0LXoNK1OEr1UPXky8P3a', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 15:09:29.473000', '2025-12-03 14:40:59.274000', 4, NULL, '195.113.101.227');
 
 -- --------------------------------------------------------
 
@@ -4795,8 +4835,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`userId`, `person`, `username`, `password`, `manager`, `principal`, `theme`, `locale`, `passwordChanged`, `recommendChangePassword`, `cookies`, `school`, `autoSelectNextWeek`, `fastlogin`, `levels_exp`, `2fa`, `2fa_secret`, `2fa_activated`, `avatar`) VALUES
 (1, 1, 'kosik', 1, 0, 0, 1, 'cs', '2025-10-14', 0, 1, 1, 1, 1, 745, 0, 'NZPHEHZSNRUROPQX', '2025-10-14 09:35:04', '{\"seed\":\"iyGs1BUjIryJVZDk\",\"type\":\"avataaarsNeutral\",\"eyebrows\":\"default\",\"eyes\":\"default\",\"mouth\":\"default\"}'),
 (2, 2, 'pizinger', 1, 0, 0, 0, 'cs', NULL, 0, 1, 1, 1, 1, 0, 0, 'HEGBKGSXDNISYF3B', '2025-06-27 14:33:48', '{\"seed\":\"A7jrlqXppJ5pO0u7\",\"type\":\"avataaarsNeutral\",\"eyebrows\":\"default\",\"eyes\":\"default\",\"mouth\":\"default\"}'),
-(3, 33, 'testrodic', 1, 0, 0, 0, 'cs', NULL, 0, 0, 1, 1, 1, 0, 0, NULL, '2025-06-27 14:33:48', '{}'),
-(4, 4, 'admin', 1, -1, 1, 1, 'cs', '2025-11-22', 0, 0, 1, 1, 1, 0, 0, 'MFLDEXAJPV2VQAT2', '2025-10-17 06:45:31', '{}'),
+(3, 33, 'testrodic', 1, 0, 0, 1, 'cs', NULL, 0, 2, 1, 1, 1, 0, 0, NULL, '2025-06-27 14:33:48', '{}'),
+(4, 4, 'admin', 1, -1, 1, 1, 'cs', '2025-11-22', 0, 2, 1, 1, 1, 0, 0, 'MFLDEXAJPV2VQAT2', '2025-10-17 06:45:31', '{}'),
 (5, 24, 'student1', 1, 0, 0, 0, 'cs', NULL, 0, 0, 1, 1, 1, 0, 0, NULL, '2025-06-27 14:33:48', '{}'),
 (6, 25, 'student2', 1, 0, 0, 0, 'cs', NULL, 0, 0, 1, 1, 1, 0, 0, NULL, '2025-06-27 14:33:48', '{}'),
 (7, 26, 'student3', 1, 0, 0, 0, 'cs', NULL, 0, 0, 1, 1, 1, 0, 0, NULL, '2025-06-27 14:33:48', '{}');
@@ -5267,6 +5307,12 @@ ALTER TABLE `messages`
 ALTER TABLE `messages_receivers`
   ADD UNIQUE KEY `message` (`message_id`,`receiver_id`),
   ADD KEY `receiver` (`receiver_id`);
+
+--
+-- Indexy pro tabulku `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`notification_id`);
 
 --
 -- Indexy pro tabulku `passwords`
@@ -5796,7 +5842,7 @@ ALTER TABLE `library_reservations`
 -- AUTO_INCREMENT pro tabulku `login_history`
 --
 ALTER TABLE `login_history`
-  MODIFY `loginId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1310;
+  MODIFY `loginId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1321;
 
 --
 -- AUTO_INCREMENT pro tabulku `marking_scales`
@@ -5815,6 +5861,12 @@ ALTER TABLE `marking_scales_groups`
 --
 ALTER TABLE `messages`
   MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT pro tabulku `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pro tabulku `passwords`
@@ -5892,7 +5944,7 @@ ALTER TABLE `subjects`
 -- AUTO_INCREMENT pro tabulku `substitution`
 --
 ALTER TABLE `substitution`
-  MODIFY `substitutionId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `substitutionId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT pro tabulku `timetable`
@@ -5904,7 +5956,7 @@ ALTER TABLE `timetable`
 -- AUTO_INCREMENT pro tabulku `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1269;
+  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1280;
 
 --
 -- AUTO_INCREMENT pro tabulku `traineeship_companies`
