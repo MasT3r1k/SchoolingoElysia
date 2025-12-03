@@ -83,6 +83,8 @@ import { ClassbookNotesTable } from './classbook_notes'
 import { documentsTable } from './documents'
 import { semester_gradesTable } from './semester_grades'
 import { notificationsTable } from './notifications'
+import { notificationRulesTable } from './notification_rules'
+import { pushSubscriptionsTable } from './push_subscriptions'
 
 export interface Database {
   absence: AbsenceTable
@@ -131,6 +133,8 @@ export interface Database {
   messages: messagesTable
   messages_receivers: messages_receiversTable
   notifications: notificationsTable
+  notification_rules: notificationRulesTable
+  push_subscriptions: pushSubscriptionsTable
   passwords: passwordsTable
   payments_classes: payments_classesTable
   payments_columns: payments_columnsTable
@@ -167,7 +171,7 @@ export interface Database {
   traineeship_weeks: Traineeship_weeksTable
   users: UsersTable
   users_backup_codes: Users_backup_codesTable
-  users_credentials: Users_credentialsTable,
-  users_resetpassword: Users_resetpasswordTable,
+  users_credentials: Users_credentialsTable
+  users_resetpassword: Users_resetpasswordTable
   webauthn_challenges: webauthn_challengesTable
 }
