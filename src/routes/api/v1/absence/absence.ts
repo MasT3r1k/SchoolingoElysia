@@ -171,18 +171,18 @@ const elysiaApp = new Elysia()
             let lessonData = lessons[lesson.subjectId];
             let type: number[] = [];
             if (lessonData) {
-                type = lessonData.type;
+              type = lessonData.type;
             }
             type[lesson.type] = lesson.count;
             
             if (!lessonData) {
-                lessons[lesson.subjectId] = {
-                    subjectId: lesson.subjectId,
-                    subject: lesson.subjectName,
-                    type,
-                    absence: 0,
-                    total_lessons: 0
-                }
+              lessons[lesson.subjectId] = {
+                subjectId: lesson.subjectId,
+                subject: lesson.subjectName,
+                type,
+                absence: 0,
+                total_lessons: 0
+              }
             }
         });
 

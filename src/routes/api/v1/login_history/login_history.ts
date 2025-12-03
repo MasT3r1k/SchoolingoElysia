@@ -43,7 +43,8 @@ const elysiaApp = new Elysia()
                 sql`COUNT(*)`.as('count')
             ])
             .where('login_history.userId', '=', user.userId)
-            .executeTakeFirst();
+            .executeTakeFirst()
+            .then(r => Number(r?.count ?? 0));
 
         const login_history = await db.selectFrom("login_history")
             .select([
@@ -61,7 +62,7 @@ const elysiaApp = new Elysia()
             .where('login_history.userId', '=', user.userId)
             .execute();
 
-        return Response.json({ count: count?.count, data: login_history });
+        return Response.json({ count, data: login_history });
     } catch (e) {
       return new Response(JSON.stringify({ error: "Failed load data", e }), {
         status: 404,

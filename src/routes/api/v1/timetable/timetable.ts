@@ -46,7 +46,7 @@ const fullName = sql`
 const elysiaApp = new Elysia()
   .use(rateLimit({
     scoping: "scoped",
-    max: 5,
+    max: 10,
     duration: 1000,
     injectServer: () => app.server
   }))
@@ -103,6 +103,7 @@ const elysiaApp = new Elysia()
                   .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                   .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
                   .select([
+                      'groups.groupId',
                       'groups.name as groupName',
                       'groups.num as groupNum',
                       sql`(timetable.day + 1) % 7`.as('day'),
@@ -130,6 +131,7 @@ const elysiaApp = new Elysia()
                 .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                 .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
                 .select([
+                  'groups.groupId',
                   'groups.name as groupName',
                   'groups.num as groupNum',
                   'substitution.start_date',
@@ -172,6 +174,7 @@ const elysiaApp = new Elysia()
                   .leftJoin('school_years as syClass', 'syClass.syId', 'classes.yearId')
                   .leftJoin('school_years as syGroup', 'syGroup.syId', 'groups.year')
                   .select([
+                    'groups.groupId',
                     'groups.name as groupName',
                     'groups.num as groupNum',
                     sql`(timetable.day + 1) % 7`.as('day'),
@@ -203,6 +206,7 @@ const elysiaApp = new Elysia()
                 .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                 .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
                 .select([
+                  'groups.groupId',
                   'groups.name as groupName',
                   'groups.num as groupNum',
                   'substitution.start_date',
@@ -242,6 +246,7 @@ const elysiaApp = new Elysia()
                   .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                   .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
                   .select([
+                    'groups.groupId',
                     'groups.name as groupName',
                     'groups.num as groupNum',
                     sql`(timetable.day + 1) % 7`.as('day'),
@@ -270,6 +275,9 @@ const elysiaApp = new Elysia()
                 .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                 .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
                 .select([
+                  'groups.groupId',
+                  'groups.name as groupName',
+                  'groups.num as groupNum',
                   'substitution.start_date',
                   'substitution.start_hour',
                   'substitution.end_date',

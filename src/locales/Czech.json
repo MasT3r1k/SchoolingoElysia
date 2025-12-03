@@ -275,6 +275,7 @@
         "main": "Boční panel",
         "home": "Můj přehled",
         "absence": "Absence",
+        "students": "Karta žáka",
         "account": "Můj účet",
         "calendar": "Kalendář",
         "documents": "Dokumenty",
@@ -292,7 +293,7 @@
         "marks": {
             "main": "Hodnocení",
             "interm": "Průběžná klasifikace",
-            "interm_record": "Zápis průběžné klasifikace",
+            "marks_record": "Zápis klasifikace",
             "midterm": "Pololetní klasifikace",
             "education_measures": "Výchovná opatření"
         },
@@ -847,6 +848,11 @@
                 "active": "Používáno"
             },
             "last_updated": "Poslední změna"
+        },
+        "edit_midterm": {
+            "title_midterm": "Upráva pololetní známky",
+            "title_quarter": "Upráva čtvrtletní známky"
+
         },
         "interm_record": {
             "select_group": "Vyber skupinu pro zápis známek",

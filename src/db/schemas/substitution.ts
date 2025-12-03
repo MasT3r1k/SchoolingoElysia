@@ -2,14 +2,14 @@ import { Generated } from "kysely"
 
 export interface SubstitutionTable {
   substitutionId: Generated<number>
-  groupId: number
-  start_date: string // date
+  groupId: Generated<number | null>
+  start_date: Date // date
   start_hour: number
-  end_date: string // date
+  end_date: Date // date
   end_hour: number
-  type: string
-  subjectId: number | null
-  teacherId: number | null
+  type: Generated<string | null>
+  subjectId: Generated<number | null>
+  teacherId: Generated<number | null>
   created: Generated<Date> // timestamp
-  event_id: number | null
+  event_id: Generated<number | null>
 }

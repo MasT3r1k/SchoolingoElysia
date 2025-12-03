@@ -1,6 +1,5 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
-import { sql } from 'kysely';
 import { rateLimit } from 'elysia-rate-limit'
 import { app } from '../../../../../index';
 import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
@@ -8,7 +7,7 @@ import { format_people_by_ids } from '../../../../functions/format_person_by_ids
 const elysiaAp = new Elysia()
   .use(rateLimit({
     scoping: "scoped",
-    max: 1,
+    max: 10,
     duration: 1000,
     injectServer: () => app.server
   }))

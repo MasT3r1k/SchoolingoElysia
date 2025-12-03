@@ -9,7 +9,7 @@ export interface UsersTable {
   locale: string
   passwordChanged: string | null // date
   recommendChangePassword: boolean
-  cookies: boolean
+  cookies: number
   school: number
   autoSelectNextWeek: boolean
   fastlogin: boolean

@@ -82,6 +82,7 @@ import { scopes_subjectsTable } from './scopes_subjects'
 import { ClassbookNotesTable } from './classbook_notes'
 import { documentsTable } from './documents'
 import { semester_gradesTable } from './semester_grades'
+import { notificationsTable } from './notifications'
 
 export interface Database {
   absence: AbsenceTable
@@ -129,6 +130,7 @@ export interface Database {
   marking_scales_groups: marking_scales_groupsTable
   messages: messagesTable
   messages_receivers: messages_receiversTable
+  notifications: notificationsTable
   passwords: passwordsTable
   payments_classes: payments_classesTable
   payments_columns: payments_columnsTable
