@@ -5,5 +5,5 @@ export interface notificationRulesTable {
   user_id: number;
   type: string;
   conditions: string;
-  enabled: boolean;
+  enabled: Generated<boolean>;
 }

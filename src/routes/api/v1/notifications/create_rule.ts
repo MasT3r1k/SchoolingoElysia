@@ -1,6 +1,5 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
-import { verifyToken } from '../../../../middleware/auth';
 
 const app = new Elysia()
   .post('/notifications/rules', async ({ cookie, body }) => {
@@ -9,10 +8,18 @@ const app = new Elysia()
       return Response.json({ error: 'no_user', details: 'no_cookie' });
     }
 
-    const user = await verifyToken(token);
-    if (!user) {
-      return Response.json({ error: 'invalid_token' });
-    }
+    const auth = await db
+      .selectFrom('tokens')
+      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .select([
+        'tokens.userId',
+        'users.person',
+    ])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', new Date())
+      .executeTakeFirst();
+
+    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
 
     const { type, conditions, enabled } = body as {
       type: string;
@@ -23,7 +30,7 @@ const app = new Elysia()
     const result = await db
       .insertInto('notification_rules')
       .values({
-        user_id: user.userId,
+        user_id: auth.userId,
         type,
         conditions: JSON.stringify(conditions),
         enabled: enabled ?? true,
