@@ -275,6 +275,7 @@
         "main": "Boční panel",
         "home": "Můj přehled",
         "absence": "Absence",
+        "management": "Přehled vedení školy",
         "students": "Karta žáka",
         "account": "Můj účet",
         "calendar": "Kalendář",
@@ -313,6 +314,9 @@
             "diary": "Seznam deníků",
             "manage": "Správa praxí",
             "settings": "Nastavení modulu praxí"
+        },
+        "user": {
+            "notifications": "Nastavení notifikací"
         },
         "system": {
             "main": "Správa systému",

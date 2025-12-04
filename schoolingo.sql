@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1
--- Vytvořeno: Stř 03. pro 2025, 15:59
+-- Vytvořeno: Čtv 04. pro 2025, 01:27
 -- Verze serveru: 12.0.2-MariaDB
 -- Verze PHP: 8.2.12
 
@@ -2777,7 +2777,12 @@ INSERT INTO `login_history` (`loginId`, `userId`, `type`, `success`, `error`, `i
 (1317, 4, 'password', 1, NULL, '185.184.192.200', 1276, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 11:11:44.208924', 'Naaldwijk', '2671', 'South Holland', 'The Netherlands', 'NL', NULL, NULL),
 (1318, 4, 'password', 1, NULL, '185.184.192.200', 1277, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 11:20:10.509186', 'Naaldwijk', '2671', 'South Holland', 'The Netherlands', 'NL', NULL, NULL),
 (1319, 4, 'password', 1, NULL, '195.113.101.227', 1278, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 13:15:45.859065', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
-(1320, 4, 'password', 1, NULL, '195.113.101.227', 1279, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 13:40:59.321382', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL);
+(1320, 4, 'password', 1, NULL, '195.113.101.227', 1279, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 13:40:59.321382', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1321, 4, 'password', 1, NULL, '109.164.51.14', 1280, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-03 19:11:31.270476', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1322, 1, 'password', 1, NULL, '109.164.51.14', 1281, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-03 20:31:29.552643', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1323, 1, 'password', 1, NULL, '109.164.51.14', 1282, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-03 20:32:07.749536', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1324, 4, 'password', 1, NULL, '109.164.51.14', 1283, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-03 22:31:48.567748', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1325, 4, 'password', 1, NULL, '109.164.51.14', 1284, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-03 22:41:19.102631', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2907,6 +2912,20 @@ CREATE TABLE `notifications` (
   `confirmed_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `notification_rules`
+--
+
+CREATE TABLE `notification_rules` (
+  `rule_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `type` varchar(100) NOT NULL,
+  `conditions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`conditions`)),
+  `enabled` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -3062,9 +3081,7 @@ CREATE TABLE `persons_degree` (
 --
 
 INSERT INTO `persons_degree` (`person`, `degree`) VALUES
-(1, 1),
 (4, 1),
-(1, 3),
 (5, 3),
 (12, 3),
 (34, 3),
@@ -3101,6 +3118,21 @@ CREATE TABLE `phone_numbers` (
   `personId` int(11) NOT NULL,
   `description` text DEFAULT NULL,
   `is_verified` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `push_subscriptions`
+--
+
+CREATE TABLE `push_subscriptions` (
+  `subscription_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `endpoint` text NOT NULL,
+  `p256dh` varchar(255) NOT NULL,
+  `auth` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -4591,7 +4623,12 @@ INSERT INTO `tokens` (`tokenId`, `token`, `password`, `userAgent`, `expires`, `c
 (1276, '$2b$04$EPlbph782tdlegbd7oNTJu3O2kKSN/hCFskqDCVBvi/5C/mdbqSLq', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 12:20:07.881000', '2025-12-03 12:11:44.147000', 4, NULL, '185.184.192.200'),
 (1277, '$2b$04$635s8o/6dOprhbKbuOiFyuX4LV3twh/ygh3B38AUkRkYAsTs1upF2', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 12:44:55.851000', '2025-12-03 12:20:10.475000', 4, NULL, '185.184.192.200'),
 (1278, '$2b$04$ZYJ7EByP68I8SiUO/ctO.eOVLsFtcsvEwXOxRmdeAByp5T681o8Rm', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 14:38:32.281000', '2025-12-03 14:15:45.838000', 4, NULL, '195.113.101.227'),
-(1279, '$2b$04$whFNKeFN59aMGPohbbgPKOCN.qe5txxZZ0LXoNK1OEr1UPXky8P3a', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 15:09:29.473000', '2025-12-03 14:40:59.274000', 4, NULL, '195.113.101.227');
+(1279, '$2b$04$whFNKeFN59aMGPohbbgPKOCN.qe5txxZZ0LXoNK1OEr1UPXky8P3a', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-03 15:09:29.473000', '2025-12-03 14:40:59.274000', 4, NULL, '195.113.101.227'),
+(1280, '$2b$04$ztc5N0ddKM.CdSQS2T/5eO.Z7tFpaeXEErKsAy2I2CsHxEd92BJ8m', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-03 21:31:25.299000', '2025-12-03 20:11:31.266000', 4, NULL, '109.164.51.14'),
+(1281, '$2b$04$N4aXrcNjLSc9fr6DAkrPeetUlcdVEh16ePxpVGbD9vDzYpDaaK7K.', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-03 21:32:03.285000', '2025-12-03 21:31:29.545000', 1, NULL, '109.164.51.14'),
+(1282, '$2b$04$mHhi0vN3iPUeO2loGjdANOYY9bC2P773ZaD97q7iOsCoU5aK3hf5K', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-03 23:30:28.637000', '2025-12-03 21:32:07.749000', 1, NULL, '109.164.51.14'),
+(1283, '$2b$04$rRHeoNBQV0wAKJfJ3ZVNiOickUSibtcgEMlksfEOD9qBet1TSeqWi', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-03 23:37:53.998000', '2025-12-03 23:31:48.566000', 4, NULL, '109.164.51.14'),
+(1284, '$2b$04$pLC2FRUf4pKhlukO4RXAheAgt0CGx9PHk0yGHeuKnVl.yfgDIQSya', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-04 01:41:27.206000', '2025-12-03 23:41:19.096000', 4, NULL, '109.164.51.14');
 
 -- --------------------------------------------------------
 
@@ -4836,7 +4873,7 @@ INSERT INTO `users` (`userId`, `person`, `username`, `password`, `manager`, `pri
 (1, 1, 'kosik', 1, 0, 0, 1, 'cs', '2025-10-14', 0, 1, 1, 1, 1, 745, 0, 'NZPHEHZSNRUROPQX', '2025-10-14 09:35:04', '{\"seed\":\"iyGs1BUjIryJVZDk\",\"type\":\"avataaarsNeutral\",\"eyebrows\":\"default\",\"eyes\":\"default\",\"mouth\":\"default\"}'),
 (2, 2, 'pizinger', 1, 0, 0, 0, 'cs', NULL, 0, 1, 1, 1, 1, 0, 0, 'HEGBKGSXDNISYF3B', '2025-06-27 14:33:48', '{\"seed\":\"A7jrlqXppJ5pO0u7\",\"type\":\"avataaarsNeutral\",\"eyebrows\":\"default\",\"eyes\":\"default\",\"mouth\":\"default\"}'),
 (3, 33, 'testrodic', 1, 0, 0, 1, 'cs', NULL, 0, 2, 1, 1, 1, 0, 0, NULL, '2025-06-27 14:33:48', '{}'),
-(4, 4, 'admin', 1, -1, 1, 1, 'cs', '2025-11-22', 0, 2, 1, 1, 1, 0, 0, 'MFLDEXAJPV2VQAT2', '2025-10-17 06:45:31', '{}'),
+(4, 4, 'admin', 1, -1, 1, 1, 'cs', '2025-11-22', 0, 1, 1, 1, 1, 0, 0, 'MFLDEXAJPV2VQAT2', '2025-10-17 06:45:31', '{}'),
 (5, 24, 'student1', 1, 0, 0, 0, 'cs', NULL, 0, 0, 1, 1, 1, 0, 0, NULL, '2025-06-27 14:33:48', '{}'),
 (6, 25, 'student2', 1, 0, 0, 0, 'cs', NULL, 0, 0, 1, 1, 1, 0, 0, NULL, '2025-06-27 14:33:48', '{}'),
 (7, 26, 'student3', 1, 0, 0, 0, 'cs', NULL, 0, 0, 1, 1, 1, 0, 0, NULL, '2025-06-27 14:33:48', '{}');
@@ -5315,6 +5352,13 @@ ALTER TABLE `notifications`
   ADD PRIMARY KEY (`notification_id`);
 
 --
+-- Indexy pro tabulku `notification_rules`
+--
+ALTER TABLE `notification_rules`
+  ADD PRIMARY KEY (`rule_id`),
+  ADD KEY `idx_user_enabled` (`user_id`,`enabled`);
+
+--
 -- Indexy pro tabulku `passwords`
 --
 ALTER TABLE `passwords`
@@ -5363,6 +5407,13 @@ ALTER TABLE `persons_degree`
 ALTER TABLE `phone_numbers`
   ADD UNIQUE KEY `code` (`code`,`number`) USING HASH,
   ADD KEY `personId` (`personId`);
+
+--
+-- Indexy pro tabulku `push_subscriptions`
+--
+ALTER TABLE `push_subscriptions`
+  ADD PRIMARY KEY (`subscription_id`),
+  ADD KEY `idx_user_id` (`user_id`);
 
 --
 -- Indexy pro tabulku `qrlogin`
@@ -5842,7 +5893,7 @@ ALTER TABLE `library_reservations`
 -- AUTO_INCREMENT pro tabulku `login_history`
 --
 ALTER TABLE `login_history`
-  MODIFY `loginId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1321;
+  MODIFY `loginId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1326;
 
 --
 -- AUTO_INCREMENT pro tabulku `marking_scales`
@@ -5867,6 +5918,12 @@ ALTER TABLE `messages`
 --
 ALTER TABLE `notifications`
   MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pro tabulku `notification_rules`
+--
+ALTER TABLE `notification_rules`
+  MODIFY `rule_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pro tabulku `passwords`
@@ -5897,6 +5954,12 @@ ALTER TABLE `payments_payments`
 --
 ALTER TABLE `persons`
   MODIFY `personId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+
+--
+-- AUTO_INCREMENT pro tabulku `push_subscriptions`
+--
+ALTER TABLE `push_subscriptions`
+  MODIFY `subscription_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pro tabulku `rooms`
@@ -5956,7 +6019,7 @@ ALTER TABLE `timetable`
 -- AUTO_INCREMENT pro tabulku `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1280;
+  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1285;
 
 --
 -- AUTO_INCREMENT pro tabulku `traineeship_companies`
@@ -6269,6 +6332,12 @@ ALTER TABLE `messages_receivers`
   ADD CONSTRAINT `messages_receivers_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `persons` (`personId`);
 
 --
+-- Omezení pro tabulku `notification_rules`
+--
+ALTER TABLE `notification_rules`
+  ADD CONSTRAINT `notification_rules_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`userId`) ON DELETE CASCADE;
+
+--
 -- Omezení pro tabulku `payments_classes`
 --
 ALTER TABLE `payments_classes`
@@ -6306,6 +6375,12 @@ ALTER TABLE `persons_degree`
 --
 ALTER TABLE `phone_numbers`
   ADD CONSTRAINT `phone_numbers_ibfk_1` FOREIGN KEY (`personId`) REFERENCES `persons` (`personId`);
+
+--
+-- Omezení pro tabulku `push_subscriptions`
+--
+ALTER TABLE `push_subscriptions`
+  ADD CONSTRAINT `push_subscriptions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`userId`) ON DELETE CASCADE;
 
 --
 -- Omezení pro tabulku `rooms`
