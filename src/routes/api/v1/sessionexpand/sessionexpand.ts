@@ -5,6 +5,7 @@ import { rateLimit } from 'elysia-rate-limit'
 import { app } from '../../../../../index';
 import moment from 'moment';
 import { SecurityConfig } from '../../../../config/security.config';
+import { createResponse, createErrorResponse } from '../../../../utils/response.helper';
 
 const elysiaApp = new Elysia()
   .use(rateLimit({
@@ -13,10 +14,10 @@ const elysiaApp = new Elysia()
     duration: 1000,
     injectServer: () => app.server
   }))
-  .get('/sessionexpand', async ({ cookie, query }) => {
+  .post('/sessionexpand', async ({ cookie, query }) => {
     const token = cookie.token.value;
     if (!token) {
-        return Response.json({ error: 'no_user', details: 'no_cookie' });
+        return createErrorResponse('no_user', 'no_cookie');
     }
 
     const user = await db.selectFrom("tokens")
@@ -35,7 +36,7 @@ const elysiaApp = new Elysia()
         .executeTakeFirst()
 
     if (!user) {
-        return Response.json({ error: 'no_user', details: 'no_db' });
+        return createErrorResponse('no_user', 'no_db');
     }
 
     try {
@@ -45,16 +46,12 @@ const elysiaApp = new Elysia()
       .set({
         expires: expires.toDate()
       })
-      .where('tokens.token', '=', token);
+      .where('tokens.token', '=', token)
+      .execute();
 
-      return Response.json({ success: true, expires: expires.toDate() });
+      return createResponse({ success: true, expires: expires.toDate() }, cookie);
     } catch (e) {
-      return new Response(JSON.stringify({ error: "Failed expand session" }), {
-        status: 404,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      return createErrorResponse('session_expand_failed', String(e), 500);
     }
   });
 

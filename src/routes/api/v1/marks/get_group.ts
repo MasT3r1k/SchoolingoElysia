@@ -82,6 +82,7 @@ const app = new Elysia()
       const name = await format_person_by_id(s.student);
 
       return {
+        studentId: s.student,
         name,
         marks: studentMarks,
       };

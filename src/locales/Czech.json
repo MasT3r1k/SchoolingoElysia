@@ -6,20 +6,24 @@
         "install_app": {
             "title": "Nainstalovat aplikaci",
             "android": {
-              "step1": "Otevřete Google Play Store na vašem Android zařízení",
-              "step2": "Vyhledejte aplikaci Schoolingo",
-              "step3": "Klikněte na tlačítko 'Instalovat' nebo použijte tlačítko níže"
+                "step1": "Otevřete Google Play Store na vašem Android zařízení",
+                "step2": "Vyhledejte aplikaci Schoolingo",
+                "step3": "Klikněte na tlačítko 'Instalovat' nebo použijte tlačítko níže"
             },
             "ios": {
-              "step1": "Otevřete App Store na vašem iOS zařízení",
-              "step2": "Vyhledejte aplikaci Schoolingo",
-              "step3": "Klikněte na tlačítko 'Získat' nebo použijte tlačítko níže"
+                "step1": "Otevřete App Store na vašem iOS zařízení",
+                "step2": "Vyhledejte aplikaci Schoolingo",
+                "step3": "Klikněte na tlačítko 'Získat' nebo použijte tlačítko níže"
             }
         },
         "login": {
             "title": "Přihlášení do školního systému",
-            "subtitle": ["Pomocí přihlašovacích údajů", "se přihlaš pomocí QR kódu"],
+            "subtitle": [
+                "Pomocí přihlašovacích údajů",
+                "Pomocí QR kódu"
+            ],
             "qrcode": "Naskejnute QR kód v mobilní aplikaci pro rychlé přihlášení",
+            "qrcode_hint": "V aplikaci přejděte do nastavení a tam najděte kolonko 'Přihlášení QR Kódem'",
             "username": "Uživatelské jméno",
             "username_placeholder": "Uživatelské jméno",
             "password": "Heslo",
@@ -27,7 +31,9 @@
             "button": "Přihlásit se",
             "login_with_passkey": "Přihlášení pomocí passkey",
             "downloadApp": "Stáhnout %app% do Vašeho telefonu",
-            "back_to_login": "Zpátky na přihlášení"
+            "back_to_login": "Zpátky na přihlášení",
+            "success": "Přihlášení úspěšné",
+            "loading_data": "Načítání dat uživatele..."
         },
         "forgotpass": {
             "click": "Zapomněl jste heslo?",
@@ -52,6 +58,12 @@
             "require_tfa": "Tento účet má aktivní dvoufázové ověření, zadejte kód z mobilní aplikace.",
             "done": "Heslo bylo úspěšně resetováno. Nyní se můžete přihlásit."
         },
+        "passkey": {
+            "authenticating": "Probíhá ověření",
+            "use_device": "Použijte biometriku nebo PIN vašeho zařízení",
+            "cancelled": "Přihlášení pomocí passkey bylo zrušeno",
+            "error": "Při přihlášení pomocí passkey došlo k chybě"
+        },
         "2fa": {
             "click": "Jiný způsob přihlášení?",
             "authentication_code": "Ověřovací kód",
@@ -60,6 +72,14 @@
             "description": "Otevřete aplikaci dvoufaktorového ověřovatele (TOTP) nebo rozšíření prohlížeče a zobrazte svůj ověřovací kód. Případně můžete použít záložní kód.",
             "note": "Zadejte kód z mobilní aplikace"
         },
+        "session_expires_in": "Vaše relace vyprší za %time%",
+        "session_expiring_description": "Z bezpečnostních důvodů bude vaše relace brzy ukončena. Chcete prodloužit relaci?",
+        "extend_session": "Prodloužit relaci",
+        "session_expired": "Vaše relace vypršela",
+        "session_expired_message": "Z bezpečnostních důvodů jste byli automaticky odhlášeni.",
+        "redirecting_to_login": "Za okamžik budete přesměrováni na přihlašovací stránku...",
+        "session_expired_alert": "Byli jste automaticky odhlášeni z důvodu bezpečnosti.",
+        "logout_success_alert": "Odhlášení proběhlo úspěšně.",
         "errors": {
             "longLoadingQR": "Načítání QR kódu trvá déle než by mělo, omlouváme se za komplikace",
             "429": "Přiliš mnoho pokusů o přihlášení, zkuste to znova za pár minut",
@@ -86,7 +106,8 @@
     "themes": {
         "system": "Režim podle systému",
         "dark": "Tmavý režim",
-        "light": "Světlý režím"
+        "light": "Světlý režim",
+        "moon": "Midnight režim"
     },
     "weeks": {
         "even": "Sudý týden",
@@ -144,14 +165,12 @@
     "delete": "Smazat",
     "actions": "Akce",
     "unknown": "Neznámé",
-
     "cookies": {
         "title": "Používáme cookies – ale v přátelském duchu!",
         "description": "Na tomto webu používáme cookies a další identifikátory, které mohou obsahovat osobní údaje. Slouží k provozu, zlepšování a vývoji našich služeb. Pro některé účely potřebujeme váš souhlas – udělíte jej volbou „Souhlasím se vším“.",
         "consent": "Souhlasím se vším",
         "only_necessary": "Pouze nezbytné"
     },
-
     "system": {
         "section_main": "Hlavní nabídka",
         "system_settings": "Nastavení systému",
@@ -162,7 +181,6 @@
         "list_scopes": "Seznam oborů",
         "list_subjects": "Seznam předmětů",
         "section_modules": "Nastavení modulů",
-
         "version": "Verze systému",
         "system_is_up_to_date": "Systém je aktuální!",
         "system_has_update": "Systém má dostupnou novou aktualizaci!",
@@ -171,12 +189,10 @@
         "system_has_valid_license": "Škola má platnou licenci systému!",
         "activated": "Aktivováno",
         "deactivated": "Deaktivováno",
-
         "email_types": {
             "basic_smtp_server": "SMTP Server - přihlášení pomocí jména a hesla",
             "google_smtp_server": "Google SMTP Server - přihlášení pomocí oAuth2 autentizace"
         },
-
         "school_name": "Název školy",
         "school_short_name": "Zkratka školy",
         "school_code": "Kód školy",
@@ -188,7 +204,6 @@
         "school_reset_password_with_email": "Resetování hesla pomocí emailové adresy",
         "warn_above_absence": "Varovat při absenci vyšší než (v %)",
         "save_school_info": "Uložit nastavení školy",
-
         "scope_details": "Máte přidaných %scopes% oborů na této škole.",
         "table_subjects": "Tabulka předmětů",
         "add_scope": "Nový",
@@ -212,7 +227,6 @@
         "create_scope": "Vytvořit obor",
         "select_scope": "Žádný obor není vybrán",
         "select_scope_desc": "Zvolte některý z oborů vlevo a zobrazí se zde jeho informace.",
-
         "add_subject": "Nový",
         "subject_details": "Máte přidaných %subjects% předmětů na této škole.",
         "search_subjects": "Hledat podle názvu",
@@ -315,6 +329,13 @@
             "manage": "Správa praxí",
             "settings": "Nastavení modulu praxí"
         },
+        "fleetVehicles": {
+            "main": "Vozový park",
+            "overview": "Přehled",
+            "vehicles": "Vozidla",
+            "reservations": "Rezervace",
+            "settings": "Nastavení"
+        },
         "user": {
             "notifications": "Nastavení notifikací"
         },
@@ -369,6 +390,9 @@
             },
             "save_email": "Zapsat email"
         }
+    },
+    "notifications": {
+        "title": "Notifikace"
     },
     "devices": {
         "current_device": "Aktuální připojení",
@@ -512,7 +536,6 @@
         "write_lesson": "Zápis hodiny",
         "absence": "Docházka",
         "notes": "Poznámky",
-
         "lesson_number": "Číslo hodiny",
         "placeholder_number": "Pro vložení čísla hodiny klikněte na šipku napravo od tohoto pole",
         "lesson_topic": "Téma hodiny",
@@ -649,7 +672,7 @@
         "no_description": "Žádný popis",
         "no_activity": "Žádné aktivity",
         "no_equipment": "Žádné věci nejsou potřeba",
-        "no_note":"Bez poznámky",
+        "no_note": "Bez poznámky",
         "no_role": "Neznámá pozice ve firmě",
         "no_name": "Bez názvu",
         "no_weeks": "Žádné dostupné praxe",
@@ -806,8 +829,11 @@
         "title": "Titulek",
         "title_placeholder": "Vyplňte titulek známky",
         "mark": "Známka",
+        "marking_scale": "Tabulka hodnocení",
         "percentage": "Procenta %",
         "mark_placeholder": "Známka, např.: 1, 1.5=1-, 2, 2-, 4, .., 5",
+        "quarter": "Čtvrtletí",
+        "midterm_grade": "Čtvrtletní známka",
         "edit_column": "Upravit sloupec",
         "create_column": "Vytvořit sloupec",
         "edit_mark": "Upravit známku",
@@ -818,6 +844,7 @@
             "marks": "Pomocí známek",
             "points": "Pomocí bodů"
         },
+        "marks_text": ["Výborný", "Chvalitebný", "Dobrý", "Dostatečný", "Nedostatečný"],
         "cant_edit_after_creation": "Nelze upravovat po vytvoření",
         "max_points": "Maximální počet bodů",
         "max_points_placeholder": "Vyplňte maximální počet bodů, co lze získat",
@@ -854,12 +881,16 @@
             "last_updated": "Poslední změna"
         },
         "edit_midterm": {
-            "title_midterm": "Upráva pololetní známky",
-            "title_quarter": "Upráva čtvrtletní známky"
-
+            "title_midterm": "Upráva čtvrtletní známky",
+            "save_midterm": "Uložit čtvrtletní známku",
+            "edit_midterm": "Upravit čtvrtletní známku",
+            "delete_midterm": "Odebrat čtvrtletní známku"
         },
         "interm_record": {
             "select_group": "Vyber skupinu pro zápis známek",
+            "no_group_selected": "Žádná skupina vybrána",
+            "select_group_desc": "Vyberte skupinu pro zobrazení známek",
+            "select_group_placeholder": "Vybrat skupinu",
             "group": "Skupina",
             "student_count": "%count% studentů",
             "no_group": "Nemáte dostupné žádné skupiny!"
@@ -869,7 +900,17 @@
                 "marks": "Známky",
                 "reports": "Přehledy"
             },
-            "years": ["První", "Druhý", "Třetí", "Čtvrtý", "Pátý", "Šestý", "Sedmý", "Osmý", "Devátý"],
+            "years": [
+                "První",
+                "Druhý",
+                "Třetí",
+                "Čtvrtý",
+                "Pátý",
+                "Šestý",
+                "Sedmý",
+                "Osmý",
+                "Devátý"
+            ],
             "year": "%year% rok",
             "mandatory_subjects": "Povinné předměty",
             "optional_subjects": "Nepovinné předměty"
@@ -931,34 +972,27 @@
             "positive": "Pochvala",
             "negative": "Napomenutí"
         },
-
         "homeworks": {
             "empty": "Nemáte žádné domácí úkoly",
             "not_selected": "Není vybraný žádný domácí úkol. Nejprve prosím vyberte úkol, abychom mohli zobrazit příjemce zprávy."
         },
-
         "receivers": {
             "all_selected_noticeboard": "Zpráva se zobrazí na nástěnce všem",
             "from_class": "z %class%",
             "from_child": "žáka %child%"
         },
-
         "tags": {
             "main": "Označení",
             "require_confirmation": "Vyžaduje potvrzení",
             "important": "Důležité"
         },
-
         "copy_classteacher": "Kopie třídnímu učiteli",
         "copy_parents": "Kopie rodičům",
         "as_principal": "Jako ředitel",
         "to_all": "Všem",
-
         "sus_error": "Nastala nějaká podivná chyba, klikni pro obnovení na základní typ",
-
         "excuse": "Omluvit",
         "excuse_myself": "Omluvit sám sebe",
-
         "types": {
             "message": "Klasická zpráva",
             "homework": "Odevzdání úkolu",
@@ -968,7 +1002,6 @@
             "system": "Systém",
             "error": "No message types found"
         },
-
         "buttons": {
             "send_message": "Poslat zprávu"
         },
@@ -992,6 +1025,9 @@
         },
         "language": "Jazyk",
         "languages": {
+            "selector": {
+                "description": "Vyberte si jazyk aplikace. Změna se projeví okamžitě."
+            },
             "loading": "Právě probíhá načítání a nastavování nového jazyka",
             "error": "Chyba"
         },
@@ -1019,15 +1055,19 @@
             "sample": {
                 "title": "Ukázková karta",
                 "description": "Toto je náhled textu a tlačítek — slouží k rychlé kontrole čitelnosti a kontrastu.",
-                "actions": ["Hlavní akce", "Druhá akce"],
+                "actions": [
+                    "Hlavní akce",
+                    "Druhá akce"
+                ],
                 "contrast": "Kontrast (text / povrch): 15.4:1 — doporučeno (≥4.5)",
                 "footer": "Tip: Doporučeno kontrolovat kontrast mezi pozadím a textem, zejména pro starší uživatele nebo při použití na mobilním telefonu."
             }
         },
         "themes_description": {
             "system": "Automaticky použije tmavý/světlý vzhled podle OS.",
-            "dark": "Nižší jas pro noční použití, úspora energie na OLED.",
-            "light": "Jasné pozadí, tradiční světlé barvy."
+            "dark": "Tmavé pozadí pro pohodlné noční použití.",
+            "light": "Světlé pozadí, tradiční světlé barvy.",
+            "moon": "Čistě černé pozadí pro OLED displeje."
         },
         "security": "Zabezpečení",
         "2fa": {
@@ -1106,6 +1146,171 @@
     "modules": {
         "timetable": "Rozvrh",
         "marks": "Přehled známek",
-        "announcements": "Oznámení"
+        "announcements": "Oznámení",
+        "homework": "Domácí úkoly",
+        "events": "Plán akcí",
+        "substitutions": "Suplování",
+        "traineeship": "Odborná praxe",
+        "cafeteria": "Jídelna",
+        "vehicles": "Rezervace vozidel"
+    },
+    "fleetvehicles": {
+        "vehicles": "Vozidla",
+        "reservations": "Rezervace",
+        "settings": "Nastavení",
+        "add_vehicle": "Přidat vozidlo",
+        "new_reservation": "Nová rezervace",
+        "view_vehicles": "Zobrazit vozidla",
+        "search_placeholder": "Hledat vozidlo...",
+        "all_statuses": "Všechny stavy",
+        "all_types": "Všechny typy",
+        "all_vehicles": "Všechna vozidla",
+        "no_vehicles": "Žádná vozidla",
+        "no_vehicles_desc": "Zatím nebyla přidána žádná vozidla do vozového parku.",
+        "no_reservations": "Žádné rezervace",
+        "no_reservations_desc": "Zatím nebyla vytvořena žádná rezervace.",
+        "create_first_reservation": "Vytvořit první rezervaci",
+        "no_upcoming_reservations": "Žádné nadcházející rezervace",
+        "no_expiring_documents": "Všechny dokumenty jsou v pořádku",
+        "no_reservations_for_vehicle": "Toto vozidlo nemá žádné rezervace",
+        "no_history": "Žádná historie",
+        "stats": {
+            "total": "Celkem vozidel",
+            "available": "K dispozici",
+            "reserved": "Rezervováno",
+            "maintenance": "V servisu"
+        },
+        "status": {
+            "available": "K dispozici",
+            "reserved": "Rezervováno",
+            "maintenance": "V servisu",
+            "unavailable": "Nedostupné",
+            "pending": "Čeká na schválení",
+            "approved": "Schváleno",
+            "rejected": "Zamítnuto",
+            "active": "Probíhá",
+            "completed": "Dokončeno",
+            "cancelled": "Zrušeno"
+        },
+        "type": {
+            "car": "Osobní automobil",
+            "van": "Dodávka",
+            "bus": "Autobus",
+            "minibus": "Minibus",
+            "truck": "Nákladní vozidlo",
+            "motorcycle": "Motocykl"
+        },
+        "fuel": {
+            "petrol": "Benzín",
+            "diesel": "Nafta",
+            "electric": "Elektřina",
+            "hybrid": "Hybrid",
+            "lpg": "LPG",
+            "cng": "CNG"
+        },
+        "document": {
+            "highway_sticker": "Dálniční známka",
+            "insurance": "Pojištění",
+            "inspection": "Technická kontrola (STK)",
+            "emission": "Emisní kontrola",
+            "other": "Ostatní"
+        },
+        "brand": "Značka",
+        "model": "Model",
+        "year": "Rok výroby",
+        "color": "Barva",
+        "fuel_type": "Typ paliva",
+        "mileage": "Najeto",
+        "capacity": "Kapacita",
+        "seats": "míst",
+        "vehicle": "Vozidlo",
+        "select_vehicle": "Vyberte vozidlo",
+        "vehicle_manager": "Správce vozidla",
+        "notes": "Poznámky",
+        "tab": {
+            "info": "Informace",
+            "documents": "Dokumenty",
+            "reservations": "Rezervace",
+            "history": "Historie"
+        },
+        "documents": "Dokumenty",
+        "add_document": "Přidat dokument",
+        "highway_stickers": "Dálniční známky",
+        "other_documents": "Ostatní dokumenty",
+        "stickers_note": "Níže naleznete přehled dálničních známek přidaných k tomuto vozidlu.",
+        "valid": "Platné",
+        "expired": "Expirované",
+        "expires_today": "Platnost končí dnes!",
+        "expires_tomorrow": "Platnost končí zítra",
+        "days_left": "dní do konce",
+        "expiring_documents": "Končící dokumenty",
+        "upcoming_reservations": "Nadcházející rezervace",
+        "pending_approvals": "Čekající schválení",
+        "pending_approvals_message": "Máte %count% žádostí o rezervaci čekajících na schválení.",
+        "review_requests": "Zkontrolovat žádosti",
+        "reservations": {
+            "upcoming": "Nadcházející",
+            "past": "Proběhlé",
+            "all": "Všechny"
+        },
+        "start_date": "Datum od",
+        "end_date": "Datum do",
+        "purpose": "Účel",
+        "purpose_placeholder": "Např. Školení, exkurze, služební cesta...",
+        "destination": "Cíl cesty",
+        "destination_placeholder": "Např. Praha, Brno...",
+        "notes_placeholder": "Volitelné poznámky k rezervaci...",
+        "create_reservation": "Vytvořit rezervaci",
+        "reserved_by": "Rezervoval",
+        "approve": "Schválit",
+        "reject": "Zamítnout",
+        "today": "Dnes",
+        "tomorrow": "Zítra",
+        "yesterday": "Včera",
+        "days_ago": "dní zpět",
+        "in": "Za",
+        "days": "dní",
+        "vehicle_reservations": "Rezervace vozidla",
+        "settings_saved": "Nastavení bylo uloženo",
+        "settings": {
+            "approval": "Schvalování rezervací",
+            "approval_desc": "Nastavte, jak se budou schvalovat rezervace vozidel.",
+            "default_manager": "Výchozí správce",
+            "default_manager_desc": "Výchozí správce vozového parku, který bude přiřazen k vozidlům bez vlastního správce.",
+            "reservations": "Pravidla rezervací",
+            "reservations_desc": "Nastavte pravidla pro vytváření rezervací.",
+            "vehicle_types": "Typy vozidel",
+            "vehicle_types_desc": "Vyberte, které typy vozidel jsou ve vašem vozovém parku.",
+            "notifications": "Upozornění",
+            "notifications_desc": "Nastavte, jaká upozornění chcete dostávat.",
+            "highway_stickers": "Dálniční známky",
+            "highway_stickers_desc": "Přehled zemí s placenými dálničními známkami."
+        },
+        "approval_mode": {
+            "auto": "Automatické schválení",
+            "auto_desc": "Rezervace budou automaticky schváleny bez nutnosti potvrzení.",
+            "manager_approval": "Schválení správcem",
+            "manager_approval_desc": "Rezervace musí být schváleny správcem vozového parku.",
+            "free": "Volný přístup",
+            "free_desc": "Kdokoliv může rezervovat vozidlo bez omezení."
+        },
+        "default_manager": "Výchozí správce",
+        "search_manager": "Vyhledat správce...",
+        "max_reservation_days": "Maximální délka rezervace (dny)",
+        "max_reservation_days_hint": "Maximální počet dní, na které lze rezervovat vozidlo.",
+        "advance_booking_days": "Předstih rezervace (dny)",
+        "advance_booking_days_hint": "Maximální počet dní dopředu, na které lze rezervovat.",
+        "require_purpose": "Vyžadovat účel rezervace",
+        "require_destination": "Vyžadovat cíl cesty",
+        "document_reminder_days": "Upozornit před koncem platnosti (dny)",
+        "document_reminder_days_hint": "Kolik dní předem upozornit na končící platnost dokumentů.",
+        "notify_on_reservation": "Upozornit na novou rezervaci",
+        "notify_on_approval": "Upozornit na schválení/zamítnutí",
+        "notify_on_document_expiry": "Upozornit na končící dokumenty",
+        "countries_with_sticker": "Země s dálniční známkou",
+        "countries_toll_free": "Země bez poplatků za dálnice",
+        "countries_pay_per_use": "Země s mýtným systémem",
+        "toll_free_note": "V těchto zemích osobní automobily neplatí za dálnice.",
+        "pay_per_use_note": "V těchto zemích se platí mýtné za použité úseky (bez známky)."
     }
 }

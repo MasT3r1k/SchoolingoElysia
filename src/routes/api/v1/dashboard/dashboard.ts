@@ -24,7 +24,7 @@ const app = new Elysia()
         sql`COUNT(*)`.as('count')
     ])
     .where('messages.type', '=', 0)
-    .where('messages_receivers.read_at', '=', null)
+    .where('messages_receivers.read_at', 'is', null)
     .where('messages_receivers.receiver_id', '=', auth.person)
     .executeTakeFirst()
     .then(r => Number(r?.count ?? 0));
@@ -34,7 +34,7 @@ const app = new Elysia()
     .select([
         sql`COUNT(*)`.as('count')
     ])
-    .where('notifications.read_at', '=', null)
+    .where('notifications.read_at', 'is', null)
     .where('notifications.user_id', '=', auth.userId)
     .executeTakeFirst()
     .then(r => Number(r?.count ?? 0));

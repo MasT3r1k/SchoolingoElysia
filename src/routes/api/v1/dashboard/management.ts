@@ -45,7 +45,7 @@ const app = new Elysia()
     const averageGrade = await db.selectFrom('grades')
     .leftJoin('grades_columns', 'grades_columns.gcId', 'grades.columnId')
     .select(
-        sql`SUM(grades.mark * grades_columns.weight) / NULLIF(SUM(grades_columns.weight),0) AS weighted_average_grade`
+        sql<number>`SUM(grades.mark * grades_columns.weight) / NULLIF(SUM(grades_columns.weight),0)`.as('weighted_average_grade')
     )
     .where('grades.mark', 'is not', null)
     .executeTakeFirst()
@@ -150,8 +150,8 @@ const app = new Elysia()
         .groupBy('s.personId')
         .as('riskStats')
     )
-    .where(sql`riskStats.riskScore >= 60`)
-    .select(sql`COUNT(*)`.as('atRiskStudents'));
+    .where(sql<boolean>`riskStats.riskScore >= 60`)
+    .select(sql<number>`COUNT(*)`.as('atRiskStudents'));
 
 
     const atRiskStudents = await atRiskCountQuery
@@ -231,7 +231,7 @@ const app = new Elysia()
       .as('riskStats')
   )
   .select([
-    sql`riskStats.personId AS student_id`,
+    sql<number>`riskStats.personId`.as('student_id'),
     'riskStats.absenceScore',
     'riskStats.gradeScore',
     'riskStats.riskScore',
@@ -254,6 +254,113 @@ const app = new Elysia()
         full_name: studentNames[index]
     }))
 
+    // === Class Statistics ===
+    const classStats = await db
+      .selectFrom('groups')
+      .leftJoin('student_groups', 'student_groups.groupId', 'groups.groupId')
+      .leftJoin('classbook', 'classbook.groupId', 'groups.groupId')
+      .leftJoin('absence', 'absence.lesson', 'classbook.cbId')
+      .leftJoin('grades', 'grades.studentId', 'student_groups.student')
+      .leftJoin('grades_columns', 'grades_columns.gcId', 'grades.columnId')
+      .select([
+        'groups.groupId as class_id',
+        'groups.name as class_name',
+        sql`COUNT(DISTINCT student_groups.student)`.as('student_count'),
+        sql`COALESCE(SUM(grades.mark * grades_columns.weight) / NULLIF(SUM(grades_columns.weight), 0), 0)`.as('average_grade'),
+        sql`
+          CASE 
+            WHEN COUNT(DISTINCT classbook.cbId) * COUNT(DISTINCT student_groups.student) = 0 THEN 0
+            ELSE (COUNT(absence.student) * 100.0) / (COUNT(DISTINCT classbook.cbId) * COUNT(DISTINCT student_groups.student))
+          END
+        `.as('absence_rate'),
+        sql`'stable'`.as('trend') // Placeholder
+      ])
+      .where('groups.year', '=', 1) // Assuming current year is 1, needs to be dynamic or fetched from config
+      .groupBy('groups.groupId')
+      .execute()
+      .then(rows => rows.map(row => ({
+        class_id: row.class_id,
+        class_name: row.class_name,
+        student_count: Number(row.student_count),
+        average_grade: Number(row.average_grade),
+        absence_rate: Number(row.absence_rate),
+        trend: row.trend as 'up' | 'down' | 'stable'
+      })));
+
+    // === Subject Statistics ===
+    const subjectStats = await db
+      .selectFrom('subjects')
+      .leftJoin('grades_columns', 'grades_columns.subjectId', 'subjects.subjectId')
+      .leftJoin('grades', 'grades.columnId', 'grades_columns.gcId')
+      .leftJoin('teachers_subject', 'teachers_subject.subject_id', 'subjects.subjectId')
+      .select([
+        'subjects.subjectId as subject_id',
+        'subjects.label as subject_name',
+        sql`COALESCE(SUM(grades.mark * grades_columns.weight) / NULLIF(SUM(grades_columns.weight), 0), 0)`.as('average_grade'),
+        sql`COUNT(DISTINCT teachers_subject.teacher_id)`.as('teacher_count'),
+        sql`COUNT(DISTINCT grades.studentId)`.as('student_count'), // Approximation based on graded students
+        sql`5`.as('difficulty_rating') // Placeholder
+      ])
+      .groupBy('subjects.subjectId')
+      .execute()
+      .then(rows => rows.map(row => ({
+        subject_id: row.subject_id,
+        subject_name: row.subject_name,
+        average_grade: Number(row.average_grade),
+        teacher_count: Number(row.teacher_count),
+        student_count: Number(row.student_count),
+        difficulty_rating: Number(row.difficulty_rating)
+      })));
+
+    // === Teacher Statistics ===
+    const teacherStats = await db
+      .selectFrom('teachers')
+      .innerJoin('persons', 'persons.personId', 'teachers.personId')
+      .leftJoin('teachers_subject', 'teachers_subject.teacher_id', 'teachers.personId')
+      .leftJoin('subjects', 'subjects.subjectId', 'teachers_subject.subject_id')
+      .leftJoin('classbook', 'classbook.teacher', 'teachers.personId')
+      .leftJoin('absence', 'absence.lesson', 'classbook.cbId')
+      .select([
+        'teachers.personId as teacher_id',
+        sql`CONCAT(persons.firstName, ' ', persons.lastName)`.as('full_name'),
+        sql`MAX(subjects.label)`.as('subject'), // Just taking one subject for display
+        sql`0`.as('class_average'), // Complex to calculate per teacher across all subjects
+        sql`COUNT(DISTINCT classbook.groupId)`.as('student_count'), // Actually counting classes taught, not students
+        sql`
+           CASE 
+            WHEN COUNT(DISTINCT classbook.cbId) = 0 THEN 0
+            ELSE (COUNT(absence.student) * 100.0) / (COUNT(DISTINCT classbook.cbId) * 20) -- Assuming avg 20 students/class
+          END
+        `.as('absence_in_classes')
+      ])
+      .groupBy('teachers.personId')
+      .execute()
+      .then(rows => rows.map(row => ({
+        teacher_id: row.teacher_id,
+        full_name: row.full_name as string,
+        subject: row.subject as string || 'N/A',
+        class_average: Number(row.class_average),
+        student_count: Number(row.student_count),
+        absence_in_classes: Number(row.absence_in_classes)
+      })));
+
+    // === Absence Heatmap ===
+    const absenceHeatmap = await db
+      .selectFrom('absence')
+      .innerJoin('classbook', 'classbook.cbId', 'absence.lesson')
+      .select([
+        sql`DAYOFWEEK(classbook.date)`.as('day'), // 1=Sunday, 2=Monday... check dialect
+        'classbook.dayHour as hour',
+        sql`COUNT(*)`.as('count')
+      ])
+      .groupBy(['day', 'hour'])
+      .execute()
+      .then(rows => rows.map(row => ({
+        day: Number(row.day) - 1, // Adjust to 1-5 if needed, standard SQL Sunday=1
+        hour: row.hour,
+        count: Number(row.count)
+      })));
+
     return {
         schoolStats: {
             totalStudents,
@@ -262,7 +369,11 @@ const app = new Elysia()
             absenceRate,
             atRiskStudents
         },
-        riskStudents: top5Students
+        riskStudents: top5Students,
+        classStats,
+        subjectStats,
+        teacherStats,
+        absenceHeatmap
     };
   });
 

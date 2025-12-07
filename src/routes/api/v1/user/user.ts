@@ -3,6 +3,7 @@ import { db } from '../../../../../database';
 import { sql } from 'kysely';
 import moment from 'moment';
 import { calculateLevelFromXP, calculatestartXPFromLevel, calculateXPForNextLevel } from '../../../../functions/levels';
+import { createResponse, createErrorResponse } from '../../../../utils/response.helper';
 
 const titlesBefore = db.selectFrom('persons_degree as pd')
   .innerJoin('degrees as d', 'pd.degree', 'd.degreeID')
@@ -46,7 +47,7 @@ const app = new Elysia()
   .get('/user', async ({ cookie }) => {
       const token = cookie.token.value;
       if (!token) {
-          return Response.json({ error: 'no_user', details: 'no_cookie' });
+          return createErrorResponse('no_user', 'no_cookie');
       }
 
       const tokenDB = await db.selectFrom("tokens")
@@ -75,7 +76,7 @@ const app = new Elysia()
           .executeTakeFirst()
 
       if (!tokenDB) {
-          return Response.json({ error: 'no_user', details: 'no_db' });
+          return createErrorResponse('no_user', 'no_db');
       }
 
       const perms = await db.selectFrom("tokens")
@@ -202,7 +203,7 @@ const app = new Elysia()
 
     delete user.levels_exp;
 
-    return Response.json(user);
+    return createResponse(user, cookie);
   })
 
 export default app;

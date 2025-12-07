@@ -108,7 +108,7 @@ export const app = new Elysia({
   })
   .use(ip())
   .use(cors({
-    origin: ['http://localhost:4200', 'http://192.168.1.102:4200'],
+    origin: ['http://localhost:4200', 'http://localhost:8100', 'http://192.168.1.102:4200', 'capacitor://localhost', 'ionic://localhost'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
