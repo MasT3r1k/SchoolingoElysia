@@ -79,8 +79,11 @@ class GitVersionService {
     }
 }
 
+
 // Create instance (cache is inside it)
 export const gitService = new GitVersionService();
+
+import { changelog } from "./src/data/changelog.data";
 
 export const version = new Elysia({ prefix: "/api/v1" })
     .on('start', () => {
@@ -90,6 +93,7 @@ export const version = new Elysia({ prefix: "/api/v1" })
         gitService.stopInterval();
     })
     .get("/version", () => ({
+        version: changelog[0].version,
         current: gitService.localCommit,
         latest: gitService.remoteCommit,
         isUpToDate: gitService.localCommit === gitService.remoteCommit
@@ -101,3 +105,4 @@ export const version = new Elysia({ prefix: "/api/v1" })
             latest: gitService.remoteCommit
         };
     });
+

@@ -1,0 +1,316 @@
+export const changelog = [
+    {
+        version: '2.3.7',
+        date: '08. 12. 2025',
+        type: 'patch',
+        changes: [
+            'Doupraven vzhled přihlašovací stránku',
+            'Načítání qr kódu pro rychlé přihlášení',
+            'Načítání qr kódu každých 15 sekund z bezpečnostních důvodů',
+            'Upravený vzhled nastavení systému',
+            'Přidána stránka archivu',
+            'Přidána stránka suplování',
+            'Přidána stránka doučování',
+            'Přidána stránka vychovná opatření'
+        ]
+    },
+    {
+        version: '2.3.6',
+        date: '07. 12. 2025',
+        type: 'patch',
+        changes: [
+            'Upraven vzhled přihlašovací stránky',
+            'Přidán ještě tmavší vzhled (moon theme)',
+            'Upravený vzhled sidebaru',
+            'Upraven vzhled pro zápis čtvrtletní známky',
+            'Přidané API pro zápis čtvrtletní známky',
+            'Ankety a testy upraveny na pouze testy',
+            'Upraven vzhled testů',
+            'Upravený vzhled alertu',
+            'Upravený vzhled tabu',
+            'Upravený vzhled modalu',
+            'Přidán CSS pro animaci',
+            'Upravený vzhled tlačítek',
+            'Upravený vzhled sidebaru',
+            'Upravený vzhled nastavení systému',
+            'Opravený vzhled componentů',
+            'Opravený vzhled notifikací',
+            'Upravený vzhled pro výběr jazyka',
+            'Upravený vzhled pro výběr vzhledu',
+            'Opravený vzhled pro poslání zprávy',
+            'Opravený vzhled pro Karta žáka',
+            'Opravený CSS ve styles.css',
+            'Opravený danger style v alertech',
+            'Opravený vzhled token warning modal',
+            'Opravený vzhled u modulu vozového parku',
+            'Přidané nové ikony',
+            'Opravené zůstávání modalu po "bezpečném odhlášení"'
+        ]
+    },
+    {
+        version: '2.3.5',
+        date: '06. 12. 2025',
+        type: 'patch',
+        changes: [
+            'Přidáný seznam předmětů',
+            'Přidaný ankety a testy',
+            'Přidána stránka odměn - správa odměn studentům',
+            'Zobrazení jestli na studenta čeká odměna',
+            'Správa odměn pro studenty',
+            'Označení, že si student odměnu vyzvednul a kdy',
+            'Přidán modal pro varování, že token vyprší a možnost prodloužit relaci',
+            'Přidán alert pri odhlášení',
+            'Upravený vzhled tabů',
+            'Upravené zpracování classů u alertu',
+            'Přidaný handler pro http requesty',
+            'Přidán monitoring pro HTTP requesty',
+            'Přidán formatAsNumber do Utils - převede text na číslo (pro rendrování v .html)',
+            'Upravený loading aplikace',
+            'Upravená stránka domácích úkolů',
+            'Opraven nadpis u Kalendaře'
+        ]
+    },
+    {
+        version: '2.3.4',
+        date: '05. 12. 2025',
+        type: 'patch',
+        changes: [
+            'Přidán modul pro správu vozidel',
+            'Upravené css',
+            'Upravené modal pro úpravu společnosti u modulu Odborné praxe',
+            'Upravený přehled u modulu Odborné praxe',
+            'Upravené vzhled u Můj účet',
+            'Upravený vzhled u Přihlešené zařízení',
+            'Upravený vzhled u Nastavení notifikací',
+            'Upravený vzhled u kalendáře',
+            'Upravený vzhled u oken na hlavní stránce',
+            'Upravené okna na hlavní stránce, jiný způsob načítání',
+            'Upravený vzhled u oken u Přehledu známek',
+            'V zápisu známek upravený vzhled',
+            'Na nástěnce upravený vzhled',
+            'V poslání zpráv u příjemců změnený vzhled',
+            'V poslání zpráv u nahraných souborů změnený vzhled',
+            'Ve tvorbě rozvrhu změněný vzhled',
+            'Upravený vzhled na Kartě žáka',
+            'Přidané nové ikony',
+            'Odebrané nepouživané itemy ze sidebaru',
+            'Aktualizovaný sidebar pro modul Vozového parku',
+            'Aktualizace vzhled domácích úkolů',
+            'Přidané nové okna na hlavní stránku',
+            'Upravený vzhled na přihlašovací stránce',
+            'Upravený vzhled na nastavení systému'
+        ]
+    },
+    {
+        version: '2.3.3',
+        date: '04. 12. 2025',
+        type: 'patch',
+        changes: [
+            'Kompletně sjednocen vzhled',
+            'Přidané ikony do sidebaru',
+            'Nové logo',
+            'Nové mobilní logo (na webu ve faviconu)',
+            'Upraven vzhled seznamu notifikací',
+            'Upraven vzhled přehledu vedení školy',
+            'Upraven vzhled výběru skupiny u zápisu známky',
+            'Upraven vzhled zápisu známky',
+            'Přidán přehled pro admin zobrazení u odborných praxí',
+            'Upraven vzhled pro správu praxí',
+            'Přidán zobrazení detailu praxe',
+            'Upraven vzhled alertů',
+            'Upraven vzhled modalů',
+            'Zprovozněná komunikace mezi frontendem a backendem při nastavení notifikací'
+        ]
+    },
+    {
+        version: '2.3.2',
+        date: '03. 12. 2025',
+        type: 'patch',
+        changes: [
+            'Aktualizace tvorby rozvrhu',
+            'Aktualizace komponentu kalendáře',
+            'Přidána karta žáka (nová stránka)',
+            'Přidáno načítání z backendu počet nepřečtených příchozích zpráv, počet nepřečtených notifikací, jestli je odsouhlasené cookies',
+            'Lepší zpracování badge u sidebaru',
+            'Přidáno ukládání výběru cookies',
+            'Přidán modal k nastavení čtvrtletní / pololetní známky',
+            'Upraven vzhled notifikací',
+            'Upraveno zobrazování v rozvrhu dle práv (příjmení učitele či třída)',
+            'V rozvrhu zobrazení suplovaných hodin pro specifické hodiny',
+            'U domácích úkolů nově možnost zobrazit dle kanbanu (3 sloupce)',
+            'Upraven vzhled pro posílání zpráv',
+            'Upraven název pro nastavení notifikací',
+            'Upraven vzhled u absence studenta',
+            'Upraven vzhled dropdownu na stránce přihlášení',
+            'Aktualizace vzhledu skupin'
+        ]
+    },
+    {
+        version: '2.3.1',
+        date: '02. 12. 2025',
+        type: 'patch',
+        changes: [
+            'Přidána podpora 1-, 2-, 3-, 4- u predikce',
+            'Formátování známek (převod z 1.5 na 1-, 2.5 na 2-, ...)',
+            'Nově u editace známek posíláme columnId',
+            'Upravené v predikci používání dropdownů z dropdown manageru',
+            'Topic přediktované známky je kurzívou',
+            'Edit lesson v tvorbě rozvrhu použíme dropdownManager',
+            'V nastavení oborů přidáno načítání nastavených předmětů',
+            'Přidána ikona GripVertical',
+            'Aktualizován komponenta kalendáře',
+            'Přidána možnost nastavení velikosti (full nebo center) - full roztáhne na celou šírku tlačítka, center přizpůsobí velikost a vycentruje',
+            'Přidán kalendář do tvorby rozvrhu',
+            'Zobrazení aktuálního rozvrhu dle kalendáře'
+        ]
+    },
+    {
+        version: '2.3.0',
+        date: '01. 12. 2025',
+        type: 'minor',
+        changes: [
+            'Seřazování studentů v zapsání známek (pro učitele) je nyní abecedně - seřazeno dle příjmení a křestního jména',
+            'Možnost výběru třídy v rozvrhu (pro třídního učitele)',
+            'Zobrazení rozvrhu svog dítěte (pro rodiče)',
+            'Zobrazení platnosti licence, využití počtu studentů a zobrazení limit (včetně progress baru) v nastavení systému',
+            'Upravené modaly pro zabezpečení (nyní používá modalManager)',
+            'Psaní zprávy na nástěnku',
+            'Označení zprávy na nástěnce jako přečtené',
+            'Načítání zpráv na nástěnku z API',
+            'Načtení seznamu příjemců pro odeslání zprávy',
+            'V tvorbě rozvrhu upravený výběr třídy',
+            'V tvorbě rozvrhu přidáno tlačítko pro uložení',
+            'Nyní v tvorbě rozvrhu načítáme data z rozvrhu',
+            'Zobrazení hodin v týdnu v tvorbě rozvrhu',
+            'Přidán avatar (použité iniciály člověka) v navbaru',
+            'Nová funkce pro získávání iniciálů z celého jména (vynechá tituly)',
+            'Zobrazení absence studenta (pro studenty a rodiče)',
+            'Na hlavní stránce zobrazení rozvrhu na konci vyučování ukazuje Konec vyučování místo Volné hodiny',
+            'Opravené otevírání dropdownu v sidebaru'
+        ]
+    },
+    {
+        version: '2.2.2',
+        date: '30. 11. 2025',
+        type: 'patch',
+        changes: [
+            'Upravená struktura classů',
+            'Upraven overflow u modalů (dynamické ovládání)',
+            'Proměnná pro šířku sidebaru',
+            'Upravenné CSS pro nastavení účtu',
+            'Upravenné HTML pro nastavení účtu',
+            'Přidán modal pro přidání emailu v nastavení účtu',
+            'Přidán modal pro upravu přidaného emailu v nastavení účtu',
+            'Přidáno lepší zabezpečení IP adresy v seznamu zařízení (za blurem nyní není celá IP adresa, ale XXX)',
+            'Upraven vzhled u historie přihlášení',
+            'Odebrán sidebar v user',
+            'Přidání modalu pro vytvoření zprávy na nástěnku',
+            'Upravený náklon zpráv na nástěnce',
+            'Text na nástěnce upravený dle i18n',
+            'Nastavení systému přidán do sidebaru: nastavení přihlášení, nastavení LDAP, nastavení elektronické pošty',
+            'Upravené rozložení nastavení systému',
+            'Upravený vzhled nastavení systému',
+            'Výběr nastavení elektronické pošty',
+            'Přidána evidence expirace hesla (pro budoucí podporu LDAP)',
+            'U emailu evidujeme typ emailu (osobní email, školní email, pracovní email, jiné)',
+            'Přidané ikony: IconClock, IconMapPin',
+            'Upravený vzhled pro label',
+            'Přidán vzhled pro custom select'
+        ]
+    },
+    {
+        version: '2.2.1',
+        date: '28. 11. 2025',
+        type: 'patch',
+        changes: [
+            'Upravení notifikací, včetně rozdělení podle typů',
+            'Přidán sidebarClickHandler pro zpracování kliknutí na sidebar item',
+            'Zobrazení zprávy dle ID z url odkazu',
+            'Upravený CSS modalu header',
+            'Zobrazení rozvrhu na hlavní stránku',
+            'Upravený vzhled pro nástěnku',
+            'Přidané nové ikony: IconBook2, IconInbox, IconFile',
+            'Přidán --header-shadow v styles.CSS'
+        ]
+    },
+    {
+        version: '2.2.0',
+        date: '27. 11. 2025',
+        type: 'minor',
+        changes: [
+            'Upraven systém dropdownů (dropdownManager)',
+            'Nově lze odkudkoliv zavřít jakýkoliv dropdown',
+            'dropdown se zavře kliknutím kdekoliv jinde na stránce',
+            'Upravený vzhled pro profil',
+            'Přidány notifikace - zatím čistě návrh html, css vzhledu',
+            'Přidané oprávnění k add dropdownu a přídana funkce pro buildnutí add dropdownu',
+            'Odebráno po kliknutí pravým tlačítkem na soubor či složku item pro vytvoření složky či souboru',
+            'Vylepšen překlad - rozdělení mezi souborem a složkou',
+            'Přidána možnost pro přejmenování souboru',
+            'Upravená správa classů na hlavní stránce',
+            'Module pro známky přejmenovaný na Přehled známek',
+            'Module pro oznámení přejmenovaný na Oznámení',
+            'Testování modulu pro zobrazení rozvrhu',
+            'Přidána ikona: IconBellFilled, IconMessage, IconFilePlus',
+            'Přidán CSS vzhled pro badge',
+            'Velký update v dokumentech',
+            'Možnost přecházet mezi soubory pomocí šipek',
+            'Přidán modal pro přejmenování souboru, odstranění souboru, přejmenování složky, odstranění složky, vytvoření složky, vytvoření souboru, nahrávání souborů'
+        ]
+    },
+    {
+        version: '2.1.2',
+        date: '22. 10. 2025',
+        type: 'patch',
+        changes: [
+            'Zvětšený sidebar',
+            'Upravená struktura sidebaru, pro lepší zobrazení badge',
+            'U zápisu známek přidáno vybrání skupin, zobrazení listu známek pro skupinu a předmětu',
+            'Výpočet průměru studenta',
+            'Výpočet průměru za hodnocení (za sloupec)',
+            'Importované modaly ze starého systému - Chybí donastavit, opravit komunikace',
+            'Možnost u zapisování známek nastavit čtvrtletní známku (TODO!)'
+        ]
+    },
+    {
+        version: '2.1.1',
+        date: '21. 10. 2025',
+        type: 'patch',
+        changes: [
+            'Přidána stránka pro zobrazení známek při pohledu studenta, podpora zobrazení pro rodiče',
+            'Zobrazení známek dle předmětu',
+            'Zobrazení známek chronologicky',
+            'Možnost předvídání známek'
+        ]
+    },
+    {
+        version: '2.1.0',
+        date: '19. 10. 2025',
+        type: 'minor',
+        changes: [
+            'Předělané Themes, Locale, Authentication',
+            'Upravené 2FA v account (/user) -> místo action tlačítek na redirect tlačítko',
+            'Upravené vlajky u změny jazyků',
+            'Upravené výběr vzhledu v nastavení',
+            'Upravené send message vzhled'
+        ]
+    },
+    {
+        version: '2.0.0',
+        date: '16. 7. 2024',
+        type: 'major',
+        changes: [
+            'Nová verze Schoolinga (2.0)',
+            'Vylepšená login stránka',
+            'Upravené překlady (Locale)',
+            'Předělané získávání překladu (Již se nenačítá každý jazyk komplet, ale stahuje ze serveru pouze potřebný překlad)',
+            'Vylepšení výkonu',
+            'Přidáné tituly u jmén',
+            'Upravené API, včetně lepší komunikace se staršími verzemi pro mobilní a desktopové aplikace',
+            'Lepší struktura',
+            'Komplet překopané práva',
+            'Předělané board style',
+            'Opravené chyby v CSS'
+        ]
+    }
+];
