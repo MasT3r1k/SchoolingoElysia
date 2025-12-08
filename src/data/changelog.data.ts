@@ -12,7 +12,8 @@ export const changelog: Changelog[] = [
         type: 'patch',
         changes: [
             'Upravený načítání informace o aktuální verzi',
-            'Upravené zobrazení nových verzí'
+            'Upravené zobrazení nových verzí',
+            'Přidáné základní stránky pro modul knihovny'
         ]
     },
     {

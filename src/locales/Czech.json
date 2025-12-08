@@ -287,6 +287,11 @@
         "overview_absence": "Přehled absence"
     },
     "sidebar": {
+        "library": {
+            "main": "Knihovna",
+            "catalog": "Katalog",
+            "manage": "Správa"
+        },
         "main": "Boční panel",
         "home": "Můj přehled",
         "absence": "Absence",
@@ -1349,5 +1354,37 @@
             "room_change": "Změna místnosti",
             "other": "Jiné"
         }
+    },
+    "library": {
+        "title": "Knihovna",
+        "catalog": "Katalog knih",
+        "catalog_subtitle": "Procházejte a vyhledávejte knihy ve školní knihovně",
+        "librarian_dashboard": "Správa knihovny",
+        "loans": "Výpůjčky",
+        "books": "Knihy",
+        "loan_console": "Konzole výpůjček",
+        "add_new_book": "Přidat novou knihu",
+        "search_placeholder": "Hledat podle názvu, autora nebo ISBN...",
+        "all_genres": "Všechny žánry",
+        "my_books": "Moje knihy",
+        "no_books_found": "Nebyly nalezeny žádné knihy",
+        "try_adjusting_filters": "Zkuste upravit vyhledávání nebo filtry",
+        "available": "k dispozici",
+        "unavailable": "Nedostupné",
+        "no_active_loans": "Nemáte žádné aktivní výpůjčky",
+        "return_by": "Vrátit do",
+        "user_id": "ID Uživatele",
+        "copy_barcode": "Čárový kód / ID Kopie",
+        "borrow": "Půjčit",
+        "return": "Vrátit",
+        "lookup": "Vyhledat ISBN",
+        "save_book": "Uložit knihu",
+        "success_borrow": "Kniha byla úspěšně půjčena",
+        "success_return": "Kniha byla úspěšně vrácena",
+        "success_add": "Kniha byla přidána do knihovny",
+        "error_borrow": "Nepodařilo se půjčit knihu (Nedostupná nebo neplatný uživatel)",
+        "error_return": "Nepodařilo se vrátit knihu (Žádná aktivní výpůjčka)",
+        "error_lookup": "Kniha nebyla nalezena v Open Library",
+        "error_add": "Nepodařilo se přidat knihu"
     }
 }
