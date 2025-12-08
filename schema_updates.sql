@@ -283,3 +283,39 @@ CREATE TABLE IF NOT EXISTS email_config (
     FOREIGN KEY (school_id) REFERENCES schools(schoolId) ON DELETE CASCADE
 );
 
+ 
+ - -   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =  
+ - -   L I B R A R Y   M O D U L E   U P D A T E S  
+ - -   U p d a t e s   f o r   t h e   L i b r a r y   M a n a g e m e n t   S y s t e m  
+ - -   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =  
+  
+ - -   A d d   d e t a i l e d   f i e l d s   t o   l i b r a r y _ b o o k s  
+ A L T E R   T A B L E   l i b r a r y _ b o o k s   A D D   C O L U M N   d e s c r i p t i o n   T E X T ;  
+ A L T E R   T A B L E   l i b r a r y _ b o o k s   A D D   C O L U M N   c o v e r U r l   V A R C H A R ( 2 5 5 ) ;  
+ A L T E R   T A B L E   l i b r a r y _ b o o k s   A D D   C O L U M N   g e n r e I d   I N T ;  
+ A L T E R   T A B L E   l i b r a r y _ b o o k s   A D D   C O L U M N   c r e a t e d A t   D A T E T I M E   D E F A U L T   C U R R E N T _ T I M E S T A M P ;  
+ - -   A s s u m i n g   l i b r a r y _ g e n r e s   a l r e a d y   e x i s t s   o r   w i l l   b e   c r e a t e d .   A d d i n g   F K   i f   n e e d e d :  
+ - -   A L T E R   T A B L E   l i b r a r y _ b o o k s   A D D   C O N S T R A I N T   f k _ l i b r a r y _ b o o k s _ g e n r e   F O R E I G N   K E Y   ( g e n r e I d )   R E F E R E N C E S   l i b r a r y _ g e n r e s ( g e n r e I d )   O N   D E L E T E   S E T   N U L L ;  
+  
+ - -   F i x   l i b r a r y _ r e s e r v a t i o n s   t o   u s e   b o o k I d   i n s t e a d   o f   c o p y I d  
+ - -   N o t e :   T h i s   i s   a   d e s t r u c t i v e   c h a n g e   f o r   e x i s t i n g   r e s e r v a t i o n   l o g i c ,   b u t   a s s u m e d   o k a y   f o r   d e v e l o p m e n t .  
+ - -   I f   t a b l e   h a s   d a t a ,   w e   m i g h t   n e e d   a   m o r e   c o m p l e x   m i g r a t i o n   s c r i p t .  
+ - -   D r o p p i n g   n a m i n g   c o n s t r a i n t   i f   e x i s t s   ( o f t e n   a u t o - n a m e d )  
+ - -   A L T E R   T A B L E   l i b r a r y _ r e s e r v a t i o n s   D R O P   F O R E I G N   K E Y   . . . ;    
+  
+ - -   F o r   s i m p l i c i t y   i n   t h i s   u p d a t e   s c r i p t ,   w e   a s s u m e   w e   c a n   m o d i f y   t h e   c o l u m n   o r   r e c r e a t e   t h e   t a b l e .  
+ - -   L e t ' s   t r y   t o   m o d i f y   t h e   c o l u m n   f i r s t   i f   i t   e x i s t s .  
+ - -   C h e c k   i f   c o p y I d   e x i s t s   a n d   b o o k I d   d o e s   n o t .  
+ - -   S i n c e   m a n u a l   c o n d i t i o n a l   l o g i c   i s   h a r d   i n   p u r e   S Q L   s c r i p t   w i t h o u t   s t o r e d   p r o c e d u r e s ,    
+ - -   w e   w i l l   p r o v i d e   t h e   A L T E R   c o m m a n d .   I f   i t   f a i l s   ( a l r e a d y   d o n e ) ,   i t   f a i l s .  
+ - -   B E T T E R   A P P O A C H   f o r   t h i s   s p e c i f i c   s c r i p t :   R e c r e a t e   t h e   t a b l e   i f   i t   d o e s n ' t   h a v e   d a t a ,   o r   A L T E R .  
+ - -   A s s u m i n g   s t a n d a r d   A L T E R :  
+ A L T E R   T A B L E   l i b r a r y _ r e s e r v a t i o n s   C H A N G E   C O L U M N   c o p y I d   b o o k I d   I N T   N O T   N U L L ;  
+ A L T E R   T A B L E   l i b r a r y _ r e s e r v a t i o n s   M O D I F Y   C O L U M N   s t a t u s   E N U M ( ' p e n d i n g ' ,   ' f u l f i l l e d ' ,   ' c a n c e l l e d ' )   N O T   N U L L   D E F A U L T   ' p e n d i n g ' ;  
+  
+ - -   A d d   F K   f o r   b o o k I d   i n   r e s e r v a t i o n s  
+ - -   A L T E R   T A B L E   l i b r a r y _ r e s e r v a t i o n s   A D D   C O N S T R A I N T   f k _ r e s e r v a t i o n s _ b o o k   F O R E I G N   K E Y   ( b o o k I d )   R E F E R E N C E S   l i b r a r y _ b o o k s ( b o o k I d )   O N   D E L E T E   C A S C A D E ;  
+  
+ - -   A d d   a u t h o r   c o l u m n   t o   l i b r a r y _ b o o k s  
+ A L T E R   T A B L E   l i b r a r y _ b o o k s   A D D   C O L U M N   a u t h o r   V A R C H A R ( 2 5 5 ) ;  
+ 

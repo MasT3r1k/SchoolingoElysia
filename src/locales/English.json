@@ -5,7 +5,10 @@
     "auth": {
         "login": {
             "title": "Login to the school system",
-            "subtitle": ["Using login credentials", "Login using QR code"],
+            "subtitle": [
+                "Using login credentials",
+                "Login using QR code"
+            ],
             "qrcode": "Scan the QR code in the mobile app for quick login",
             "username": "Username",
             "username_placeholder": "Username",
@@ -42,5 +45,44 @@
     "or": "or",
     "system": {
         "version": "System version"
+    },
+    "library": {
+        "title": "Library",
+        "catalog": "Book Catalog",
+        "catalog_subtitle": "Browse and search books in the school library",
+        "librarian_dashboard": "Librarian Dashboard",
+        "loans": "Loans",
+        "books": "Books",
+        "loan_console": "Loan Console",
+        "add_new_book": "Add New Book",
+        "search_placeholder": "Search by title, author, or ISBN...",
+        "all_genres": "All Genres",
+        "my_books": "My Books",
+        "no_books_found": "No books found",
+        "try_adjusting_filters": "Try adjusting your search or filters",
+        "available": "available",
+        "unavailable": "Unavailable",
+        "no_active_loans": "You have no active loans",
+        "return_by": "Return by",
+        "user_id": "User ID",
+        "copy_barcode": "Barcode / Copy ID",
+        "borrow": "Borrow",
+        "return": "Return",
+        "lookup": "Lookup ISBN",
+        "save_book": "Save Book",
+        "success_borrow": "Book borrowed successfully",
+        "success_return": "Book returned successfully",
+        "success_add": "Book added to library",
+        "error_borrow": "Failed to borrow book (Unavailable or Invalid User)",
+        "error_return": "Failed to return book (No active loan)",
+        "error_lookup": "Book not found in Open Library",
+        "error_add": "Failed to add book"
+    },
+    "sidebar": {
+        "library": {
+            "main": "Library",
+            "catalog": "Catalog",
+            "manage": "Manage"
+        }
     }
 }

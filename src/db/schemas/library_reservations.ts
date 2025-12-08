@@ -2,8 +2,8 @@ import { Generated } from "kysely";
 
 export interface library_reservationsTable {
   reservationId: Generated<number>;
-  copyId: number;
+  bookId: number;
   reserverId: number;
   reservationDate: Generated<Date>;
-  status: 'active' | 'cancelled' | 'fulfilled';
+  status: 'pending' | 'cancelled' | 'fulfilled';
 }
