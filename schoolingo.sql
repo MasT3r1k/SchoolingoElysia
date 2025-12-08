@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1
--- Vytvořeno: Pon 08. pro 2025, 00:07
+-- Vytvořeno: Pon 08. pro 2025, 14:19
 -- Verze serveru: 12.0.2-MariaDB
 -- Verze PHP: 8.2.12
 
@@ -2846,7 +2846,36 @@ INSERT INTO `login_history` (`loginId`, `userId`, `type`, `success`, `error`, `i
 (1376, 4, 'password', 1, NULL, '109.164.51.14', 1335, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-07 22:48:15.318819', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1377, 4, 'password', 1, NULL, '109.164.51.14', 1336, 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1', '2025-12-07 22:48:41.506919', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1378, 4, 'password', 1, NULL, '109.164.51.14', 1337, 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1', '2025-12-07 22:49:04.969624', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
-(1379, 4, 'password', 1, NULL, '109.164.51.14', 1338, 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1', '2025-12-07 22:55:53.012648', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL);
+(1379, 4, 'password', 1, NULL, '109.164.51.14', 1338, 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1', '2025-12-07 22:55:53.012648', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1380, 4, 'password', 1, NULL, '195.113.101.227', 1339, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-08 07:10:12.847914', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1381, 4, 'password', 1, NULL, '195.113.101.227', 1340, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-08 08:23:41.382060', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1382, 1, 'password', 1, NULL, '195.113.101.227', 1341, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-08 08:23:55.298960', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1383, 4, 'password', 1, NULL, '195.113.101.227', 1342, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-08 08:24:53.338961', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1384, 2, 'password', 1, NULL, '195.113.101.227', 1343, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-08 08:31:17.138079', 'Ostrava', '702 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1385, 4, 'password', 1, NULL, '185.100.234.183', 1344, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-08 09:07:38.966500', 'Amsterdam', '1012', 'North Holland', 'The Netherlands', 'NL', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `login_qrcodes`
+--
+
+CREATE TABLE `login_qrcodes` (
+  `qrcode` varchar(255) NOT NULL,
+  `socket` text NOT NULL,
+  `userAgent` text NOT NULL,
+  `ip` text DEFAULT NULL,
+  `created` timestamp(6) NOT NULL DEFAULT current_timestamp(6) ON UPDATE current_timestamp(6)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Vypisuji data pro tabulku `login_qrcodes`
+--
+
+INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) VALUES
+('5wFwhJU5AIf5AfN3lwYFVKtnDmRdQ9cl', '80225c6b27aaf69f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '::1', '2025-12-08 08:55:52.903230'),
+('BhVIcC40TQjN2zOMoljE4EjmospD1XBG', 'b6750ff167eefd77', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '::1', '2025-12-08 09:07:42.548402'),
+('usTPaD0DZrMsyr071uLaXUfGGfh5MEQV', '80225c6b27aaf69f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '::1', '2025-12-08 08:55:58.154782');
 
 -- --------------------------------------------------------
 
@@ -3287,19 +3316,6 @@ CREATE TABLE `push_subscriptions` (
   `p256dh` varchar(255) NOT NULL,
   `auth` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Struktura tabulky `qrlogin`
---
-
-CREATE TABLE `qrlogin` (
-  `qrcode` varchar(255) NOT NULL,
-  `socket` text NOT NULL,
-  `userAgent` text NOT NULL,
-  `created` timestamp(6) NOT NULL DEFAULT current_timestamp(6) ON UPDATE current_timestamp(6)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -4843,7 +4859,13 @@ INSERT INTO `tokens` (`tokenId`, `token`, `password`, `userAgent`, `expires`, `c
 (1335, '$2b$04$oOAVnnNN7ScKunCUhPZSDelMYULzHTI5ByKjZYc9vJZXvFyGz7XGC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '2025-12-08 00:03:41.103000', '2025-12-07 23:48:15.314000', 4, NULL, '109.164.51.14'),
 (1336, '$2b$04$SD.9M1AXNmXUEq2Re3CWL.mznaTKOkmRO74PiKu7B2tF3j8RVhNhm', 1, 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1', '2025-12-08 00:04:04.557000', '2025-12-07 23:48:41.502000', 4, NULL, '109.164.51.14'),
 (1337, '$2b$04$yOLPZLCEiatunULeCRt3pugWwoVw2jwQSKcu9VXjg.LjhYwxfr0ke', 1, 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1', '2025-12-08 00:10:52.343000', '2025-12-07 23:49:04.966000', 4, NULL, '109.164.51.14'),
-(1338, '$2b$04$X3gPjH7t9MzJrYcpeDXoj.R.ZvokjKZhXyT5L3yZKPjAeXn5eale2', 1, 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1', '2025-12-08 00:22:13.170000', '2025-12-07 23:55:53.008000', 4, NULL, '109.164.51.14');
+(1338, '$2b$04$X3gPjH7t9MzJrYcpeDXoj.R.ZvokjKZhXyT5L3yZKPjAeXn5eale2', 1, 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1', '2025-12-08 00:22:13.170000', '2025-12-07 23:55:53.008000', 4, NULL, '109.164.51.14'),
+(1339, '$2b$04$HlCrqrauGecNvqho7DICEu8EzczXBMBvmFlGPhoKj1SSYbveyu7n.', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-08 08:10:23.847000', '2025-12-08 08:10:12.650000', 4, NULL, '195.113.101.227'),
+(1340, '$2b$04$H1vXaDJKWpd.J7/9tC.ZQewiTBvukxL6IFnvhVeB/RsRvweOEVgVy', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-08 09:23:51.945000', '2025-12-08 09:23:41.332000', 4, NULL, '195.113.101.227'),
+(1341, '$2b$04$rFWZjobYMr9AZVfdxKAUsexEUFc5R4Gcqw5ue2jGeKeKuAWKkrl5i', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-08 09:24:50.392000', '2025-12-08 09:23:55.281000', 1, NULL, '195.113.101.227'),
+(1342, '$2b$04$Twc7IJQKOubnJYBAU6P72.E2S1Rx3tthGCExCjvS9A64pxrng3ToC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-08 09:31:13.432000', '2025-12-08 09:24:53.325000', 4, NULL, '195.113.101.227'),
+(1343, '$2b$04$Tf9QjDZHUqShB0UbwuemcOcHj/8hJ5AnLiQ5i2EPMjNX8dMClTjwC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-08 09:40:42.768000', '2025-12-08 09:31:17.120000', 2, NULL, '195.113.101.227'),
+(1344, '$2b$04$gTRhvQNZso3n4Y5ZEOyA4O8GqB8vAAoKZY/uVflaEkI5qtWSGthbO', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-12-08 10:42:44.993000', '2025-12-08 10:07:38.934000', 4, NULL, '185.100.234.183');
 
 -- --------------------------------------------------------
 
@@ -5540,6 +5562,12 @@ ALTER TABLE `login_history`
   ADD KEY `token_id` (`token_id`);
 
 --
+-- Indexy pro tabulku `login_qrcodes`
+--
+ALTER TABLE `login_qrcodes`
+  ADD UNIQUE KEY `qrcode` (`qrcode`);
+
+--
 -- Indexy pro tabulku `marking_scales`
 --
 ALTER TABLE `marking_scales`
@@ -5668,12 +5696,6 @@ ALTER TABLE `poll_responses`
 ALTER TABLE `push_subscriptions`
   ADD PRIMARY KEY (`subscription_id`),
   ADD KEY `idx_user_id` (`user_id`);
-
---
--- Indexy pro tabulku `qrlogin`
---
-ALTER TABLE `qrlogin`
-  ADD UNIQUE KEY `qrcode` (`qrcode`);
 
 --
 -- Indexy pro tabulku `rooms`
@@ -6147,7 +6169,7 @@ ALTER TABLE `library_reservations`
 -- AUTO_INCREMENT pro tabulku `login_history`
 --
 ALTER TABLE `login_history`
-  MODIFY `loginId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1380;
+  MODIFY `loginId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1386;
 
 --
 -- AUTO_INCREMENT pro tabulku `marking_scales`
@@ -6309,7 +6331,7 @@ ALTER TABLE `timetable`
 -- AUTO_INCREMENT pro tabulku `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1339;
+  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1345;
 
 --
 -- AUTO_INCREMENT pro tabulku `traineeship_companies`

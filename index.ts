@@ -16,6 +16,7 @@ import { sessionMiddleware } from './src/middleware/session-expand.middleware';
 import { db } from './database';
 import moment from 'moment';
 import { SecurityConfig } from './src/config/security.config';
+import { ws } from './websocket';
 
 function getLocalCommit(): string {
     try {
@@ -45,13 +46,6 @@ function fetchRemoteCommit(): Promise<string> {
         });
     });
 }
-
-const ws = new Elysia()
-  .ws('/ws', {
-    message(ws, message) {
-      ws.send(message);
-    }
-  });
 
 export const app = new Elysia({
     serve: {

@@ -23,7 +23,7 @@
                 "Pomocí QR kódu"
             ],
             "qrcode": "Naskejnute QR kód v mobilní aplikaci pro rychlé přihlášení",
-            "qrcode_hint": "V aplikaci přejděte do nastavení a tam najděte kolonko 'Přihlášení QR Kódem'",
+            "qrcode_hint": "V aplikaci přejděte do nastavení a tam najděte kolonku 'Přihlášení QR Kódem'",
             "username": "Uživatelské jméno",
             "username_placeholder": "Uživatelské jméno",
             "password": "Heslo",
@@ -303,7 +303,8 @@
             "tutoring": "Doučování",
             "subjects": "Přehled předmětů",
             "classbook": "Třídní kniha",
-            "rewards": "Odměny"
+            "rewards": "Odměny",
+            "tests": "Testy"
         },
         "marks": {
             "main": "Hodnocení",
@@ -339,6 +340,7 @@
         "user": {
             "notifications": "Nastavení notifikací"
         },
+        "archive": "Archiv systému",
         "system": {
             "main": "Správa systému",
             "settings": "Nastavení systému",
