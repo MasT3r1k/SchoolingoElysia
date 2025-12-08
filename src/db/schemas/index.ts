@@ -47,6 +47,7 @@ import { persons_degreeTable } from './persons_degree'
 import { phone_numbersTable } from './phone_numbers'
 import { login_qrcodesTable } from './login_qrcodes'
 import { LdapConfigTable } from './ldap_config'
+import { EmailConfigTable } from './email_config'
 import { schoolsTable } from './schools'
 import { school_breaksTable } from './school_breaks'
 import { school_domainsTable } from './school_domains'
@@ -107,6 +108,7 @@ export interface Database {
   degrees: DegreesTable
   districts: DistrictsTable
   emails: emailsTable
+  email_config: EmailConfigTable
   emergency_events: emergency_eventsTable
   emergency_event_types: emergency_event_typesTable
   emergency_event_users: emergency_event_usersTable

@@ -262,3 +262,24 @@ ALTER TABLE schools ADD COLUMN IF NOT EXISTS auth_passkeys BOOLEAN DEFAULT FALSE
 ALTER TABLE schools ADD COLUMN IF NOT EXISTS session_lifetime_minutes INT DEFAULT 480;
 ALTER TABLE schools ADD COLUMN IF NOT EXISTS max_login_attempts INT DEFAULT 5;
 
+-- =====================================================
+-- EMAIL CONFIGURATION TABLE
+-- =====================================================
+DROP TABLE IF EXISTS email_config;
+CREATE TABLE IF NOT EXISTS email_config (
+    config_id INT PRIMARY KEY AUTO_INCREMENT,
+    school_id INT NOT NULL,
+    provider VARCHAR(50) DEFAULT 'basic_smtp',
+    host VARCHAR(255) NOT NULL,
+    port INT DEFAULT 587,
+    username VARCHAR(255),
+    password VARCHAR(255),
+    encryption ENUM('none', 'ssl', 'tls') DEFAULT 'tls',
+    from_email VARCHAR(255) NOT NULL,
+    from_name VARCHAR(255) DEFAULT 'Schoolingo',
+    enabled BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (school_id) REFERENCES schools(schoolId) ON DELETE CASCADE
+);
+

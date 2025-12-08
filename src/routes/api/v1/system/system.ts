@@ -14,7 +14,8 @@ const app = new Elysia()
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
-    const [school_info, districts, student_count, subjects, scopes, ldap_config] = await Promise.all([
+
+    const [school_info, districts, student_count, subjects, scopes, ldap_config, email_config] = await Promise.all([
       // School settings
       db.selectFrom('schools')
         .leftJoin('districts', 'districts.districtId', 'schools.district')
@@ -86,6 +87,12 @@ const app = new Elysia()
       db.selectFrom('ldap_config')
         .selectAll()
         .limit(1)
+        .executeTakeFirst(),
+
+      // Email Config
+      db.selectFrom('email_config')
+        .selectAll()
+        .limit(1)
         .executeTakeFirst()
     ]);
 
@@ -96,6 +103,7 @@ const app = new Elysia()
     return Response.json({
       settings: school_info,
       ldap_config: ldap_config || null,
+      email_config: email_config || null,
       districts,
       student_count,
       subjects,
