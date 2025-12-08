@@ -1,4 +1,20 @@
-export const changelog = [
+export interface Changelog {
+    version: string;
+    date: string;
+    type: 'patch' | 'minor' | 'major';
+    changes: string[];
+}
+
+export const changelog: Changelog[] = [
+    {
+        version: '2.3.8',
+        date: '08. 12. 2025',
+        type: 'patch',
+        changes: [
+            'Upravený načítání informace o aktuální verzi',
+            'Upravené zobrazení nových verzí'
+        ]
+    },
     {
         version: '2.3.7',
         date: '08. 12. 2025',

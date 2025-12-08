@@ -51,6 +51,23 @@ class GitVersionService {
         });
     }
 
+    loadRemoteVersion(): Promise<string> {
+        return new Promise((resolve) => {
+            exec("git show origin/main:src/data/changelog.data.ts", (err, stdout) => {
+                if (err) {
+                    console.error("❌ Failed to read remote changelog:", err);
+                    return resolve("unknown");
+                }
+                const match = stdout.toString().match(/version:\s*['"]([\d\.]+)['"]/);
+                if (match && match[1]) {
+                    resolve(match[1]);
+                } else {
+                    resolve("unknown");
+                }
+            });
+        });
+    }
+
     // Safe refresh (prevents running twice)
     async refreshRemote() {
         if (this.isRefreshing) return;
@@ -100,9 +117,15 @@ export const version = new Elysia({ prefix: "/api/v1" })
     }))
     .post("/refresh", async () => {
         await gitService.refreshRemote();
+        const remoteVersion = await gitService.loadRemoteVersion();
+        
         return {
             ok: true,
-            latest: gitService.remoteCommit
+            version: changelog[0].version,
+            remoteVersion: remoteVersion,
+            current: gitService.localCommit,
+            latest: gitService.remoteCommit,
+            isUpToDate: gitService.localCommit === gitService.remoteCommit
         };
     });
 

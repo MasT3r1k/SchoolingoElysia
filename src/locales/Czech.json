@@ -193,6 +193,7 @@
             "basic_smtp_server": "SMTP Server - přihlášení pomocí jména a hesla",
             "google_smtp_server": "Google SMTP Server - přihlášení pomocí oAuth2 autentizace"
         },
+        "changelog": "Seznam změn systému",
         "school_name": "Název školy",
         "school_short_name": "Zkratka školy",
         "school_code": "Kód školy",
