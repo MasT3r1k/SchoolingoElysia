@@ -46,6 +46,7 @@ import { Persons } from './persons'
 import { persons_degreeTable } from './persons_degree'
 import { phone_numbersTable } from './phone_numbers'
 import { login_qrcodesTable } from './login_qrcodes'
+import { LdapConfigTable } from './ldap_config'
 import { schoolsTable } from './schools'
 import { school_breaksTable } from './school_breaks'
 import { school_domainsTable } from './school_domains'
@@ -143,6 +144,7 @@ export interface Database {
   persons: Persons
   persons_degree: persons_degreeTable
   phone_numbers: phone_numbersTable
+  ldap_config: LdapConfigTable
   login_qrcodes: login_qrcodesTable
   semester_grades: semester_gradesTable
   schools: schoolsTable

@@ -14,7 +14,7 @@ const app = new Elysia()
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
-    const [school_info, districts, student_count, subjects, scopes] = await Promise.all([
+    const [school_info, districts, student_count, subjects, scopes, ldap_config] = await Promise.all([
       // School settings
       db.selectFrom('schools')
         .leftJoin('districts', 'districts.districtId', 'schools.district')
@@ -33,7 +33,14 @@ const app = new Elysia()
           'schools.license_type',
           'schools.license_until',
           'schools.studentsLimit',
-          'schools.modules'
+          'schools.modules',
+          // Auth Settings
+          'schools.auth_classic',
+          'schools.auth_ldap',
+          'schools.auth_qr',
+          'schools.auth_passkeys',
+          'schools.session_lifetime_minutes',
+          'schools.max_login_attempts'
         ])
         .limit(1)
         .executeTakeFirst(),
@@ -73,7 +80,13 @@ const app = new Elysia()
           'scopes.students_per_class'
         ])
         .orderBy('scopes.name', 'asc')
-        .execute()
+        .execute(),
+
+      // LDAP Config
+      db.selectFrom('ldap_config')
+        .selectAll()
+        .limit(1)
+        .executeTakeFirst()
     ]);
 
     if (!school_info) {
@@ -82,6 +95,7 @@ const app = new Elysia()
 
     return Response.json({
       settings: school_info,
+      ldap_config: ldap_config || null,
       districts,
       student_count,
       subjects,
