@@ -846,7 +846,13 @@
             "marks": "Pomocí známek",
             "points": "Pomocí bodů"
         },
-        "marks_text": ["Výborný", "Chvalitebný", "Dobrý", "Dostatečný", "Nedostatečný"],
+        "marks_text": [
+            "Výborný",
+            "Chvalitebný",
+            "Dobrý",
+            "Dostatečný",
+            "Nedostatečný"
+        ],
         "cant_edit_after_creation": "Nelze upravovat po vytvoření",
         "max_points": "Maximální počet bodů",
         "max_points_placeholder": "Vyplňte maximální počet bodů, co lze získat",
@@ -1314,5 +1320,33 @@
         "countries_pay_per_use": "Země s mýtným systémem",
         "toll_free_note": "V těchto zemích osobní automobily neplatí za dálnice.",
         "pay_per_use_note": "V těchto zemích se platí mýtné za použité úseky (bez známky)."
+    },
+    "substitution": {
+        "today": "Dnes",
+        "tomorrow": "Zítra",
+        "yesterday": "Včera",
+        "total": "Celkem",
+        "loading": "Načítání suplování...",
+        "create": "Vytvořit suplování",
+        "hour": "Hodina",
+        "class": "Třída",
+        "subject": "Předmět",
+        "type": "Typ",
+        "original_teacher": "Původní učitel",
+        "substitute_teacher": "Zástupný učitel",
+        "room": "Místnost",
+        "search": "Vyhledat suplování...",
+        "no_substitutions": "Žádná suplování",
+        "no_substitutions_desc": "Pro vybraný den nejsou evidována žádná suplování.",
+        "filters": {
+            "all": "Všechna suplování",
+            "by_type": "Podle typu"
+        },
+        "types": {
+            "cancelled": "Zrušená hodina",
+            "substitution": "Suplování",
+            "room_change": "Změna místnosti",
+            "other": "Jiné"
+        }
     }
 }

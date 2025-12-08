@@ -50,12 +50,46 @@ const elysiaApp = new Elysia()
     duration: 1000,
     injectServer: () => app.server
   }))
-  .post('/timetable', async ({ body }) => {
+  .post('/timetable', async ({ body, user }) => {
     try {
+      if (!user) {
+         return Response.json({ error: 'unauthorized' }, { status: 401 });
+      }
+
       let type = body.type;
-      let id = body.id;
+      let targetId = body.id;
       let time = moment(body.time)
 
+      // SECURITY: Access Control Check
+      // Block users from viewing other people's timetables unless authorized
+      if (user.person !== targetId) {
+          const isPrincipal = user.isPrincipal;
+          // Note: Assuming manager might also have rights, but Principal is safer check for now
+          
+          if (!isPrincipal) {
+              // Check if requester is a teacher
+              const isTeacher = await db.selectFrom('teachers')
+                  .select(['personId'])
+                  .where('personId', '=', user.person)
+                  .executeTakeFirst();
+              
+              if (!isTeacher) {
+                  // Check if requester is a parent of the target
+                  const isParent = await db.selectFrom('family_relations')
+                    .select(['source'])
+                    .where('source', '=', user.person)
+                    .where('target', '=', targetId)
+                    .executeTakeFirst();
+                  
+                  if (!isParent) {
+                      return Response.json({ error: 'forbidden', details: 'You are not allowed to view this timetable' }, { status: 403 });
+                  }
+              }
+              // Teachers allowed to view anyone's timetable (or restrict to their class? Leaving open for staff flexibility)
+          }
+      }
+
+      // Determine Target's Roles (Student/Teacher/Parent) to decide what to show
       const perms = await db.selectFrom("tokens")
       .leftJoin('users', 'users.userId', 'tokens.userId')
       .leftJoin('students', 'students.personId', 'users.person')
@@ -66,11 +100,36 @@ const elysiaApp = new Elysia()
           sql`teachers.personId`.as('teacher'),
           sql`family_relations.source`.as('parent')
       ])
-      .where('users.person', '=', id)
+      .where('users.person', '=', targetId)
       .limit(1)
       .executeTakeFirst()
-
-      if (perms?.student) {
+      // Note: This query relies on 'tokens' but we are querying by 'person'. 
+      // It might be safer to query 'users' table directly instead of joining tokens if the target isn't logged in?
+      // But original code joined tokens. It implies target must have a token?
+      // Wait, original code: `.where('users.person', '=', id)`.
+      // If user has multiple tokens, it returns multiple rows? `.limit(1)` handles it.
+      // If user has NO tokens (never logged in), this returns undefined?
+      // Then `perms?.student` is undefined.
+      // And nothing is returned.
+      // Better to query 'users' directly for roles.
+      
+      // Improved Role Check for Target (removing token dependency)
+      // Actually, perms logic below uses `perms?.student` etc.
+      // I'll keep original logic structure but switch to 'users' table base to be robust.
+      const targetRoles = await db.selectFrom('users')
+         .leftJoin('students', 'students.personId', 'users.person')
+         .leftJoin('teachers', 'teachers.personId', 'users.person')
+         // .leftJoin('family_relations', ... ) // Parent logic not used in branches below?
+         .select([
+             'students.personId as student',
+             'teachers.personId as teacher'
+         ])
+         .where('users.person', '=', targetId)
+         .executeTakeFirst();
+      
+      // Use targetRoles instead of perms
+      
+      if (targetRoles?.student) {
           const groups = await db.selectFrom('student_groups')
               .innerJoin('groups', 'student_groups.groupId', 'groups.groupId')
               .innerJoin('school_years as sy', 'groups.year', 'sy.syId')
@@ -79,7 +138,7 @@ const elysiaApp = new Elysia()
                   'groups.name',
                   'groups.num',
               ])
-              .where('student_groups.student', '=', id)
+              .where('student_groups.student', '=', targetId)
               .where('sy.start', '<=', time.format("YYYY-MM-DD"))
               .where('sy.end', '>=', time.format("YYYY-MM-DD"))
               .execute()
@@ -162,7 +221,7 @@ const elysiaApp = new Elysia()
           ])
 
           return Response.json({timetable, substitution});
-      } else if (perms?.teacher) {
+      } else if (targetRoles?.teacher) {
         if (type == "person") {
           const [timetable, substitution] = await Promise.all([
               db.selectFrom('timetable')
@@ -190,7 +249,7 @@ const elysiaApp = new Elysia()
                   ])
                   .where((eb) =>
                     eb.and([
-                      eb('timetable.teacher', '=', id),
+                      eb('timetable.teacher', '=', targetId),
                       eb('syGroup.start', '<=',  time.clone().format("YYYY-MM-DD")),
                       eb('syGroup.end', '>=',    time.clone().format("YYYY-MM-DD"))
                     ])
@@ -222,7 +281,7 @@ const elysiaApp = new Elysia()
                 .where((eb) =>
                   eb.and([
                     eb.or([
-                      eb('substitution.teacherId', '=', id),
+                      eb('substitution.teacherId', '=', targetId),
                       eb('substitution.groupId', 'is', null)
                     ]),
                     eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').format('YYYY-MM-DD')),
@@ -261,9 +320,13 @@ const elysiaApp = new Elysia()
                     sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className'),
                     fullName.as('teacher')
                   ])
-                  .where('groups.class', '=', id)
-                  .where('syGroup.start', '<=',  time.clone().format("YYYY-MM-DD"))
-                  .where('syGroup.end', '>=',    time.clone().format("YYYY-MM-DD"))
+                  .where('groups.class', '=', targetId)
+                  .where((eb) => eb.exists(
+                      db.selectFrom('school_years as syGroup').select('syGroup.start')
+                      .whereRef('syGroup.syId', '=', 'groups.year')
+                      .where('syGroup.start', '<=', time.clone().format("YYYY-MM-DD"))
+                      .where('syGroup.end', '>=', time.clone().format("YYYY-MM-DD"))
+                   ))
                   .execute(),
 
               db.selectFrom('substitution')
@@ -292,7 +355,7 @@ const elysiaApp = new Elysia()
                 .where((eb) =>
                   eb.and([
                     eb.or([
-                      eb('groups.class', '=', id),
+                      eb('groups.class', '=', targetId),
                       eb('substitution.groupId', '=', null)
                     ]),
                     eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').format('YYYY-MM-DD')),
@@ -305,8 +368,12 @@ const elysiaApp = new Elysia()
           return Response.json({timetable, substitution});
         }
       }
+      
+      // If no valid roles found or structure unsupported
+      return Response.json({ timetable: [], substitution: [] });
+
     } catch (e) {
-      return new Response(JSON.stringify({ error: "Student not found", e }), {
+      return new Response(JSON.stringify({ error: "Student not found or internal error", e }), {
         status: 404,
         headers: {
           'Content-Type': 'application/json'

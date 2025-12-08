@@ -4,259 +4,92 @@ import { sql } from 'kysely';
 import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
-  .get('/dashboard/admin', async ({ cookie }) => {
-    const token = cookie.token?.value;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
+  .get('/dashboard/admin', async ({ user }) => {
+    // Auth Check
+    if (!user) return { error: 'no_user', details: 'unauthorized' };
+    
+    // Permission Check: User must either Not have a manager (manager == -1) AND NOT be principal? 
+    // Preserving original logic: if (manager != -1 && principal == false) ERROR.
+    // Meaning: You must be Principal OR Independent (No Manager, -1).
+    if (user.manager != -1 && user.isPrincipal == false) return { error: 'no_permission' };
 
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select([
-        'tokens.userId',
-        'users.person',
-        'users.manager',
-        'users.principal'
-    ])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
+    // === Define Queries ===
+    
+    // Total students
+    const totalStudentsQuery = db.selectFrom('students')
+        .select([sql`COUNT(*)`.as('count')])
+        .where('students.status', '=', 'active')
+        .executeTakeFirst()
+        .then(r => Number(r?.count ?? 0));
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
-    if (auth.manager != -1 && auth.principal == false) return { error: 'no_permission' };
+    // Limit students
+    const limitStudentsQuery = db.selectFrom('schools')
+        .select(['schools.studentsLimit'])
+        .executeTakeFirst()
+        .then(r => Number(r?.studentsLimit ?? 0));
 
-    // === Count of total students ===
-    const totalStudents = await db.selectFrom('students')
-    .select([
-        sql`COUNT(*)`.as('count')
-    ])
-    .where('students.status', '=', 'active')
-    .executeTakeFirst()
-    .then(r => Number(r?.count ?? 0));
+    // Average grade
+    const averageGradeQuery = db.selectFrom('grades')
+        .leftJoin('grades_columns', 'grades_columns.gcId', 'grades.columnId')
+        .select(sql<number>`SUM(grades.mark * grades_columns.weight) / NULLIF(SUM(grades_columns.weight),0)`.as('weighted_average_grade'))
+        .where('grades.mark', 'is not', null)
+        .executeTakeFirst()
+        .then(r => Number(r?.weighted_average_grade ?? 0));
 
-    // === Limit students ===
-    const limitStudents = await db.selectFrom('schools')
-    .select([
-        'schools.studentsLimit'
-    ])
-    .executeTakeFirst()
-    .then(r => Number(r?.studentsLimit ?? 0));
-
-    // === Average grade ===
-    const averageGrade = await db.selectFrom('grades')
-    .leftJoin('grades_columns', 'grades_columns.gcId', 'grades.columnId')
-    .select(
-        sql<number>`SUM(grades.mark * grades_columns.weight) / NULLIF(SUM(grades_columns.weight),0)`.as('weighted_average_grade')
-    )
-    .where('grades.mark', 'is not', null)
-    .executeTakeFirst()
-    .then(r => Number(r?.weighted_average_grade ?? 0));
-
-    // === Absence rate ===
-    const stats = db
-    .selectFrom('classbook as c')
-    .leftJoin('student_groups as sg', 'sg.groupId', 'c.groupId')
-    .leftJoin(
-        db
-        .selectFrom('absence')
-        .select([
-            'lesson',
-            sql`COUNT(*)`.as('absent_count'),
-        ])
-        .groupBy('lesson')
-        .as('a'),
-        'a.lesson',
-        'c.cbId'
-    )
-    .select([
-        'c.cbId',
-        sql`COUNT(sg.student)`.as('lesson_expected'),
-        sql`COALESCE(a.absent_count, 0)`.as('lesson_absent'),
-    ])
-    .groupBy('c.cbId')
-    .as('stats');
-
-    const absenceRate = await db
-    .selectFrom(stats)
-    .select(sql`
-        SUM(stats.lesson_absent) / SUM(stats.lesson_expected)
-        `.as('school_absence_rate'))
-    .executeTakeFirst()
-    .then(r => Number(r?.school_absence_rate ?? 0));
-
-    const atRiskCountQuery = db
-    .selectFrom(
-        db
-        .selectFrom('students as s')
-        // JOIN student_groups → přes studentId
-        .leftJoin('student_groups as sg', 'sg.student', 's.personId')
-        // JOIN classbook → přes groupId z student_groups
+    // Absence rate logic helpers
+    const stats = db.selectFrom('classbook as c')
+        .leftJoin('student_groups as sg', 'sg.groupId', 'c.groupId')
         .leftJoin(
-            db
-            .selectFrom('classbook as c')
-            .leftJoin(
-                db
-                .selectFrom('absence')
-                .select(['lesson', sql`COUNT(*)`.as('missed')])
-                .groupBy('lesson')
-                .as('a2'),
-                'a2.lesson',
-                'c.cbId'
-            )
-            .select([
-                'c.cbId',
-                'c.groupId',
-                sql`1`.as('expected'),
-                sql`COALESCE(a2.missed,0)`.as('absent')
-            ])
+            db.selectFrom('absence')
+            .select(['lesson', sql`COUNT(*)`.as('absent_count')])
+            .groupBy('lesson')
             .as('a'),
-            'a.groupId',
-            'sg.groupId'
+            'a.lesson', 'c.cbId'
         )
-        // JOIN pro známky
+        .select(['c.cbId', sql`COUNT(sg.student)`.as('lesson_expected'), sql`COALESCE(a.absent_count, 0)`.as('lesson_absent')])
+        .groupBy('c.cbId')
+        .as('stats');
+
+    // Absence rate
+    const absenceRateQuery = db.selectFrom(stats)
+        .select(sql`SUM(stats.lesson_absent) / SUM(stats.lesson_expected)`.as('school_absence_rate'))
+        .executeTakeFirst()
+        .then(r => Number(r?.school_absence_rate ?? 0));
+
+    // At Risk Count
+    const atRiskCountQuery = db.selectFrom(
+        db.selectFrom('students as s')
+        .leftJoin('student_groups as sg', 'sg.student', 's.personId')
         .leftJoin(
-            db
-            .selectFrom('grades as g')
-            .leftJoin('grades_columns as gc', 'gc.gcId', 'g.columnId')
-            .select([
-                'g.studentId',
-                sql`SUM(g.mark * gc.weight) / SUM(gc.weight)`.as('weightedAvg')
-            ])
-            .groupBy('g.studentId')
-            .as('g'),
-            'g.studentId',
-            's.personId'
+            db.selectFrom('classbook as c')
+            .leftJoin(
+                db.selectFrom('absence').select(['lesson', sql`COUNT(*)`.as('missed')]).groupBy('lesson').as('a2'),
+                'a2.lesson', 'c.cbId'
+            )
+            .select(['c.cbId', 'c.groupId', sql`1`.as('expected'), sql`COALESCE(a2.missed,0)`.as('absent')])
+            .as('a'), 'a.groupId', 'sg.groupId'
         )
-        .select([
-            's.personId',
-            // absenceScore
-            sql`
-            CASE WHEN COALESCE(SUM(a.absent),0) = 0 THEN 0
-                ELSE COALESCE(SUM(a.absent),0) / SUM(a.expected) * 40
-            END
-            `.as('absenceScore'),
-            // gradeScore
-            sql`
-            CASE WHEN COALESCE(g.weightedAvg,0) = 0 THEN 0
-                ELSE ((COALESCE(g.weightedAvg,0) - 1)/4*100)*0.4
-            END
-            `.as('gradeScore'),
-            // riskScore = absence + grade
-            sql`
-            (CASE WHEN COALESCE(SUM(a.absent),0) = 0 THEN 0 ELSE COALESCE(SUM(a.absent),0)/SUM(a.expected)*40 END
-            +
-            CASE WHEN COALESCE(g.weightedAvg,0) = 0 THEN 0 ELSE ((COALESCE(g.weightedAvg,0)-1)/4*100)*0.4 END)
-            `.as('riskScore')
+        .leftJoin(
+            db.selectFrom('grades as g')
+            .leftJoin('grades_columns as gc', 'gc.gcId', 'g.columnId')
+            .select(['g.studentId', sql`SUM(g.mark * gc.weight) / SUM(gc.weight)`.as('weightedAvg')])
+            .groupBy('g.studentId').as('g'),
+            'g.studentId', 's.personId'
+        )
+        .select(['s.personId',
+            sql`CASE WHEN COALESCE(SUM(a.absent),0) = 0 THEN 0 ELSE COALESCE(SUM(a.absent),0) / SUM(a.expected) * 40 END`.as('absenceScore'),
+            sql`CASE WHEN COALESCE(g.weightedAvg,0) = 0 THEN 0 ELSE ((COALESCE(g.weightedAvg,0) - 1)/4*100)*0.4 END`.as('gradeScore'),
+            sql`(CASE WHEN COALESCE(SUM(a.absent),0) = 0 THEN 0 ELSE COALESCE(SUM(a.absent),0)/SUM(a.expected)*40 END + CASE WHEN COALESCE(g.weightedAvg,0) = 0 THEN 0 ELSE ((COALESCE(g.weightedAvg,0)-1)/4*100)*0.4 END)`.as('riskScore')
         ])
-        .groupBy('s.personId')
-        .as('riskStats')
+        .groupBy('s.personId').as('riskStats')
     )
     .where(sql<boolean>`riskStats.riskScore >= 60`)
-    .select(sql<number>`COUNT(*)`.as('atRiskStudents'));
-
-
-    const atRiskStudents = await atRiskCountQuery
+    .select(sql<number>`COUNT(*)`.as('atRiskStudents'))
     .executeTakeFirst()
     .then(r => Number(r?.atRiskStudents ?? 0));
 
-    const top5AtRiskQuery = db
-  .selectFrom(
-    db
-      .selectFrom('students as s')
-      .leftJoin('student_groups as sg', 'sg.student', 's.personId')
-      .leftJoin(
-        db
-          .selectFrom('classbook as c')
-          .leftJoin(
-            db
-              .selectFrom('absence')
-              .select(['lesson', sql`COUNT(*)`.as('missed')])
-              .groupBy('lesson')
-              .as('a2'),
-            'a2.lesson',
-            'c.cbId'
-          )
-          .select([
-            'c.cbId',
-            'c.groupId',
-            sql`1`.as('expected'),
-            sql`COALESCE(a2.missed,0)`.as('absent')
-          ])
-          .as('a'),
-        'a.groupId',
-        'sg.groupId'
-      )
-      .leftJoin(
-        db
-          .selectFrom('grades as g')
-          .leftJoin('grades_columns as gc', 'gc.gcId', 'g.columnId')
-          .select([
-            'g.studentId',
-            sql`SUM(g.mark * gc.weight) / SUM(gc.weight)`.as('weightedAvg')
-          ])
-          .groupBy('g.studentId')
-          .as('g'),
-        'g.studentId',
-        's.personId'
-      )
-      .select([
-        's.personId',
-        // absenceScore
-        sql`
-          CASE WHEN COALESCE(SUM(a.absent),0)=0 THEN 0
-               ELSE COALESCE(SUM(a.absent),0)/SUM(a.expected)*40
-          END
-        `.as('absenceScore'),
-        // gradeScore
-        sql`
-          CASE WHEN COALESCE(g.weightedAvg,0)=0 THEN 0
-               ELSE ((COALESCE(g.weightedAvg,0)-1)/4*100)*0.4
-          END
-        `.as('gradeScore'),
-        // riskScore = absenceScore + gradeScore
-        sql`
-          (CASE WHEN COALESCE(SUM(a.absent),0)=0 THEN 0 ELSE COALESCE(SUM(a.absent),0)/SUM(a.expected)*40 END
-          +
-          CASE WHEN COALESCE(g.weightedAvg,0)=0 THEN 0 ELSE ((COALESCE(g.weightedAvg,0)-1)/4*100)*0.4 END)
-        `.as('riskScore'),
-        // průměrná známka
-        sql`COALESCE(g.weightedAvg,0)`.as('avgGrade'),
-        // absence rate
-        sql`
-          CASE WHEN COALESCE(SUM(a.expected),0)=0 THEN 0
-               ELSE COALESCE(SUM(a.absent),0)/SUM(a.expected)
-          END
-        `.as('absenceRate')
-      ])
-      .groupBy('s.personId')
-      .as('riskStats')
-  )
-  .select([
-    sql<number>`riskStats.personId`.as('student_id'),
-    'riskStats.absenceScore',
-    'riskStats.gradeScore',
-    'riskStats.riskScore',
-    'riskStats.avgGrade',
-    'riskStats.absenceRate'
-  ])
-  .orderBy('riskStats.riskScore', 'desc')
-  .limit(5);
-
-    const top5StudentsData = await top5AtRiskQuery.execute();
-    const studentNames = await format_people_by_ids(top5StudentsData.map((student) => (student.student_id)));
-
-    const top5Students = top5StudentsData.map((student, index) => ({
-        student_id: student.student_id,
-        absence_score: student.absenceScore,
-        absence_rate: student.absenceRate,
-        grade_score: student.gradeScore,
-        grade_average: student.avgGrade,
-        risk_score: student.riskScore,
-        full_name: studentNames[index]
-    }))
-
-    // === Class Statistics ===
-    const classStats = await db
-      .selectFrom('groups')
+    // Class Stats
+    const classStatsQuery = db.selectFrom('groups')
       .leftJoin('student_groups', 'student_groups.groupId', 'groups.groupId')
       .leftJoin('classbook', 'classbook.groupId', 'groups.groupId')
       .leftJoin('absence', 'absence.lesson', 'classbook.cbId')
@@ -267,15 +100,10 @@ const app = new Elysia()
         'groups.name as class_name',
         sql`COUNT(DISTINCT student_groups.student)`.as('student_count'),
         sql`COALESCE(SUM(grades.mark * grades_columns.weight) / NULLIF(SUM(grades_columns.weight), 0), 0)`.as('average_grade'),
-        sql`
-          CASE 
-            WHEN COUNT(DISTINCT classbook.cbId) * COUNT(DISTINCT student_groups.student) = 0 THEN 0
-            ELSE (COUNT(absence.student) * 100.0) / (COUNT(DISTINCT classbook.cbId) * COUNT(DISTINCT student_groups.student))
-          END
-        `.as('absence_rate'),
-        sql`'stable'`.as('trend') // Placeholder
+        sql`CASE WHEN COUNT(DISTINCT classbook.cbId) * COUNT(DISTINCT student_groups.student) = 0 THEN 0 ELSE (COUNT(absence.student) * 100.0) / (COUNT(DISTINCT classbook.cbId) * COUNT(DISTINCT student_groups.student)) END`.as('absence_rate'),
+        sql`'stable'`.as('trend')
       ])
-      .where('groups.year', '=', 1) // Assuming current year is 1, needs to be dynamic or fetched from config
+      .where('groups.year', '=', 1)
       .groupBy('groups.groupId')
       .execute()
       .then(rows => rows.map(row => ({
@@ -287,9 +115,8 @@ const app = new Elysia()
         trend: row.trend as 'up' | 'down' | 'stable'
       })));
 
-    // === Subject Statistics ===
-    const subjectStats = await db
-      .selectFrom('subjects')
+    // Subject Stats
+    const subjectStatsQuery = db.selectFrom('subjects')
       .leftJoin('grades_columns', 'grades_columns.subjectId', 'subjects.subjectId')
       .leftJoin('grades', 'grades.columnId', 'grades_columns.gcId')
       .leftJoin('teachers_subject', 'teachers_subject.subject_id', 'subjects.subjectId')
@@ -298,8 +125,8 @@ const app = new Elysia()
         'subjects.label as subject_name',
         sql`COALESCE(SUM(grades.mark * grades_columns.weight) / NULLIF(SUM(grades_columns.weight), 0), 0)`.as('average_grade'),
         sql`COUNT(DISTINCT teachers_subject.teacher_id)`.as('teacher_count'),
-        sql`COUNT(DISTINCT grades.studentId)`.as('student_count'), // Approximation based on graded students
-        sql`5`.as('difficulty_rating') // Placeholder
+        sql`COUNT(DISTINCT grades.studentId)`.as('student_count'),
+        sql`5`.as('difficulty_rating')
       ])
       .groupBy('subjects.subjectId')
       .execute()
@@ -312,9 +139,8 @@ const app = new Elysia()
         difficulty_rating: Number(row.difficulty_rating)
       })));
 
-    // === Teacher Statistics ===
-    const teacherStats = await db
-      .selectFrom('teachers')
+    // Teacher Stats
+    const teacherStatsQuery = db.selectFrom('teachers')
       .innerJoin('persons', 'persons.personId', 'teachers.personId')
       .leftJoin('teachers_subject', 'teachers_subject.teacher_id', 'teachers.personId')
       .leftJoin('subjects', 'subjects.subjectId', 'teachers_subject.subject_id')
@@ -323,15 +149,10 @@ const app = new Elysia()
       .select([
         'teachers.personId as teacher_id',
         sql`CONCAT(persons.firstName, ' ', persons.lastName)`.as('full_name'),
-        sql`MAX(subjects.label)`.as('subject'), // Just taking one subject for display
-        sql`0`.as('class_average'), // Complex to calculate per teacher across all subjects
-        sql`COUNT(DISTINCT classbook.groupId)`.as('student_count'), // Actually counting classes taught, not students
-        sql`
-           CASE 
-            WHEN COUNT(DISTINCT classbook.cbId) = 0 THEN 0
-            ELSE (COUNT(absence.student) * 100.0) / (COUNT(DISTINCT classbook.cbId) * 20) -- Assuming avg 20 students/class
-          END
-        `.as('absence_in_classes')
+        sql`MAX(subjects.label)`.as('subject'),
+        sql`0`.as('class_average'),
+        sql`COUNT(DISTINCT classbook.groupId)`.as('student_count'),
+        sql`CASE WHEN COUNT(DISTINCT classbook.cbId) = 0 THEN 0 ELSE (COUNT(absence.student) * 100.0) / (COUNT(DISTINCT classbook.cbId) * 20) END`.as('absence_in_classes')
       ])
       .groupBy('teachers.personId')
       .execute()
@@ -344,31 +165,76 @@ const app = new Elysia()
         absence_in_classes: Number(row.absence_in_classes)
       })));
 
-    // === Absence Heatmap ===
-    const absenceHeatmap = await db
-      .selectFrom('absence')
+    // Absence Heatmap
+    const absenceHeatmapQuery = db.selectFrom('absence')
       .innerJoin('classbook', 'classbook.cbId', 'absence.lesson')
-      .select([
-        sql`DAYOFWEEK(classbook.date)`.as('day'), // 1=Sunday, 2=Monday... check dialect
-        'classbook.dayHour as hour',
-        sql`COUNT(*)`.as('count')
-      ])
+      .select([sql`DAYOFWEEK(classbook.date)`.as('day'), 'classbook.dayHour as hour', sql`COUNT(*)`.as('count')])
       .groupBy(['day', 'hour'])
       .execute()
       .then(rows => rows.map(row => ({
-        day: Number(row.day) - 1, // Adjust to 1-5 if needed, standard SQL Sunday=1
+        day: Number(row.day) - 1,
         hour: row.hour,
         count: Number(row.count)
       })));
 
+    // Top 5 Risk Query (Complex query definition)
+    const top5AtRiskQuery = db.selectFrom(
+       db.selectFrom('students as s')
+       .leftJoin('student_groups as sg', 'sg.student', 's.personId')
+       .leftJoin(
+            db.selectFrom('classbook as c')
+            .leftJoin(db.selectFrom('absence').select(['lesson', sql`COUNT(*)`.as('missed')]).groupBy('lesson').as('a2'), 'a2.lesson', 'c.cbId')
+            .select(['c.cbId', 'c.groupId', sql`1`.as('expected'), sql`COALESCE(a2.missed,0)`.as('absent')])
+            .as('a'), 'a.groupId', 'sg.groupId'
+       )
+       .leftJoin(
+            db.selectFrom('grades as g')
+            .leftJoin('grades_columns as gc', 'gc.gcId', 'g.columnId')
+            .select(['g.studentId', sql`SUM(g.mark * gc.weight) / SUM(gc.weight)`.as('weightedAvg')])
+            .groupBy('g.studentId').as('g'), 'g.studentId', 's.personId'
+       )
+       .select(['s.personId',
+         sql`CASE WHEN COALESCE(SUM(a.absent),0)=0 THEN 0 ELSE COALESCE(SUM(a.absent),0)/SUM(a.expected)*40 END`.as('absenceScore'),
+         sql`CASE WHEN COALESCE(g.weightedAvg,0)=0 THEN 0 ELSE ((COALESCE(g.weightedAvg,0)-1)/4*100)*0.4 END`.as('gradeScore'),
+         sql`(CASE WHEN COALESCE(SUM(a.absent),0)=0 THEN 0 ELSE COALESCE(SUM(a.absent),0)/SUM(a.expected)*40 END + CASE WHEN COALESCE(g.weightedAvg,0)=0 THEN 0 ELSE ((COALESCE(g.weightedAvg,0)-1)/4*100)*0.4 END)`.as('riskScore'),
+         sql`COALESCE(g.weightedAvg,0)`.as('avgGrade'),
+         sql`CASE WHEN COALESCE(SUM(a.expected),0)=0 THEN 0 ELSE COALESCE(SUM(a.absent),0)/SUM(a.expected) END`.as('absenceRate')
+       ])
+       .groupBy('s.personId')
+       .as('riskStats')
+    )
+    .select([
+        sql<number>`riskStats.personId`.as('student_id'),
+        'riskStats.absenceScore', 'riskStats.gradeScore', 'riskStats.riskScore', 'riskStats.avgGrade', 'riskStats.absenceRate'
+    ])
+    .orderBy('riskStats.riskScore', 'desc')
+    .limit(5);
+
+    // Execute Top 5 Students separate promise because formatting depends on it
+    const top5StudentsPromise = top5AtRiskQuery.execute().then(async (top5StudentsData) => {
+        const studentNames = await format_people_by_ids(top5StudentsData.map((student) => (student.student_id)));
+        return top5StudentsData.map((student, index) => ({
+            student_id: student.student_id,
+            absence_score: student.absenceScore,
+            absence_rate: student.absenceRate,
+            grade_score: student.gradeScore,
+            grade_average: student.avgGrade,
+            risk_score: student.riskScore,
+            full_name: studentNames[index]
+        }));
+    });
+
+    // === EXECUTE ALL IN PARALLEL ===
+    const [
+        totalStudents, limitStudents, averageGrade, absenceRate, atRiskStudents,
+        top5Students, classStats, subjectStats, teacherStats, absenceHeatmap
+    ] = await Promise.all([
+        totalStudentsQuery, limitStudentsQuery, averageGradeQuery, absenceRateQuery, atRiskCountQuery,
+        top5StudentsPromise, classStatsQuery, subjectStatsQuery, teacherStatsQuery, absenceHeatmapQuery
+    ]);
+
     return {
-        schoolStats: {
-            totalStudents,
-            limitStudents,
-            averageGrade,
-            absenceRate,
-            atRiskStudents
-        },
+        schoolStats: { totalStudents, limitStudents, averageGrade, absenceRate, atRiskStudents },
         riskStudents: top5Students,
         classStats,
         subjectStats,

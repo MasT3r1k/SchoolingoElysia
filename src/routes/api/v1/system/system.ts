@@ -1,0 +1,120 @@
+import { Elysia, t } from 'elysia';
+import { db } from '../../../../../database';
+import { sql } from 'kysely';
+import { getAuthUser } from '../../../../utils/auth';
+
+const app = new Elysia()
+  .derive(async ({ cookie }) => ({
+      user: await getAuthUser(cookie?.token?.value)
+  }))
+  // GET /system - Načtení všech systémových nastavení
+  .get('/system', async ({ user }) => {
+    if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
+    if (user.manager !== -1 && !user.isPrincipal) {
+      return Response.json({ error: 'no_permission' }, { status: 403 });
+    }
+
+    const [school_info, districts, student_count, subjects, scopes] = await Promise.all([
+      // School settings
+      db.selectFrom('schools')
+        .leftJoin('districts', 'districts.districtId', 'schools.district')
+        .select([
+          'schools.name',
+          'schools.shortName',
+          'schools.code',
+          'districts.district',
+          'schools.startHour',
+          'schools.startMinute',
+          'schools.lessonHour',
+          'schools.breakTime',
+          'schools.warningAbsencePercent',
+          'schools.resetPasswordWithEmail',
+          'schools.fastlogin',
+          'schools.license_type',
+          'schools.license_until',
+          'schools.studentsLimit',
+          'schools.modules'
+        ])
+        .limit(1)
+        .executeTakeFirst(),
+
+      // Districts
+      db.selectFrom('districts')
+        .select(['districts.districtId', 'districts.district'])
+        .orderBy('district', 'asc')
+        .execute(),
+
+      // Student count
+      db.selectFrom('students')
+        .select(sql`COUNT(*)`.as('count'))
+        .where('students.status', '=', 'active')
+        .executeTakeFirst()
+        .then(r => Number(r?.count ?? 0)),
+
+      // Subjects
+      db.selectFrom('subjects')
+        .select([
+          'subjects.subjectId',
+          'subjects.label as subjectName',
+          'subjects.shortcut'
+        ])
+        .orderBy('subjectName', 'asc')
+        .execute(),
+
+      // Scopes
+      db.selectFrom('scopes')
+        .select([
+          'scopes.scopeId',
+          'scopes.name',
+          'scopes.code',
+          'scopes.shortcut',
+          'scopes.years',
+          'scopes.number_of_classes',
+          'scopes.students_per_class'
+        ])
+        .orderBy('scopes.name', 'asc')
+        .execute()
+    ]);
+
+    if (!school_info) {
+      return Response.json({ error: 'invalid_school' }, { status: 500 });
+    }
+
+    return Response.json({
+      settings: school_info,
+      districts,
+      student_count,
+      subjects,
+      scopes
+    });
+  })
+
+  // GET /system/scope - Načtení předmětů pro konkrétní obor
+  .get('/system/scope', async ({ user, query }) => {
+    if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
+    if (user.manager !== -1 && !user.isPrincipal) {
+      return Response.json({ error: 'no_permission' }, { status: 403 });
+    }
+
+    if (query.scope_id === undefined) {
+      return Response.json({ error: 'invalid_query' }, { status: 400 });
+    }
+
+    const scopes_subjects = await db.selectFrom('scopes_subjects')
+      .select([
+        'scopes_subjects.ss_id',
+        'scopes_subjects.subject_id',
+        'scopes_subjects.year',
+        'scopes_subjects.hours_per_week'
+      ])
+      .where('scopes_subjects.scope_id', '=', query.scope_id)
+      .execute();
+
+    return Response.json(scopes_subjects);
+  }, {
+    query: t.Object({
+      scope_id: t.Optional(t.Number())
+    })
+  });
+
+export default app;

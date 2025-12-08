@@ -1,6 +1,7 @@
 import { Elysia } from 'elysia';
 import { ip } from 'elysia-ip';
 import { elysiaXSS } from 'elysia-xss';
+import { helmet } from 'elysia-helmet';
 import * as fs from 'fs';
 import path from 'path';
 import 'dotenv/config';
@@ -10,125 +11,62 @@ import { errorHandler } from './src/middleware/error.middleware';
 import { rateLimit } from './src/middleware/rate-limit.middleware';
 import { logger, requestLogger } from './src/utils/logger';
 import locales from './src/infrastructure/locale';
-import { exec, execSync } from 'child_process';
-import { gitService, version } from './version';
-import { sessionMiddleware } from './src/middleware/session-expand.middleware';
+import { version } from './version';
 import { db } from './database';
 import moment from 'moment';
-import { SecurityConfig } from './src/config/security.config';
 import { ws } from './websocket';
+import { getAuthUser } from './src/utils/auth';
 
-function getLocalCommit(): string {
-    try {
-        return execSync("git rev-parse HEAD").toString().trim();
-    } catch (err) {
-        console.error("Failed to get local commit:", err);
-        return "unknown";
-    }
-}
-
-function fetchRemoteCommit(): Promise<string> {
-    return new Promise((resolve) => {
-        exec("git fetch origin main --quiet", (err) => {
-            if (err) {
-                console.error("Failed to fetch remote:", err);
-                return resolve("unknown");
-            }
-
-            exec("git rev-parse origin/main", (err2, stdout) => {
-                if (err2) {
-                    console.error("Failed to get remote commit:", err2);
-                    return resolve("unknown");
-                }
-
-                resolve(stdout.toString().trim());
-            });
-        });
-    });
-}
+// ...
 
 export const app = new Elysia({
     serve: {
       idleTimeout: 30,
     },
   })
-  .onBeforeHandle(async ({ cookie }) => {
-    const token = cookie?.token?.value;
-    if (!token) return;
-
-    // 1) Najdi session
-    const session = await db
-      .selectFrom('tokens')
-      .select(['tokens.expires'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!session) return;
-
-    const now = Date.now();
-    const exp = new Date(session.expires).getTime();
-    const remaining = exp - now;
-
-    // 2) Expired session
-    if (remaining <= 0) {
-      cookie.token.set({
-        httpOnly: true,
-        secure: false,
-        value: '',
-        path: '/',
-        maxAge: 0
-      });
-      return;
-    }
-
-    // 3) Sliding session — vždy prodluž
-    const newExpires = moment().add(SecurityConfig.RESET_PASSWORD_EXPIRES_MINUTES, 'minutes');
-
-    await db
-      .updateTable('tokens')
-      .set({ expires: newExpires.toDate() })
-      .where('tokens.token', '=', token)
-      .executeTakeFirst();
-
-    cookie.token.set({
-      httpOnly: true,
-      secure: false,
-      value: token,
-      path: '/',
-      maxAge: 2592000000, // 30 dní v cookie
-      expires: newExpires.toDate()
-    })
-  })
+  // Security Headers
+  .use(helmet())
   .use(ip())
+  .use(elysiaXSS({}))
   .use(cors({
     origin: ['http://localhost:4200', 'http://localhost:8100', 'http://192.168.1.102:4200', 'capacitor://localhost', 'ionic://localhost'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
     credentials: true,
   }))
-  .use(elysiaXSS({}))
   .use(errorHandler)
   .use(requestLogger)
   .use(rateLimit)
   .use(version)
+  
+  // Authentication & Context Derivation
+  .derive(async ({ cookie }) => {
+    const user = await getAuthUser(cookie?.token?.value, cookie);
+    return { user };
+  })
+  
   .use(ws)
   .use(locales);
 
+// Routing Automation
 const modulePath: string = path.join(__dirname, '/src/routes');
 
 async function loadFolder(folder: string = modulePath) {
   try {
     const files = await fs.promises.readdir(folder);
     for (const [index, file] of files.entries()) {
+      const fullPath = path.join(folder, file);
+      
       if (file.includes('.')) {
         if (!file.endsWith('.ts') || file.endsWith('.d.ts')) continue;
+        
         const start = Date.now();
-        const route = folder.replace(modulePath, '');
+        let relativePath = fullPath.replace(modulePath, '');
+        relativePath = relativePath.split(path.sep).join('/');
+        
         console.log('[🦊 Elysia]: Loading ' + file);
 
-        const filePath = path.join(folder, file);
-        const mod = await import(filePath);
+        const mod = await import(fullPath);
         const routeApp: Elysia = mod.default;
 
         if (!routeApp || typeof routeApp !== 'object' || typeof routeApp.handle !== 'function') {
@@ -137,24 +75,20 @@ async function loadFolder(folder: string = modulePath) {
         }
 
         let prefix = "";
-        if (route.startsWith("\\api\\")) {
-          let url = route.split('\\');
-          if (url[2] == "api") {
-            prefix = "/api";
-          }
-          prefix = "/api/" + route.split('\\')[2];
+        const parts = relativePath.split('/');
+        
+        if (parts.length > 2 && parts[1] === 'api') {
+            prefix = `/api/${parts[2]}`;
         }
-
+        
         const wrapper = new Elysia({ prefix })
-        .use(requestLogger)
         .use(routeApp);
         app.use(wrapper);
 
         const end = Date.now();
-        console.log(`[🦊 Elysia]: Loaded ${file} at ${prefix} in ${end - start}ms (${index + 1}/${files.length})`);
+        console.log(`[🦊 Elysia]: Loaded ${file} at ${prefix} in ${end - start}ms`);
       } else {
-        const folderPath = path.join(folder, file);
-        await loadFolder(folderPath);
+        await loadFolder(fullPath);
       }
     }
 
@@ -170,7 +104,6 @@ async function loadFolder(folder: string = modulePath) {
 
 (async () => {
   try {
-    // Initialize database tables
     logger.log('Database tables initialized successfully');
 
     await loadFolder(modulePath);
