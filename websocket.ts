@@ -161,9 +161,9 @@ export const ws = new Elysia()
             }
 
             // ----------------- GUEST -----------------
-            if (state.role === "guest") {
+            if (state.role == "guest") {
                 // Guest can only request QR codes for login
-                if (msg.type === "qrcode_request") {
+                if (msg.type == "qrcode_request") {
                     // Generate secure QR code with signature
                     const { qrcode, fullCode } = generateSecureQRCode();
 
@@ -317,11 +317,13 @@ export const ws = new Elysia()
                 wsClientManager.unregister(ws.id);
             }
 
+            if (state.role == "guest") {
             // Remove QR codes for guest connections
             await db.deleteFrom('login_qrcodes')
                 .where('socket', '=', ws.id)
                 .execute();
 
             console.log("WS disconnected:", state.user?.userId ?? "guest");
+            }
         }
     });

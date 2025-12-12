@@ -45,7 +45,7 @@ const fullName = sql`
 const elysiaAp = new Elysia()
   .use(rateLimit({
     scoping: "scoped",
-    max: 1,
+    max: 3,
     duration: 1000,
     injectServer: () => app.server
   }))
