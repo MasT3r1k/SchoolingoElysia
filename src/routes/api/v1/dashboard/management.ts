@@ -95,9 +95,14 @@ const app = new Elysia()
       .leftJoin('absence', 'absence.lesson', 'classbook.cbId')
       .leftJoin('grades', 'grades.studentId', 'student_groups.student')
       .leftJoin('grades_columns', 'grades_columns.gcId', 'grades.columnId')
+      .leftJoin('classes', 'classes.classId', 'groups.class')
+      .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
       .select([
-        'groups.groupId as class_id',
-        'groups.name as class_name',
+        'classes.classId',
+        'groups.groupId as group_id',
+        sql<string>`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className'),
+        'groups.name as group_name',
+        'groups.num as group_num',
         sql`COUNT(DISTINCT student_groups.student)`.as('student_count'),
         sql`COALESCE(SUM(grades.mark * grades_columns.weight) / NULLIF(SUM(grades_columns.weight), 0), 0)`.as('average_grade'),
         sql`CASE WHEN COUNT(DISTINCT classbook.cbId) * COUNT(DISTINCT student_groups.student) = 0 THEN 0 ELSE (COUNT(absence.student) * 100.0) / (COUNT(DISTINCT classbook.cbId) * COUNT(DISTINCT student_groups.student)) END`.as('absence_rate'),
@@ -107,8 +112,11 @@ const app = new Elysia()
       .groupBy('groups.groupId')
       .execute()
       .then(rows => rows.map(row => ({
-        class_id: row.class_id,
-        class_name: row.class_name,
+        class_id: row.classId,
+        class_name: row.className,
+        group_id: row.group_id,
+        group_name: row.group_name,
+        group_num: row.group_num,
         student_count: Number(row.student_count),
         average_grade: Number(row.average_grade),
         absence_rate: Number(row.absence_rate),

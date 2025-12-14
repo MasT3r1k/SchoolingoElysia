@@ -420,6 +420,8 @@
         "upload_files": "Nahrát soubory",
         "back": "Zpátky",
         "cancel": "Zrušit",
+        "edit": "Upravit",
+        "view_all": "Zobrazit vše",
         "save": "Uložit",
         "save_changes": "Uložit změny",
         "reset": "Obnovit"
@@ -1169,10 +1171,11 @@
         "vehicles": "Rezervace vozidel"
     },
     "fleetvehicles": {
+        "overview": "Přehled vozidel",
+        "overview_desc": "Sledujte stav vašeho vozového parku na jednom místě",
         "vehicles": "Vozidla",
-        "reservations": "Rezervace",
-        "settings": "Nastavení",
         "add_vehicle": "Přidat vozidlo",
+        "add_vehicle_title": "Přidat nové vozidlo",
         "new_reservation": "Nová rezervace",
         "view_vehicles": "Zobrazit vozidla",
         "search_placeholder": "Hledat vozidlo...",
@@ -1213,6 +1216,10 @@
             "minibus": "Minibus",
             "truck": "Nákladní vozidlo",
             "motorcycle": "Motocykl"
+        },
+        "gearbox": {
+            "manual": "Manuální převodovka",
+            "automatic": "Automatická převodovka"
         },
         "fuel": {
             "petrol": "Benzín",
@@ -1263,6 +1270,7 @@
         "pending_approvals_message": "Máte %count% žádostí o rezervaci čekajících na schválení.",
         "review_requests": "Zkontrolovat žádosti",
         "reservations": {
+            "title": "Rezervace",
             "upcoming": "Nadcházející",
             "past": "Proběhlé",
             "all": "Všechny"
@@ -1286,7 +1294,9 @@
         "days": "dní",
         "vehicle_reservations": "Rezervace vozidla",
         "settings_saved": "Nastavení bylo uloženo",
+        "settings_desc": "Nastav zde základní nastavení modulu Vozového parku",
         "settings": {
+            "title": "Nastavení",
             "approval": "Schvalování rezervací",
             "approval_desc": "Nastavte, jak se budou schvalovat rezervace vozidel.",
             "default_manager": "Výchozí správce",
@@ -1307,6 +1317,12 @@
             "manager_approval_desc": "Rezervace musí být schváleny správcem vozového parku.",
             "free": "Volný přístup",
             "free_desc": "Kdokoliv může rezervovat vozidlo bez omezení."
+        },
+        "new_vehicle": {
+            "basic_info": "Základní údaje",
+            "operating_and_technical_data": "Technické údaje",
+            "administration_and_deadlines": "Administrativa a Termíny",
+            "assignment": "Přiřazení"
         },
         "default_manager": "Výchozí správce",
         "search_manager": "Vyhledat správce...",
@@ -1386,5 +1402,31 @@
         "error_return": "Nepodařilo se vrátit knihu (Žádná aktivní výpůjčka)",
         "error_lookup": "Kniha nebyla nalezena v Open Library",
         "error_add": "Nepodařilo se přidat knihu"
+    },
+    "announcements": {
+        "no_announcements": "Žádné oznámení",
+        "no_announcements_desc": "Nemáte žádné nové oznámení"
+    },
+    "events": {
+        "no_events": "Žádné akce",
+        "no_events_desc": "Nemáte žádné následující akce"
+    },
+    "substitutions": {
+        "no_substitutions": "Žádná suplování",
+        "no_substitutions_desc": "Nemáte žádné následující suplování"
+    },
+    "cafeteria": {
+        "no_menu": "Žádná nabídka",
+        "no_menu_desc": "Není evidovaný žádný menu"
+    },
+    "vehicles": {
+        "no_reservations": "Žádné rezervace",
+        "no_reservations_desc": "Zatím nebyla vytvořena žádná rezervace."
+    },
+    "dashboard": {
+        "overview": "Přehled",
+        "classes": "Třídy",
+        "teachers": "Učitelé",
+        "risks": "Rizika"
     }
 }

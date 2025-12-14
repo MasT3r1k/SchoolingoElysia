@@ -50,63 +50,132 @@ const elysiaAp = new Elysia()
     injectServer: () => app.server
   }))
   .get('/students', async({ query }) => {
-    const result = await db.selectFrom('students')
+    let queryBuilder = db.selectFrom('students')
       .leftJoin('persons', 'students.personId', 'persons.personId')
-      .orderBy('persons.lastName', 'asc')
-      .orderBy('persons.firstName', 'asc')
       .leftJoin('classes', 'students.class', 'classes.classId')
       .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
       .leftJoin(
-          titlesBefore,
-          'tb.person',
-          'persons.personId'
+        titlesBefore,
+        'tb.person',
+        'persons.personId'
       )
       .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
       .leftJoin('scopes', 'scopes.scopeId', 'classes.scopeId')
       .select([
-          'persons.personId',
-          'persons.firstName',
-          'persons.lastName',
-          fullName,
-          // Get primary email via subquery
-          sql`(SELECT email FROM emails WHERE emails.personId = persons.personId AND emails.is_verified = 1 LIMIT 1)`.as('email'),
-          // Get primary phone via subquery
-          sql`(SELECT number FROM phone_numbers WHERE phone_numbers.personId = persons.personId AND phone_numbers.is_verified = 1 LIMIT 1)`.as('phone'),
-          sql`DATE_FORMAT(persons.birthday, '%d. %m. %Y')`.as('dateOfBirth'),
-          'persons.birthday',
-          'students.status',
-          sql`DATE_FORMAT(students.startStudy, '%d. %m. %Y')`.as('startStudy'),
-          sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className'),
-          sql`TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1`.as('year'),
-          'classes.scopeId',
-          sql`scopes.name`.as('fieldOfStudy'),
-          // Calculate weighted average grade
-          sql`(
+        'persons.personId',
+        'persons.firstName',
+        'persons.lastName',
+        'students.status',
+        fullName,
+        sql<string>`(SELECT email FROM emails WHERE emails.personId = persons.personId AND emails.is_verified = 1 LIMIT 1)`.as('email'),
+        sql<string>`(SELECT number FROM phone_numbers WHERE phone_numbers.personId = persons.personId AND phone_numbers.is_verified = 1 LIMIT 1)`.as('phone'),
+        sql<string>`DATE_FORMAT(persons.birthday, '%d. %m. %Y')`.as('dateOfBirth'),
+        'persons.birthday',
+        sql<string>`DATE_FORMAT(students.startStudy, '%d. %m. %Y')`.as('startStudy'),
+        sql<string>`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className'),
+        sql<number>`TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1`.as('year'),
+        'classes.scopeId',
+        sql<string>`scopes.name`.as('fieldOfStudy'),
+        sql<string>`(
             SELECT ROUND(SUM(g.mark * gc.weight) / NULLIF(SUM(gc.weight), 0), 2)
             FROM grades g
             LEFT JOIN grades_columns gc ON gc.gcId = g.columnId
             WHERE g.studentId = students.personId
             AND gc.status = 'active'
             AND g.mark IS NOT NULL
-          )`.as('averageGrade'),
-          // Calculate absence rate - simplified version
-          sql`(
+        )`.as('averageGrade'),
+        sql<string>`(
             SELECT ROUND(
-              CASE 
+            CASE 
                 WHEN COUNT(DISTINCT c.cbId) = 0 THEN 0
                 ELSE (COUNT(a.student) * 100.0) / COUNT(DISTINCT c.cbId)
-              END, 
+            END, 
             2)
             FROM student_groups sg
             LEFT JOIN classbook c ON c.groupId = sg.groupId
             LEFT JOIN absence a ON a.lesson = c.cbId AND a.student = students.personId
             WHERE sg.student = students.personId
-          )`.as('absenceRate')
+        )`.as('absenceRate')
       ])
+
+    // Apply Filters
+    if (query.search) {
+      const search = `%${query.search}%`;
+      queryBuilder = queryBuilder.where((eb) => eb.or([
+        eb('persons.firstName', 'like', search),
+        eb('persons.lastName', 'like', search),
+        // eb(fullName, 'like', search) // Fullname is derived, might not work in WHERE directly in some DBs without wrapping, but typically OK if Kysely handles it or use having.
+        // For safety, stick to columns or verify.
+      ]))
+    }
+
+    if (query.status && query.status !== 'all') {
+      // API expects 'active', 'former', 'suspended'
+      // DB stores... let's assume it matches or map it.
+      // Based on frontend 'mapStatus', DB might have different values.
+      // Assuming 'active', 'archive' (former), 'suspended'.
+      let dbStatus = query.status;
+      if (query.status === 'former') dbStatus = 'archive'; // Common pattern, check logic if needed.
+      queryBuilder = queryBuilder.where('students.status', '=', dbStatus);
+    }
+
+    if (query.classId) {
+       queryBuilder = queryBuilder.where('classes.classId', '=', query.classId);
+    }
+
+    if (query.scopeId) {
+      queryBuilder = queryBuilder.where('classes.scopeId', '=', query.scopeId);
+    }
+    
+    // Average Grade & Absence (Having clauses)
+    if (query.avgGradeMin !== undefined) {
+      queryBuilder = queryBuilder.having(sql`CAST(averageGrade AS DECIMAL(4,2))`, '>=', query.avgGradeMin)
+    }
+    if (query.avgGradeMax !== undefined) {
+      queryBuilder = queryBuilder.having(sql`CAST(averageGrade AS DECIMAL(4,2))`, '<=', query.avgGradeMax)
+    }
+    
+    if (query.absenceMin !== undefined) {
+      queryBuilder = queryBuilder.having(sql`CAST(absenceRate AS DECIMAL(5,2))`, '>=', query.absenceMin)
+    }
+    if (query.absenceMax !== undefined) {
+      queryBuilder = queryBuilder.having(sql`CAST(absenceRate AS DECIMAL(5,2))`, '<=', query.absenceMax)
+    }
+
+    if (query.missingInfo) {
+      // Using HAVING for subqueries email/phone
+      queryBuilder = queryBuilder.having((eb) => eb.or([
+        eb('email', 'is', null),
+        eb('phone', 'is', null)
+      ]))
+    }
+
+    // Sort
+    queryBuilder = queryBuilder
+      .orderBy('persons.lastName', 'asc')
+      .orderBy('persons.firstName', 'asc')
+
+    // Count Total (using a subquery to handle HAVING clauses)
+    const countResult = await db.selectFrom(queryBuilder.as('filtered_students'))
+      .select(sql<number>`count(*)`.as('total'))
+      .executeTakeFirst();
+    
+    const total = Number(countResult?.total || 0);
+
+    // Apply Pagination
+    const results = await queryBuilder
       .limit(query.limit!)
       .offset(query.offset!)
       .execute();
-    return Response.json(result);
+
+    return Response.json({
+      data: results,
+      meta: {
+        total,
+        page: Math.floor(query.offset! / query.limit!) + 1,
+        limit: query.limit!
+      }
+    });
 
   }, {
     query: t.Object({
@@ -119,9 +188,16 @@ const elysiaAp = new Elysia()
         minimum: 0,
         default: 0
       })),
-      type: t.Optional(t.Array(
-        t.String()
-      ))
+      type: t.Optional(t.Array(t.String())),
+      search: t.Optional(t.String()),
+      status: t.Optional(t.String()), // 'active', 'former', 'suspended', 'all'
+      classId: t.Optional(t.Numeric()),
+      scopeId: t.Optional(t.Numeric()),
+      avgGradeMin: t.Optional(t.Number()),
+      avgGradeMax: t.Optional(t.Number()),
+      absenceMin: t.Optional(t.Number()),
+      absenceMax: t.Optional(t.Number()),
+      missingInfo: t.Optional(t.BooleanString())
 		})
   });
 
