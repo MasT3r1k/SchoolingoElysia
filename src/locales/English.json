@@ -84,5 +84,56 @@
             "catalog": "Catalog",
             "manage": "Manage"
         }
+    },
+    "seasonal": {
+        "toggle": {
+            "enable": "Enable seasonal theme",
+            "disable": "Disable seasonal theme"
+        },
+        "mode": {
+            "off": "Off",
+            "subtle": "Subtle",
+            "full": "Full"
+        },
+        "countdown": {
+            "daysLeft": "days until break",
+            "dateRange": "December 23 – January 3",
+            "viewCalendar": "View Calendar"
+        },
+        "yearReview": {
+            "lessonsAttended": "lessons attended",
+            "assignmentsCompleted": "assignments completed",
+            "averageGrade": "average grade"
+        },
+        "christmas": {
+            "greeting": "Season's greetings! ☕ Stay warm and focused."
+        }
+    },
+    "modules": {
+        "seasonal": {
+            "countdown": "Winter Break Countdown",
+            "yearReview": "Your 2024 Highlights"
+        }
+    },
+    "admin": {
+        "seasonal": {
+            "title": "Seasonal Themes",
+            "description": "Configure seasonal effects and widgets for the school",
+            "globalSettings": "Global Settings",
+            "enableGlobally": "Enable seasonal themes",
+            "enableDescription": "Activates seasonal effects for the entire school",
+            "allowUserOverride": "Allow users to opt-out",
+            "allowUserDescription": "Users can individually disable seasonal effects",
+            "seasonConfig": "Season Configuration",
+            "startDate": "Start Date",
+            "endDate": "End Date",
+            "preview": "Preview",
+            "currentStatus": "Current Status",
+            "activeSeason": "Active Season",
+            "noActiveSeason": "No active season"
+        }
+    },
+    "common": {
+        "save": "Save"
     }
 }

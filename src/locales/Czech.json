@@ -1169,7 +1169,11 @@
         "substitutions": "Suplování",
         "traineeship": "Odborná praxe",
         "cafeteria": "Jídelna",
-        "vehicles": "Rezervace vozidel"
+        "vehicles": "Rezervace vozidel",
+        "seasonal": {
+            "countdown": "Odpočet do prázdnin",
+            "yearReview": "Rok 2024 v kostce"
+        }
     },
     "fleetvehicles": {
         "overview": "Přehled vozidel",
@@ -1429,5 +1433,50 @@
         "classes": "Třídy",
         "teachers": "Učitelé",
         "risks": "Rizika"
+    },
+    "seasonal": {
+        "toggle": {
+            "enable": "Zapnout sezónní téma",
+            "disable": "Vypnout sezónní téma"
+        },
+        "mode": {
+            "off": "Vypnuto",
+            "subtle": "Jemné",
+            "full": "Plné"
+        },
+        "countdown": {
+            "daysLeft": "dní do prázdnin",
+            "dateRange": "23. prosince – 3. ledna",
+            "viewCalendar": "Zobrazit kalendář"
+        },
+        "yearReview": {
+            "lessonsAttended": "navštívených hodin",
+            "assignmentsCompleted": "splněných úkolů",
+            "averageGrade": "průměrná známka"
+        },
+        "christmas": {
+            "greeting": "Krásné svátky! ☕ Zůstaňte v teple a soustředění."
+        }
+    },
+    "admin": {
+        "seasonal": {
+            "title": "Sezónní témata",
+            "description": "Konfigurujte sezónní efekty a widgety pro školu",
+            "globalSettings": "Globální nastavení",
+            "enableGlobally": "Povolit sezónní témata",
+            "enableDescription": "Aktivuje sezónní efekty pro celou školu",
+            "allowUserOverride": "Povolit uživatelům vypnout",
+            "allowUserDescription": "Uživatelé si mohou individuálně vypnout sezónní efekty",
+            "seasonConfig": "Konfigurace sezón",
+            "startDate": "Začátek",
+            "endDate": "Konec",
+            "preview": "Náhled",
+            "currentStatus": "Aktuální stav",
+            "activeSeason": "Aktivní sezóna",
+            "noActiveSeason": "Žádná aktivní sezóna"
+        }
+    },
+    "common": {
+        "save": "Uložit"
     }
 }
