@@ -7,6 +7,16 @@ export interface Changelog {
 
 export const changelog: Changelog[] = [
     {
+        version: '2.3.9',
+        date: '15. 12. 2025',
+        type: 'patch',
+        changes: [
+            'Upravené logo ve qrkódu na přihlašovací stránce',
+            'Upravena správa placeholderů u locales',
+            'Odstraněný nevyužívaný modal'
+        ]
+    },
+    {
         version: '2.3.8',
         date: '08. 12. 2025',
         type: 'patch',
