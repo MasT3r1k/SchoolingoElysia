@@ -7,6 +7,14 @@ export interface Changelog {
 
 export const changelog: Changelog[] = [
     {
+        version: '2.3.9b',
+        date: '16. 12. 2025',
+        type: 'patch',
+        changes: [
+            'Added new locale'
+        ]
+    },
+    {
         version: '2.3.9',
         date: '15. 12. 2025',
         type: 'patch',

@@ -182,6 +182,7 @@
         "list_subjects": "Seznam předmětů",
         "section_modules": "Nastavení modulů",
         "version": "Verze systému",
+        "version_available": "Nová verze",
         "system_is_up_to_date": "Systém je aktuální!",
         "system_has_update": "Systém má dostupnou novou aktualizaci!",
         "system_update_loading": "Načítám informace o nejnovější verzi.",
