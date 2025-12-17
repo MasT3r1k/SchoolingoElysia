@@ -115,7 +115,6 @@ const elysiaAp = new Elysia()
       // Based on frontend 'mapStatus', DB might have different values.
       // Assuming 'active', 'archive' (former), 'suspended'.
       let dbStatus = query.status;
-      if (query.status === 'former') dbStatus = 'archive'; // Common pattern, check logic if needed.
       queryBuilder = queryBuilder.where('students.status', '=', dbStatus);
     }
 
