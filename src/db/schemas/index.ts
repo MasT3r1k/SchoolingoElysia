@@ -88,6 +88,10 @@ import { notificationsTable } from './notifications'
 import { notificationRulesTable } from './notification_rules'
 import { pushSubscriptionsTable } from './push_subscriptions'
 import { PollsTable, PollQuestionsTable, PollOptionsTable, PollResponsesTable, PollAnswersTable } from './polls'
+import { EmployeeAttendanceTable } from './employee_attendance'
+import { EmployeeVacationBalanceTable, EmployeeVacationRequestsTable } from './employee_vacations'
+import { EmployeeBonusesTable } from './employee_bonuses'
+import { educationMeasuresTable } from './education_measures'
 
 export interface Database {
   absence: AbsenceTable
@@ -107,6 +111,7 @@ export interface Database {
   documents: documentsTable
   degrees: DegreesTable
   districts: DistrictsTable
+  education_measures: educationMeasuresTable
   emails: emailsTable
   email_config: EmailConfigTable
   emergency_events: emergency_eventsTable
@@ -184,4 +189,9 @@ export interface Database {
   poll_options: PollOptionsTable
   poll_responses: PollResponsesTable
   poll_answers: PollAnswersTable
+  // Employee management tables
+  employee_attendance: EmployeeAttendanceTable
+  employee_vacation_balance: EmployeeVacationBalanceTable
+  employee_vacation_requests: EmployeeVacationRequestsTable
+  employee_bonuses: EmployeeBonusesTable
 }

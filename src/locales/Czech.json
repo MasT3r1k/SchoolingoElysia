@@ -109,6 +109,10 @@
         "light": "Světlý režim",
         "moon": "Midnight režim"
     },
+    "genders": {
+        "male": "Muž",
+        "female": "Žena"
+    },
     "weeks": {
         "even": "Sudý týden",
         "odd": "Lichý týden"
@@ -274,7 +278,9 @@
     "person": {
         "first_name": "Křestní jméno",
         "last_name": "Přijmení",
-        "full_name": "Jméno"
+        "full_name": "Jméno",
+        "birthday": "Datum narození",
+        "gender": "Pohlaví"
     },
     "absence": {
         "absence": "Absence",
@@ -298,6 +304,7 @@
         "absence": "Absence",
         "management": "Přehled vedení školy",
         "students": "Karta žáka",
+        "employees": "Zaměstnanci",
         "account": "Můj účet",
         "calendar": "Kalendář",
         "documents": "Dokumenty",
@@ -326,7 +333,7 @@
             "send": "Poslat zprávu",
             "received": "Obdržené zprávy",
             "sent": "Odeslané zprávy",
-            "groups": "Skupiny",
+            "groups": "Diskuze",
             "noticeboard": "Nástěnka"
         },
         "traineeship": {
@@ -508,6 +515,9 @@
             }
         }
     },
+    "student_summary": {
+        "title": "Přehled za školní rok %year%"
+    },
     "documents": {
         "types": {
             "folder": "Složka",
@@ -652,6 +662,8 @@
         }
     },
     "traineeship": {
+        "no_traineeship": "Žádná praxe",
+        "no_traineeship_desc": "Nemáte následující praxi",
         "country": "Země sídla firmy",
         "company_name": "Název firmy",
         "selected_company": "Vybraná firma",
@@ -1433,6 +1445,45 @@
         "classes": "Třídy",
         "teachers": "Učitelé",
         "risks": "Rizika"
+    },
+    "employees": {
+        "list": "Seznam",
+        "attendance": "Docházka", 
+        "vacations": "Dovolené",
+        "salaries": "Platy",
+        "bonuses": "Prémie",
+        "overview": "Přehled",
+        "salary": "Plat",
+        "add_employee": {
+            "title": "Přidat zaměstnance",
+            "roles": {
+                "teacher_male": "Učitel",
+                "teacher_female": "Učitelka",
+                "admin_staff_male": "Administrativní pracovník",
+                "admin_staff_female": "Administrativní pracovnice",
+                "management_male": "Vedení",
+                "management_female": "Vedení",
+                "personnel_male": "Personalista",
+                "personnel_female": "Personalistka",
+                "maintenance_male": "Údržbář",
+                "maintenance_female": "Údržbářka",
+                "cook_male": "Kuchař",
+                "cook_female": "Kuchařka",
+                "other": "Ostatní"
+            }
+        },
+        "request_vacation": {
+            "title": "Žádost o dovolenou",
+            "types": {
+                "title": "Druh dovolené",
+                "vacation": "Dovolená",
+                "sick_leave": "Nemocenská",
+                "personal_leave": "Osobní volno",
+                "unpaid_leave": "Neplacené volno",
+                "study_leave": "Studijní volno"
+            },
+            "reason": "Důvod (nepovinné)"
+        }
     },
     "seasonal": {
         "toggle": {

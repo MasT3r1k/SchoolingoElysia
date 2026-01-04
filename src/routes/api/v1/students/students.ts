@@ -189,7 +189,7 @@ const elysiaAp = new Elysia()
       })),
       type: t.Optional(t.Array(t.String())),
       search: t.Optional(t.String()),
-      status: t.Optional(t.String()), // 'active', 'former', 'suspended', 'all'
+      status: t.Optional(t.UnionEnum(['active', 'former', 'suspended', 'all'])),
       classId: t.Optional(t.Numeric()),
       scopeId: t.Optional(t.Numeric()),
       avgGradeMin: t.Optional(t.Number()),

@@ -1,0 +1,281 @@
+import { Elysia, t } from 'elysia';
+import { db } from "../../../../../database"
+import { sql } from 'kysely';
+
+const vacationsRouter = new Elysia()
+  // GET /employees/vacations/balance - Get vacation balance
+  .get('/employees/vacations/balance', async({ query, cookie }) => {
+    const token = cookie.token?.value;
+    if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+    const auth = await db
+      .selectFrom('tokens')
+      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', new Date())
+      .executeTakeFirst();
+
+    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+    
+    const canViewAll = auth.manager == 1;
+    
+    const employeeId = canViewAll && query.employeeId ? query.employeeId : auth.person;
+    const year = query.year || new Date().getFullYear();
+
+    const balance = await db.selectFrom('employee_vacation_balance')
+      .selectAll()
+      .where('teacherId', '=', employeeId)
+      .where('year', '=', year)
+      .executeTakeFirst();
+
+    if (!balance) {
+      // Return default if no balance record exists
+      return Response.json({
+        teacherId: employeeId,
+        year,
+        entitlement: 20, // Default vacation days
+        used: 0,
+        remaining: 20
+      });
+    }
+
+    return Response.json(balance);
+
+  }, {
+    query: t.Object({
+      employeeId: t.Optional(t.Number()),
+      year: t.Optional(t.Number()),
+    })
+  })
+  // GET /employees/vacations/requests - Get vacation requests
+  .get('/employees/vacations/requests', async({ query, store }) => {
+    const user = (store as any).user;
+    
+    if (!user) {
+      return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+    }
+    
+    const canViewAll = user.manager >= 1;
+    
+    let queryBuilder = db.selectFrom('employee_vacation_requests')
+      .leftJoin('teachers', 'employee_vacation_requests.teacherId', 'teachers.personId')
+      .leftJoin('persons', 'teachers.personId', 'persons.personId')
+      .select([
+        'employee_vacation_requests.requestId',
+        'employee_vacation_requests.teacherId',
+        'persons.firstName',
+        'persons.lastName',
+        'employee_vacation_requests.startDate',
+        'employee_vacation_requests.endDate',
+        'employee_vacation_requests.days',
+        'employee_vacation_requests.type',
+        'employee_vacation_requests.status',
+        'employee_vacation_requests.reason',
+        'employee_vacation_requests.createdAt',
+        'employee_vacation_requests.approvedAt',
+      ])
+
+    // Filter by status
+    if (query.status && query.status !== 'all') {
+      queryBuilder = queryBuilder.where('employee_vacation_requests.status', '=', query.status as any);
+    }
+
+    // Filter by type
+    if (query.type) {
+      queryBuilder = queryBuilder.where('employee_vacation_requests.type', '=', query.type as any);
+    }
+
+    // If not admin, only show own requests
+    if (!canViewAll) {
+      queryBuilder = queryBuilder.where('employee_vacation_requests.teacherId', '=', user.person);
+    } else if (query.employeeId) {
+      queryBuilder = queryBuilder.where('employee_vacation_requests.teacherId', '=', query.employeeId);
+    }
+
+    const results = await queryBuilder
+      .orderBy('employee_vacation_requests.createdAt', 'desc')
+      .limit(query.limit!)
+      .offset(query.offset!)
+      .execute();
+
+    return Response.json({ data: results });
+
+  }, {
+    query: t.Object({
+      limit: t.Optional(t.Number({ minimum: 1, maximum: 100, default: 50 })),
+      offset: t.Optional(t.Number({ minimum: 0, default: 0 })),
+      employeeId: t.Optional(t.Number()),
+      status: t.Optional(t.String()),
+      type: t.Optional(t.String()),
+    })
+  })
+  // POST /employees/vacations/request - Create vacation request
+  .post('/employees/vacations/request', async({ body, cookie }) => {
+    const token = cookie.token?.value;
+    if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+    const auth = await db
+      .selectFrom('tokens')
+      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', new Date())
+      .executeTakeFirst();
+
+    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+    
+    // Calculate number of days
+    const startDate = new Date(body.startDate);
+    const endDate = new Date(body.endDate);
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    // Check vacation balance for vacation type
+    if (body.type === 'vacation') {
+      const year = startDate.getFullYear();
+      const balance = await db.selectFrom('employee_vacation_balance')
+        .select('remaining')
+        .where('teacherId', '=', auth.person)
+        .where('year', '=', year)
+        .executeTakeFirst();
+
+      if (balance && balance.remaining < diffDays) {
+        return new Response(JSON.stringify({ 
+          error: 'insufficient_days',
+          remaining: balance.remaining,
+          requested: diffDays
+        }), { status: 400 });
+      }
+    }
+
+    await db.insertInto('employee_vacation_requests')
+      .values({
+        teacherId: auth.person!,
+        startDate: body.startDate,
+        endDate: body.endDate,
+        days: diffDays,
+        type: body.type as any,
+        status: 'pending',
+        reason: body.reason || null,
+        approvedBy: null,
+        approvedAt: null,
+        createdAt: new Date().toISOString(),
+      })
+      .execute();
+
+    return Response.json({ 
+      success: true, 
+      message: 'Request submitted',
+      days: diffDays 
+    });
+
+  }, {
+    body: t.Object({
+      startDate: t.String(),
+      endDate: t.String(),
+      type: t.String(), // vacation, sick, personal, unpaid, study, parental
+      reason: t.Optional(t.String()),
+    })
+  })
+  // PUT /employees/vacations/request/:id/approve - Approve request
+  .put('/employees/vacations/request/:id/approve', async({ params, cookie }) => {
+    const requestId = parseInt(params.id);
+    
+    const token = cookie.token?.value;
+    if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+    const auth = await db
+      .selectFrom('tokens')
+      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', new Date())
+      .executeTakeFirst();
+
+    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+    
+    const canManage = auth.manager == -1;
+    
+    if (!canManage) {
+      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
+    }
+
+    // Get request details
+    const request = await db.selectFrom('employee_vacation_requests')
+      .select(['teacherId', 'days', 'type', 'startDate'])
+      .where('requestId', '=', requestId)
+      .executeTakeFirst();
+
+    if (!request) {
+      return new Response(JSON.stringify({ error: 'request_not_found' }), { status: 404 });
+    }
+
+    // Update request status
+    await db.updateTable('employee_vacation_requests')
+      .set({
+        status: 'approved',
+        approvedBy: auth.userId,
+        approvedAt: new Date().toISOString(),
+      })
+      .where('requestId', '=', requestId)
+      .execute();
+
+    // Update vacation balance for vacation type
+    if (request.type === 'vacation') {
+      const year = new Date(request.startDate).getFullYear();
+      
+      await db.updateTable('employee_vacation_balance')
+        .set({
+          used: sql`used + ${request.days}`,
+          remaining: sql`remaining - ${request.days}`,
+        } as any)
+        .where('teacherId', '=', request.teacherId)
+        .where('year', '=', year)
+        .execute();
+    }
+
+    return Response.json({ success: true, message: 'Request approved' });
+  })
+  // PUT /employees/vacations/request/:id/reject - Reject request
+  .put('/employees/vacations/request/:id/reject', async({ params, body, cookie }) => {
+    const requestId = parseInt(params.id);
+    
+    const token = cookie.token?.value;
+    if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+    const auth = await db
+      .selectFrom('tokens')
+      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', new Date())
+      .executeTakeFirst();
+
+    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+    
+    const canManage = auth.manager == -1;
+    
+    if (!canManage) {
+      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
+    }
+
+    await db.updateTable('employee_vacation_requests')
+      .set({
+        status: 'rejected',
+        reason: body.reason || null,
+        approvedBy: auth.userId,
+        approvedAt: new Date().toISOString(),
+      })
+      .where('requestId', '=', requestId)
+      .execute();
+
+    return Response.json({ success: true, message: 'Request rejected' });
+
+  }, {
+    body: t.Object({
+      reason: t.Optional(t.String()),
+    })
+  });
+
+export default vacationsRouter;

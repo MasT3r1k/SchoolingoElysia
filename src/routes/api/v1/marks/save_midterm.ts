@@ -10,11 +10,10 @@ const app = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .leftJoin('teachers', 'teachers.personId', 'users.person')
       .select([
         'tokens.userId',
         'users.person',
-        'teachers.personId'
+        'users.role'
       ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', moment().toDate())
@@ -23,7 +22,7 @@ const app = new Elysia()
     if (!auth?.person) return { error: 'no_user', details: 'no_db' };
 
     // Teacher check
-    if (!auth.personId) {
+    if (auth.role != "teacher") {
       return { error: 'no_permission', details: 'not_teacher' };
     }
 
@@ -103,11 +102,10 @@ const app = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .leftJoin('teachers', 'teachers.personId', 'users.person')
       .select([
         'tokens.userId',
         'users.person',
-        'teachers.personId'
+        'users.role'
       ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', moment().toDate())
@@ -115,7 +113,7 @@ const app = new Elysia()
 
     if (!auth?.person) return { error: 'no_user', details: 'no_db' };
 
-    if (!auth.personId) {
+    if (auth.role != "teacher") {
       return { error: 'no_permission', details: 'not_teacher' };
     }
 

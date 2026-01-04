@@ -3,6 +3,7 @@ export interface UsersTable {
   person: number
   username: string
   password: number
+  role: 'student'|'teacher'|'parent'|'admin_staff'|'management'|'personnel'|'maintenance'|'other'
   manager: number
   principal: boolean
   theme: number

@@ -16,6 +16,8 @@ export const MainConfigSchema = z.object({
   MARK_MAX_TOPIC_LENGTH: z.number().min(0).max(999),
   MARK_MIN_TOPIC_LENGTH: z.number().min(0).max(10),
 
+  MAX_BEHAVE_MARK: z.number().min(1).max(10).default(3),
+
   MARKING_SCALE: z.array(z.number().min(0).max(100))
 })
 .refine(d => d.MARK_MAX_WEIGHT >= d.MARK_MIN_WEIGHT, {
@@ -46,6 +48,8 @@ export const MainConfig = MainConfigSchema.parse({
 
   MARK_MAX_TOPIC_LENGTH: 64,
   MARK_MIN_TOPIC_LENGTH: 2,
+
+  MAX_BEHAVE_MARK: 3,
 
   MARKING_SCALE: [ 90, 75, 60, 45 ]
 });

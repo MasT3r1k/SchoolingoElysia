@@ -43,7 +43,7 @@ const app = new Elysia()
       return { error: 'student_not_found' };
     }
 
-    if (student.status == 'archive') {
+    if (student.status == 'former') {
       return { error: 'student_is_not_on_school' }
     }
 

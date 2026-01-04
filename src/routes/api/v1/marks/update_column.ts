@@ -15,7 +15,11 @@ const app = new Elysia().post(
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'tokens.userId', 'users.userId')
-      .select(['tokens.userId', 'users.person'])
+      .select([
+        'tokens.userId',
+        'users.person',
+        'users.role'
+      ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', moment().toDate())
       .limit(1)
@@ -24,15 +28,7 @@ const app = new Elysia().post(
     if (!auth) {
       return Response.json({ error: 'no_user', details: 'no_db' });
     }
-
-    const teacher = await db
-      .selectFrom('teachers')
-      .select(['personId'])
-      .where('personId', '=', auth.person)
-      .limit(1)
-      .execute();
-
-    if (!teacher.length) {
+    if (auth.role != "teacher") {
       return Response.json({ error: 'no_permission' });
     }
 

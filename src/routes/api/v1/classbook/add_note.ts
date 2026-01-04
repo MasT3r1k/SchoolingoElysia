@@ -22,6 +22,7 @@ const elysiaApp = new Elysia()
       .select([
         'users.userId',
         'users.username',
+        'users.role',
         'users.person',
         'users.2fa',
         'users.2fa_secret',
@@ -32,14 +33,7 @@ const elysiaApp = new Elysia()
       .executeTakeFirst();
 
     if (!user) return { error: 'no_user', details: 'no_db' };
-
-    // === TEACHER PERMISSION ===
-    const perm = await db.selectFrom('teachers')
-      .select(['teachers.personId'])
-      .where('personId', '=', user.person)
-      .executeTakeFirst();
-
-    if (!perm) return { error: 'no_permission' };
+    if (user.role != "teacher") return { error: 'no_permission' };
 
     // === VALIDACE QUERY ===
     const { subject_id, group_id, title, note } = body;

@@ -13,20 +13,17 @@ const app = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person'])
+      .select([
+        'tokens.userId',
+        'users.person',
+        'users.role'
+      ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
     if (!auth?.person) return { error: 'no_user', details: 'no_db' };
-
-    const teacher = await db
-      .selectFrom('teachers')
-      .select(['teachers.personId'])
-      .where('teachers.personId', '=', auth.person)
-      .executeTakeFirst();
-
-    if (!teacher) return { error: 'no_permission' };
+    if (auth.role != "teacher") return { error: 'no_permission' };
 
     // ověření, že marking scale existuje
     const marking_scale = await db

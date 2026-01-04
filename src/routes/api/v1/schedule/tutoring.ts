@@ -60,13 +60,20 @@ const app = new Elysia()
         const auth = await db
             .selectFrom('tokens')
             .leftJoin('users', 'users.userId', 'tokens.userId')
-            .leftJoin('teachers', 'teachers.person', 'users.person')
-            .select(['tokens.userId', 'users.person', 'teachers.teacher'])
+            .select([
+                'tokens.userId',
+                'users.person',
+                'users.role'
+            ])
             .where('tokens.token', '=', token.value)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.teacher) {
+        if (!auth) {
+            return Response.json({ error: 'unauthorized' }, { status: 401 });
+        }
+
+        if (auth.role != "teacher") {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 
