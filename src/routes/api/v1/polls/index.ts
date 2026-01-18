@@ -29,8 +29,6 @@ const app = new Elysia({ prefix: '/polls' })
                 'polls.title',
                 'polls.description',
                 'polls.type',
-                'polls.active_from',
-                'polls.active_to',
                 'polls.time_limit',
                 'polls.created_at',
                 'polls.created_by'
@@ -133,8 +131,6 @@ const app = new Elysia({ prefix: '/polls' })
             type,
             created_by: auth.person,
             created_at: new Date().toISOString(),
-            active_from: active_from ? new Date(active_from).toISOString() : null,
-            active_to: active_to ? new Date(active_to).toISOString() : null,
             time_limit: time_limit ? Number(time_limit) : null
         }).execute();
 

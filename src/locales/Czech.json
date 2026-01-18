@@ -848,6 +848,16 @@
         "homework": "Domácí úkol",
         "no_homework_to_submit": "Nemátě žádný úkol k odevzdání"
     },
+    "tests": {
+        "title": "Testy",
+        "description": "Procházejte vaše testy",
+        "question_types": {
+            "title": "Typ otázky",
+            "text": "Textová odpověď",
+            "uni": "Jedna správná odpověď",
+            "multi": "Více správných odpovědí"
+        }
+    },
     "marks": {
         "title": "Titulek",
         "title_placeholder": "Vyplňte titulek známky",

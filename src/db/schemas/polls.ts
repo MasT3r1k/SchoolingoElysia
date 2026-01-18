@@ -7,8 +7,6 @@ export interface PollsTable {
   type: 'feedback' | 'test'
   created_by: number
   created_at: ColumnType<Date, string | undefined, never>
-  active_from: ColumnType<Date, string | undefined, string | undefined> | null
-  active_to: ColumnType<Date, string | undefined, string | undefined> | null
   time_limit: number | null // in minutes
 }
 

@@ -95,9 +95,9 @@ async function loadFolder(folder: string = modulePath) {
   } catch (err: any) {
     if (err?.code === 'ENOENT') {
       await fs.promises.mkdir(folder, { recursive: true });
-      console.log('[📁 FileManager] Created /routes folder.');
+      logger.log('[📁 FileManager] Created /routes folder.');
     } else {
-      console.error(err);
+      logger.log('ERROR: ' + err);
     }
   }
 }
