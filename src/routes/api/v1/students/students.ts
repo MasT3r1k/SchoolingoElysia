@@ -42,7 +42,7 @@ const fullName = sql`
   )
   `.as('fullName')
 
-const elysiaAp = new Elysia()
+const elysiaApp = new Elysia()
   .use(rateLimit({
     scoping: "scoped",
     max: 3,
@@ -104,16 +104,10 @@ const elysiaAp = new Elysia()
       queryBuilder = queryBuilder.where((eb) => eb.or([
         eb('persons.firstName', 'like', search),
         eb('persons.lastName', 'like', search),
-        // eb(fullName, 'like', search) // Fullname is derived, might not work in WHERE directly in some DBs without wrapping, but typically OK if Kysely handles it or use having.
-        // For safety, stick to columns or verify.
       ]))
     }
 
     if (query.status && query.status !== 'all') {
-      // API expects 'active', 'former', 'suspended'
-      // DB stores... let's assume it matches or map it.
-      // Based on frontend 'mapStatus', DB might have different values.
-      // Assuming 'active', 'archive' (former), 'suspended'.
       let dbStatus = query.status;
       queryBuilder = queryBuilder.where('students.status', '=', dbStatus);
     }
@@ -142,6 +136,7 @@ const elysiaAp = new Elysia()
     }
 
     if (query.missingInfo) {
+      // TODO edit to count total emails and phones
       // Using HAVING for subqueries email/phone
       queryBuilder = queryBuilder.having((eb) => eb.or([
         eb('email', 'is', null),
@@ -201,4 +196,4 @@ const elysiaAp = new Elysia()
   });
 
 
-export default elysiaAp;
+export default elysiaApp;

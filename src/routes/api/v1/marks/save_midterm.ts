@@ -1,6 +1,7 @@
 import { Elysia, t } from 'elysia';
 import moment from 'moment';
 import { db } from '../../../../../database';
+import { MainConfig, MainConfigSchema } from '../../../../config/main.config';
 
 const app = new Elysia()
   .post('/marks/midterm', async ({ cookie, body }) => {
@@ -33,17 +34,17 @@ const app = new Elysia()
       return { error: 'missing_params' };
     }
 
-    if (quarter < 1 || quarter > 4) {
+    if (quarter < MainConfig.MIN_QUARTER || quarter > MainConfig.MAX_QUARTER) {
       return { error: 'invalid_quarter' };
     }
 
-    if (grade < 1 || grade > 5) {
+    if (grade < MainConfig.MIN_MARK || grade > MainConfig.MAX_MARK) {
       return { error: 'invalid_grade' };
     }
 
     // Get current school year
     const now = moment();
-    const currentYear = now.month() >= 8 ? now.year() : now.year() - 1;
+    const currentYear = now.month() >= MainConfig.SEMESTER_START_MONTH ? now.year() : now.year() - 1;
 
     // Check if grade already exists
     const existingGrade = await db

@@ -1,6 +1,8 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
+import { MainConfig } from '../../../../config/main.config';
+import moment from 'moment';
 
 const app = new Elysia()
   .post('/marks/teacher/group', async ({ cookie, body, query }) => {
@@ -9,6 +11,10 @@ const app = new Elysia()
 
     if (!body?.group_id) return { error: 'invalid_group_id' };
     if (!body?.subject_id) return { error: 'invalid_subject_id' };
+
+    // Get current school year
+    const now = moment();
+    const currentYear = now.month() >= MainConfig.SEMESTER_START_MONTH ? now.year() : now.year() - 1;
 
     const auth = await db
       .selectFrom('tokens')
@@ -53,12 +59,26 @@ const app = new Elysia()
 
     let grades: any;
     if (gradeColumns.length) {
-        grades = await db
+      grades = await db
         .selectFrom('grades')
         .select(['mark', 'studentId', 'columnId'])
         .where('grades.columnId', 'in', gradeColumns.map((c: any) => c.gcId))
         .execute();
     }
+
+    const semester_grades = await db
+      .selectFrom('semester_grades')
+      .select([
+        'semester_grades.student_id',
+        'semester_grades.semester as quarter',
+        'semester_grades.grade',
+        'semester_grades.verbal_assessment',
+        'semester_grades.year'
+      ])
+      .where('semester_grades.student_id', 'in', students.map((student) => student.student))
+      .where('semester_grades.subject_id', '=', body.subject_id)
+      .where('semester_grades.year', '=', currentYear)
+      .execute();
 
     // Připravíme strukturu pro výsledky
     const columns = gradeColumns.map((c: any) => ({
@@ -80,6 +100,11 @@ const app = new Elysia()
       return {
         studentId: s.student,
         name,
+        quarters: semester_grades.filter((g: any) => g.student_id === s.student).map((g: any) => ({
+          quarter: g.quarter,
+          grade: g.grade,
+          verbal_assessment: g.verbal_assessment
+        })),
         marks: studentMarks,
       };
     }));
