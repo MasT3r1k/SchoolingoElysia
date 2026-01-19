@@ -266,12 +266,17 @@
         "older": "Starší"
     },
     "roles": {
+        "all": "Všechny role",
         "teacher": "Učitel",
         "student": "Žák",
         "parent": "Rodič",
         "classteacher": "Třídní učitel",
         "system": "Systém",
         "manager": "Správce",
+        "admin_staff": "Administrativa",
+        "maintenance": "Údržba",
+        "management": "Vedení",
+        "personnel": "Personalista",
         "unknown": "Neznámé",
         "undefined": "Neznámé"
     },
@@ -1464,6 +1469,12 @@
         "bonuses": "Prémie",
         "overview": "Přehled",
         "salary": "Plat",
+        "status": {
+            "all": "Všechny stavy",
+            "active": "Aktivní",
+            "inactive": "Neaktivní",
+            "terminated": "Ukončení"
+        },
         "add_employee": {
             "title": "Přidat zaměstnance",
             "roles": {
