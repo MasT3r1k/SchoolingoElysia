@@ -18,10 +18,6 @@
         },
         "login": {
             "title": "Přihlášení do školního systému",
-            "subtitle": [
-                "Pomocí přihlašovacích údajů",
-                "Pomocí QR kódu"
-            ],
             "qrcode": "Naskejnute QR kód v mobilní aplikaci pro rychlé přihlášení",
             "qrcode_hint": "V aplikaci přejděte do nastavení a tam najděte kolonku 'Přihlášení QR Kódem'",
             "username": "Uživatelské jméno",
