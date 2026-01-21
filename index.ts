@@ -14,6 +14,7 @@ import locales from './src/infrastructure/locale';
 import { version } from './version';
 import { ws } from './websocket';
 import { getAuthUser } from './src/utils/auth';
+import { filesRoutes } from './upload';
 
 export const app = new Elysia({
     serve: {
@@ -34,6 +35,7 @@ export const app = new Elysia({
   .use(requestLogger)
   .use(rateLimit)
   .use(version)
+  .use(filesRoutes)
   
   // Authentication & Context Derivation
   .derive(async ({ cookie }) => {
