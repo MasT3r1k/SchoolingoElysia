@@ -4,6 +4,7 @@ import { db } from "./database";
 import { createHmac } from "crypto";
 import { QRConfig } from "./src/config/qr.config";
 import { wsClientManager } from "./src/functions/ws-client-manager";
+import { logger } from "./src/utils/logger";
 
 // Rate limiting for QR validation attempts
 const qrValidationAttempts: Map<string, { count: number; resetAt: number }> = new Map();
@@ -109,6 +110,8 @@ export const ws = new Elysia()
             const token = ws.data.cookie.token;
             const wsId = ws.id;
             
+            logger.log('WS conn: ' + token + ' | wsID: ' + wsId)
+
             // Initialize state for this connection
             const state: WsState = {
                 user: null,
@@ -307,7 +310,7 @@ export const ws = new Elysia()
             }
 
             ws.send(JSON.stringify({ error: "unknown_request" }));
-        },
+        },  
 
         async close(ws) {
             const state: WsState = (ws as any)._state || { user: null, role: "guest" };

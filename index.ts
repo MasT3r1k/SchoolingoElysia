@@ -12,12 +12,8 @@ import { rateLimit } from './src/middleware/rate-limit.middleware';
 import { logger, requestLogger } from './src/utils/logger';
 import locales from './src/infrastructure/locale';
 import { version } from './version';
-import { db } from './database';
-import moment from 'moment';
 import { ws } from './websocket';
 import { getAuthUser } from './src/utils/auth';
-
-// ...
 
 export const app = new Elysia({
     serve: {
@@ -78,7 +74,7 @@ async function loadFolder(folder: string = modulePath) {
         const parts = relativePath.split('/');
         
         if (parts.length > 2 && parts[1] === 'api') {
-            prefix = `/api/${parts[2]}`;
+          prefix = `/api/${parts[2]}`;
         }
         
         const wrapper = new Elysia({ prefix })

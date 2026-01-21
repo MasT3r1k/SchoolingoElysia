@@ -72,9 +72,10 @@ export async function authenticateUser(userId: number, cookie: any, userAgent: s
 
       cookie.token.set({
         httpOnly: true,
-        // secure: true,
+        secure: true,
         maxAge: 2592000000,
         path: '/',
+        sameSite: 'None',
         value: dbToken
       })
 

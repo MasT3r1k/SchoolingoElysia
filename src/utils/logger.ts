@@ -11,10 +11,15 @@ if (!fs.existsSync(LOG_DIR)) {
 
 // Cesta k log souboru
 const LOG_FILE = path.join(LOG_DIR, 'app.log');
+const ERROR_FILE = path.join(LOG_DIR, 'error.log');
 
 // Funkce pro zápis do souboru
-const writeToFile = (message: string) => {
+const writeToLog = (message: string) => {
   fs.appendFileSync(LOG_FILE, message + '\n');
+};
+
+const writeToError = (message: string) => {
+  fs.appendFileSync(ERROR_FILE, message + '\n');
 };
 
 // Singleton instance loggeru
@@ -27,7 +32,7 @@ class Logger {
     // Přidání oddělovače při startu aplikace
     const timestamp = new Date().toISOString();
     const separator = `\n[${timestamp}] ----- NEW START --------\n`;
-    writeToFile(separator);
+    writeToLog(separator);
   }
 
   public static getInstance(): Logger {
@@ -43,12 +48,19 @@ class Logger {
     
     // V production režimu logujeme pouze do souboru
     if (this.isProduction) {
-      writeToFile(logMessage);
+      writeToLog(logMessage);
     } else {
       // V development režimu logujeme do konzole i do souboru
       console.log(logMessage);
-      writeToFile(logMessage);
+      writeToLog(logMessage);
     }
+  }
+
+  public error(message: string) {
+    const timestamp = new Date().toISOString();
+    const logMessage = `[${timestamp}] ${message}`;
+    
+    writeToError(logMessage)
   }
 }
 
