@@ -3,7 +3,7 @@ import { ip } from 'elysia-ip';
 import { elysiaXSS } from 'elysia-xss';
 import { helmet } from 'elysia-helmet';
 import * as fs from 'fs';
-import path from 'path';
+import path, { join } from 'path';
 import 'dotenv/config';
 import cors from '@elysiajs/cors';
 import { config } from './src/config/app.config';
@@ -15,36 +15,113 @@ import { version } from './version';
 import { ws } from './websocket';
 import { getAuthUser } from './src/utils/auth';
 import { filesRoutes } from './upload';
+import { randomUUID } from 'crypto';
+import { writeFile } from 'fs/promises';
+
+const UPLOAD_DIR = './uploads';
 
 export const app = new Elysia({
     serve: {
       idleTimeout: 30,
+      maxRequestBodySize: 1024 * 1024 * 500 
     },
   })
   // Security Headers
-  .use(helmet())
-  .use(ip())
-  .use(elysiaXSS({}))
+  // .use(ip())
   .use(cors({
     origin: ['http://localhost:4200', 'http://localhost:8100', 'http://192.168.1.102:4200', 'capacitor://localhost', 'ionic://localhost'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
     credentials: true,
   }))
-  .use(errorHandler)
-  .use(requestLogger)
-  .use(rateLimit)
-  .use(version)
-  .use(filesRoutes)
+  // .use(requestLogger)
+  .post('/api/upload', async ({ request }) => {
+    try {
+      console.log('📥 Incoming upload request');
+      
+      // Získej FormData z raw requestu
+      const formData = await request.formData();
+      
+      console.log('📋 FormData entries:');
+      const allEntries = Array.from(formData.entries());
+      console.log(`Total entries: ${allEntries.length}`);
+      
+      for (const [key, value] of allEntries) {
+        console.log(`  - ${key}: ${value?.constructor?.name}`);
+        if (value instanceof File) {
+          console.log(`    ✓ File: ${value.name} (${value.size} bytes, ${value.type})`);
+        }
+      }
+      
+      // Získej všechny soubory s klíčem 'files'
+      const filesEntries = formData.getAll('files');
+      console.log(`\n📦 Found ${filesEntries.length} file entries`);
+      
+      if (filesEntries.length === 0) {
+        return { 
+          success: false, 
+          error: 'Žádné soubory nebyly nahrány' 
+        };
+      }
+
+      const storedFiles = [];
+
+      for (const entry of filesEntries) {
+        if (!(entry instanceof File)) {
+          console.log(`⚠️  Entry is not a File: ${typeof entry}`);
+          continue;
+        }
+
+        const file = entry as File;
+        const originalName = file.name || `file_${randomUUID()}.bin`;
+        const ext = originalName.includes('.') 
+          ? '.' + originalName.split('.').pop() 
+          : '.bin';
+        const id = randomUUID();
+        const filename = `${id}${ext}`;
+        const filepath = join(UPLOAD_DIR, filename);
+
+        console.log(`💾 Saving: ${originalName} → ${filename}`);
+
+        // Uložení souboru
+        const buffer = await file.arrayBuffer();
+        await writeFile(filepath, Buffer.from(buffer));
+        
+        storedFiles.push({ 
+          id, 
+          filename, 
+          originalName, 
+          size: file.size,
+          type: file.type,
+          url: `/uploads/${filename}`
+        });
+        
+        console.log(`✓ Saved: ${filename} (${file.size} bytes)`);
+      }
+
+      console.log(`\n✅ Successfully uploaded ${storedFiles.length} files\n`);
+
+      return { 
+        success: true, 
+        files: storedFiles 
+      };
+      
+    } catch (err: any) {
+      console.error('❌ Upload error:', err);
+      return { 
+        success: false, 
+        error: err.message || 'Unknown error' 
+      };
+    }
+  })
+  // .use(version)
   
   // Authentication & Context Derivation
-  .derive(async ({ cookie }) => {
-    const user = await getAuthUser(cookie?.token?.value, cookie);
-    return { user };
-  })
+  // .derive(async ({ cookie }) => {
+  //   const user = await getAuthUser(cookie?.token?.value, cookie);
+  //   return { user };
+  // })
   
-  .use(ws)
-  .use(locales);
+  // .use(ws)
+  // .use(locales);
 
 // Routing Automation
 const modulePath: string = path.join(__dirname, '/src/routes');
@@ -104,7 +181,7 @@ async function loadFolder(folder: string = modulePath) {
   try {
     logger.log('Database tables initialized successfully');
 
-    await loadFolder(modulePath);
+    // await loadFolder(modulePath);
     const port = parseInt(config.PORT);
     await app.listen(port);
     logger.log(`[🦊 Elysia]: Running at http://${app.server?.hostname}:${port}`);

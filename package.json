@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Schoolingo API built with Elysia",
   "main": "index.ts",
+  "type": "module",
   "scripts": {
     "dev": "bun run --watch index.ts",
     "start": "bun run index.ts",
@@ -20,6 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@elysiajs/cors": "latest",
+    "@elysiajs/static": "^1.4.7",
     "@elysiajs/swagger": "latest",
     "@simplewebauthn/server": "^13.1.1",
     "@sinclair/typebox": "^0.34.41",
@@ -44,6 +46,7 @@
     "zod": "latest"
   },
   "devDependencies": {
+    "@types/bun": "^1.3.6",
     "@types/node": "latest",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
