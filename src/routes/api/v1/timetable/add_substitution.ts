@@ -6,12 +6,6 @@ import { format_people_by_ids } from '../../../../functions/format_person_by_ids
 import moment from 'moment';
 
 const elysiaAp = new Elysia()
-.use(rateLimit({
-    scoping: "scoped",
-    max: 5,
-    duration: 1000,
-    injectServer: () => app.server
-  }))
 .post('/timetable/substitution', async({ cookie, body }) => {
     const token = cookie.token.value;
 

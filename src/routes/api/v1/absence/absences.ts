@@ -1,10 +1,8 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database'
 import { sql } from 'kysely';
-import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../../../index';
 import moment from 'moment';
-import { AbsenceType } from '../../../../types/absence.d';
+import { AbsenceType } from '../../../../types/absence';
 
 interface lessonInfo {
     subjectId: number;
@@ -53,12 +51,6 @@ const fullName = sql`
 `;
 
 const elysiaApp = new Elysia()
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 15,
-    duration: 1000,
-    injectServer: () => app.server
-  }))
   .get('/absences/:id', async ({ params: { id }, query }) => {
     try {
         let start = moment(query.start);

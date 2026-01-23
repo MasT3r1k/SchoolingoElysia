@@ -1,18 +1,8 @@
-import { Elysia, t } from 'elysia';
+import { Elysia } from 'elysia';
 import { db } from '../../../../../database'
-import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../../../index';
-import { ip } from 'elysia-ip';
 import moment from 'moment';
 
 const elysiaApp = new Elysia()
-  .use(ip())
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 5,
-    duration: 5 * 1000,
-    injectServer: () => app.server
-  }))
   .get('/school/', async () => {
     const now = moment().format("YYYY-MM-DD");
 

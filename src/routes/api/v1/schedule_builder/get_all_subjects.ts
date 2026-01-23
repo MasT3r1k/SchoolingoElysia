@@ -6,12 +6,7 @@ import moment from 'moment';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
 
 const elysiaApp = new Elysia()
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 10,
-    duration: 1000,
-    injectServer: () => app.server
-  }))
+  
   .get('/schedule/all_subjects', async ({ cookie }) => {
     const token = cookie.token?.value;
     if (!token) {

@@ -92,6 +92,7 @@ import { EmployeeAttendanceTable } from './employee_attendance'
 import { EmployeeVacationBalanceTable, EmployeeVacationRequestsTable } from './employee_vacations'
 import { EmployeeBonusesTable } from './employee_bonuses'
 import { educationMeasuresTable } from './education_measures'
+import { filesTable } from './files'
 
 export interface Database {
   absence: AbsenceTable
@@ -120,6 +121,7 @@ export interface Database {
   emergency_notifications: emergency_notificationsTable
   events: EventsTable
   family_relations: family_relationsTable
+  files: filesTable;
   fleetvehicles_expenses: fleetvehicles_expensesTable
   fleetvehicles_maintenance: fleetvehicles_maintenanceTable
   fleetvehicles_trips: fleetvehicles_tripsTable

@@ -9,12 +9,6 @@ import { get_classbook_lesson_number } from '../../../../functions/get_classbook
 import { get_total_lessons } from '../../../../functions/get_total_lessons';
 
 const elysiaApp = new Elysia()
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 10,
-    duration: 1000,
-    injectServer: () => app.server
-  }))
   .get('/classbook/lesson', async ({ cookie, query }) => {
     // === AUTH ===
     const token = cookie.token.value;

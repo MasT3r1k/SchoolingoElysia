@@ -7,8 +7,9 @@ const max = parseInt(config.RATE_LIMIT_MAX);
 const store = new Map<string, { count: number; resetTime: number }>();
 
 export const rateLimit = new Elysia()
-  .derive(({ request }) => {
-    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+  .derive(({ headers }) => {
+    if (!headers) return;
+    const ip = headers['x-forwarded-for'] || headers['x-real-ip'] || 'unknown';
     const now = Date.now();
     const windowStart = now - windowMs;
 

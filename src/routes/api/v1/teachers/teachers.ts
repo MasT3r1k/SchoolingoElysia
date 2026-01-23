@@ -5,12 +5,7 @@ import { app } from '../../../../../index';
 import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 
 const elysiaAp = new Elysia()
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 10,
-    duration: 1000,
-    injectServer: () => app.server
-  }))
+  
   .get('/teachers', async({ query }) => {
     const result = await db.selectFrom('teachers')
       .innerJoin('persons', 'teachers.personId', 'persons.personId')

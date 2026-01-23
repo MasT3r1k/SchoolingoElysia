@@ -6,10 +6,8 @@ import { authenticator } from 'otplib';
 import * as OTPAuth from 'otpauth'
 import { SecurityConfig } from '../../../../config/security.config';
 import { generateNewBackupCodes } from '../../../../functions/generateNewBackupCodes';
-import { ip } from 'elysia-ip';
 
 const app = new Elysia()
-    .use(ip())
     .get('/security', async ({ cookie }) => {
         const token = cookie.token.value;
         if (!token) {

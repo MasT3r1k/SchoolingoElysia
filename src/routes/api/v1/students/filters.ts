@@ -5,12 +5,6 @@ import { rateLimit } from 'elysia-rate-limit'
 import { app } from '../../../../../index';
 
 const filterApp = new Elysia()
-    .use(rateLimit({
-        scoping: "scoped",
-        max: 10,
-        duration: 1000,
-        injectServer: () => app.server
-    }))
     .get('/students/filters', async () => {
         const [classes, scopes] = await Promise.all([
             // Get all active classes

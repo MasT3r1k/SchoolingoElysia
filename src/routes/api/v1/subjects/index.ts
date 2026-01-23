@@ -7,12 +7,6 @@ import moment from 'moment';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
 
 const elysiaApp = new Elysia({ prefix: '/subjects' })
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 20,
-    duration: 1000,
-    injectServer: () => app.server
-  }))
   // GET subjects for current user (student or teacher)
   .get('/', async ({ cookie }) => {
     const token = cookie.token.value;

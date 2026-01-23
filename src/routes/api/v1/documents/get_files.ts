@@ -5,12 +5,7 @@ import { app } from '../../../../../index';
 import moment from 'moment';
 
 const elysiaApp = new Elysia()
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 10,
-    duration: 1000,
-    injectServer: () => app.server
-  }))
+  
   .post('/documents/files', async ({ cookie, body }) => {
     const token = cookie.token.value;
     if (!token) {

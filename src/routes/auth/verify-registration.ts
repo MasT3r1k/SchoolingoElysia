@@ -1,19 +1,12 @@
 import Elysia from "elysia";
 import { rateLimit } from "elysia-rate-limit";
-import { app } from "../../..";
+import { app } from "../../../index";
 import { VerifiedRegistrationResponse, verifyRegistrationResponse } from "@simplewebauthn/server";
 import { ip } from "elysia-ip";
 import moment from "moment";
 import { db } from "../../../database";
 
 const elysiaApp = new Elysia()
-  .use(ip())
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 5,
-    duration: 5 * 60 * 1000,
-    injectServer: () => app.server
-  }))
     .post('/verify-registration', async ({ body, cookie }: any) => {
     const token = cookie.token.value;
     if (!token) return Response.json({ error: 'no_user', details: 'no_cookie' });

@@ -5,13 +5,6 @@ import { ip } from "elysia-ip";
 import { rateLimit } from "elysia-rate-limit";
 
 const elysiaApp = new Elysia()
-  .use(ip())
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 5,
-    duration: 5 * 60 * 1000,
-    injectServer: () => app.server
-  }))
   .get('/auth-passkey', async ({ request }: any) => {
     const opts: GenerateAuthenticationOptionsOpts = {
       timeout: 60000,

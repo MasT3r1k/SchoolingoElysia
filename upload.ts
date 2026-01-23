@@ -1,8 +1,22 @@
 import { Elysia, t } from 'elysia';
-import { mkdir, writeFile, readdir } from 'node:fs/promises';
+import { mkdir, writeFile, readdir, unlink } from 'node:fs/promises';
 import { existsSync, createReadStream } from 'node:fs';
 import { randomUUID } from 'node:crypto';
-import path from 'node:path';
+import path, { join } from 'node:path';
+import { db } from './database';
+import { createHash } from 'node:crypto';
+import moment from 'moment';
+
+export function checksumFile(path: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const hash = createHash('sha256');
+    const stream = createReadStream(path);
+
+    stream.on('data', chunk => hash.update(chunk));
+    stream.on('end', () => resolve(hash.digest('hex')));
+    stream.on('error', reject);
+  });
+}
 
 const UPLOAD_DIR = './uploads';
 
@@ -29,104 +43,204 @@ if (!existsSync(UPLOAD_DIR)) {
   await mkdir(UPLOAD_DIR, { recursive: true });
 }
 
-export const filesRoutes = new Elysia()
-  .post('/api/upload', async ({ body, set }) => {
-    try {
-      const files = body.files;
-      console.log('--- DEBUG UPLOAD ---', typeof files);
-      if (files) console.log('Is array:', Array.isArray(files));
-
-      // Ensure files is an array
-      const fileList = Array.isArray(files) ? files : [files];
-
-      if (!fileList || fileList.length === 0) {
-        set.status = 400;
-        return { error: 'Žádné soubory nebyly nahrány' };
-      }
-
-      const uploadedFiles: string[] = [];
-
-      for (const file of fileList) {
-        if (!file) continue;
-
-        // Ověření MIME typu
-        // Ověření MIME typu
-        const mimeType = file.type || file.mimetype;
-        if (ALLOWED_MIME.length > 0 && !ALLOWED_MIME.includes(mimeType)) {
-          // If type is missing, we might still want to allow it if it has content, for debugging.
-          // Or just log it and proceed? No, user wants it fixed.
-          // If undefined, maybe we can accept it if we trust the extension?
-
-          if (!mimeType) {
-            console.log('Warning: File has no type. Proceeding with upload for debug.');
-            // We will NOT return error here, we will try to save it. 
-          } else {
-            return { error: `Nepovolený typ souboru: ${mimeType} (Keys: ${Object.keys(file).join(', ')})` };
-          }
-        }
-
-        // Generování UUID
-        const uuid = randomUUID();
-
-        // Získání přípony z původního názvu
-        const originalName = file.name || 'file';
-        const ext = path.extname(originalName);
-
-        // Název souboru: UUID + přípona
-        const filename = `${uuid}${ext}`;
-        const filepath = path.join(UPLOAD_DIR, filename);
-
-        // Převedení File na buffer a uložení
-        let buffer;
-        try {
-          if (typeof file.arrayBuffer === 'function') {
-            const arrayBuffer = await file.arrayBuffer();
-            buffer = Buffer.from(arrayBuffer);
-          } else if (file.data) {
-            buffer = file.data;
-          } else if (file.path) {
-            const fs = await import('node:fs');
-            buffer = fs.readFileSync(file.path);
-          } else if (Buffer.isBuffer(file)) {
-            buffer = file;
-          } else {
-            console.log('File object keys:', Object.keys(file));
-            // Fallback attempt: maybe it's just a string path?
-            if (typeof file === 'string' && existsSync(file)) {
-              const fs = await import('node:fs');
-              buffer = fs.readFileSync(file);
-            } else {
-              const debugKeys = Object.keys(file).join(', ');
-              const debugJson = JSON.stringify(file);
-              set.status = 500;
-              return { error: `Nepodporovaný formát souboru. Keys: [${debugKeys}], JSON: ${debugJson}` };
-            }
-          }
-        } catch (e) {
-          console.error('Error processing file buffer:', e);
-          set.status = 500;
-          return { error: 'Chyba při zpracování souboru' };
-        }
-
-        await writeFile(filepath, buffer);
-
-        uploadedFiles.push(uuid);
-      }
-
-      return {
-        uuids: uploadedFiles,
-        count: uploadedFiles.length
-      };
-    } catch (err: any) {
-      set.status = 500;
-      return { error: `Chyba při nahrávání: ${err.message}` };
+export const uploadAPI = new Elysia()
+  .post('/api/upload', async ({ body, cookie }) => {
+    const token = cookie.token.value;
+    if (!token) {
+        return Response.json({ error: 'no_user', details: 'no_cookie' });
     }
-  }, {
-    body: t.Object({
-      files: t.Any()
-    })
-  })
 
+    const user = await db.selectFrom("tokens")
+        .select([
+            'tokens.userId'
+        ])
+        .where('tokens.token', '=', token)
+        .where('tokens.expires', '>=', moment().toDate())
+        .limit(1)
+        .executeTakeFirst()
+
+    if (!user) {
+        return Response.json({ error: 'no_user', details: 'no_db' });
+    }
+
+      try {
+        console.log('📥 Incoming upload request');
+        
+        // Získej FormData z raw requestu
+        const files = body.files
+        
+        if (files.length === 0) {
+          return { 
+            success: false, 
+            error: 'Žádné soubory nebyly nahrány' 
+          };
+        }
+  
+        const storedFiles = [];
+  
+        for (const entry of files) {
+          if (!(entry instanceof File)) {
+            console.log(`⚠️  Entry is not a File: ${typeof entry}`);
+            continue;
+          }
+  
+          const file = entry as File;
+          const originalName = file.name || `file_${randomUUID()}.bin`;
+          const ext = originalName.includes('.') 
+            ? '.' + originalName.split('.').pop() 
+            : '.bin';
+          const id = randomUUID();
+          const filename = `${id}${ext}`;
+          const filepath = join(UPLOAD_DIR, filename);
+  
+          console.log(`💾 Saving: ${originalName} → ${filename}`);
+  
+          // Uložení souboru
+          const arrayBuffer = await file.arrayBuffer();
+          const nodeBuffer = Buffer.from(arrayBuffer);
+
+          await writeFile(filepath, nodeBuffer);
+
+          const checksum = createHash('sha256')
+            .update(nodeBuffer)
+            .digest('hex');
+
+          // Save to database
+          db.insertInto('files')
+          .values({
+            file_uuid: id,
+            name: filename,
+            real_file_name: originalName,
+            file_format: ext,
+            mime_type: file.type,
+            file_size: file.size,
+            storage_path: filepath,
+            thumbnail_path: null,
+            permissions: JSON.stringify({}),
+            owner_id: user.userId,
+            checksum
+          })
+          .executeTakeFirst();
+          
+          storedFiles.push({ 
+            id, 
+            filename, 
+            originalName, 
+            size: file.size,
+            type: file.type,
+            url: `/uploads/${filename}`
+          });
+          
+          console.log(`✓ Saved: ${filename} (${file.size} bytes)`);
+        }
+  
+        console.log(`\n✅ Successfully uploaded ${storedFiles.length} files\n`);
+  
+        return { 
+          success: true, 
+          files: storedFiles 
+        };
+        
+      } catch (err: any) {
+        console.error('❌ Upload error:', err);
+        return { 
+          success: false, 
+          error: err.message || 'Unknown error' 
+        };
+      }
+    }, {
+      body: t.Object({
+        files: t.Files()
+      })
+    })
+
+
+  .delete(
+    '/api/delete_file/:id',
+    async ({ params, cookie }) => {
+      const token = cookie.token.value;
+      if (!token) {
+        return Response.json({ error: 'no_user', details: 'no_cookie' });
+      }
+
+      // Ověření tokenu
+      const user = await db
+        .selectFrom('tokens')
+        .innerJoin('users', 'users.userId', 'tokens.userId')
+        .select([
+          'tokens.userId',
+          'users.manager'
+        ])
+        .where('tokens.token', '=', token)
+        .where('tokens.expires', '>=', moment().toDate())
+        .limit(1)
+        .executeTakeFirst();
+
+      if (!user) {
+        return Response.json({ error: 'no_user', details: 'no_db' });
+      }
+
+      const fileId = params.id;
+
+      // Načti soubor
+      const file = await db
+        .selectFrom('files')
+        .select([
+          'file_uuid',
+          'owner_id',
+          'storage_path',
+          'name'
+        ])
+        .where('file_uuid', '=', fileId)
+        .limit(1)
+        .executeTakeFirst();
+
+      if (!file) {
+        return Response.json({ error: 'not_found', details: 'file_not_exists' });
+      }
+
+      // Ověření oprávnění
+      const isOwner = file.owner_id === user.userId;
+      const isManager = user.manager === -1;
+
+      if (!isOwner && !isManager) {
+        return Response.json({
+          error: 'forbidden',
+          details: 'not_owner'
+        });
+      }
+
+      try {
+        // Smazání souboru z disku
+        try {
+          if (file.storage_path) {
+            await unlink(file.storage_path);
+            console.log(`🗑️ File removed from disk: ${file.storage_path}`);
+          }
+        } catch (fsErr) {
+          console.warn(`⚠️ File not found on disk: ${file.storage_path}`);
+        }
+
+        // Smazání z DB
+        await db
+          .deleteFrom('files')
+          .where('file_uuid', '=', fileId)
+          .execute();
+
+        return {
+          success: true,
+          id: fileId
+        };
+
+      } catch (err: any) {
+        console.error('❌ Delete error:', err);
+        return {
+          success: false,
+          error: err.message || 'delete_failed'
+        };
+      }
+    }
+  )
   // -------------------------
   // DOWNLOAD ENDPOINT
   // -------------------------

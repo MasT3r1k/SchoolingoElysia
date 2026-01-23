@@ -1,5 +1,4 @@
-import { generateAuthenticationOptions, GenerateAuthenticationOptionsOpts } from "@simplewebauthn/server";
-import { app } from "../../..";
+import { app } from "../../../index";
 import Elysia, { t } from "elysia";
 import { ip } from "elysia-ip";
 import { rateLimit } from "elysia-rate-limit";
@@ -7,13 +6,6 @@ import { db } from "../../../database";
 import moment from "moment";
 
 const elysiaApp = new Elysia()
-  .use(ip())
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 5,
-    duration: 5 * 60 * 1000,
-    injectServer: () => app.server
-  }))
   .post('/remove-passkey', async ({ cookie, body }: any) => {
     const token = cookie.token.value;
     if (!token) {

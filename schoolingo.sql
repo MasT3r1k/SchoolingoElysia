@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1
--- Vytvořeno: Ned 18. led 2026, 23:32
+-- Vytvořeno: Pát 23. led 2026, 06:54
 -- Verze serveru: 12.0.2-MariaDB
 -- Verze PHP: 8.2.12
 
@@ -434,7 +434,11 @@ INSERT INTO `classbook` (`cbId`, `date`, `dayHour`, `subject`, `teacher`, `group
 (131, '2025-12-02', 1, 33, NULL, 9, NULL, NULL, NULL, NULL),
 (132, '2025-12-02', 2, 31, NULL, 9, NULL, NULL, NULL, NULL),
 (133, '2025-12-02', 3, 31, NULL, 9, NULL, NULL, NULL, NULL),
-(134, '2025-12-16', 0, 33, NULL, 9, NULL, NULL, NULL, NULL);
+(134, '2025-12-16', 0, 33, NULL, 9, NULL, NULL, NULL, NULL),
+(135, '2026-01-20', 1, 33, NULL, 9, NULL, NULL, NULL, NULL),
+(136, '2026-01-20', 2, 31, NULL, 9, NULL, NULL, NULL, NULL),
+(137, '2026-01-20', 3, 31, NULL, 9, NULL, NULL, NULL, NULL),
+(138, '2026-01-20', 0, 33, NULL, 9, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1216,6 +1220,40 @@ CREATE TABLE `family_relations` (
 
 INSERT INTO `family_relations` (`frId`, `source`, `target`, `role`) VALUES
 (1, 33, 1, 'father');
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `files`
+--
+
+CREATE TABLE `files` (
+  `file_id` int(11) NOT NULL,
+  `file_uuid` text NOT NULL,
+  `name` text NOT NULL,
+  `real_file_name` text DEFAULT NULL,
+  `file_format` text DEFAULT NULL,
+  `mime_type` text DEFAULT NULL,
+  `file_size` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+  `storage_path` text DEFAULT NULL,
+  `thumbnail_path` text DEFAULT NULL,
+  `permissions` text NOT NULL DEFAULT '{}',
+  `owner_id` int(11) DEFAULT NULL,
+  `checksum` text DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `last_accessed_at` timestamp NULL DEFAULT NULL,
+  `modified_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Vypisuji data pro tabulku `files`
+--
+
+INSERT INTO `files` (`file_id`, `file_uuid`, `name`, `real_file_name`, `file_format`, `mime_type`, `file_size`, `storage_path`, `thumbnail_path`, `permissions`, `owner_id`, `checksum`, `deleted_at`, `last_accessed_at`, `modified_at`, `created_at`) VALUES
+(2, 'cb681815-1ece-449e-ac7d-ea999f4ba518', 'cb681815-1ece-449e-ac7d-ea999f4ba518.zip', 'aioaquarea-1.0.31.zip', '.zip', 'application/zip', 77716, 'uploads\\cb681815-1ece-449e-ac7d-ea999f4ba518.zip', NULL, '{}', 4, 'b157ff4d97d8ae82017fced5b496b8153006f79f93457e8a2b08da4873ab239e', NULL, NULL, '2026-01-22 20:34:14', '2026-01-22 20:34:14'),
+(3, '3e4c2b98-447a-4267-895a-4e771f2596ef', '3e4c2b98-447a-4267-895a-4e771f2596ef.7z', 'SRP 0.9.3.7z', '.7z', 'application/x-7z-compressed', 1206051675, 'uploads\\3e4c2b98-447a-4267-895a-4e771f2596ef.7z', NULL, '{}', 4, '6d37e1cf97bcbc2c50353da6711a320f3140adf8ae47807513cf65cca6d5374e', NULL, NULL, '2026-01-22 20:34:25', '2026-01-22 20:34:25'),
+(4, 'ecab79c7-6e33-406f-96d7-a9c4776ff12b', 'ecab79c7-6e33-406f-96d7-a9c4776ff12b.7z', 'SRP_Car_Pack_3.6.7z', '.7z', 'application/x-7z-compressed', 516120833, 'uploads\\ecab79c7-6e33-406f-96d7-a9c4776ff12b.7z', NULL, '{}', 4, 'ed40a7e08f931f21210c55d7ed25caad62a9c1c0a8cca996c4e3b30202e331ee', NULL, NULL, '2026-01-22 20:34:41', '2026-01-22 20:34:41');
 
 -- --------------------------------------------------------
 
@@ -3178,7 +3216,35 @@ INSERT INTO `login_history` (`loginId`, `userId`, `type`, `success`, `error`, `i
 (1492, 4, 'password', 1, NULL, '109.164.51.14', 1451, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-18 18:14:04.667465', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1493, 4, 'password', 1, NULL, '109.164.51.14', 1452, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-18 18:57:52.287608', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1494, 4, 'password', 1, NULL, '109.164.51.14', 1453, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-18 21:41:57.702046', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
-(1495, 4, 'password', 1, NULL, '109.164.51.14', 1454, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-18 22:00:20.328583', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL);
+(1495, 4, 'password', 1, NULL, '109.164.51.14', 1454, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-18 22:00:20.328583', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1496, 4, 'password', 1, NULL, '109.164.51.14', 1455, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 14:43:29.380632', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1497, 4, 'password', 1, NULL, '109.164.51.14', 1456, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 15:08:54.329352', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1498, 4, 'passkey', 1, NULL, NULL, NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 15:22:25.840195', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(1499, 4, 'password', 1, NULL, '109.164.51.14', 1458, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 20:36:21.294712', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1500, 4, 'password', 1, NULL, '109.164.51.14', 1459, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 22:19:23.087658', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1501, 1, 'password', 1, NULL, '109.164.51.14', 1460, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 22:21:27.432252', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1502, 1, 'password', 1, NULL, '109.164.51.14', 1461, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 22:48:41.631565', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1503, 4, 'password', 1, NULL, '109.164.51.14', 1462, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 23:08:40.550721', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1504, 4, 'password', 1, NULL, '109.164.51.14', 1463, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 23:45:55.806851', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1505, 4, 'password', 1, NULL, '109.164.51.14', 1464, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-20 00:09:43.205705', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1506, 4, 'password', 1, NULL, '109.164.51.14', 1465, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-20 16:06:21.126917', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1507, 4, 'password', 1, NULL, '109.164.51.14', 1466, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-20 20:50:10.388166', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1508, 4, 'password', 1, NULL, '109.164.51.14', 1467, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-20 22:09:53.330922', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1509, 4, 'password', 1, NULL, '109.164.51.14', 1468, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-20 23:03:05.577250', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1510, 4, 'password', 1, NULL, '109.164.51.14', 1469, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 19:05:05.520546', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1511, 4, 'password', 1, NULL, '109.164.51.14', 1470, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 19:51:46.033195', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1512, 4, 'password', 1, NULL, '109.164.51.14', 1471, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 21:18:11.955881', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1513, 4, 'password', 1, NULL, '109.164.51.14', 1472, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 21:35:56.539937', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1514, 4, 'password', 1, NULL, '109.164.51.14', 1473, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 22:02:49.456414', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1515, 4, 'password', 1, NULL, '109.164.51.14', 1474, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 22:31:06.716241', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1516, 4, 'password', 1, NULL, '109.164.51.14', 1475, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 22:54:27.470933', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1517, 4, 'password', 1, NULL, '109.164.51.14', 1476, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 16:11:15.281823', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1518, 4, 'password', 1, NULL, '109.164.51.14', 1477, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 17:33:05.426200', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1519, 4, 'password', 1, NULL, '109.164.51.14', 1478, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 18:14:48.068037', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1520, 4, 'password', 1, NULL, '109.164.51.14', 1479, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 18:35:07.304329', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1521, 4, 'password', 1, NULL, '109.164.51.14', 1480, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 19:48:48.449102', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1522, 4, 'password', 1, NULL, '109.164.51.14', 1481, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 20:18:36.381581', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1523, 4, 'password', 1, NULL, '109.164.51.14', 1482, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 21:24:21.672551', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -3208,9 +3274,11 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('0RTyPO9u5GUbDpAD02qI0Nh9i00lP5Z5', '83d2edd0ab53af0d', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:04:25.991067'),
 ('0sJElh4YP5IemvHIJcJKBzCiQh7eKl7q', 'b3a08bbce49e09ef', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:27.717297'),
 ('0uJ1nL40QX3bLuTaoQ0daOt065Ly2AmE', 'c9be02d8a612b66a', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-19 21:00:22.505142'),
+('16uGh4wgaVmoGAMjuW5V8RVjmidVftSq', '9df6fe09eef69841', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 16:56:00.847866'),
 ('1fbwrhKABkjPwHL3KLcUkooldYIBfLY3', '4099061b63bf48fb', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:38:59.531171'),
 ('1FWGbln6kiPOlvBXMK8t5OtJY4arKl12', '68a82aabf9b64ce1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:38.155318'),
 ('1glNlB24A7RBVD3PFNvpU8xXaxubN0rQ', '027955e6fc060959', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:04:13.858000'),
+('1mcLOJAaC51ymt1Eo84h1OkcwA7vG003', '4abc3c7507b47c9f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 21:48:00.498833'),
 ('1Q8Lhv4imUrbpiimldhf3U9K1DoS4UUT', 'e9ac3bb3217863fb', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:41.122009'),
 ('1XjlI1KXWG2JBZTKjIrDprNVdZ3iaLej', '0f334a71a02b993d', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:52.374165'),
 ('1YdpgFVSPgrIdP9szJWorLCvmSF5djBX', 'ed96eb17f9074a73', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:31.973944'),
@@ -3234,9 +3302,11 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('3GETRYJLmQr5BdZ5qfKz3KKvLsCKYXKV', 'c7229ff2591658d4', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:00.419162'),
 ('3IDVaB1Qek8LHmAFfgeFhj3hFodAC3sg', '5db7d0f15ab6bcc2', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:27.337921'),
 ('3nvNe3lsUoiAtqP51AxZa6h26gFdCiVK', 'f5b0a90dda3c14f5', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:42.086196'),
+('3Tbkkf1j5XWho8NYf54N19kyoSHTDT8g', 'c21fc78b45eba2cf', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::1', '2026-01-21 22:31:06.887262'),
 ('400q3YvPB8rASZ4DhlJrrYM33mSS2aut', 'daf519012d4d4662', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-18 16:53:39.757620'),
 ('47kJl0pRDKuMRQ7WImfagezRItM2CRFc', '72f78b0c6b3adf09', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:47.927424'),
 ('4BU8gYgdxr6He5rNg7Lh15YTXmf64lFs', '04ec7aed7d44e4c3', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:08.552448'),
+('4I6zr8EbdS0I30tYgdidNWNJG3ht0CC1', 'eb98577060cd5e0d', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 20:24:30.170423'),
 ('4snGpafoMTcIQJdOoVG349wx7oM30LAY', '8dfe71eab46bcc9f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:21.813216'),
 ('4vnFHnasC0J6YyxgzTrqDxYdeh4JrB96', 'b8950023cc298568', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:06:02.116890'),
 ('4y3g06nA6OHktFYCE9nSxh6xoX19ADgJ', 'dca820a396f5a9b5', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:27.036611'),
@@ -3251,18 +3321,22 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('5wFwhJU5AIf5AfN3lwYFVKtnDmRdQ9cl', '80225c6b27aaf69f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '::1', '2025-12-08 08:55:52.903230'),
 ('5WTy9emuJj5qzPynJuqe5dR3XnFAS9Hg', '2707054db92fea0a', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:01.583642'),
 ('60QZO5nQdGbz4uKTBRjakVaAY1A7yQhk', '37295642ee557eca', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:38.203638'),
+('63tt1owhXtEbm7IBL2811rF4z69uS0nd', '1b3302e2fdaa437e', 'unknown', '::ffff:127.0.0.1', '2026-01-22 16:40:20.264009'),
 ('67yWJs7dzHiYTbTL5mCUwcYBD5dYc0rb', 'd46bcdcac81d540d', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-20 06:43:28.857652'),
 ('68uuEuJVhBHSGMahkpHK4aZwN0JDwjKX', '41aa856ad42b1dc8', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:11.912131'),
 ('6BoAFMWAq6IfBPDpJHxXSe0v41jqrgG6', '031dcedae014eb1d', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:19.705076'),
 ('6cx64YyKSLRZRsCBgM0wa2BEf5DKYSqH', 'd4eb1faacc178d31', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 20:47:14.165097'),
 ('6Gt8mUIY78rJ8dVrSoTxyRhoeP4BE2pI', 'b4b14bbcb6295f3b', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:58.059224'),
 ('6kZoI0NmF3YzvcxPJSrL14SYFVj8tNQD', 'a86b254702ef80e8', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:20.925746'),
+('6rwMwn1KMkaAKPx9PX6MCeqg05H5CYmr', '105018df204daaa0', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 20:17:52.041005'),
+('6XM5VuIW03dssLBBOQY5eMeurRcIjRB6', 'c21fc78b45eba2cf', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::1', '2026-01-21 22:31:10.181627'),
 ('6YDnGOXCkrpLxfKlmtyjijMEJFhBG8cX', 'f5378e5ff78d5e85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-20 00:12:29.715740'),
 ('759a9jkvMjdTTMG0uvnVCbneSiEGt3mx', '6eb88a1e22ad7005', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-20 00:12:06.063539'),
 ('78uIUZyNWEVOrKwtivllPO0GyTgU1o76', '80fa75b38487099e', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:47.935630'),
 ('79wyTZDunBOVSFoAJ5YwJdajgKkaV8gC', 'b597c66b6f0e91d3', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-17 23:45:37.313732'),
 ('7cEjD9kUXiigcvcKMDaPzO3qVnHdNpmp', 'febaef451f632521', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:14:36.287793'),
 ('7eHFQJHzAONtpol5sJZDWTxIrdu3RI3V', 'fb62029bf3f5c73b', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:26.945692'),
+('7GuXfbQB7OjvNqmE8CHQBcqaSsiQUEYH', '39fc7a1223f677b0', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-21 23:16:43.858262'),
 ('7L9bOz4MSzi9TC3N0cREh8t05O1BPRAl', '9bf50bb9237b7df7', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:58.605451'),
 ('7odKLVZtKB4kmuSM5Jlt5dYk2U476J0r', 'c9be02d8a612b66a', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-19 21:00:16.423374'),
 ('7R4A0PLceTWhjXQu5EVMLnFDdeG7lRhD', '0dc1602c5d515378', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:38:56.674141'),
@@ -3271,6 +3345,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('8AoTVkOsB1dulMC2kl7h4gfcxMJ94uoP', '7739d1ef3d6021f9', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:59.556272'),
 ('8B3HgrEZnZB4if4D8KqQ2cy0KsFkkHmi', '43578998b463aa71', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:52.493509'),
 ('8c5DbxjINeCw4FcMRSp3B03rpEofdmIo', '40cdeb009e4135db', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:54.008697'),
+('8eGtpTXhtGBYxDGWQfJbj010LIDftBDR', 'b7aeb68377f0e363', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 17:36:05.583435'),
 ('8GvgVYdhNYtL3ziJd81WYFXtoQMwyMpH', '1fe024fc77f41c0e', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:49.277781'),
 ('8hqHhaCOXERWpSJwpdv0PemiKyRqtyoK', '4c2a66561b603023', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:14.901265'),
 ('8LCjaH5AyToKcmj6hXDIXeU4eds76yUE', 'ddb889d4f3c7b921', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:55.333410'),
@@ -3278,7 +3353,9 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('8MVvoKdHd3auo6KFmrqT1dv3wvElOLnv', 'a07c558417729958', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:33.782088'),
 ('8RcWd7TIN3zKVQMxqLDThyHDoFRFwc3B', '5752b913dc3bb816', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 21:14:32.914604'),
 ('8sb5zMO1PNxqHgw4sSRju4hWRea9v4F7', 'c0377672780afc14', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:06:08.332088'),
+('8UGPUtybj2LvJ9ZKGL0HQHgT1Zq4WFf6', '91fddd2413780195', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-21 23:17:47.123437'),
 ('8UHsT0sJokd2kOlAx6VqynNLC9BL16Mm', 'c9c912f9bda23077', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:44.280903'),
+('92MbtNkiHQVUvzGkmCDM8ML83T1iDZqR', 'bd0e2ccc2dbee072', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 17:35:05.555897'),
 ('954RukpsIu5Z5L4cAsJ9YcXz25vhXpyN', 'ffabc2a2813e5acf', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:37.115300'),
 ('9bpZZwjsEIXbOLfM4O4f84tbsFRMf6Ws', '68a0fa01c99662d9', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:38:58.691865'),
 ('9zDpUxe7pJKdlMRtK3lmcgruOxNzo9H6', '4cefebd6f27e69be', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:03.615698'),
@@ -3293,7 +3370,9 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('ANp1vb7IB8fmJgIesnZmfQLHe49vS3YD', '94d64d9b7a3121b5', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:13:22.985000'),
 ('aQbkZ8NtUdjClJJQ3aj0qBgCykhEUYrP', 'fbf858ad3117d492', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:44:17.764002'),
 ('axA5PalXGXGIDGGNoSFqnRu9CId8G28B', 'b012944afee3a5e0', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 21:14:05.764609'),
+('AXV60l2TK5AoD3i71gcDLRWR7SCqNDM4', 'aac539cd21822d31', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 20:29:37.680071'),
 ('axxffO21cFZwab8cxUVXCrETtGowdBkU', '2ea308056b557f58', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:55.332287'),
+('aYn8BSE02QUkvrD39v7N56MX9S7C8z3p', '005cb94c578a09bb', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-20 00:15:54.235849'),
 ('b12symh3SVKvpT4y8uEf5louSmWnKKuK', 'ae1c2261853bc484', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:37.144074'),
 ('B1LX2ZbzAYGwTOwq7pjD6Yye7uGB42MN', '7758bd533677bcc9', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:24.827463'),
 ('b1qhDOGMbOq5SN8xoWsdlxkj9i5gjICX', '9893a2660d5141ef', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 21:15:53.040315'),
@@ -3318,14 +3397,18 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('CL8bk7m9Jic4OqNjuTGH6uuKlVyVykxY', '6e3b3cad1681adb9', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:14:20.834465'),
 ('cnKg9EpXEXqwAYIiKbKkCauwuN4EFXms', '17de788ed361dcbe', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:05.841881'),
 ('cogHcpJJ6AfvoVQv6OaBz7vjcXeflLnM', '148d6a811dddaffe', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:13.579030'),
+('cSPseReKnrlWYWiZfUAGWzZavZ4RVjqz', '9df6fe09eef69841', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 16:56:00.848525'),
 ('cTON1jJol6fWiehuad4gjhwDLLCOltWE', 'cb766f812a670bc2', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:20.716069'),
+('CV5xTTTP64IXuI5TSMDgh8Nl0txfyFjL', '04cd309b71c3d475', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-21 23:16:59.665612'),
 ('CvcjtHcho22yOjs2PiBuTLjwOlg8ODPQ', '7a669e575e314264', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:10.612858'),
 ('CWG9YGUxYXHX4iHLMzpkxQHGybvBs04I', 'f51f404886bf9aba', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:10.626832'),
 ('CzjIqlCwyt8qso4T9sPsn91OPWRI9m7t', '98b10244dd532741', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:34.047995'),
+('D6WHSpJUG0BnkurDLSoud1P7I7J04uf9', 'b1b501d20afeaca9', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-21 23:17:15.274034'),
 ('D9s150QfaJ6DbmiWpfjokbaEdpD7Foo1', '396d9250fcd2c06d', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:43.153367'),
 ('DcoJ1a6YoYPMzvn3mAQzpC3P7y5nJybR', '42281ac2a4127e2d', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-20 06:46:05.465511'),
 ('dExqnetAdBKNVIQ7lZjm3EoDx7HMcuBf', '72c751cea6d29dff', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 21:10:46.081837'),
 ('Di39s4gf5d5NHkjXbcGY8AoVC6unwagZ', '43578998b463aa71', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:52.493689'),
+('dIAhHP87V8pfn341ibGeyy7oHPUYJADU', 'd65a67f2e4ad80b9', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 19:23:09.457571'),
 ('DjnJJfYLKzX4bnBSn6bFFIzWE1USD7oW', 'b6cc2be37ce39946', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:51.975980'),
 ('DKTdWXgy7fMdtNRSGStOqHXJ4qmjuDm1', 'bcd373a6f88bd3b6', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 20:49:22.822479'),
 ('DlwjdlNvqZerpyP4sEifcAOWalPffAR3', 'b3a08bbce49e09ef', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:27.717604'),
@@ -3342,6 +3425,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('ef9zwxdUBuEOgbXoPugVMzuRWOYIol1P', '92770e9e42a9919f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:04:48.278201'),
 ('eJTwLVVEx53gc35jwFNm3nuIMRGuUrfc', '173c27d0a42314e1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:30.123245'),
 ('Ek3l08SFbf9gldhPxxOyM2kpfpXuer1g', 'cf7ac2a6a0803596', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:08.462845'),
+('EMBvDI1EXV8IN5kRBEWQqDqHdjGJ3BZq', '9993b24dd32febaf', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 20:24:26.837965'),
 ('EOaoCjQecGaxNwz4AIRmM7quc4EmTkpp', 'b87dd6504b3e55da', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:44:09.662414'),
 ('eOVmXqZeOttRBCytuz5k8wmidkGEgsCx', 'bf114e8b3aa3df07', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:04:40.131916'),
 ('EQ1nJozbCzneSBlcoSKJKn3dveIShV6e', 'b9e88ff0a509504b', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:02.658181'),
@@ -3352,6 +3436,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('EXmIefmyfnjgkKYEsXuZjH8XfSJdNHfV', '0fa1192534825645', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:42.259745'),
 ('EzA2FilXBfdRZEwdMSHMaaLGuDhT0EBp', 'e0c9098cdf28a1bc', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:04.403051'),
 ('f0c9tg5lbrL6hs8vaglTnsdFDoC7F7Ta', 'ee0df5d8daadc624', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:10.811577'),
+('f4juW9um1pLgQrvlgLbLkNu7yDGPlCVy', 'b7aeb68377f0e363', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 17:35:57.085125'),
 ('fAzXtkHumptrmTlCyR2Zz2fwKkbE7nHx', '9c5c691b7a34ef4e', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:16.874529'),
 ('FbsF8IUyoZpP5LOPWE3JqHvIr5ASwVLw', '3f9f0149ffefe2a1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:10.744239'),
 ('feVWraA5QfiLBiQ0GurorBJT1mfzhTY8', '9aa2e84d173b1880', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:13.732837'),
@@ -3363,6 +3448,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('Fr0jVWI82gmT0jWXcEoCBlxRrfZY2OUM', 'c3f678b59164bfc9', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 17:36:56.244548'),
 ('fSNXqUFKas1Z5ZavvUZFDJwBebcyRCUH', '92595af687fc1a26', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:31.377991'),
 ('fuRshMQecaTVDSoglpJ1ViUshS2H8Go9', '7478d9a10027b4ef', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:53.207936'),
+('FURVppgP2MBKf1efgIqtnkbZZYvrl39z', 'a4719cbe7c253553', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 20:24:40.132913'),
 ('FuWr1SerwxSE6Tx4cx8KEGfgnqGfNmjS', 'a35c285f6d30dc90', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:44:22.487625'),
 ('g27U10ZZdM82M9lAhIcCW3aJpjUfs8GF', 'b3878fd7fd0de822', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:18.849588'),
 ('G2h0uqf4Z3eowk7OJ9gkxbfMVshfCeZY', 'dca820a396f5a9b5', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:27.036226'),
@@ -3371,6 +3457,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('GaMXGlfU9cCfiGWfkWSBtYuXdtspdZIR', '9893a2660d5141ef', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 21:15:55.965291'),
 ('gBPTfChalqlcgfBM2k1aXCt4NX8hJY6J', '3ab667ca908680e0', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:40.068350'),
 ('GC99RU7pQXpPapEAFVlFW8yixxNzO1yu', '1a01e2768df31774', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-20 06:47:04.466298'),
+('GDyMu73rsDrGFCd2CMAW9ZSkeucHWY8b', '859832cfd76b8366', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 17:35:35.568156'),
 ('GE8I1WS64lbJZnwCE56x1yeVBQm22OV0', 'a581f4061df143f8', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:22.761765'),
 ('gfPEb5E2s6hifvBVFzCqRAYRgUvj7PBi', '8261e136ae189976', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:51.299593'),
 ('Gh3xOSwHH1J6PhHXBYVzAz3jQLxbTQng', '42566f3b44f6ba9c', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:53.312679'),
@@ -3382,6 +3469,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('GlErlr54v2n4iCZXqZ9vgOTzLUD6CruR', 'd6946c8810bda724', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:29.060253'),
 ('GMvo6PZR3yciQoGWSPFbOkHzeG3g5fCs', 'ee1f9bd313b29e80', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:44.105125'),
 ('GNlWITMaxj2wG8EeBBDEyhWra84awf0f', 'e83e4e01684ea774', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:37.580638'),
+('GokRAmuQ3oaaC3qFtY4IJBOqeIEBoK8I', '2b470329041ae299', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 20:29:06.192280'),
 ('GPEROV2KiU8lbYaK4p83IONWy474jqdb', 'dc620ff5d7089dd7', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:05.509884'),
 ('gqF2EJWMtQsBkmUZW6txuD6IYz5bzO3H', '9a455fbc1d09da35', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:05.636501'),
 ('gQpO6UqbDO396kl15kSNm0Z9U3XNxzlQ', '2987c727f79f6e19', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 21:20:53.234893'),
@@ -3389,6 +3477,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('GurAljz3TrtFBWtdPTQuujgqQdSYM74Q', '345abbd3a5b7473f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:44:12.289222'),
 ('gyb3aWrpntkVYlamaQSl4JNoNgUioIwc', 'ba38c6ad2140d9cc', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:12.770140'),
 ('gyPMpvyee0fe7GKNo7BubwaIJY8m7xyv', '2d7d59a5e38e4318', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:44.331904'),
+('H1cfVlsGzzthAOofJNQFevBZKhM8yN5r', '2b470329041ae299', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 20:29:21.891599'),
 ('H4rvoDKIoVFyEs2JbwnE6uN0IoNVq6et', '7f505909f804f0a0', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:34.962887'),
 ('h6ZxgHa6iJrcFdo7iOSKBKZy7hlaN2lm', 'a8a9b1a4bbcf2e17', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:38.101418'),
 ('h8R1BWNqTzXjesSVkAsRK65bSgRMPu0U', '6087e47fef5b5b18', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 20:47:45.952234'),
@@ -3404,6 +3493,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('HqEwf4qutLQnWV6UPBjldVgQcjdFmbMl', '97d88ef16d360b62', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:44:16.367359'),
 ('HqFIbMT7sxsDLvn4PpbnBeOVEVoAsBfS', '5856cbe63f0c3463', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:00.630909'),
 ('hSNxiEX79IdW9ZqyjuBH7w0M1frnwmAR', '5db7d0f15ab6bcc2', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:27.337589'),
+('HXNharGTIeOaEv69oQq1qOgXVmLLZOpQ', 'fcf700d358d7251a', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-20 23:43:43.946859'),
 ('hY6bGssEgRmyUYD4AHWbGQdETDgg5sN9', '51d9272241203285', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:19.793782'),
 ('I34Vzfey0a9F1jqzUd1LZuqWSE7gnPTo', '2987c727f79f6e19', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 21:20:50.290329'),
 ('i3dbjyaalzaaFXsPVjFTN8MXkW2porJa', '16ce16ddcca8d680', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:06:12.418601'),
@@ -3412,6 +3502,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('ibSqi1PDXSbkX4MWzhCvg9vYTqrGNZfY', 'b7854c7779c07f6f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:17.975763'),
 ('IGgg1gme2KXExK1gqxhoVx5BDY0fy1WL', '0cb9990a97810d32', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:35.047223'),
 ('iGIN3Wtvy1Vbe1SvwOrKN4HDlSPV5Vur', '169a0e30a193ddd0', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:37.826872'),
+('igkXZdzypKqS3XK99BCWyUAiqCYff0gs', '4abc3c7507b47c9f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 21:48:15.630213'),
 ('IIVlLJ0A8QLNfSDCWakdLRS45GLvT08V', '4bea84b8595ca37b', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:47.260840'),
 ('IK3auJvUFv15kp0g8KhqnBSdlq6pth9R', 'b5993f5c780f7e45', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:43.228331'),
 ('Inf7JOYJbdo862ZUGX0cMBZth0kJI9Ro', 'a40e71fee5a3fbd1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-19 21:03:38.986012'),
@@ -3432,11 +3523,15 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('jq9VFnBrBUONqW2fHjYFpSaMdsxhgkb3', 'f4be450bcda39108', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:29.982006'),
 ('JQfP4rbQ0t4So2yXZaMLo7D7PSkyVz0S', '1dc083f4d8b84c97', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:42.262046'),
 ('jwNpm15mB856dmiEuvMnEC58mVxY4cn0', 'ddab97477008eb0a', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:39.100575'),
+('jYdbJkYRr8Bpuvy9EK5XTCdp89GIKzYt', '105018df204daaa0', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 20:18:07.439617'),
 ('JZ5GOFjBYjQSLUKBMAVnAmYlXyykEwSO', '68a82aabf9b64ce1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:38.156368'),
 ('k1kT6iLy8ppPzwlddEMRMp4D2Sa0MdAE', 'b411d7b1fc572c70', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:08.833518'),
-('k5Ainzp99ya5ICH9WnohXvu5ZDlorUdi', '61d235c23058d743', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:47.280503'),
+('k4vLcsxtcH8oaXdGmeJbSZWu41rPGZ7W', 'a4719cbe7c253553', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 20:24:41.842227'),
+('k5Ainzp99ya5ICH9WnohXvu5ZDlorUdi', '61d235c23058d743', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:47.280503');
+INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) VALUES
 ('Kakfgx5WVuWbWOnbT7X2MUJo9CoDAAv1', '0ccd548e44a83cae', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:51.985545'),
 ('kCNmDyKlyn4FjZIFD0JjvgtuGcvewDWG', '4129b77286a6dd94', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:16.679545'),
+('keQijnANc5Ou5FtJLUHXbBZtCEd7a53t', '91fddd2413780195', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-21 23:17:47.123802'),
 ('kgionn2BGWGlXBx3lGNyQuz0ZF9jCAQA', '203a37c3cf239db7', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:04:38.120003'),
 ('KhCZVAcUdK67lNNtYdvKtwPyNkdOAHtU', 'b264007f861820f7', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:35.066945'),
 ('KKjzUfFvDGlsmvo6gL5zxvu9tmwFLYvx', 'a4f9ec642a27d59f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:24.051459'),
@@ -3449,6 +3544,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('KQXqr2Z7GIJBDex4MZLS4gXUfw8Mflzo', '55997bab6359fae3', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-18 14:04:57.214112'),
 ('KRKbPKXkZpe1cviTEuO3JI6GxMgT0iVU', '6087e47fef5b5b18', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 20:47:51.134235'),
 ('kT9Cwm5HZMBjATIkwfea3WrIUS2Lv89f', 'a208788252c40a1f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:41.862332'),
+('KTAUdWzjRwrOS43MnVpUvtFv3WjxTiFu', '1b3302e2fdaa437e', 'unknown', '::ffff:127.0.0.1', '2026-01-22 16:40:35.263629'),
 ('KWnVzgDTHXd4PFrCLSZCLszv8VKeUXBq', 'd46bcdcac81d540d', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-20 06:43:35.079612'),
 ('L45aSYHDqUVT0geoysFuZ7hKsAwoPlBv', 'b4bd2cd18197459e', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:06.777520'),
 ('l60eUeKSHwrFTqi77rOsKS7mv67obDBX', '92595af687fc1a26', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:31.378363'),
@@ -3460,8 +3556,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('lkTfoCxWRd9K79LB8Wn0ZW8XdGoTYawt', 'a133d5af7b871c8e', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-18 16:54:27.558687'),
 ('lm1AogotI1yO9D32AB3SbfK1RQZ79p2w', 'a7dfffaff1f9cf82', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:27.026445'),
 ('Lo2xyV3Rp1jZSCWcMxSUVMYaBfvDshwu', '0a8192ff293b6b2f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:03.330693'),
-('LUHh1WVbzlM68o2CFVK89r18HRt2d5OB', 'db75d53b14419503', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:34.067590');
-INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) VALUES
+('LUHh1WVbzlM68o2CFVK89r18HRt2d5OB', 'db75d53b14419503', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:34.067590'),
 ('LV0odpoLNl6ZhQKbDF8mtsTIjyuTWvJQ', '246bd1b1bab7e6de', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:33.103901'),
 ('lv7xVhoyGg8ByQpZuiuljTQG7V7rlFu8', 'ece5324b140da8a7', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:37.066258'),
 ('lVwEG3jn2oyDtP81OXmRg3tOLycX4HPv', '94bfdc34b051f1fc', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-18 17:27:55.844364'),
@@ -3483,11 +3578,14 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('MtBpvTprZXgsvXtNHrhsLAONusISRBQz', '338335c55525058e', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-20 07:12:19.544076'),
 ('muFuggOCORc32q6DEiMszL45e1SvLlb9', 'eb3cea405ae562a9', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 21:09:40.640962'),
 ('mZJrhGUdtV6aTfiLLOTgJfhWdhbDsnTJ', '55997bab6359fae3', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-18 14:04:52.204246'),
+('N08XJxFMsBxH6CRUZRPBfbgcOKS4wJxr', 'fcf700d358d7251a', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-20 23:43:38.941475'),
 ('n0PasS2Mw61kite77n9yhijI6f78jKxa', 'dd40e262fb210418', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:48.149035'),
 ('n1MJMeQohKDTHOPu7fSukzMGKsQYxeCF', '3c3ef8e7b92c218a', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:59.388500'),
+('N2hjkFrinyMrUYDtpCs34hlDvHWuZYVj', 'b1b501d20afeaca9', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-21 23:17:30.674443'),
 ('N3JhwC6YvY59GoCITUI9tjvYqFpWgTqL', '5cc00c4cdc4f6426', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:36.110713'),
 ('naowP5pnFpoj6AuGKBIDH17coaYt8oBI', 'eb3cea405ae562a9', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 21:09:40.640546'),
 ('ndWfBAM9jewWmPKR8nSFrD9K3Pm7mjGK', '0fa1192534825645', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:42.259409'),
+('NEexOAgw7aYNWLWONhiXfVLjLyJ7owrA', 'b665f55673a6cfb8', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::1', '2026-01-21 23:15:56.320982'),
 ('nG2UcSZuFoJG4UqXXOIBmme44yThb3yc', 'bbbc758622fb2b1d', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:19.610532'),
 ('NKCibz1NZI3IvjTOpJ7HwsZPbM9oioEm', '9bcb7300cabba2ee', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:44:07.626706'),
 ('nMvWcEdTIASMAmJpcVxwJyT1uQRo4CpO', 'be6a0092beb990e2', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:31.017579'),
@@ -3504,6 +3602,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('oC7oK9K6flBwHSBgVE8bX8jjt8IoLzSd', 'a89de5a2eed5462f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:30.906045'),
 ('OD5AHfePMYXVIqbN0O3sk5Mmu2rP7tqm', 'df7c04f5a4498fab', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:48.326366'),
 ('OkbMuXEZLyUnFYAGz1kKIoKdLv3jWB9g', 'fc54c3950344ee75', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:43.657295'),
+('okGwZT7VIwjCshYQNTtYagSX8Je6Lr18', '777809d7c8385a73', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-21 22:30:24.071959'),
 ('olk3TK1TYIFyp1McZa6h83Ca9SDbRzBc', '9e4d9cadb3d78110', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:31.088742'),
 ('ONrxovrLGPSO8iKIwAbAFxqPeIIv5uGX', '5d7f425ddd9e186c', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:48.360930'),
 ('oOEwISCkTUXQZgacsMwHNWvMfhaZu2Nu', 'd03924c8873aafde', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:06:00.074789'),
@@ -3515,6 +3614,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('p7fgX9SPUIYVVfkIR6ot7GYBhvDvUIVi', '4e08c6a061a3bbfc', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:16.911368'),
 ('paNW53bnB7aEh3d2WCbZwKcdizPGA1iq', 'bcaad06718edac8b', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:11.640834'),
 ('PCd37aDYp3k12lAhZ2I2hKnb8sODjeEB', '125d8bed71a94b83', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:23.742273'),
+('pESWJ6TBsTLP0XeD6jUMN1gTvAl3ROhL', '04cd309b71c3d475', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-21 23:16:51.297390'),
 ('PgmBLqi5i22JAPTsAiN5EAf4oevpr7ju', 'e00561cf2774cc17', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:04:36.106643'),
 ('PGtcX1RxEfPrUmFI2m1ylQgz95QgpuJY', '158c436f3a76fc38', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:15.610250'),
 ('PkrxtgwhdSW8eYKBxfMRYTnRsHr2V3pm', 'd4eb1faacc178d31', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 20:47:09.104898'),
@@ -3550,6 +3650,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('Rzrwpw9MbrBI743WRqUaC6UrbNCsFxlA', '6eb88a1e22ad7005', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-20 00:12:00.906504'),
 ('ShGtCmbjnv1fIfWVsRYp0Kx4UZcPBtjo', 'f886d66b7e6dcb2e', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:04.793653'),
 ('sjoHonMxlF5hCGA9QAmbtdT84kcFKJl9', 'b597c66b6f0e91d3', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-17 23:45:32.306330'),
+('Sl6rHqXosbFEqLdgDoBX1XcM5Wjdqtlk', '005cb94c578a09bb', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-20 00:15:49.225672'),
 ('sLjAFSyf0VU5GelGzyvMzV5KZ3xyWEt2', '3acc5634cf0dc1fa', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:18.997169'),
 ('SLKH9j9GCza0UaGEemIH41w9QtkWI0Fk', 'c30147df68a4a773', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 21:10:56.094543'),
 ('spq1l8IQNaZzu0cRgAKR8nXZDOJlZ4xW', '90efdf2ff555ecea', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:09.603822'),
@@ -3617,12 +3718,14 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('vZ8SIL5AHTyS0Lx4y6puC5EvBsNaCuSz', '31e9a13da0c9c110', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:02.443614'),
 ('w05ada3KX6KnxfBEEYpzoWCOA22MmqA1', '8ab9e123d38b85c5', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:57.249885'),
 ('wavHBi0kofaLlMi3I6dIaAWoQsDkaJSI', 'fe9f1a87ce1fb79e', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:33.399895'),
+('wd1aouM1ZEOAp7AJxFhzAJXlAd4FtNoT', 'b665f55673a6cfb8', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::1', '2026-01-21 23:16:12.686381'),
 ('WEr05JnkHxomz8MNo9c0HntIM64RloLa', '4030ef9361ec2b74', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:46.279280'),
 ('WEvR4ha34IrMEIZ35jiRou19Sym62dTP', '5042c57e733b4b73', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:59.283673'),
 ('Wfbp4eopTEA5hHtE52tSdEsREwBIZ0Na', 'bc692c433b827779', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:32.140256'),
 ('wI54h4YunGiBBq2mxfhXEnVmNKzs0sov', '94bfdc34b051f1fc', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-18 17:28:00.911057'),
 ('WI9Ol7whXmcixCTWiyjEaSaL1iHn13Ci', 'a9c5bc5a12f2701e', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:06:04.194045'),
 ('wkAMnqtd85RpmWoah2sKWI9tuiIPHNos', '0e59e966a7b53fd7', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 18:01:03.763298'),
+('wkDXVrx9TWldnGzuFlgvXEEj3vzHQTx1', 'd65a67f2e4ad80b9', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 19:23:24.425618'),
 ('WLYmR2X7MITj2RzcNs8YXbVQ9cxXbjJF', '9586ea5926e302e7', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 20:48:57.274323'),
 ('wncLU9AKPDjHBlYvU9uCV9j4OiF5WsUI', '9f9f0f97f207129f', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:57.359012'),
 ('wNMI8R9E4ph4ik2uJdguricCskGX8rV8', '2c8ce7aa7982afac', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:57.512884'),
@@ -3637,7 +3740,9 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('WZXEY1RLAH6cgO24VD3Ll7HRRgMgxkhC', '4a78de17525ca8c5', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:32.020640'),
 ('X0EBNYqtkiCD8WS194F29UBrO6Q8dXR7', '8dfb0210302fca6c', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:04:19.923205'),
 ('X7pWQKQ8Ku9jngLCHjz31kXzqZLaXRAd', '1572de81f17a4c29', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 21:09:37.562247'),
+('x7zGUeDkZwAYHRJzJrIvksub3HFLnKJp', '39fc7a1223f677b0', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-21 23:16:32.547593'),
 ('xAKa4bSKbMCFmpPkxb171aG0gUmcn9Hr', 'f23b3ddfb592b248', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:03.449952'),
+('XBNCExr0v3KsDTcb8uZWqYKrYt30SXJZ', '859832cfd76b8366', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 17:35:50.580887'),
 ('XgtU8sBIhpVSmw1gRCypaU8p2Ag13oK4', '23f150cd74eca02a', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:04:58.387770'),
 ('xhx4hSSrlE6Sy8xvmiIWOACRIweRBkNZ', 'a95bbc4238516e25', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:04:50.300821'),
 ('XI9F5Yld3RavDqheux7bfsCeWALelScE', '67ba3af0d6556dd8', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-20 07:21:19.212325'),
@@ -3650,11 +3755,13 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('XRr5O9DsKtjmGkBQdcHg76tUZTzAqNyH', 'c0377672780afc14', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:06:08.331797'),
 ('xRy7KwfFENSmSCl0Vqzj1xxWwagrGS8c', 'e0f0ca053cf807ac', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:04:23.965738'),
 ('XTB7EV53QmnmVTMXw4bMUS2dx2VwJMG1', '9d072a4ba73c1aa2', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:21.794521'),
+('XTHfzMbymWDVRmNedeDEUn546IYE1R9C', 'aac539cd21822d31', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 20:29:33.560943'),
 ('Xvq9Lseld011zM3EB0tiOXvvVzLBhWpw', '8193d4f250261d5e', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-18 21:09:30.332924'),
 ('XxB9JjECrPeQLhJvDJZz9EZ7Ae2zxPvt', '04b2dbc72c362638', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:20.735547'),
 ('xxdiM385DzSLuaOUN6KR2EeUBBao5loo', '3c8d2f492a043226', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:55.234978'),
 ('xxIeZqaup3cku2QlO4QtXSIq40aUcrs8', '0f334a71a02b993d', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:52.374332'),
 ('XxuYhnTwnrbA8j2NsYyGjgfpLK8QM1hL', '5305fcfcd8f04260', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:49.358389'),
+('xYtXGnUAoshUToY7riv9jF0082M1j0gE', '7db83cfc383aedf9', 'unknown', '::ffff:127.0.0.1', '2026-01-22 16:40:41.232323'),
 ('y0Gmtb9cFuQzHobxcL4CfStGwv8YH7sZ', '4e08c6a061a3bbfc', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:16.910799'),
 ('Y1EwdgT9X0Mp1mUgnFpHjl8d1L65Jup3', '483f6517f40e179d', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:29.359777'),
 ('Y26wEwxHRxTanG0pzAXLNvEMVv5ZXGMy', '9289f6ce14f309cf', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-16 22:24:53.745248'),
@@ -3670,6 +3777,7 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('YGOu4CqlxwosUSkKU86SXYtl6hENC5vH', '39307459bd5474d3', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:06:16.466266'),
 ('yiVCBk5y0NeMCfXqJkrHs3qAbvkslxSi', '9ab165c6d1c534ee', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 19:18:23.582770'),
 ('YIx4NuAsnwB9omXN9sWEtwJDEDTyDLSQ', 'eb2fc231d21a0401', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:24.799142'),
+('YjKTeovbC6tS3ilGxARlKIu1qZ6Ak5hI', 'bd0e2ccc2dbee072', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 17:35:20.562500'),
 ('YkgDwb341nfcH4O8UxJFd7N3rh0GDi7U', '43afa699797646f1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-18 16:54:11.304602'),
 ('ylBSfrnjIEQMsBPWYlxhCdbXSPU8X2cJ', 'e3f3002f0a0772e2', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:07.557794'),
 ('yMGj3hnQDqKo25jaKzg7TpGZVyKUq8US', 'febaef451f632521', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:14:31.096047'),
@@ -3682,16 +3790,20 @@ INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) V
 ('ypEcP8z9s067RoJ9YfHcq1p3YShHCR68', '2319a0b5c12f9d8b', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:04:11.843754'),
 ('yrZkQByw8jnWmMom91EDnEaTgNF6zO1j', 'fe44de52b306ded3', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:09.681546'),
 ('YSwLtnMDNlyabTPkf4FIevdciYb0EcK8', '1b82533b390967c5', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:41:06.563492'),
-('yXjcTBLBiKmQ2nZk6pE0zsPMPj0u3QXC', 'f30202625210e17c', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:27.934335'),
+('YTPkGEmzyuyd223vI2wmKqDrGsSAZfcz', '9993b24dd32febaf', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 20:24:11.818972'),
+('yXjcTBLBiKmQ2nZk6pE0zsPMPj0u3QXC', 'f30202625210e17c', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:27.934335');
+INSERT INTO `login_qrcodes` (`qrcode`, `socket`, `userAgent`, `ip`, `created`) VALUES
 ('Z7WeMlDovvAsiAoLxhjW3xx4wVXihMeB', '208182466a20394e', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-20 00:13:28.406338'),
 ('zAhf5LsAi5mO5erqAxFmJybrVLgtxdiA', '2c8ce7aa7982afac', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:39:57.513595'),
 ('ZAudB9SxWHHEuisLfwCBVRzB4jf57bd5', 'bc0db4e014c8bd95', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:43:28.976651'),
 ('zCfNwTR7g1FUlWnIBysWOY0ptQNi1XYE', 'bc42212f50ffddca', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:44:19.791569'),
+('ZEzc8fiqd1qqCQBG83sG1h5KH9Ej7CwT', 'a3e96581a26efdc6', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-22 20:24:33.180665'),
 ('Zi0WBku2BJxSiLFA1LE2CNymFi1n26D0', 'd6757ad319bdb864', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:44:18.417472'),
 ('zicSdjjLdKQwZg45fQ5xUzBKtfDGw6uI', '72f78b0c6b3adf09', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:47.927648'),
 ('ZK1qfY7y2QjZsaKH3qJ7VhdYkCcPaGUg', '557c991adbe5a351', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:42:58.535349'),
 ('zLbsyRFknkpyweh23AUkI0VwF8QOmnoI', '25683cc0c8450456', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:44:00.089736'),
 ('zmYe7hkARWtlwSZAYVRbeFsqXxwBaRzB', '67ba3af0d6556dd8', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0', '::ffff:127.0.0.1', '2025-12-20 07:21:24.338622'),
+('ZOyvMzRI1t3maWWrtw8jKYpqR3LGK5NZ', '777809d7c8385a73', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '::ffff:127.0.0.1', '2026-01-21 22:30:39.489839'),
 ('zpC78cNCorhXrXsxzfDYlGmPHEXcp7Fv', 'ae1c2261853bc484', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:40:37.143594'),
 ('ZqwbOMjylUXwlBWsrKlGjNkUGfSCoXgX', '94d64d9b7a3121b5', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 14:13:28.157000'),
 ('ZwMJpKMOVA9Ctulc8esyjgUaVDhaDHVh', '7e02d6f0d0e96faa', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0', '::ffff:127.0.0.1', '2025-12-08 15:05:06.535361'),
@@ -5856,7 +5968,36 @@ INSERT INTO `tokens` (`tokenId`, `token`, `password`, `userAgent`, `expires`, `c
 (1451, '$2b$04$h1oRGtMiMJIE2yGwpRomtu7clAZlaVlFkDYHWhxPKL/Q8iLn0k2g2', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-18 19:54:12.715000', '2026-01-18 19:14:04.661000', 4, NULL, '109.164.51.14'),
 (1452, '$2b$04$h.hGpjGo.YC/Khf6uEmA4uFQnhXjzlccvKxmgvPFNLhi0pWRgAOgu', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-18 20:12:52.411000', '2026-01-18 19:57:52.277000', 4, NULL, '109.164.51.14'),
 (1453, '$2b$04$uvS88hknzBKUbza81zjtdOnuf9gQctEtSi44DsOT1ECm3sBrkKR8a', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-18 23:15:19.570000', '2026-01-18 22:41:57.698000', 4, NULL, '109.164.51.14'),
-(1454, '$2b$04$vNtVhrdnRpFswEsJHZ2J2OwJT3zalKOKQ1kAtw2H87x.7HutS978y', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-18 23:46:20.745000', '2026-01-18 23:00:20.322000', 4, NULL, '109.164.51.14');
+(1454, '$2b$04$vNtVhrdnRpFswEsJHZ2J2OwJT3zalKOKQ1kAtw2H87x.7HutS978y', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-18 23:46:20.745000', '2026-01-18 23:00:20.322000', 4, NULL, '109.164.51.14'),
+(1455, '$2b$04$mSs4GTGGbQmRCoUaPCA7kOyaPkc7SqV1lbuozHOsWjjheFRuF4bzG', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 16:23:53.505000', '2026-01-19 15:43:29.381000', 4, NULL, '109.164.51.14'),
+(1456, '$2b$04$6S5TfUF12A6ToRnRXT6kNO4pD42E5/hYObS8PU8JYnYpmw7b0rBcC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 16:37:21.497000', '2026-01-19 16:08:54.329000', 4, NULL, '109.164.51.14'),
+(1457, '$2b$04$ut2He8VHR2rjutQaKy7Xyu0IdJ4Oz6BgAQpiIf81fQr1Rb7z..PAO', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 16:52:28.064000', '2026-01-19 16:22:25.847000', 4, NULL, NULL),
+(1458, '$2b$04$uiAhIM2qbqWRI0zk4wulWutdvhXfHA.zTBdgwBw3PtkdWWflHhyDW', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 23:03:14.228000', '2026-01-19 21:36:21.291000', 4, NULL, '109.164.51.14'),
+(1459, '$2b$04$LfKzow39PIMaPQLQXs6M3eaWw3kuMvahuIhW3hXjPqT0S4xkbRzn.', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 23:21:24.273000', '2026-01-19 23:19:23.085000', 4, NULL, '109.164.51.14'),
+(1460, '$2b$04$YlRHh7HpX..z5e8Y0C00VuBcS/KcVKlfgy8Ti/7bJBphaUVXL1hfi', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-19 23:44:48.756000', '2026-01-19 23:21:27.430000', 1, NULL, '109.164.51.14'),
+(1461, '$2b$04$ni.fv9mPrZvaclJyoiOHX.0tWN5SYXwNX7e5YynhVOECGZ.4XkyKS', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-20 00:04:29.047000', '2026-01-19 23:48:41.629000', 1, NULL, '109.164.51.14'),
+(1462, '$2b$04$yTwF3EbBen6P6NAj4hmR0ey.WevE0264hYVJ.oDqjRmJ5TXSCkn/e', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-20 00:33:20.110000', '2026-01-20 00:08:40.548000', 4, NULL, '109.164.51.14');
+INSERT INTO `tokens` (`tokenId`, `token`, `password`, `userAgent`, `expires`, `created`, `userId`, `socket`, `ip`) VALUES
+(1463, '$2b$04$ds9kdL/Owedvzzjo9Qpnqeompr9zKXnitbTBF6QzrdsiZwTMG/X42', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-20 01:24:42.391000', '2026-01-20 00:45:55.796000', 4, NULL, '109.164.51.14'),
+(1464, '$2b$04$8D7A3t7y9rilhLJpj8xWTehKaf2fTWYbt437.LHYqZDhcvQ9StjvC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-20 01:24:43.355000', '2026-01-20 01:09:43.203000', 4, NULL, '109.164.51.14'),
+(1465, '$2b$04$/E7Pq91XGdhEK1iXMG7raugvGMLcSa4mcUgUDtFKZ8Jpa3JQQFsem', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-20 17:36:22.214000', '2026-01-20 17:06:21.129000', 4, NULL, '109.164.51.14'),
+(1466, '$2b$04$6yaGdiXx4qwSd0zSKXS/2.nZ1OsvR1amOWnYeu94p/Y4BGwKHndi6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-20 22:46:35.933000', '2026-01-20 21:50:10.384000', 4, NULL, '109.164.51.14'),
+(1467, '$2b$04$ML8Ns6CdxO1q/LgVl4IibOUBnnhfxfbYLqJp7J.0YhKKRMTCEX.4G', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-20 23:39:54.344000', '2026-01-20 23:09:53.329000', 4, NULL, '109.164.51.14'),
+(1468, '$2b$04$7h1er9KlHer/pb.suIPqRuTLOAh3seozpRcYDxHXCW6rDvw6ZpV22', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 00:48:01.820000', '2026-01-21 00:03:05.573000', 4, NULL, '109.164.51.14'),
+(1469, '$2b$04$0wOHvaVTcMNkVMefWCNPv.ozeQOrgTIw4hXe5fFtOHdUPZKzoIC/2', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 20:35:05.808000', '2026-01-21 20:05:05.518000', 4, NULL, '109.164.51.14'),
+(1470, '$2b$04$kO5kuEHUxkrtF/N5dHTmsO5LcipMN01du2Lw.lOmKTfbjE6u.2pDK', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 21:39:35.588000', '2026-01-21 20:51:46.026000', 4, NULL, '109.164.51.14'),
+(1471, '$2b$04$cKisTLwMXvWtnKtY272BPeuaIStGfmk8GgF9.vHKKXuYm.Trn8.yC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 22:33:12.082000', '2026-01-21 22:18:11.950000', 4, NULL, '109.164.51.14'),
+(1472, '$2b$04$/ebDbFW.e6V3GbC72mDLNu4LJF7sJ3yRHksmt4FRn8h4C/CGrTgNG', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 22:55:34.616000', '2026-01-21 22:35:56.536000', 4, NULL, '109.164.51.14'),
+(1473, '$2b$04$Vq478TvX2XNLtdbmYu8gpOSvjq2AfBonAwgmso4SMKQu30ZQBeOd2', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-21 23:29:52.521000', '2026-01-21 23:02:49.452000', 4, NULL, '109.164.51.14'),
+(1474, '$2b$04$qztoB.s6GDtf/R/kYWobLu4Gl6LrJJYOdWB3UciKlPJ5fd0Ea5f62', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 00:09:26.807000', '2026-01-21 23:31:06.712000', 4, NULL, '109.164.51.14'),
+(1475, '$2b$04$yCAK.fKuaYqYxi4Fgu5oHeR2PGTPH6FJMj2VlX.5syvQb7S6SfsCu', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 00:48:41.837000', '2026-01-21 23:54:27.464000', 4, NULL, '109.164.51.14'),
+(1476, '$2b$04$.y5iv6E4yvjgsetqBt7gK.mhhuByrn99k52l.55rARvP2Uas2VCji', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 18:48:04.718000', '2026-01-22 17:11:15.276000', 4, NULL, '109.164.51.14'),
+(1477, '$2b$04$IxHHgYA0svPQ2MBPb11Z/uO.gRI7kFtLbxxjs.wmxEwkm1Xf1v4Te', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 19:03:06.060000', '2026-01-22 18:33:05.416000', 4, NULL, '109.164.51.14'),
+(1478, '$2b$04$T7ngIhs1WHW.jQqUOF5sc.c6/BzCkNHNliT5i5/53nOb/7VmJCoXK', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 19:50:06.447000', '2026-01-22 19:14:48.065000', 4, NULL, '109.164.51.14'),
+(1479, '$2b$04$yY06PQIpLpvx0U750ifuveZxttcADqFdf8D4XtbeO7nj2zoU.XieO', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 21:03:47.652000', '2026-01-22 19:35:07.302000', 4, NULL, '109.164.51.14'),
+(1480, '$2b$04$97SvbJDVUDjr47Kl6taD2eT4Ec5fuWvH9NuWdOgMAENAQJBQ7mrEW', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 21:33:35.478000', '2026-01-22 20:48:48.445000', 4, NULL, '109.164.51.14'),
+(1481, '$2b$04$M8nJjcPPoq4n/0p9ACZY..YlYmQ/bLvdGeQykCIt4ik893s7SgRSC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 22:03:21.269000', '2026-01-22 21:18:36.383000', 4, NULL, '109.164.51.14'),
+(1482, '$2b$04$/F84IBqGdQXKpz3Fjt.zcuTILHqbu604eyFSJIW0cTeQ8MBoqqtny', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-01-22 23:02:41.304000', '2026-01-22 22:24:21.671000', 4, NULL, '109.164.51.14');
 
 -- --------------------------------------------------------
 
@@ -6017,7 +6158,7 @@ INSERT INTO `traineeship_instructors` (`instructorId`, `companyId`, `firstname`,
 (1, 2, 'Lukáš', 'Němec', NULL, NULL, NULL, 'active', 11, '2025-03-16 18:30:31.804432', '2025-11-09 21:46:44'),
 (2, 1, 'Pavel', 'Vyroubal', 'pa.vyroubal@napicu.eu', '607444222', 'Vývojář', 'active', 11, '2025-03-16 18:30:31.804432', '2025-11-09 22:25:42'),
 (3, 1, 'Kokot', 'Leo', 'kokot.leo@napicu.eu', '772362488', 'Vedoucí směny', 'active', 4, '2025-11-09 22:18:02.883000', '2025-12-15 19:46:54'),
-(4, 1, 'KOKOTINEC', 'babinec', 'kokot@napicu.eu', '+421444666222', 'Kokot na recepci', 'deleted', 4, '2025-11-09 22:19:30.848000', '2025-11-10 11:21:31'),
+(4, 1, 'KOKOTINEC', 'babinec', 'kokot@napicu.eu', '+421444666222', 'Kokot na recepci', 'deleted', 4, '2025-11-09 22:19:30.848000', '2026-01-22 21:27:29'),
 (5, 1, 'Michal', 'Mácha', 'mmacha@kokot.sps-pi.cz', '123456489', 'Spáč', 'active', 4, '2025-11-13 11:05:15.318000', '2025-11-13 11:05:35');
 
 -- --------------------------------------------------------
@@ -6143,6 +6284,13 @@ CREATE TABLE `users_credentials` (
   `backed_up` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
+--
+-- Vypisuji data pro tabulku `users_credentials`
+--
+
+INSERT INTO `users_credentials` (`id`, `credential_id`, `userId`, `public_key`, `counter`, `device_name`, `device_type`, `transports`, `registered_at`, `last_used`, `backed_up`) VALUES
+(1, 'SxKvBok2QgSkL7sZJ6Oc1g', 4, 'pQECAyYgASFYICtqcwc4HlL0kyzYDUcQ7GC2tJgfSyOD2hgrlkLKs1HqIlgg4ezMV1eDoYgFHVa4INILgwI0LdBcHAdF0KfArxcgFwg=', 0, '', 'multiDevice', '[]', '2026-01-19 15:22:17', '2026-01-19 15:22:25', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -6236,7 +6384,8 @@ CREATE TABLE `webauthn_challenges` (
 
 INSERT INTO `webauthn_challenges` (`userId`, `challenge`, `createdAt`, `expiresAt`) VALUES
 (1, 'UI8a2w2v5OOUqjYSgDE8P8sMD3LFygb_l0plYLh62ro', '2025-06-27 14:48:11', '2025-06-27 14:53:11'),
-(1, 'Muh3nO2PlunUQImDVo0XIZbgJ7ngiqaTOjgJZaB8pLk', '2025-08-17 12:17:25', '2025-08-17 12:22:25');
+(1, 'Muh3nO2PlunUQImDVo0XIZbgJ7ngiqaTOjgJZaB8pLk', '2025-08-17 12:17:25', '2025-08-17 12:22:25'),
+(4, 'o9VHsHDgxJO8I-wymGWs8GvI2MsPO7JVrMzizoBH25Q', '2026-01-19 15:22:14', '2026-01-19 15:27:14');
 
 --
 -- Indexy pro exportované tabulky
@@ -6442,7 +6591,8 @@ ALTER TABLE `emergency_notifications`
 -- Indexy pro tabulku `employee_attendance`
 --
 ALTER TABLE `employee_attendance`
-  ADD PRIMARY KEY (`attendanceId`);
+  ADD PRIMARY KEY (`attendanceId`),
+  ADD KEY `teacherId` (`teacherId`);
 
 --
 -- Indexy pro tabulku `employee_bonuses`
@@ -6476,6 +6626,13 @@ ALTER TABLE `family_relations`
   ADD UNIQUE KEY `source` (`source`,`target`),
   ADD KEY `target` (`target`),
   ADD KEY `role` (`role`);
+
+--
+-- Indexy pro tabulku `files`
+--
+ALTER TABLE `files`
+  ADD PRIMARY KEY (`file_id`),
+  ADD UNIQUE KEY `file_uuid` (`file_uuid`) USING HASH;
 
 --
 -- Indexy pro tabulku `fleetvehicles_expenses`
@@ -7108,7 +7265,7 @@ ALTER TABLE `cities`
 -- AUTO_INCREMENT pro tabulku `classbook`
 --
 ALTER TABLE `classbook`
-  MODIFY `cbId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
+  MODIFY `cbId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=139;
 
 --
 -- AUTO_INCREMENT pro tabulku `classbook_notes`
@@ -7217,6 +7374,12 @@ ALTER TABLE `events`
 --
 ALTER TABLE `family_relations`
   MODIFY `frId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT pro tabulku `files`
+--
+ALTER TABLE `files`
+  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pro tabulku `fleetvehicles_expenses`
@@ -7330,7 +7493,7 @@ ALTER TABLE `library_reservations`
 -- AUTO_INCREMENT pro tabulku `login_history`
 --
 ALTER TABLE `login_history`
-  MODIFY `loginId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1496;
+  MODIFY `loginId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1524;
 
 --
 -- AUTO_INCREMENT pro tabulku `marking_scales`
@@ -7516,7 +7679,7 @@ ALTER TABLE `timetable`
 -- AUTO_INCREMENT pro tabulku `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1455;
+  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1483;
 
 --
 -- AUTO_INCREMENT pro tabulku `traineeship_companies`
@@ -7576,7 +7739,7 @@ ALTER TABLE `users_backup_codes`
 -- AUTO_INCREMENT pro tabulku `users_credentials`
 --
 ALTER TABLE `users_credentials`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pro tabulku `users_resetpassword`
@@ -7729,6 +7892,12 @@ ALTER TABLE `emergency_event_users`
 ALTER TABLE `emergency_notifications`
   ADD CONSTRAINT `emergency_notifications_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `emergency_events` (`eev_id`),
   ADD CONSTRAINT `emergency_notifications_ibfk_2` FOREIGN KEY (`person_id`) REFERENCES `persons` (`personId`);
+
+--
+-- Omezení pro tabulku `employee_attendance`
+--
+ALTER TABLE `employee_attendance`
+  ADD CONSTRAINT `employee_attendance_ibfk_1` FOREIGN KEY (`teacherId`) REFERENCES `teachers` (`personId`);
 
 --
 -- Omezení pro tabulku `family_relations`

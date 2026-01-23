@@ -1,17 +1,17 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../database';
 import { sql } from 'kysely';
 import { rateLimit } from 'elysia-rate-limit';
-import { app } from '../../../index';
 import moment from 'moment';
 import { ip } from 'elysia-ip';
-import { maskEmail } from '../../functions/mask_email';
-import { SecurityConfig } from '../../config/security.config';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
-import { verifyTFA } from '../../functions/verifyTFA';
 import bcrypt from 'bcryptjs';
+import { app } from '../../..';
+import { db } from '../../../database';
+import { SecurityConfig } from '../../config/security.config';
+import { maskEmail } from '../../functions/mask_email';
 import { verify_password } from '../../functions/verify_password';
+import { verifyTFA } from '../../functions/verifyTFA';
 
 // 🔹 Globální proměnná pro testovací transporter
 const transporter = nodemailer.createTransport({
@@ -53,15 +53,6 @@ function generateOTP(length = 8) {
 }
 
 const elysiaApp = new Elysia()
-  .use(ip())
-  .use(
-    rateLimit({
-      scoping: 'scoped',
-      max: 25,
-      duration: 5 * 60 * 1000,
-      injectServer: () => app.server,
-    })
-  )
   .post(
     '/forgot-pass',
     async ({ body, store, request }: any) => {

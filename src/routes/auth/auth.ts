@@ -97,13 +97,6 @@ export async function authenticateUser(userId: number, cookie: any, userAgent: s
 }
 
 const elysiaApp = new Elysia()
-  .use(ip())
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 5,
-    duration: 5 * 60 * 1000,
-    injectServer: () => app.server
-  }))
   .post('/auth', async ({ body, store, request, cookie }: any) => {
     const { username, password, TFA } = body;
     let err = [];

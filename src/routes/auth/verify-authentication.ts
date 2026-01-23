@@ -3,18 +3,11 @@ import Elysia, { t } from "elysia";
 import { ip } from "elysia-ip";
 import { rateLimit } from "elysia-rate-limit";
 import moment from "moment";
-import { app } from "../../..";
+import { app } from "../../../index";
 import { db } from "../../../database";
 import { authenticateUser } from "./auth";
 
 const elysiaApp = new Elysia()
-  .use(ip())
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 5,
-    duration: 5 * 60 * 1000,
-    injectServer: () => app.server
-  }))
 
   .post('/verify-authentication', async({ body: { response, challenge }, cookie, store, request }: any) => {
     // Získej uložené credential pro uživatele (podle potřeby)

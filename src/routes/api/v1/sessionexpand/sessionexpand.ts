@@ -1,20 +1,12 @@
-import { Elysia, t } from 'elysia';
+import { Elysia } from 'elysia';
 import { db } from "../../../../../database"
-import { sql } from 'kysely';
-import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../../../index';
 import moment from 'moment';
 import { SecurityConfig } from '../../../../config/security.config';
 import { createResponse, createErrorResponse } from '../../../../utils/response.helper';
 
 const elysiaApp = new Elysia()
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 10,
-    duration: 1000,
-    injectServer: () => app.server
-  }))
-  .post('/sessionexpand', async ({ cookie, query }) => {
+  
+  .post('/sessionexpand', async ({ cookie }) => {
     const token = cookie.token.value;
     if (!token) {
         return createErrorResponse('no_user', 'no_cookie');

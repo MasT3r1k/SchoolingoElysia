@@ -5,12 +5,7 @@ import { app } from '../../../../../index';
 import moment from 'moment';
 
 const elysiaApp = new Elysia()
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 10,
-    duration: 1000,
-    injectServer: () => app.server
-  }))
+  
   .get('/classbook/notes', async ({ cookie, query }) => {
     // === AUTH ===
     const token = cookie.token.value;

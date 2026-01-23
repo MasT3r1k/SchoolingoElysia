@@ -43,12 +43,6 @@ const fullName = sql`
   `.as('fullName')
 
 const elysiaAp = new Elysia()
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 3,
-    duration: 1000,
-    injectServer: () => app.server
-  }))
   .post('/students/search', async({ body }) => {
     let queryBuilder = db.selectFrom('students')
       .leftJoin('persons', 'students.personId', 'persons.personId')

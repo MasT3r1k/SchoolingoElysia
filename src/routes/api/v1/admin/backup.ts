@@ -23,7 +23,7 @@ const app = new Elysia()
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth || auth.role !== 'admin') {
+        if (!auth || auth.role !== 'admin_staff') {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 
@@ -53,7 +53,7 @@ const app = new Elysia()
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth || auth.role !== 'admin') {
+        if (!auth || auth.role !== 'admin_staff') {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 
@@ -94,7 +94,7 @@ const app = new Elysia()
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth || auth.role !== 'admin') {
+        if (!auth || auth.role !== 'admin_staff') {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 
@@ -133,7 +133,7 @@ const app = new Elysia()
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth || auth.role !== 'admin') {
+        if (!auth || auth.role !== 'admin_staff') {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 
@@ -164,7 +164,7 @@ const app = new Elysia()
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth || auth.role !== 'admin') {
+        if (!auth || auth.role !== 'admin_staff') {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 

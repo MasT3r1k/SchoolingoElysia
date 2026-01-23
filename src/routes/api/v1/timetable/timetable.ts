@@ -44,12 +44,7 @@ const fullName = sql`
 `;
 
 const elysiaApp = new Elysia()
-  .use(rateLimit({
-    scoping: "scoped",
-    max: 10,
-    duration: 1000,
-    injectServer: () => app.server
-  }))
+  
   .post('/timetable', async ({ body, user }) => {
     try {
       if (!user) {
