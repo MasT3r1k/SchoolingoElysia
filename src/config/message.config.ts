@@ -32,7 +32,7 @@ export namespace MessagesConfig {
 
     ];
     export const MESSAGE_FILES_LIMIT = 10;
-    export const FILE_MAX_SIZE_MB = 15;
+    export const FILE_MAX_SIZE_MB = 20;
 
     // === TITLE CONFIG ===
     export const MESSAGE_TITLE_MAX_LENGTH = 100;

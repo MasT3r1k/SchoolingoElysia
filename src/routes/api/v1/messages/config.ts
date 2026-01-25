@@ -3,7 +3,7 @@ import { MessagesConfig } from '../../../../config/message.config';
 
 const app = new Elysia()
   .get('/messages/config', async ({ cookie }) => {
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
     if (!token) {
       return Response.json({ error: 'no_user', details: 'no_cookie' });
     }

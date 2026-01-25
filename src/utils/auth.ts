@@ -9,7 +9,16 @@ export async function getAuthUser(token: string | undefined, cookie: any = null)
     const session = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'tokens.expires', 'users.person', 'users.username', 'users.locale', 'users.principal', 'users.manager'])
+      .select([
+        'tokens.userId',
+        'tokens.expires',
+        'users.person',
+        'users.username',
+        'users.locale',
+        'users.principal',
+        'users.manager',
+        'users.role'
+      ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -48,6 +57,7 @@ export async function getAuthUser(token: string | undefined, cookie: any = null)
         username: session.username,
         locale: session.locale,
         isPrincipal: !!session.principal,
-        manager: session.manager
+        manager: session.manager,
+        role: session.role
     };
 }

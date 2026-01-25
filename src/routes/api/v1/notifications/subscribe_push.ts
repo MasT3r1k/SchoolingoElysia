@@ -3,7 +3,7 @@ import { db } from '../../../../../database';
 
 const app = new Elysia()
   .post('/notifications/push/subscribe', async ({ cookie, body }) => {
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
     if (!token) {
       return Response.json({ error: 'no_user', details: 'no_cookie' });
     }

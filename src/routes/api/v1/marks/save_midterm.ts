@@ -5,7 +5,7 @@ import { MainConfig, MainConfigSchema } from '../../../../config/main.config';
 
 const app = new Elysia()
   .post('/marks/midterm', async ({ cookie, body }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -97,7 +97,7 @@ const app = new Elysia()
   })
 
   .delete('/marks/midterm', async ({ cookie, body }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db

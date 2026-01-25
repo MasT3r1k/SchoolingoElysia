@@ -4,7 +4,7 @@ import { db } from "../../../../../database"
 const bonusesRouter = new Elysia()
   // GET /employees/bonuses - Get bonuses
   .get('/employees/bonuses', async({ query, cookie }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -96,7 +96,7 @@ const bonusesRouter = new Elysia()
   })
   // POST /employees/bonuses - Add bonus (admin only)
   .post('/employees/bonuses', async({ body, cookie }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -143,7 +143,7 @@ const bonusesRouter = new Elysia()
   .put('/employees/bonuses/:id', async({ params, body, cookie }) => {
     const bonusId = parseInt(params.id);
     
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -184,7 +184,7 @@ const bonusesRouter = new Elysia()
   .put('/employees/bonuses/:id/paid', async({ params, cookie }) => {
     const bonusId = parseInt(params.id);
     
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -217,7 +217,7 @@ const bonusesRouter = new Elysia()
   .delete('/employees/bonuses/:id', async({ params, cookie }) => {
     const bonusId = parseInt(params.id);
     
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db

@@ -7,7 +7,7 @@ import moment from "moment";
 
 const elysiaApp = new Elysia()
   .post('/update-passkey', async ({ cookie, body }: any) => {
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
     if (!token) {
         return Response.json({ error: 'no_user', details: 'no_cookie' });
     }

@@ -1,14 +1,12 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../database'
 import { sql } from 'kysely';
-import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../index';
 import moment from 'moment';
-import { ip } from 'elysia-ip';
 import bcrypt from 'bcryptjs';
 import { verifyTFA } from '../../functions/verifyTFA';
 import { getIPData } from '../../functions/get_ip_data';
 import { SecurityConfig } from '../../config/security.config';
+import { Mailer } from '../../../mailer.module';
 
 export async function authenticateUser(userId: number, cookie: any, userAgent: string, ip: string) {
   try {
@@ -57,7 +55,7 @@ export async function authenticateUser(userId: number, cookie: any, userAgent: s
         }
       }
 
-      const expire = moment().add(SecurityConfig.RESET_PASSWORD_EXPIRES_MINUTES, 'minutes');
+      const expire = moment().add(SecurityConfig.TOKEN_SHORT_EXPIRE_MNUTES, 'minutes');
       const tokenDB = await db.insertInto("tokens")
       .values({
         userId: user.userId,
@@ -190,9 +188,18 @@ const elysiaApp = new Elysia()
 
       // Authenticate user (existing logic)
       const res = await authenticateUser(user.userId, cookie, userAgent, ipData?.ip ?? ip);
-
       if (res?.status === true) {
-        await db.insertInto("login_history")
+        // Check if ip has been ever logged in
+        const checkIP = await db.selectFrom('login_history')
+        .select([
+          'loginId'
+        ])
+        .where('ip', '=', ipData?.ip ?? ip)
+        .where('userId', '=', user.userId)
+        .where('success', '=', true)
+        .executeTakeFirst();
+
+        const loginHistory = await db.insertInto("login_history")
           .values({
             userId: user.userId,
             success: true,
@@ -209,7 +216,35 @@ const elysiaApp = new Elysia()
             continent: ipData?.continent ?? null,
             continent_code: ipData?.continent_code ?? null,
           })
+          .executeTakeFirst();
+
+        if (!checkIP) {
+          await db.insertInto("notifications")
+          .values({
+            user_id: user.userId,
+            type: 'new_login',
+            data: JSON.stringify({
+              id: Number(loginHistory.insertId)
+            })
+          })
           .execute();
+
+          await Mailer.sendFromTemplate(
+            "new_login.html",
+            {
+              to: "TODO",
+              subject: "Nové přihlášení z neznámého zařízení",
+              data: {
+                location: `${ipData?.city}, ${ipData?.country}`,
+                security_url: "https://localhost:4200",
+                device: "Chrome / Windows",
+                ip: ipData?.ip ?? ip,
+                time: moment().format('DD. MM. YYYY HH:mm')
+              }
+            }
+          );
+        }
+
 
         return Response.json({
           username: res.username,

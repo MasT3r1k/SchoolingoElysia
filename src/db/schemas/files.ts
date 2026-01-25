@@ -5,6 +5,7 @@ export interface filesTable {
   file_uuid: string;
   name: string;
   real_file_name: Generated<string | null>;
+  origin: Generated<string | null>;
   file_format: Generated<string | null>;
   mime_type: Generated<string | null>;
   file_size: Generated<number>;

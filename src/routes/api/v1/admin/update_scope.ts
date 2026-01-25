@@ -4,7 +4,7 @@ import { sql } from 'kysely';
 
 const app = new Elysia()
   .post('/system/update_scope', async ({ cookie, body }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db

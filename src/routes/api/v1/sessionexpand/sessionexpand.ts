@@ -7,7 +7,7 @@ import { createResponse, createErrorResponse } from '../../../../utils/response.
 const elysiaApp = new Elysia()
   
   .post('/sessionexpand', async ({ cookie }) => {
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
     if (!token) {
         return createErrorResponse('no_user', 'no_cookie');
     }

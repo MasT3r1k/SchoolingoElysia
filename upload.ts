@@ -6,6 +6,8 @@ import path, { join } from 'node:path';
 import { db } from './database';
 import { createHash } from 'node:crypto';
 import moment from 'moment';
+import fs from 'fs';
+import mime from 'mime-types'; 
 
 export function checksumFile(path: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -45,7 +47,7 @@ if (!existsSync(UPLOAD_DIR)) {
 
 export const uploadAPI = new Elysia()
   .post('/api/upload', async ({ body, cookie }) => {
-    const token = cookie.token.value;
+    const token = cookie.token.value as string;
     if (!token) {
         return Response.json({ error: 'no_user', details: 'no_cookie' });
     }
@@ -106,15 +108,16 @@ export const uploadAPI = new Elysia()
             .digest('hex');
 
           // Save to database
-          db.insertInto('files')
+          const dbFile = await db.insertInto('files')
           .values({
             file_uuid: id,
             name: filename,
             real_file_name: originalName,
+            origin: body.origin ?? null,
             file_format: ext,
             mime_type: file.type,
             file_size: file.size,
-            storage_path: filepath,
+            storage_path: filename,
             thumbnail_path: null,
             permissions: JSON.stringify({}),
             owner_id: user.userId,
@@ -122,13 +125,14 @@ export const uploadAPI = new Elysia()
           })
           .executeTakeFirst();
           
-          storedFiles.push({ 
-            id, 
+          storedFiles.push({
+            id: Number(dbFile.insertId),
+            uuid: id, 
             filename, 
             originalName, 
             size: file.size,
             type: file.type,
-            url: `/uploads/${filename}`
+            url: filename
           });
           
           console.log(`✓ Saved: ${filename} (${file.size} bytes)`);
@@ -150,7 +154,8 @@ export const uploadAPI = new Elysia()
       }
     }, {
       body: t.Object({
-        files: t.Files()
+        files: t.Files(),
+        origin: t.Optional(t.String())
       })
     })
 
@@ -158,7 +163,7 @@ export const uploadAPI = new Elysia()
   .delete(
     '/api/delete_file/:id',
     async ({ params, cookie }) => {
-      const token = cookie.token.value;
+      const token = cookie.token.value as string;
       if (!token) {
         return Response.json({ error: 'no_user', details: 'no_cookie' });
       }
@@ -245,25 +250,226 @@ export const uploadAPI = new Elysia()
   // DOWNLOAD ENDPOINT
   // -------------------------
   .get(
-    '/api/upload/:id',
+    '/api/download/:id',
     async ({ params, set }) => {
       const { id } = params;
 
-      // najdi soubor podle id
-      const files = await readdir(UPLOAD_DIR);
-      const file = files.find(f => f.startsWith(id));
+      const file = await db
+        .selectFrom('files')
+        .select([
+          'files.storage_path',
+          'files.real_file_name' // doporučeno
+        ])
+        .where('file_uuid', '=', id)
+        .executeTakeFirst();
 
-      if (!file) {
+      if (!file || !file.storage_path) {
         set.status = 404;
         return 'Soubor nenalezen';
       }
 
-      const filepath = path.join(UPLOAD_DIR, file);
+      // absolutní cesta k souboru
+      const filepath = path.resolve(UPLOAD_DIR, file.storage_path);
+      console.log(filepath)
 
-      // nastavení hlaviček
+      // 🛡️ bezpečnost – nesmí lézt mimo uploads
+      if (!filepath.startsWith(path.resolve(UPLOAD_DIR))) {
+        set.status = 403;
+        return 'Neplatná cesta k souboru';
+      }
+
+      if (!existsSync(filepath)) {
+        set.status = 404;
+        return 'Soubor na disku neexistuje';
+      }
+
+      // hlavičky
       set.headers['Content-Type'] = 'application/octet-stream';
-      set.headers['Content-Disposition'] = `attachment; filename="${file}"`;
+      set.headers['Content-Disposition'] =
+        `attachment; filename="${encodeURIComponent(
+          file.real_file_name ?? path.basename(file.storage_path)
+        )}"`;
 
       return createReadStream(filepath);
     }
-  );
+  )
+
+  .get(
+    '/api/file_info/:id',
+    async ({ params, cookie, set }) => {
+      const { id } = params;
+
+      const token = cookie.token.value  as string;
+      if (!token) {
+        return Response.json({ error: 'no_user', details: 'no_cookie' });
+      }
+
+      // Ověření tokenu
+      const user = await db
+        .selectFrom('tokens')
+        .innerJoin('users', 'users.userId', 'tokens.userId')
+        .select([
+          'tokens.userId',
+          'users.manager'
+        ])
+        .where('tokens.token', '=', token)
+        .where('tokens.expires', '>=', moment().toDate())
+        .limit(1)
+        .executeTakeFirst();
+
+      if (!user) {
+        return Response.json({ error: 'no_user', details: 'no_db' });
+      }
+
+      const file = await db
+        .selectFrom('files')
+        .select([
+          'files.file_id',
+          'files.storage_path',
+          'files.real_file_name'
+        ])
+        .where('file_uuid', '=', id)
+        .executeTakeFirst();
+
+      if (!file || !file.storage_path) {
+        set.status = 404;
+        return { error: 'Soubor nenalezen' };
+      }
+
+      const filepath = path.resolve(UPLOAD_DIR, file.storage_path);
+
+      // 🛡️ bezpečnost – nesmí mimo uploads
+      if (!filepath.startsWith(path.resolve(UPLOAD_DIR))) {
+        set.status = 403;
+        return { error: 'Neplatná cesta k souboru' };
+      }
+
+      if (!existsSync(filepath)) {
+        set.status = 404;
+        return { error: 'Soubor na disku neexistuje' };
+      }
+
+      // ⚠️ jen textové soubory (ochrana RAM)
+      const stat = await fs.promises.stat(filepath);
+      const MAX_SIZE = 2 * 1024 * 1024; // 2 MB
+
+      if (stat.size > MAX_SIZE) {
+        set.status = 413;
+        return { error: 'Soubor je příliš velký pro načtení obsahu' };
+      }
+
+      // načtení obsahu
+      const content = await fs.promises.readFile(filepath, 'utf-8');
+
+      const lines = content === ''
+        ? 0
+        : content.split(/\r?\n/).length;
+
+      // Generace tokenu pro načtení bez oprávnění
+      const access_token = randomUUID();
+      const expire_at = new Date(Date.now() + 15 * 60 * 1000); // 24 hodin
+
+      await db
+        .insertInto('files_tokens')
+        .values({
+          file_id: file.file_id,
+          access_token,
+          expire_at,
+          token_owner: user.userId,
+        })
+        .execute();
+
+        return {
+          file_name: file.real_file_name,
+          size: stat.size,
+          lines,
+          content: content,
+          access_token
+        };
+    }
+  )
+
+.get('/api/file/:id', async ({ query, params, cookie, set }) => {
+  const { id } = params;
+  const { access_token } = query;
+  const token = cookie.token.value as string;
+  if (!token && !access_token) {
+    return Response.json({ error: 'no_user', details: 'no_cookie' });
+  }
+
+  if (token && !access_token) {
+    // Ověření tokenu
+    const user = await db
+      .selectFrom('tokens')
+      .innerJoin('users', 'users.userId', 'tokens.userId')
+      .select([
+        'tokens.userId',
+        'users.manager'
+      ])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', moment().toDate())
+      .limit(1)
+      .executeTakeFirst();
+
+    if (!user) {
+      return Response.json({ error: 'no_user', details: 'no_db' });
+    }
+  }
+
+  if (access_token) {
+    const has_access = await db.selectFrom('files_tokens')
+    .leftJoin('files', 'files.file_id', 'files_tokens.file_id')
+    .select([
+      'files_tokens.used_count',
+      'files_tokens.file_id'
+    ])
+    .where('files.file_uuid', '=', id)
+    .where('files_tokens.access_token', '=', access_token)
+    .where('files_tokens.expire_at', '>=', moment().toDate())
+    .executeTakeFirst();
+
+    if (!has_access) return Response.json({ error: 'no_access', details: 'access_token_dont_have_access' });
+    db.updateTable('files_tokens')
+    .set({
+      used_count: has_access.used_count + 1
+    })
+    .where('files_tokens.file_id', '=', has_access.file_id)
+    .where('files_tokens.access_token', '=', access_token)
+    .executeTakeFirst()
+  }
+
+  const file = await db
+    .selectFrom('files')
+    .select(['files.storage_path', 'files.real_file_name'])
+    .where('file_uuid', '=', id)
+    .executeTakeFirst();
+
+  if (!file || !file.storage_path) {
+    set.status = 404;
+    return { error: 'Soubor nenalezen' };
+  }
+
+  const filepath = path.resolve(UPLOAD_DIR, file.storage_path);
+
+  if (!filepath.startsWith(path.resolve(UPLOAD_DIR))) {
+    set.status = 403;
+    return { error: 'Neplatná cesta k souboru' };
+  }
+
+  if (!fs.existsSync(filepath)) {
+    set.status = 404;
+    return { error: 'Soubor na disku neexistuje' };
+  }
+
+  const mimeType = mime.lookup(filepath) || 'application/octet-stream';
+
+  // Nastavit hlavičky
+  set.headers = {
+    'Content-Type': mimeType,
+    'Content-Disposition': `inline; filename="${file.real_file_name}"`,
+  };
+
+  // Vrátit stream souboru
+  const fileStream = fs.createReadStream(filepath);
+  return fileStream;
+});

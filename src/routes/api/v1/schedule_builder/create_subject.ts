@@ -8,7 +8,7 @@ import moment from 'moment';
 const elysiaApp = new Elysia()
   
   .post('/schedule/create_subject', async ({ cookie, body }) => {
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
     if (!token) {
         return Response.json({ error: 'no_user', details: 'no_cookie' });
     }

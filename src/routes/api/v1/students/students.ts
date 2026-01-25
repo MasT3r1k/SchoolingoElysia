@@ -1,8 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
-import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../../../index';
 
 const titlesBefore = db.selectFrom('persons_degree as pd')
   .innerJoin('degrees as d', 'pd.degree', 'd.degreeID')
@@ -59,13 +57,13 @@ const elysiaApp = new Elysia()
         'persons.personId',
         'persons.firstName',
         'persons.lastName',
+        'persons.gender',
         'students.status',
         fullName,
         sql<string>`(SELECT email FROM emails WHERE emails.personId = persons.personId AND emails.is_verified = 1 LIMIT 1)`.as('email'),
         sql<string>`(SELECT number FROM phone_numbers WHERE phone_numbers.personId = persons.personId AND phone_numbers.is_verified = 1 LIMIT 1)`.as('phone'),
-        sql<string>`DATE_FORMAT(persons.birthday, '%d. %m. %Y')`.as('dateOfBirth'),
         'persons.birthday',
-        sql<string>`DATE_FORMAT(students.startStudy, '%d. %m. %Y')`.as('startStudy'),
+        sql<string>`students.startStudy`.as('startStudy'),
         sql<string>`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className'),
         sql<number>`TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1`.as('year'),
         'classes.scopeId',

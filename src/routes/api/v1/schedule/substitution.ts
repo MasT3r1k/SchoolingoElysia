@@ -10,7 +10,7 @@ import { notificationBroadcaster } from '../../../../functions/notification-broa
 const app = new Elysia()
     // List substitutions
     .get('/substitution', async ({ query, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -56,7 +56,7 @@ const app = new Elysia()
 
     // Create substitution (admin/teacher only)
     .post('/substitution', async ({ body, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -117,7 +117,7 @@ const app = new Elysia()
 
     // Delete substitution
     .delete('/substitution/:id', async ({ params, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }

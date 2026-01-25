@@ -9,7 +9,7 @@ import { notificationBroadcaster } from '../../../../functions/notification-broa
 const app = new Elysia()
     // Get rewards for current user (student view) or all rewards (teacher view)
     .get('/rewards', async ({ cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -60,7 +60,7 @@ const app = new Elysia()
 
     // Create a new reward (teacher only)
     .post('/rewards', async ({ body, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -139,7 +139,7 @@ const app = new Elysia()
 
     // Update reward status (mark as collected)
     .put('/rewards/:id', async ({ params, body, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -205,7 +205,7 @@ const app = new Elysia()
 
     // Delete reward (teacher only)
     .delete('/rewards/:id', async ({ params, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }

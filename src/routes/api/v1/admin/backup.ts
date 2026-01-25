@@ -9,7 +9,7 @@ import { backupService } from '../../../../functions/backup.service';
 const app = new Elysia()
     // List all backups
     .get('/backup', async ({ cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -40,7 +40,7 @@ const app = new Elysia()
 
     // Create new backup
     .post('/backup', async ({ body, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -81,7 +81,7 @@ const app = new Elysia()
 
     // Download backup
     .get('/backup/:filename', async ({ params, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -120,7 +120,7 @@ const app = new Elysia()
 
     // Delete backup
     .delete('/backup/:filename', async ({ params, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -151,7 +151,7 @@ const app = new Elysia()
 
     // Restore from backup
     .post('/backup/:filename/restore', async ({ params, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }

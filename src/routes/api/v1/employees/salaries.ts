@@ -4,7 +4,7 @@ import { db } from "../../../../../database"
 const salariesRouter = new Elysia()
   // GET /employees/salaries - Get salaries (admin/personnel only)
   .get('/employees/salaries', async({ query, cookie }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -71,7 +71,7 @@ const salariesRouter = new Elysia()
   })
   // POST /employees/salaries - Set salary (admin only)
   .post('/employees/salaries', async({ body, cookie }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -128,7 +128,7 @@ const salariesRouter = new Elysia()
   .put('/employees/salaries/:id', async({ params, body, cookie }) => {
     const salaryId = parseInt(params.id);
     
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -173,7 +173,7 @@ const salariesRouter = new Elysia()
   .get('/employees/salaries/history/:employeeId', async({ params, cookie }) => {
     const employeeId = parseInt(params.employeeId);
     
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db

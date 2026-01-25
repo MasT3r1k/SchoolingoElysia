@@ -11,7 +11,7 @@ import { get_total_lessons } from '../../../../functions/get_total_lessons';
 const elysiaApp = new Elysia()
   .get('/classbook/lesson', async ({ cookie, query }) => {
     // === AUTH ===
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const user = await db.selectFrom("tokens")

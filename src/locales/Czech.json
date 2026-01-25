@@ -178,6 +178,7 @@
         "ldap_settings": "Nastavení protokolu LDAP",
         "school_settings": "Nastavení školy",
         "email_settings": "Nastavení elektronické pošty",
+        "files_settings": "Nastavení souborů",
         "list_scopes": "Seznam oborů",
         "list_subjects": "Seznam předmětů",
         "section_modules": "Nastavení modulů",
@@ -360,6 +361,8 @@
             "main": "Správa systému",
             "settings": "Nastavení systému",
             "manage_users": "Správa uživatelů",
+            "manage_files": "Správa souborů",
+            "manage_messages": "Správa zpráv",
             "auditlog": "Auditlog"
         }
     },
@@ -544,12 +547,14 @@
         "file_modified": "Změněno",
         "file_created": "Vytvořeno",
         "open_folder": "Otevřít složku",
+        "open_file": "Otevřít soubor",
         "rename_file": "Přejmenovat soubor",
         "rename_folder": "Přejmenovat složku",
         "permissions_file": "Oprávnění",
         "delete": "Smazat",
         "delete_file": "Smazat soubor",
         "delete_folder": "Smazat složku",
+        "download_file": "Stáhnout soubor",
         "save_file": "Uložit soubor",
         "save_folder": "Uložit složku"
     },
@@ -857,6 +862,24 @@
             "text": "Textová odpověď",
             "uni": "Jedna správná odpověď",
             "multi": "Více správných odpovědí"
+        },
+        "test_types": {
+            "all": "Všechny otázky",
+            "random": "Náhodné otázky"
+        },
+        "require_types": {
+            "points": "Bodů",
+            "questions": "Otázek"
+        }
+    },
+    "upload": {
+        "drag_files_description": "Přetáhněte soubory nebo klikněte",
+        "no_files": "Žádné soubory",
+        "upload_failed": "Nebude nahráno %files% souborů",
+        "errors": {
+            "file_too_big": "Soubor je příliš velký.",
+            "format_not_supported": "Formát souboru není podporován.",
+            "error_while_uploading": "Chyba při nahrávání."
         }
     },
     "marks": {
@@ -1002,6 +1025,7 @@
         "no_type_access": "Nemáte oprávnění poslat tento druh zprávy",
         "child": "Dítě",
         "no_child_selected": "Nevybrali jste žádné dítě",
+        "select_receiver": "Vyberte příjemce zprávy",
         "search_receiver": "Vyhledávat příjemce",
         "selected_receivers": "Vybraní příjemci:",
         "no_selected_receivers": "Nemáte vybrané žádné příjemce.",
@@ -1045,6 +1069,10 @@
         },
         "buttons": {
             "send_message": "Poslat zprávu"
+        },
+        "upload": {
+            "note": "Soubory jsou automaticky přiloženy ke zprávě.",
+            "upload_info": "Maximální velikost pro 1 soubor je %max_size% MB. Větší soubory nebudou přiloženy. Celkem lze přiložit až %max_files% souborů. Nelze odesílat spustitelné soubory (.exe)."
         },
         "noticeboard_description": "Aktuální oznámení, zprávy a upomínky",
         "new_announcement": "Nová zpráva na nástěnku",
@@ -1102,6 +1130,10 @@
                 ],
                 "contrast": "Kontrast (text / povrch): 15.4:1 — doporučeno (≥4.5)",
                 "footer": "Tip: Doporučeno kontrolovat kontrast mezi pozadím a textem, zejména pro starší uživatele nebo při použití na mobilním telefonu."
+            },
+            "system_settings": {
+                "title": "Nastavení vzhledu podle systému",
+                "description": "Vyberte co za vzhled Vám máme zobrazit podle vašeho systému?"
             }
         },
         "themes_description": {

@@ -12,7 +12,7 @@ import moment from 'moment';
 const app = new Elysia()
     // Get education measure behaviour grade
     .get('/measure/student', async({ query, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -71,7 +71,7 @@ const app = new Elysia()
 
     // List education measures
     .get('/measures', async ({ query, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -124,7 +124,7 @@ const app = new Elysia()
 
     // Create education measure (teacher only)
     .post('/measures', async ({ body, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -165,7 +165,7 @@ const app = new Elysia()
 
     // Update education measure
     .put('/measures/:id', async ({ params, body, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -207,7 +207,7 @@ const app = new Elysia()
 
     // Delete education measure
     .delete('/measures/:id', async ({ params, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }

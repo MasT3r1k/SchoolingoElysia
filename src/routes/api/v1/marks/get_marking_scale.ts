@@ -4,7 +4,7 @@ import { MainConfig } from '../../../../config/main.config';
 
 const app = new Elysia()
   .get('/marks/teacher/marking_scale', async ({ cookie, query }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const { group_id, subject_id } = query;

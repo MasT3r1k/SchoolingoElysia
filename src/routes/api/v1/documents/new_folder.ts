@@ -2,11 +2,12 @@ import { Elysia, t } from 'elysia';
 import moment from 'moment';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
+import { randomUUID } from 'crypto';
 
 const app = new Elysia().post(
   '/documents/new_folder',
   async ({ cookie, body }) => {
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
     const { name, parent_id } = body;
     if (!token) {
       return Response.json({ error: 'no_user', details: 'no_cookie' });
@@ -46,19 +47,28 @@ const app = new Elysia().post(
     if (isExist) return { error: 'folder_already_created' }
 
     try {
+      const newFile = await db.insertInto('files')
+      .values({
+        file_uuid: randomUUID(),
+        name: name,
+        origin: 'documents',
+        owner_id: auth.userId
+      })
+      .executeTakeFirst()
+
         const newFolder = await db.insertInto('documents')
         .values({
             parent_id,
             name,
             type: 'folder',
-            permissions: 'no-one',
-            owner_id: auth.userId
+            file_id: Number(newFile.insertId) ?? null
         })
         .executeTakeFirst();
 
         return {
             success: true,
-            file_id: Number(newFolder.insertId),
+            document_id: Number(newFolder.insertId),
+            file_id: Number(newFile.insertId) ?? null,
             name,
             parent_id,
             owner_id: auth.userId,

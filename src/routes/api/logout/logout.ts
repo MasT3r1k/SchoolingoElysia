@@ -3,7 +3,7 @@ import { db } from '../../../../database';
 
 const app = new Elysia()
     .get('/', async ({ cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'no_user' });
         }

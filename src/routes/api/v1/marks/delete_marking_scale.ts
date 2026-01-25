@@ -3,7 +3,7 @@ import { db } from '../../../../../database';
 
 const app = new Elysia()
   .delete('/marks/teacher/marking_scale', async ({ cookie, query }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const { ms_id } = query;

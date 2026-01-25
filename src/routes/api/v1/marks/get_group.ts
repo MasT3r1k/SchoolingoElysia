@@ -6,7 +6,7 @@ import moment from 'moment';
 
 const app = new Elysia()
   .post('/marks/teacher/group', async ({ cookie, body, query }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     if (!body?.group_id) return { error: 'invalid_group_id' };

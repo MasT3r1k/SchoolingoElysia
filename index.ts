@@ -15,6 +15,8 @@ import { version } from './version';
 import { ws } from './websocket';
 import { getAuthUser } from './src/utils/auth';
 import { uploadAPI } from './upload';
+  import { Mailer } from "./mailer.module";
+
 
 const UPLOAD_DIR = './uploads';
 
@@ -28,7 +30,7 @@ export const app = new Elysia({
   .use(helmet())
   .use(ip())
   .use(cors({
-    origin: ['http://localhost:4200', 'http://localhost:8100', 'http://192.168.1.102:4200', 'capacitor://localhost', 'ionic://localhost'],
+    origin: ['http://localhost:4200', 'http://localhost:5173', 'http://localhost:8100', 'http://192.168.1.102:4200', 'capacitor://localhost', 'ionic://localhost'],
     credentials: true,
   }))
   .use(errorHandler)
@@ -40,7 +42,7 @@ export const app = new Elysia({
   
   // Authentication & Context Derivation
   .derive(async ({ cookie }) => {
-    const user = await getAuthUser(cookie?.token?.value, cookie);
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
     return { user };
   })
   
@@ -110,6 +112,17 @@ async function loadFolder(folder: string = modulePath) {
     await app.listen(port);
     logger.log(`[🦊 Elysia]: Running at http://${app.server?.hostname}:${port}`);
     logger.log(`[🌍 Environment]: ${config.NODE_ENV}`);
+
+
+    Mailer.init({
+        host: "smtp.seznam.cz",
+        port: 465,
+        secure: true,
+        user: "XXXX",
+        pass: "XXXX",
+        fromName: "Schoolingo",
+        debug: true
+    });
   } catch (error) {
     logger.log('Failed to start application:' + error);
     process.exit(1);

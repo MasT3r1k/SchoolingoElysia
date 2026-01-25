@@ -4,7 +4,7 @@ import { format_people_by_ids } from '../../../../functions/format_person_by_ids
 
 const app = new Elysia()
   .post('/messages/recipients', async ({ cookie, body }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db

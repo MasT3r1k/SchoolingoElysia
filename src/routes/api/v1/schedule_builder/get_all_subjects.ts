@@ -8,7 +8,7 @@ import { format_person_by_id } from '../../../../functions/format_person_by_id';
 const elysiaApp = new Elysia()
   
   .get('/schedule/all_subjects', async ({ cookie }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) {
       return Response.json({ error: 'no_user', details: 'no_cookie' });
     }

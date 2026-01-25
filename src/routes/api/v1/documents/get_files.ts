@@ -1,13 +1,11 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
-import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../../../index';
 import moment from 'moment';
 
 const elysiaApp = new Elysia()
   
   .post('/documents/files', async ({ cookie, body }) => {
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
     if (!token) {
         return Response.json({ error: 'no_user', details: 'no_cookie' });
     }
@@ -35,34 +33,37 @@ const elysiaApp = new Elysia()
 
         const files = await db
         .selectFrom('documents')
+        .leftJoin('files', 'files.file_id', 'documents.file_id')
         .select((eb) => [
-            'documents.file_id',
+            'documents.document_id',
             'documents.parent_id',
             'documents.type',
             'documents.name',
-            'documents.real_file_name',
-            'documents.file_format',
-            'documents.mime_type',
-            'documents.file_size',
-            'documents.storage_path',
-            'documents.thumbnail_path',
-            'documents.owner_id',
-            'documents.last_accessed_at',
-            'documents.modified_at',
-            'documents.created_at',
+            'files.file_uuid',
+            'files.real_file_name',
+            'files.file_format',
+            'files.mime_type',
+            'files.file_size',
+            'files.thumbnail_path',
+            'files.owner_id',
+            'files.last_accessed_at',
+            'files.modified_at',
+            'files.created_at',
             eb.selectFrom('documents as d2')
                 .whereRef('d2.parent_id', '=', 'documents.file_id')
                 .select((eb2) => eb2.fn.countAll().as('files_count'))
                 .as('files_count')
         ])
-        .where('documents.is_deleted', '=', false)
+        .where('files.deleted_at', 'is', null)
         .where('documents.parent_id', body.parent_id == null ? 'is' : '=', body.parent_id ?? null)
         .execute();
 
 
         console.log(files);
 
-        return files;
+        return files.map(
+          (file) => ({...file, name: file.name == null ? file.real_file_name : file.name, real_file_name: undefined })
+        );
     } catch (e) {
       return { error: 'failed_get_files' };
     }

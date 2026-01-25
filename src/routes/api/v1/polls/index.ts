@@ -7,7 +7,7 @@ const app = new Elysia({ prefix: '/polls' })
 
     // GET / - List available polls
     .get('/', async ({ cookie }) => {
-        const token = cookie.token?.value;
+        const token = cookie.token?.value as string;
         if (!token) return { error: 'no_user', details: 'no_cookie' };
 
         const auth = await db
@@ -46,7 +46,7 @@ const app = new Elysia({ prefix: '/polls' })
 
     // GET /:id - Get details (questions)
     .get('/:id', async ({ params: { id }, cookie }) => {
-        const token = cookie.token?.value;
+        const token = cookie.token?.value as string;
         if (!token) return { error: 'no_user', details: 'no_cookie' };
 
         const auth = await db.selectFrom('tokens')
@@ -109,7 +109,7 @@ const app = new Elysia({ prefix: '/polls' })
 
     // POST / - Create (Teacher only)
     .post('/', async ({ body, cookie }) => {
-        const token = cookie.token?.value;
+        const token = cookie.token?.value as string;
         if (!token) return { error: 'no_user', details: 'no_cookie' };
 
         const auth = await db
@@ -123,14 +123,13 @@ const app = new Elysia({ prefix: '/polls' })
         if (!auth?.person) return { error: 'no_user', details: 'no_db' };
         if (auth.manager === -1 && !auth.principal) return { error: 'no_permission' };
 
-        const { title, description, type, questions, active_from, active_to, time_limit } = body as any;
+        const { title, description, type, questions, time_limit } = body as any;
 
         const result = await db.insertInto('polls').values({
             title,
             description,
             type,
             created_by: auth.person,
-            created_at: new Date().toISOString(),
             time_limit: time_limit ? Number(time_limit) : null
         }).execute();
 
@@ -169,9 +168,7 @@ const app = new Elysia({ prefix: '/polls' })
             title: t.String(),
             description: t.Optional(t.String()),
             type: t.Union([t.Literal('feedback'), t.Literal('test')]),
-            active_from: t.Optional(t.String()),
-            active_to: t.Optional(t.String()),
-            time_limit: t.Optional(t.Number()),
+            time_limit: t.Optional(t.Number({ default: 0, minimum: 0, maximum: 999 })),
             questions: t.Array(t.Object({
                 title: t.String(),
                 type: t.Union([t.Literal('text'), t.Literal('single'), t.Literal('multiple')]),
@@ -186,7 +183,7 @@ const app = new Elysia({ prefix: '/polls' })
 
     // POST /:id/submit - Submit answers
     .post('/:id/submit', async ({ params: { id }, body, cookie }) => {
-        const token = cookie.token?.value;
+        const token = cookie.token?.value as string;
         if (!token) return { error: 'no_user', details: 'no_cookie' };
 
         const auth = await db.selectFrom('tokens')
@@ -295,7 +292,7 @@ const app = new Elysia({ prefix: '/polls' })
 
     // GET /:id/results - Aggregated results
     .get('/:id/results', async ({ params: { id }, cookie }) => {
-         const token = cookie.token?.value;
+         const token = cookie.token?.value as string;
          if (!token) return { error: 'no_user', details: 'no_cookie' };
  
          const auth = await db.selectFrom('tokens')
@@ -375,7 +372,7 @@ const app = new Elysia({ prefix: '/polls' })
 
     // GET /:id/student/:studentId
     .get('/:id/student/:studentId', async ({ params: { id, studentId }, cookie }) => {
-         const token = cookie.token?.value;
+         const token = cookie.token?.value as string;
          if (!token) return { error: 'no_user', details: 'no_cookie' };
          
          const auth = await db.selectFrom('tokens').leftJoin('users', 'users.userId', 'tokens.userId')
@@ -409,7 +406,7 @@ const app = new Elysia({ prefix: '/polls' })
 
     // POST /:id/student/:studentId/grade
     .post('/:id/student/:studentId/grade', async ({ params: { id, studentId }, body, cookie }) => {
-        const token = cookie.token?.value;
+        const token = cookie.token?.value as string;
         if (!token) return { error: 'no_user', details: 'no_cookie' };
          
          const auth = await db.selectFrom('tokens').leftJoin('users', 'users.userId', 'tokens.userId')

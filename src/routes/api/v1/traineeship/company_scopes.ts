@@ -7,7 +7,7 @@ const app = new Elysia()
   .post(
     '/traineeship/company_scopes',
     async ({ body, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
 
         if (!token) {
             return Response.json({ error: 'no_user', details: 'no_cookie' });

@@ -5,7 +5,7 @@ import { db } from '../../../../../database';
 const app = new Elysia().post(
   '/marks/update_column',
   async ({ cookie, body }) => {
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
     const { group_id, subject_id, columnIndex, weight, type, topic } = body;
 
     if (!token) {

@@ -5,7 +5,7 @@ import { sql } from 'kysely';
 
 const app = new Elysia()
   .get('/marks/teacher/list', async ({ cookie, query }) => {
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
     if (!token) {
       return Response.json({ error: 'no_user', details: 'no_cookie' });
     }

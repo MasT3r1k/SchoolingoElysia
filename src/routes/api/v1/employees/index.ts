@@ -53,7 +53,7 @@ const employeesRouter = new Elysia()
   })
   // POST /degrees - Create new degree (admin only)
   .post('/degrees', async({ body, cookie }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -101,7 +101,7 @@ const employeesRouter = new Elysia()
   })
   // GET /employees - List all employees (teachers)
   .get('/employees', async({ query, cookie }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -185,7 +185,7 @@ const employeesRouter = new Elysia()
   .get('/employees/:id', async({ params, cookie }) => {
     const employeeId = parseInt(params.id);
     
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -252,7 +252,7 @@ const employeesRouter = new Elysia()
   })
   // POST /employees - Create new employee (admin only)
   .post('/employees', async({ body, cookie }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -363,7 +363,7 @@ const employeesRouter = new Elysia()
   .put('/employees/:id', async({ params, body, cookie }) => {
     const employeeId = parseInt(params.id);
     
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -412,7 +412,7 @@ const employeesRouter = new Elysia()
   .delete('/employees/:id', async({ params, cookie }) => {
     const employeeId = parseInt(params.id);
     
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db

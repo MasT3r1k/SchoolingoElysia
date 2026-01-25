@@ -46,7 +46,7 @@ const fullName = sql`
 
 const app = new Elysia()
   .get('/user', async ({ cookie }) => {
-      const token = cookie.token.value;
+      const token = cookie.token?.value as string;
       if (!token) {
         return createErrorResponse('no_user', 'no_cookie');
       }

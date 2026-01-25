@@ -5,7 +5,7 @@ import { db } from '../../../../../database';
 const app = new Elysia().post(
   '/documents/rename_file',
   async ({ cookie, body }) => {
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
     const { file_id, name } = body;
     if (file_id === undefined || name == undefined) {
         return Response.json({}, { status: 422 });

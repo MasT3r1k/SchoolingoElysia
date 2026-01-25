@@ -7,7 +7,7 @@ import moment from 'moment';
 
 const elysiaAp = new Elysia()
 .post('/timetable/substitution', async({ cookie, body }) => {
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
 
     if (!token) {
         return Response.json({ error: 'no_user', details: 'no_cookie' });

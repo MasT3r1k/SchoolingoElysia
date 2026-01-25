@@ -5,8 +5,7 @@ export interface notificationsTable {
   user_id: number;
   type: string;
   data: Generated<string>;
-  action: Generated<string>;
+  url: Generated<string>;
   read_at: Generated<Date | null>;
-  confirmed_at: Generated<Date | null>;
   created_at: Generated<Date>;
 }

@@ -9,7 +9,7 @@ import { generateNewBackupCodes } from '../../../../functions/generateNewBackupC
 
 const app = new Elysia()
     .get('/security', async ({ cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'no_user', details: 'no_cookie' });
         }
@@ -50,7 +50,7 @@ const app = new Elysia()
     .post('/security', async ({ cookie, body, store }: any) => {
         const { ip } = store;
 
-      const token = cookie.token.value;
+      const token = cookie.token?.value as string;
       if (!token) {
         return Response.json({ error: 'no_user', details: 'no_cookie' });
       }

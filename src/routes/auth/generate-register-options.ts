@@ -8,7 +8,7 @@ import { db } from "../../../database";
 
 const elysiaApp = new Elysia()
   .get('/generate-register-options', async ({ cookie }: any) => {
-    const token = cookie.token.value;
+    const token = cookie.token?.value as string;
     if (!token) return Response.json({ error: 'no_user', details: 'no_cookie' });
 
     const user = await db.selectFrom("tokens")

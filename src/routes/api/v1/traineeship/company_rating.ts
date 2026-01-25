@@ -6,7 +6,7 @@ const app = new Elysia()
   .get(
     '/traineeship/company_rating',
     async ({ query, cookie }) => {
-        const token = cookie.token.value;
+        const token = cookie.token?.value as string;
 
         if (!token) {
             return Response.json({ error: 'no_user', details: 'no_cookie' });

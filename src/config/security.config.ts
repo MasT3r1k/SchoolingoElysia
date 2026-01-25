@@ -15,6 +15,7 @@ namespace SConfig {
     const PASSWORD_REQUIRE_NUMBER = false;
     const PASSWORD_REQUIRE_SPECIAL_CHARACTER = false;
     const RESET_PASSWORD_EXPIRES_MINUTES = 15;
+    const TOKEN_SHORT_EXPIRE_MNUTES = 15
 }
 
 const envSchema = z.object({
@@ -26,7 +27,8 @@ const envSchema = z.object({
     PASSWORD_REQUIRE_LOWERCASE_LETTER: z.boolean().default(false),
     PASSWORD_REQUIRE_NUMBER: z.boolean().default(false),
     PASSWORD_REQUIRE_SPECIAL_CHARACTER: z.boolean().default(false),
-    RESET_PASSWORD_EXPIRES_MINUTES: z.number().default(15)
+    RESET_PASSWORD_EXPIRES_MINUTES: z.number().default(15),
+    TOKEN_SHORT_EXPIRE_MNUTES: z.number().default(15)
 })
 
 export const SecurityConfig = envSchema.parse(SConfig);

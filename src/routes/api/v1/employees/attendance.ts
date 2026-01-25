@@ -5,7 +5,7 @@ import { sql } from 'kysely';
 const attendanceRouter = new Elysia()
   // GET /employees/attendance - Get attendance records
   .get('/employees/attendance', async({ query, cookie }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -80,7 +80,7 @@ const attendanceRouter = new Elysia()
   })
   // POST /employees/attendance/checkin - Record check-in
   .post('/employees/attendance/checkin', async({ body, cookie }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -136,7 +136,7 @@ const attendanceRouter = new Elysia()
   })
   // POST /employees/attendance/checkout - Record check-out
   .post('/employees/attendance/checkout', async({ body, cookie }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
@@ -201,7 +201,7 @@ const attendanceRouter = new Elysia()
   .put('/employees/attendance/:id', async({ params, body, cookie }) => {
     const attendanceId = parseInt(params.id);
     
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db

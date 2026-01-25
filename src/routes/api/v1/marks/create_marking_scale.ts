@@ -3,7 +3,7 @@ import { db } from '../../../../../database';
 
 const app = new Elysia()
   .post('/marks/teacher/marking_scale_create', async ({ cookie, body }) => {
-    const token = cookie.token?.value;
+    const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const { name, grades } = body;
