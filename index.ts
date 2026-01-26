@@ -115,12 +115,12 @@ async function loadFolder(folder: string = modulePath) {
 
 
     Mailer.init({
-        host: "smtp.seznam.cz",
-        port: 465,
-        secure: true,
-        user: "XXXX",
-        pass: "XXXX",
-        fromName: "Schoolingo",
+        host: config.STMP_HOST,
+        port: parseInt(config.STMP_PORT),
+        secure: parseInt(config.STMP_PORT) == 465,
+        user: config.STMP_USER,
+        pass: config.STMP_PASS,
+        fromName: config.STMP_NAME,
         debug: true
     });
   } catch (error) {

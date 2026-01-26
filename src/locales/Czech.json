@@ -310,7 +310,12 @@
         "account": "Můj účet",
         "calendar": "Kalendář",
         "documents": "Dokumenty",
-        "schedule_builder": "Tvorba rozvrhu",
+        "schedule": {
+            "main": "Správa rozvrhu",
+            "template_timetable": "Schéma rozvrhu",
+            "template_subject": "Šablony předměty",
+            "builder": "Tvorba rozvrhu"
+        },
         "teach": {
             "main": "Výuka",
             "timetable": "Rozvrh",
@@ -852,7 +857,10 @@
         "active": "Aktivní",
         "all": "Všechny",
         "homework": "Domácí úkol",
-        "no_homework_to_submit": "Nemátě žádný úkol k odevzdání"
+        "no_homework_to_submit": "Nemátě žádný úkol k odevzdání",
+        "detail": {
+            "title": "Podrobnosti o úkolu"
+        }
     },
     "tests": {
         "title": "Testy",
