@@ -515,6 +515,23 @@
                 "grade_level": "Ročník třídy"
             }
         },
+        "template_timetable": {
+            "title": "Schéma rozvrhu třídy",
+            "save_scheme": "Uložit schéma",
+            "types": {
+                "title": "Označit do rozvrhu",
+                "empty": "Zrušit označení",
+                "disabled": "Hodinu nenasazovat",
+                "maybe": "Hodinu raději nenasazovat",
+                "lunch": "Volno na oběd",
+                "continuous": "Souvislé vyučování"
+            },
+            "multi_settings": {
+                "title": "Hromadné nastavení",
+                "save_scope": "Toto schéma nastavit u skupiny tříd",
+                "save_all": "Toto schéma nastavit u všech tříd"
+            }
+        },
         "edit_lesson": {
             "types": {
                 "substitution": "Suplování",

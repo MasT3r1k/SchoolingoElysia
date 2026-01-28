@@ -8,4 +8,5 @@ export interface ScopesTable {
   years: number;
   students_per_class: number;
   number_of_classes: number;
+  is_active: Generated<boolean>
 }

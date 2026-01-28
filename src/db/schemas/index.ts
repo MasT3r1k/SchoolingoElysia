@@ -95,6 +95,7 @@ import { educationMeasuresTable } from './education_measures'
 import { filesTable } from './files'
 import { filesTokensTable } from './files_tokens'
 import { messages_filesTable } from './messages_files'
+import { TimetableSchemasTable } from './timetable_schemas'
 
 export interface Database {
   absence: AbsenceTable
@@ -175,6 +176,7 @@ export interface Database {
   teachers: TeachersTable
   teachers_salary: Teachers_salaryTable
   teachers_subject: Teachers_subjectTable
+  timetable_schemas: TimetableSchemasTable
   timetable: TimetableTable
   tokens: TokensTable
   traineeship_companies: Traineeship_companiesTable

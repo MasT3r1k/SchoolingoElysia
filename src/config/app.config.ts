@@ -12,13 +12,12 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default('*'),
   RATE_LIMIT_WINDOW_MS: z.string().default('900000'),
   RATE_LIMIT_MAX: z.string().default('100'),
-  STMP_HOST: z.string(),
-  STMP_PORT: z.string(),
-  STMP_USER: z.string(),
-  STMP_PASS: z.string(),
-  STMP_EMAIL: z.string(),
-  STMP_NAME: z.string().default('Schoolingo'),
-
+  STMP_HOST: z.optional(z.string()),
+  STMP_PORT: z.optional(z.string()),
+  STMP_USER: z.optional(z.string()),
+  STMP_PASS: z.optional(z.string()),
+  STMP_EMAIL:z.optional(z.string()),
+  STMP_NAME: z.optional(z.string()).default('Schoolingo'),
 });
 
 export const config = envSchema.parse(process.env);
