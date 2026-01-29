@@ -2,7 +2,15 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database'
 import { sql } from 'kysely';
 import moment from 'moment';
-import { AbsenceType } from '../../../../types/absence';
+export enum AbsenceType {
+    ABSENCE,
+    EXCUSED,
+    UNEXCUSED,
+    NON_COUNT,
+    LATE,
+    EARLY,
+    DISTANCE
+}
 
 interface lessonInfo {
     subjectId: number;
@@ -109,8 +117,8 @@ const elysiaApp = new Elysia()
                 'groups.num',
             ])
             .where('student_groups.student', '=', id)
-            .where('sy.start', '<=', moment().format("YYYY-MM-DD"))
-            .where('sy.end', '>=', moment().format("YYYY-MM-DD"))
+            .where('sy.start', '<=', moment().format("YYYY-MM-DD") as any)
+            .where('sy.end', '>=', moment().format("YYYY-MM-DD") as any)
             .execute()
         ]);
 

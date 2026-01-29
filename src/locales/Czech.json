@@ -1001,7 +1001,23 @@
             ],
             "year": "%year% rok",
             "mandatory_subjects": "Povinné předměty",
-            "optional_subjects": "Nepovinné předměty"
+            "optional_subjects": "Nepovinné předměty",
+            "report": {
+                "year_label": "ročník",
+                "semester": "pololetí",
+                "average": "Průměr",
+                "hours": "hodin",
+                "absence_excused": "Omluveno",
+                "absence_unexcused": "Neomluveno",
+                "issued": "Vysvědčení vydáno",
+                "not_yet_evaluated": "Dosud nehodnoceno",
+                "evaluation_types": {
+                    "honors": "S vyznamenáním",
+                    "standard": "Prospěl(a)",
+                    "failed": "Neprospěl(a)",
+                    "not_evaluated": "Nehodnoceno"
+                }
+            }
         },
         "predictor": {
             "title": "Předvídač známek",
