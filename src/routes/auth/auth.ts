@@ -111,6 +111,7 @@ const elysiaApp = new Elysia()
         .select([
           "users.userId",
           "users.username",
+          "users.login_type",
           "users.2fa",
           "users.2fa_secret",
           "persons.firstName",
@@ -133,7 +134,8 @@ const elysiaApp = new Elysia()
       const ipData = await getIPData(ip);
 
       // Validate password
-      const isPasswordValid = bcrypt.compareSync(password, user.password);
+      // TODO ldap login
+      const isPasswordValid = user.login_type == "local" ? bcrypt.compareSync(password, user.password) : false;
 
       if (!isPasswordValid) {
         await db.insertInto("login_history")
@@ -229,6 +231,7 @@ const elysiaApp = new Elysia()
           })
           .execute();
 
+          // TODO:!
           await Mailer.sendFromTemplate(
             "new_login.html",
             {
