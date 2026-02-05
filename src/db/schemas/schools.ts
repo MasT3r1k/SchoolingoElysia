@@ -7,6 +7,7 @@ export interface schoolsTable {
   district: number
   code: string
   owner: number
+  total_storage_limit: number;
   apiToken: string
   license_type: 'FREE' | 'BASIC' | 'PRO' | 'DEV';
   license_until: Generated<Date | null>

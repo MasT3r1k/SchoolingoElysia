@@ -155,8 +155,6 @@ class MailerModule {
     }
 
     async send(payload: SendMailPayload): Promise<{ id: string }> {
-        console.log("MAILER.send CALLED WITH:", payload);
-
         if (!payload) {
             throw new Error("Mailer.send called with undefined payload");
         }

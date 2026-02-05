@@ -12,6 +12,7 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default('*'),
   RATE_LIMIT_WINDOW_MS: z.string().default('900000'),
   RATE_LIMIT_MAX: z.string().default('100'),
+  STMP_ENABLED: z.optional(z.string()),
   STMP_HOST: z.optional(z.string()),
   STMP_PORT: z.optional(z.string()),
   STMP_USER: z.optional(z.string()),
