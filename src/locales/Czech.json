@@ -58,6 +58,7 @@
             "authenticating": "Probíhá ověření",
             "use_device": "Použijte biometriku nebo PIN vašeho zařízení",
             "cancelled": "Přihlášení pomocí passkey bylo zrušeno",
+            "no_account": "Zadaný Passkey nebyl propojen s žádným účtem",
             "error": "Při přihlášení pomocí passkey došlo k chybě"
         },
         "2fa": {
