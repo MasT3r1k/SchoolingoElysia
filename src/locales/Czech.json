@@ -418,7 +418,8 @@
         }
     },
     "notifications": {
-        "title": "Notifikace"
+        "title": "Notifikace",
+        "empty": "Žádné příchozí notifikace"
     },
     "devices": {
         "current_device": "Aktuální připojení",
@@ -1184,6 +1185,7 @@
             "light": "Světlé pozadí, tradiční světlé barvy.",
             "moon": "Čistě černé pozadí pro OLED displeje."
         },
+        "other": "Ostatní",
         "security": "Zabezpečení",
         "2fa": {
             "already_activated": "Dvoufázové ověření máte již aktivované!",

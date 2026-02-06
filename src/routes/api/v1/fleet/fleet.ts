@@ -52,6 +52,9 @@ const app = new Elysia()
         }
 
         const vehicleId = parseInt(params.id);
+        if (isNaN(vehicleId)) {
+            return Response.json({ error: 'invalid_vehicle' }, { status: 400 });
+        }
 
         const vehicle = await db
             .selectFrom('fleetvehicles_vehicles')
