@@ -69,7 +69,8 @@ const app = new Elysia()
               'users.manager',
               'users.locale',
               'users.levels_exp',
-              'users.theme'
+              'users.theme',
+              'users.2fa'
           ])
           .where('tokens.token', '=', token)
           .where('tokens.expires', '>=', moment().toDate())

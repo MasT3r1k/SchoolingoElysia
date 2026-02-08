@@ -360,7 +360,9 @@
             "settings": "Nastavení"
         },
         "user": {
-            "notifications": "Nastavení notifikací"
+            "notifications": "Nastavení notifikací",
+            "gdpr": "GDPR - Ochrana osobních údajů",
+            "cookies": "Nastavení Cookies"
         },
         "archive": "Archiv systému",
         "system": {
@@ -419,7 +421,8 @@
     },
     "notifications": {
         "title": "Notifikace",
-        "empty": "Žádné příchozí notifikace"
+        "empty": "Žádné příchozí notifikace",
+        "mark_all_read": "Přečíst všechny oznámení"
     },
     "devices": {
         "current_device": "Aktuální připojení",

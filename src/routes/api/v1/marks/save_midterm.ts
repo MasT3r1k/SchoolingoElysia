@@ -73,14 +73,12 @@ const app = new Elysia()
       await db
         .insertInto('semester_grades')
         .values({
-          student_id: student_id,
-          subject_id: subject_id,
+          student_id,
+          subject_id,
           semester: quarter,
           grade: grade,
           year: currentYear,
-          teacher_id: auth.person!,
-          created_at: moment().toDate(),
-          updated_at: moment().toDate()
+          teacher_id: auth.person!
         })
         .execute();
     }

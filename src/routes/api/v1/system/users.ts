@@ -16,16 +16,35 @@ const app = new Elysia()
 
     const { limit = 20, offset = 0, search = '', role = 'all', status = 'all' } = query;
 
-    let dbQuery = db.selectFrom('users')
-    .leftJoin('persons', 'persons.personId', 'users.person')
+    const lastLoginSubquery = db
+      .selectFrom('login_history')
+      .select([
+        'login_history.userId',
+        sql`MAX(login_history.created)`.as('last_login')
+      ])
+      .groupBy('login_history.userId')
+      .as('last_login');
+
+    let dbQuery = db
+      .selectFrom('users')
+      .leftJoin('persons', 'persons.personId', 'users.person')
+      .leftJoin(lastLoginSubquery, 'last_login.userId', 'users.userId')
+      .leftJoin('login_history', (join) =>
+        join
+          .onRef('login_history.userId', '=', 'users.userId')
+          .onRef('login_history.created', '=', 'last_login.last_login')
+      )
       .select([
         'users.userId',
         'users.username',
+        'users.login_type',
         'persons.firstName',
         'persons.lastName',
-        sql`concat(persons.firstName, ' ', persons.lastName)`.as('fullName')
+        sql`concat(persons.firstName, ' ', persons.lastName)`.as('fullName'),
+        'login_history.created as last_login',
+        'login_history.ip as lastLoginIp',
+        'login_history.userAgent as lastLoginUserAgent'
       ]);
-
     // Filters
     if (search) {
       dbQuery = dbQuery.where((eb) => eb.or([
@@ -37,7 +56,6 @@ const app = new Elysia()
 
     // Get Total Count
     const countQuery = dbQuery
-      .select(sql`count(*)`.as('total'))
       .clearSelect()
       .select(sql`count(*)`.as('total'));
 

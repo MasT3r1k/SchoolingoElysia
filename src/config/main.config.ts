@@ -23,7 +23,9 @@ export const MainConfigSchema = z.object({
 
   MAX_BEHAVE_MARK: z.number().min(1).max(10).default(3),
 
-  MARKING_SCALE: z.array(z.number().min(0).max(100))
+  MARKING_SCALE: z.array(z.number().min(0).max(100)),
+
+  DEFAULT_NOTIFICATION: z.array(z.string())
 })
   .refine(d => d.MARK_MAX_WEIGHT >= d.MARK_MIN_WEIGHT, {
     message: "MARK_MAX_WEIGHT cannot be smaller than MARK_MIN_WEIGHT",
@@ -65,5 +67,7 @@ export const MainConfig = MainConfigSchema.parse({
 
   MAX_BEHAVE_MARK: 3,
 
-  MARKING_SCALE: [90, 75, 60, 45]
+  MARKING_SCALE: [90, 75, 60, 45],
+
+  DEFAULT_NOTIFICATION: ["new_grade"]
 });
