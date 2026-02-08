@@ -101,10 +101,10 @@
         }
     },
     "themes": {
-        "system": "Režim podle systému",
-        "dark": "Tmavý režim",
-        "light": "Světlý režim",
-        "moon": "Midnight režim"
+        "system": "Podle systému",
+        "dark": "Tmavý",
+        "light": "Světlý",
+        "moon": "Midnight"
     },
     "genders": {
         "male": "Muž",
@@ -168,8 +168,9 @@
     "unknown": "Neznámé",
     "cookies": {
         "title": "Používáme cookies – ale v přátelském duchu!",
-        "description": "Na tomto webu používáme cookies a další identifikátory, které mohou obsahovat osobní údaje. Slouží k provozu, zlepšování a vývoji našich služeb. Pro některé účely potřebujeme váš souhlas – udělíte jej volbou „Souhlasím se vším“.",
+        "description": "Na těchto webových stránkách používáme soubory cookies a další síťové identifikátory, které mohou obsahovat osobní údaje (např. informace o používání webu). Tyto údaje slouží k zajištění provozu webu, ke zlepšování našich služeb a k jejich dalšímu vývoji. Pro některé způsoby zpracování je vyžadován váš souhlas, který můžete udělit kliknutím na možnost „Souhlasím se vším“. Kliknutím na „Podrobné nastavení“ můžete jednotlivé účely zpracování povolit nebo zakázat. Volbou „Pouze nezbytné“ povolíte pouze cookies nutné pro správné fungování webu.",
         "consent": "Souhlasím se vším",
+        "settings": "Podrobné nastavení",
         "only_necessary": "Pouze nezbytné"
     },
     "system": {
@@ -371,6 +372,7 @@
             "manage_users": "Správa uživatelů",
             "manage_files": "Správa souborů",
             "manage_messages": "Správa zpráv",
+            "monitoring": "Monitorování",
             "auditlog": "Auditlog"
         }
     },

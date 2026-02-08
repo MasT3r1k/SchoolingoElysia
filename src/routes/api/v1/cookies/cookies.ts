@@ -2,6 +2,27 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 
 const app = new Elysia()
+  .get('/cookies', async ({ cookie }) => {
+    const token = cookie.token?.value as string;
+    if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+    const auth = await db
+      .selectFrom('tokens')
+      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .select([
+        'tokens.userId',
+        'users.person',
+        'users.cookies'
+      ])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', new Date())
+      .executeTakeFirst();
+
+    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+
+    return { success: true, cookies: auth?.cookies ?? 0 };
+  })
+
   .post('/cookies', async ({ cookie, body }) => {
     const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
@@ -21,9 +42,7 @@ const app = new Elysia()
     
     try {
         const updateCookie = await db.updateTable('users')
-        .set({
-            cookies
-        })
+        .set({ cookies })
         .where('users.userId', '=', auth.userId)
         .executeTakeFirst();
 
@@ -33,7 +52,7 @@ const app = new Elysia()
     }
   }, {
     body: t.Object({
-        cookies: t.Optional(t.Number())
+      cookies: t.Optional(t.Number())
     })
   });
 

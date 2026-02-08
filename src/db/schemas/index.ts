@@ -1,5 +1,6 @@
 import { AbsenceTable } from './absence'
 import { AddressesTable } from './addresses'
+import { AnalyticsVisitsTable } from './analytics'
 import { AuditlogTable } from './auditlog'
 import { BuildingsTable } from './buildings'
 import { Building_exitsTable } from './building_exits'
@@ -100,6 +101,7 @@ import { TimetableSchemasTable } from './timetable_schemas'
 export interface Database {
   absence: AbsenceTable
   addresses: AddressesTable
+  analytics_visits: AnalyticsVisitsTable
   auditlog: AuditlogTable
   buildings: BuildingsTable
   building_exits: Building_exitsTable
