@@ -12,7 +12,7 @@ export default new Elysia({ prefix: '/analytics' })
 
             const userAgent = headers['user-agent'] || request.headers.get('user-agent');
             
-            await db.insertInto('analytics_visits')
+            const result = await db.insertInto('analytics_visits')
                 .values({
                     visitor_id: body.visitor_id,
                     user_id: body.user_id || null,
@@ -22,9 +22,9 @@ export default new Elysia({ prefix: '/analytics' })
                     ip_address: ipData?.ip ?? ip ?? typeof header_ip === 'string' ? header_ip.split(',')[0].trim() : String(header_ip),
                     user_agent: userAgent,
                 })
-                .execute();
+                .executeTakeFirst();
 
-            return { success: true };
+            return { success: true, id: Number(result.insertId) };
         } catch (error) {
             console.error('Analytics tracking failed:', error);
             set.status = 500;

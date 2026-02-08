@@ -20,9 +20,9 @@ export default new Elysia({ prefix: '/admin/analytics' })
                 .select([
                     sql<number>`count(*)`.as('nb_visits'),
                     sql<number>`count(distinct visitor_id)`.as('nb_uniq_visitors'),
-                    sql<number>`count(*)`.as('nb_actions'), // Simple actions = visits for now
-                     // avg duration is hard without exit events, skip for now or set 0
-                    sql<number>`0`.as('avg_time_on_site')
+                    sql<number>`count(*)`.as('nb_actions'), 
+                    // Calculate average duration, default to 0 if null
+                    sql<number>`COALESCE(AVG(duration), 0)`.as('avg_time_on_site')
                 ])
                 .where(dateCondition)
                 .executeTakeFirst();
@@ -31,10 +31,10 @@ export default new Elysia({ prefix: '/admin/analytics' })
             const topPages = await db
                 .selectFrom('analytics_visits')
                 .select([
-                    'path as label', // match Matomo structure
+                    'path as label',
                     sql<number>`count(*)`.as('nb_visits'),
                     sql<number>`count(distinct visitor_id)`.as('nb_uniq_visitors'),
-                    sql<number>`0`.as('avg_time_on_page')
+                    sql<number>`COALESCE(AVG(duration), 0)`.as('avg_time_on_page')
                 ])
                 .where(dateCondition)
                 .groupBy('path')
@@ -42,14 +42,15 @@ export default new Elysia({ prefix: '/admin/analytics' })
                 .limit(10)
                 .execute();
 
-            // Visits per hour/day (for graph if needed, optional)
-
             return {
                 nb_visits: summary?.nb_visits || 0,
                 nb_uniq_visitors: summary?.nb_uniq_visitors || 0,
                 nb_actions: summary?.nb_actions || 0,
-                avg_time_on_site: 0,
-                pages: topPages
+                avg_time_on_site: Math.round(Number(summary?.avg_time_on_site || 0)),
+                pages: topPages.map(p => ({
+                    ...p,
+                    avg_time_on_page: Math.round(Number(p.avg_time_on_page || 0))
+                }))
             };
         } catch (error) {
             console.error('Analytics stats error:', error);

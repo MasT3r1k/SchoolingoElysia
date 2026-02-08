@@ -1,3 +1,5 @@
+import { Generated } from "kysely"
+
 export interface UsersTable {
   userId: number
   person: number
@@ -19,5 +21,7 @@ export interface UsersTable {
   '2fa': boolean
   '2fa_secret': string | null
   '2fa_activated': Date | null
-  avatar: string
+  avatar: string;
+  created_at: Generated<Date>;
+  updated_at: Generated<Date>;
 }
