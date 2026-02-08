@@ -1125,7 +1125,9 @@
         "noticeboard_description": "Aktuální oznámení, zprávy a upomínky",
         "new_announcement": "Nová zpráva na nástěnku",
         "mark_as_read": "Označit jako přečtené",
-        "marked_as_read": "Přečteno"
+        "marked_as_read": "Přečteno",
+        "details": "Podrobnosti o zprávě",
+        "error_loading": "Nepodařilo se načíst informace o zprávě"
     },
     "settings": {
         "alerts": {
