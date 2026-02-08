@@ -31,7 +31,6 @@ export interface schoolsTable {
   // Auth settings
   auth_classic: number // boolean
   auth_ldap: number // boolean
-  auth_qr: number // boolean
   auth_passkeys: number // boolean
   session_lifetime_minutes: number
   max_login_attempts: number

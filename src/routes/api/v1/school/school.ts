@@ -22,7 +22,17 @@ const elysiaApp = new Elysia()
             'schools.warningAbsencePercent',
             'schools.modules',
             'schools.studentsLimit',
-            'districts.district'
+            'districts.district',
+            'schools.auth_classic',
+            'schools.auth_ldap',
+            'schools.auth_passkeys',
+            'schools.gdpr_firstname',
+            'schools.gdpr_lastname',
+            'schools.gdpr_phone',
+            'schools.gdpr_email',
+            'schools.gdpr_mobile',
+            'schools.gdpr_databox',
+            'schools.gdpr_web'
         ])
         .executeTakeFirst(),
         db.selectFrom("school_breaks")

@@ -38,7 +38,6 @@ const app = new Elysia()
           // Auth Settings
           'schools.auth_classic',
           'schools.auth_ldap',
-          'schools.auth_qr',
           'schools.auth_passkeys',
           'schools.session_lifetime_minutes',
           'schools.max_login_attempts'

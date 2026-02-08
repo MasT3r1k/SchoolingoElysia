@@ -17,9 +17,10 @@ const app = new Elysia()
         auth_classic, 
         auth_ldap, 
         auth_qr, 
-        auth_passkeys, 
+        auth_passkeys,
+        reset_password_with_email,
         session_lifetime_minutes, 
-        max_login_attempts 
+        max_login_attempts,
     } = body;
 
     // Update school settings
@@ -27,8 +28,9 @@ const app = new Elysia()
       .set({
         auth_classic: auth_classic ? 1 : 0, // Kysely boolean/tinyint match
         auth_ldap: auth_ldap ? 1 : 0,
-        auth_qr: auth_qr ? 1 : 0,
+        fastlogin: auth_qr ? true : false,
         auth_passkeys: auth_passkeys ? 1 : 0,
+        resetPasswordWithEmail: reset_password_with_email ? true : false,
         session_lifetime_minutes,
         max_login_attempts
       })
@@ -41,6 +43,7 @@ const app = new Elysia()
       auth_ldap: t.Boolean(),
       auth_qr: t.Boolean(),
       auth_passkeys: t.Boolean(),
+      reset_password_with_email: t.Boolean(),
       session_lifetime_minutes: t.Number(),
       max_login_attempts: t.Number()
     })
