@@ -2,6 +2,11 @@ import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
 
+import attendanceRouter from './attendance';
+import vacationsRouter from './vacations';
+import salariesRouter from './salaries';
+import bonusesRouter from './bonuses';
+
 // Build fullname with degrees
 const titlesBefore = db.selectFrom('persons_degree as pd')
   .innerJoin('degrees as d', 'pd.degree', 'd.degreeID')
@@ -42,8 +47,13 @@ const fullName = sql`
   `.as('fullName')
 
 const employeesRouter = new Elysia()
+    .use(attendanceRouter)
+    .use(vacationsRouter)
+    .use(salariesRouter)
+    .use(bonusesRouter)
   // GET /degrees - Get all degrees for selection
   .get('/degrees', async() => {
+
     const degrees = await db.selectFrom('degrees')
       .selectAll()
       .orderBy('weight', 'asc')

@@ -1268,6 +1268,7 @@
         }
     },
     "modules": {
+        "attendance": "Docházka",
         "timetable": "Rozvrh",
         "marks": "Přehled známek",
         "announcements": "Oznámení",
@@ -1543,7 +1544,7 @@
     },
     "employees": {
         "list": "Seznam",
-        "attendance": "Docházka", 
+        "attendance": "Docházka",
         "vacations": "Dovolené",
         "salaries": "Platy",
         "bonuses": "Prémie",
@@ -1584,6 +1585,9 @@
                 "study_leave": "Studijní volno"
             },
             "reason": "Důvod (nepovinné)"
+        },
+        "edit_attendance": {
+            "title": "Upravit docházku"
         }
     },
     "seasonal": {
