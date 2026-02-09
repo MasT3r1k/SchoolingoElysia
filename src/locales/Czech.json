@@ -419,6 +419,18 @@
                 "other": "Jiný"
             },
             "save_email": "Zapsat email"
+        },
+        "delete_email": {
+            "title": "Odstranit e-mailovou adresu?",
+            "placeholder": "Zadejte e-mail pro potvrzení",
+            "delete_email": "Trvale smazat e-mail"
+        },
+        "add_phone": {
+            "title": "Přidání telefonu k Vašemu účtu",
+            "code": "Předvolba",
+            "number": "Telefonní číslo",
+            "save_phone": "Zapsat telefon",
+            "save_changes": "Uložit změny"
         }
     },
     "notifications": {

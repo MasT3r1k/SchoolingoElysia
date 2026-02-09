@@ -4,7 +4,7 @@ import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia()
   .derive(async ({ cookie }) => ({
-      user: await getAuthUser(cookie?.token?.value)
+      user: await getAuthUser(cookie?.token?.value as string)
   }))
   // POST /system/update_login - Update Authentication Settings
   .post('/system/update_login', async ({ user, body }) => {

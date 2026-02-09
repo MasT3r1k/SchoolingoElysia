@@ -161,6 +161,27 @@
             "no_data": "No pages recorded yet."
         }
     },
+    "user": {
+        "add_email": {
+            "title": "Add Email to Your Account",
+            "email": "Email Address",
+            "type": "Email Type",
+            "types": {
+                "personal": "Personal Email",
+                "school": "School Email",
+                "work": "Work Email",
+                "other": "Other"
+            },
+            "save_email": "Save Email"
+        },
+        "add_phone": {
+            "title": "Add Phone to Your Account",
+            "code": "Area Code",
+            "number": "Phone Number",
+            "save_phone": "Save Phone",
+            "save_changes": "Save Changes"
+        }
+    },
     "common": {
         "save": "Save"
     }
