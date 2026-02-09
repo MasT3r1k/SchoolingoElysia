@@ -1630,6 +1630,34 @@
             "currentStatus": "Aktuální stav",
             "activeSeason": "Aktivní sezóna",
             "noActiveSeason": "Žádná aktivní sezóna"
+        },
+        "monitoring": {
+            "title": "Monitorování (Matomo)",
+            "period": {
+                "today": "Dnes",
+                "week": "Týden",
+                "month": "Měsíc"
+            },
+            "loading": "Načítání analytiky...",
+            "error": "Nepodařilo se načíst statistiky.",
+            "retry": "Zkusit znovu",
+            "visits_overview": "Přehled návštěv",
+            "visits": "Návštěvy",
+            "unique_visitors": "Unikátní návštěvníci",
+            "page_views": "Zobrazení stránek",
+            "avg_duration": "Prům. doba",
+            "total_sessions": "Celkem relací",
+            "individual_users": "Jednotliví uživatelé",
+            "total_interactions": "Celkem interakcí",
+            "per_session": "Za relaci",
+            "most_visited_pages": "Nejnavštěvovanější stránky",
+            "table": {
+                "page_name": "Název stránky",
+                "visits": "Návštěvy",
+                "unique": "Unikátní",
+                "avg_time": "Prům. čas"
+            },
+            "no_data": "Žádné stránky zatím nebyly zaznamenány."
         }
     },
     "common": {

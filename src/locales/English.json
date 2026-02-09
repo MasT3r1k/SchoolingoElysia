@@ -131,6 +131,34 @@
             "currentStatus": "Current Status",
             "activeSeason": "Active Season",
             "noActiveSeason": "No active season"
+        },
+        "monitoring": {
+            "title": "Monitoring (Matomo)",
+            "period": {
+                "today": "Today",
+                "week": "Week",
+                "month": "Month"
+            },
+            "loading": "Loading Analytics...",
+            "error": "Failed to load statistics.",
+            "retry": "Retry",
+            "visits_overview": "Visits Overview",
+            "visits": "Visits",
+            "unique_visitors": "Unique Visitors",
+            "page_views": "Page Views",
+            "avg_duration": "Avg. Duration",
+            "total_sessions": "Total sessions",
+            "individual_users": "Individual users",
+            "total_interactions": "Total interactions",
+            "per_session": "Per session",
+            "most_visited_pages": "Most Visited Pages",
+            "table": {
+                "page_name": "Page Name",
+                "visits": "Visits",
+                "unique": "Unique",
+                "avg_time": "Avg Time"
+            },
+            "no_data": "No pages recorded yet."
         }
     },
     "common": {
