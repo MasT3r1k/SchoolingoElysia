@@ -7,6 +7,7 @@ import { verifyTFA } from '../../functions/verifyTFA';
 import { getIPData } from '../../functions/get_ip_data';
 import { SecurityConfig } from '../../config/security.config';
 import { Mailer } from '../../../mailer.module';
+import { Utils } from '../../utils/utils';
 
 export async function authenticateUser(userId: number, cookie: any, userAgent: string, ip: string) {
   try {
@@ -114,6 +115,7 @@ const elysiaApp = new Elysia()
           "users.login_type",
           "users.2fa",
           "users.2fa_secret",
+          "persons.personId",
           "persons.firstName",
           "persons.lastName",
           "passwords.password",
@@ -226,26 +228,40 @@ const elysiaApp = new Elysia()
             user_id: user.userId,
             type: 'new_login',
             data: JSON.stringify({
-              id: Number(loginHistory.insertId)
+              id: Number(loginHistory.insertId),
+              city: ipData?.city ?? null,
+              ip: ipData?.ip ?? ip,
+              country: ipData?.country ?? null,
+              country_code: ipData?.country_code ?? null,
             })
           })
           .execute();
 
-          // TODO:!
-          await Mailer.sendFromTemplate(
-            "new_login.html",
-            {
-              to: "TODO",
-              subject: "Nové přihlášení z neznámého zařízení",
-              data: {
-                location: `${ipData?.city}, ${ipData?.country}`,
-                security_url: "https://localhost:4200",
-                device: "Chrome / Windows",
-                ip: ipData?.ip ?? ip,
-                time: moment().format('DD. MM. YYYY HH:mm')
+          const emails = await db.selectFrom('emails')
+          .select([
+            'emails.email'
+          ])
+          .where('emails.personId', '=', user.personId)
+          .where('emails.is_verified', '=', true)
+          .execute();
+
+          for(const email of emails) {
+            // TODO:!
+            await Mailer.sendFromTemplate(
+              "new_login.html",
+              {
+                to: email.email,
+                subject: "Nové přihlášení z neznámého zařízení",
+                data: {
+                  location: `${ipData?.city}, ${ipData?.country}`,
+                  security_url: "https://localhost:4200",
+                  device: `${Utils.getBrowser(userAgent)}, ${Utils.getOS(userAgent)}`,
+                  ip: ipData?.ip ?? ip,
+                  time: moment().format('DD. MM. YYYY HH:mm')
+                }
               }
-            }
-          );
+            );
+          }
         }
 
 

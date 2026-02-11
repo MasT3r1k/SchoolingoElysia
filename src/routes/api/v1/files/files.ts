@@ -2,6 +2,7 @@ import { Elysia, t } from 'elysia';
 import { sql } from 'kysely';
 import { db } from '../../../../../database';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
+import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia({ prefix: '/files' })
 
@@ -44,7 +45,14 @@ const app = new Elysia({ prefix: '/files' })
         if (query.user_id != -1) {
             filesQuery.where('files.owner_id', '=', query.user_id);
         }
-        const files = await filesQuery.execute();
+        const filesData = await filesQuery.execute();
+
+        const files = await Promise.all(
+            filesData.map(async (file) => ({
+                ...file,
+                owner: await format_person_by_id(file.owner_id!)
+            }))
+        );
 
         return files;
     }, {

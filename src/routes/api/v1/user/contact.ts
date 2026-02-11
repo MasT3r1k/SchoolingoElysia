@@ -2,6 +2,10 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import moment from 'moment';
 import { createErrorResponse, createResponse } from '../../../../utils/response.helper';
+import { randomString } from '../../../../functions/random_string';
+import { Mailer } from '../../../../../mailer.module';
+import { Utils } from '../../../../utils/utils';
+import { verifyTFA } from '../../../../functions/verifyTFA';
 
 const app = new Elysia()
     // Email Management
@@ -49,13 +53,20 @@ const app = new Elysia()
         })
     })
 
-    .put('/user/email', async ({ cookie, body }: any) => {
+    .put('/user/email', async ({ cookie, body }) => {
         const token = cookie.token?.value as string;
         if (!token) return createErrorResponse('no_user', 'no_cookie');
 
         const user = await db.selectFrom("tokens")
             .innerJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person'])
+            .leftJoin('persons', 'persons.personId', 'users.person')
+            .select([
+                'users.userId',
+                'users.person',
+                'users.2fa',
+                'users.2fa_secret',
+                'persons.firstName'
+            ])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', moment().toDate())
             .limit(1)
@@ -63,7 +74,7 @@ const app = new Elysia()
 
         if (!user || !user.person) return createErrorResponse('no_user', 'no_db');
 
-        const { originalEmail, email, type, description } = body;
+        const { originalEmail, email, type, description } = body as any;
 
         // Verify ownership of original
         const ownership = await db.selectFrom('emails')
@@ -74,23 +85,66 @@ const app = new Elysia()
 
         if (!ownership) return createErrorResponse('permission_denied', 'email_not_owned');
 
+        // Check if already has email
+        const hasEmail = await db.selectFrom('emails')
+        .select(['email'])
+        .where('emails.personId', '=', user.person)
+        .where('emails.email', '=', email)
+        .executeTakeFirst();
+        if (hasEmail) {
+            return createErrorResponse('already_has_email');
+        }
+
+        // Check 2FA
+        if (user['2fa'] && user['2fa_secret']) {
+            if (!body.token) {
+                return createErrorResponse('required_2fa');
+            }
+    
+            const isApproved2FA = await verifyTFA(body.token, user['userId']);
+            if (!isApproved2FA) {
+                return Response.json({ error: ['Invalid 2FA'] });
+            }
+        }
+
+        const emailCode = randomString(8);
+        const codeExpiration = moment().add(30, 'minutes');
+
         await db.updateTable('emails')
             .set({
-                email: email,
-                type: type,
-                description: description
+                email,
+                type,
+                description,
+                is_verified: false,
+                email_code: emailCode,
+                code_until: codeExpiration.toDate()
             })
             .where('email', '=', originalEmail)
             .where('personId', '=', user.person)
             .execute();
 
-        return createResponse({ success: true }, cookie);
+        await Mailer.sendFromTemplate(
+            "add_email.html",
+            {
+                to: email.email,
+                subject: "Přidání emailu k účtu",
+                data: {
+                    firstName: user.firstName || '',
+                    email,
+                    code: emailCode,
+                    validUntil: Utils.formatDate(codeExpiration)
+                }
+            }
+        );
+
+        return createResponse({ success: true, code_valid_until: codeExpiration.toDate() }, cookie);
     }, {
         body: t.Object({
             originalEmail: t.String(),
             email: t.String(),
             type: t.Optional(t.String()),
-            description: t.Optional(t.String())
+            description: t.Optional(t.String()),
+            token: t.Optional(t.String())
         })
     })
 
@@ -100,13 +154,30 @@ const app = new Elysia()
 
         const user = await db.selectFrom("tokens")
             .innerJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person'])
+            .select([
+                'users.userId',
+                'users.person',
+                'users.2fa',
+                'users.2fa_secret'
+            ])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', moment().toDate())
             .limit(1)
             .executeTakeFirst();
 
         if (!user || !user.person) return createErrorResponse('no_user', 'no_db');
+
+        // Check 2FA
+        if (user['2fa'] && user['2fa_secret']) {
+            if (!body.token) {
+                return createErrorResponse('required_2fa');
+            }
+    
+            const isApproved2FA = await verifyTFA(body.token, user['userId']);
+            if (!isApproved2FA) {
+                return Response.json({ error: ['Invalid 2FA'] });
+            }
+        }
 
         const { email } = body;
 
@@ -118,7 +189,8 @@ const app = new Elysia()
         return createResponse({ success: true }, cookie);
     }, {
         body: t.Object({
-            email: t.String()
+            email: t.String(),
+            token: t.Optional(t.String())
         })
     })
 

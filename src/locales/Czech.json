@@ -276,6 +276,7 @@
         "maintenance": "Údržba",
         "management": "Vedení",
         "personnel": "Personalista",
+        "other": "Ostatní",
         "unknown": "Neznámé",
         "undefined": "Neznámé"
     },
@@ -1221,7 +1222,8 @@
                 "show_backup_codes": "Zadáním kódu níže si zobrazíte záložní kódy. Kódy nikomu neukazujte ani neposílejte!",
                 "refresh_backup_codes": "Zadáním kódu níže si obnovíte záložní kódy. Stávající kódy budou smazány a vytvoří se nové, ty se Vám následně ukážou, aby jste si je mohli uložit. Nikomu je neukazuj ani neposílej!",
                 "deactivate2FA": "Zadáním kódu níže si deaktivujete dvoufázové ověření. Tudíž nebude již nadále aktivní.",
-                "add_to_phone": "Naskenujte QR kód v mobilní aplikaci a zadejte ověřovací kód z mobilní aplikace."
+                "add_to_phone": "Naskenujte QR kód v mobilní aplikaci a zadejte ověřovací kód z mobilní aplikace.",
+                "verify_code": "Zadejte kód z mobilní aplikace, aby jste ověřili svojí totožnost."
             },
             "backup_codes": {
                 "title": "🔐 Záložní kódy",

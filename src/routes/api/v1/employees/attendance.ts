@@ -239,7 +239,7 @@ const attendanceRouter = new Elysia()
   }, {
     body: t.Object({
       checkIn: t.Optional(t.String()),
-      checkOut: t.Optional(t.String()),
+      checkOut: t.Optional(t.Nullable(t.String())),
       breakMinutes: t.Optional(t.Number()),
       workedMinutes: t.Optional(t.Number()),
       type: t.Optional(t.String()),

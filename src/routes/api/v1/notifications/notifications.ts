@@ -26,6 +26,7 @@ const app = new Elysia()
         'notifications.created_at'
     ])
     .where('notifications.user_id', '=', auth.userId)
+    .orderBy('notifications.created_at', 'desc')
     .execute();
    
     return notifications;
