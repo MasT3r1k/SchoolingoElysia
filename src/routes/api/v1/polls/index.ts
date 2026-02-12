@@ -13,7 +13,7 @@ const app = new Elysia({ prefix: '/polls' })
         const auth = await db
             .selectFrom('tokens')
             .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.manager', 'users.principal'])
+            .select(['users.person', 'users.manager', 'users.principal', 'users.userId'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -22,7 +22,8 @@ const app = new Elysia({ prefix: '/polls' })
 
         const canCreate = auth.manager !== -1 || auth.principal;
 
-        const polls = await db
+        // 1. Definujeme dotaz pro vlastní pollly
+        const ownPollsQuery = db
             .selectFrom('polls')
             .select([
                 'polls.id',
@@ -33,10 +34,31 @@ const app = new Elysia({ prefix: '/polls' })
                 'polls.created_at',
                 'polls.created_by'
             ])
-            .orderBy('polls.created_at', 'desc')
+            .where('polls.created_by', '=', auth.userId);
+
+        // 2. Definujeme dotaz pro sdílené polly
+        const sharedPollsQuery = db
+            .selectFrom('poll_shares')
+            .innerJoin('polls', 'poll_shares.poll_id', 'polls.id') // innerJoin je zde bezpečnější pro integritu
+            .select([
+                'polls.id',
+                'polls.title',
+                'polls.description',
+                'polls.type',
+                'polls.time_limit',
+                'polls.created_at',
+                'polls.created_by'
+            ])
+            .where('poll_shares.is_valid', '=', true);
+
+        // 3. Spojíme je pomocí unionAll a seřadíme jako celek
+        const allPolls = await ownPollsQuery
+            .unionAll(sharedPollsQuery)
+            .orderBy('created_at', 'desc')
             .execute();
 
-        const pollsWithAuthors = await Promise.all(polls.map(async (p) => ({
+        // 4. Doplníme jména autorů
+        const pollsWithAuthors = await Promise.all(allPolls.map(async (p) => ({
             ...p,
             authorName: p.created_by ? await format_person_by_id(p.created_by) : 'Unknown'
         })));

@@ -88,7 +88,7 @@ import { semester_gradesTable } from './semester_grades'
 import { notificationsTable } from './notifications'
 import { notificationRulesTable } from './notification_rules'
 import { pushSubscriptionsTable } from './push_subscriptions'
-import { PollsTable, PollQuestionsTable, PollOptionsTable, PollResponsesTable, PollAnswersTable } from './polls'
+import { PollsTable, PollQuestionsTable, PollOptionsTable, PollResponsesTable, PollAnswersTable, PollAssignsTable, PollSharesTable } from './polls'
 import { EmployeeAttendanceTable } from './employee_attendance'
 import { EmployeeVacationBalanceTable, EmployeeVacationRequestsTable } from './employee_vacations'
 import { EmployeeBonusesTable } from './employee_bonuses'
@@ -195,10 +195,12 @@ export interface Database {
   users_resetpassword: Users_resetpasswordTable
   webauthn_challenges: webauthn_challengesTable
   polls: PollsTable
+  poll_answers: PollAnswersTable
+  poll_assigns: PollAssignsTable
   poll_questions: PollQuestionsTable
   poll_options: PollOptionsTable
   poll_responses: PollResponsesTable
-  poll_answers: PollAnswersTable
+  poll_shares: PollSharesTable
   // Employee management tables
   employee_attendance: EmployeeAttendanceTable
   employee_vacation_balance: EmployeeVacationBalanceTable

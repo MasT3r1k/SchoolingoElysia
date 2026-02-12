@@ -1,8 +1,10 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { getIPData } from '../../../../functions/get_ip_data';
+import { ip } from 'elysia-ip';
 
 export default new Elysia({ prefix: '/analytics' })
+    .use(ip())
     .post('/track', async ({ body, request, headers, set, store }: any) => {
         try {
             const { ip } = store;

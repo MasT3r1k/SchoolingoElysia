@@ -10,6 +10,29 @@ export interface PollsTable {
   time_limit: number | null // in minutes
 }
 
+export interface PollAssignsTable {
+  poll_assign_id: Generated<number>;
+  poll_id: number;
+  start: Generated<Date>;
+  end: Generated<Date>;
+  time_limit: Generated<number>;
+  shuffle_questions: Generated<boolean>;
+  shuffle_options: Generated<boolean>;
+  show_results: Generated<boolean>;
+  allow_review: Generated<boolean>;
+  grade_column: Generated<number | null>;
+  assign_by: number;
+  assign_at: Generated<Date>;
+}
+
+export interface PollSharesTable {
+  poll_share_id: Generated<number>;
+  poll_id: number;
+  user_id: number;
+  is_valid: Generated<boolean>;
+  added_at: Generated<Date>;
+}
+
 export interface PollQuestionsTable {
   id: Generated<number>
   poll_id: number

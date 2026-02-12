@@ -253,6 +253,8 @@
         "to": "Do"
     },
     "time": {
+        "minute": "minuta",
+        "minutes": "minut",
         "daily": "Denně",
         "week": "Týden",
         "weekly": "Týdně",
