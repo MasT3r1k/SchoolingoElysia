@@ -7,6 +7,9 @@ import { Mailer } from '../../../../../mailer.module';
 import { Utils } from '../../../../utils/utils';
 import { verifyTFA } from '../../../../functions/verifyTFA';
 
+// TODO: Dodělat ověření 2FA
+// TODO: Při přidání e-mailu vytvořit kód a následně vyžadovat zadat kód pro ověření vlastnictví e-mailu
+
 const app = new Elysia()
     // Email Management
     .post('/user/email', async ({ cookie, body }: any) => {

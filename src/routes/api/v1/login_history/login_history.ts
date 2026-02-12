@@ -49,7 +49,13 @@ const elysiaApp = new Elysia()
               'login_history.ip',
               'login_history.userAgent',
               'login_history.error',
-              'login_history.created'
+              'login_history.created',
+              'login_history.city',
+              'login_history.zip_code',
+              'login_history.region_name',
+              'login_history.country',
+              'login_history.continent',
+              'login_history.token_id'
             ])
             .limit(query.limit)
             .offset(query.offset)

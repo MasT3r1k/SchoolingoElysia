@@ -23,21 +23,46 @@ const vacationsRouter = new Elysia()
     const employeeId = canViewAll && query.employeeId ? query.employeeId : auth.person;
     const year = query.year || new Date().getFullYear();
 
-    const balance = await db.selectFrom('employee_vacation_balance')
+    let balance = await db.selectFrom('employee_vacation_balance')
       .selectAll()
       .where('teacherId', '=', employeeId)
       .where('year', '=', year)
       .executeTakeFirst();
 
+    if (!balance && employeeId) {
+      // Auto-assign default vacation days (25 days)
+      const defaultEntitlement = 25;
+      
+      try {
+        await db.insertInto('employee_vacation_balance')
+            .values({
+                teacherId: employeeId,
+                year: year,
+                entitlement: defaultEntitlement,
+                used: 0,
+                remaining: defaultEntitlement
+            })
+            .execute();
+            
+        // Fetch the newly created record
+        balance = await db.selectFrom('employee_vacation_balance')
+            .selectAll()
+            .where('teacherId', '=', employeeId)
+            .where('year', '=', year)
+            .executeTakeFirst();
+      } catch (e) {
+        console.error("Error creating default balance:", e);
+      }
+    }
+
     if (!balance) {
-      // Return default if no balance record exists
-      return Response.json({
-        teacherId: employeeId,
-        year,
-        entitlement: 20, // Default vacation days
-        used: 0,
-        remaining: 20
-      });
+         return Response.json({
+            teacherId: employeeId,
+            year,
+            entitlement: 0, 
+            used: 0,
+            remaining: 0
+          });
     }
 
     return Response.json(balance);
@@ -48,15 +73,78 @@ const vacationsRouter = new Elysia()
       year: t.Optional(t.Number()),
     })
   })
+  // POST /employees/vacations/balance/adjust - Adjust vacation entitlement (Admin only)
+  .post('/employees/vacations/balance/adjust', async({ body, cookie }) => {
+    const token = cookie.token?.value as string;
+    if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+    const auth = await db
+      .selectFrom('tokens')
+      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', new Date())
+      .executeTakeFirst();
+
+    if (!auth || auth.manager != 1) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 403 });
+
+    const currentYear = new Date().getFullYear();
+
+    // Check if balance exists, if not create it
+    const balance = await db.selectFrom('employee_vacation_balance')
+        .select(['remaining', 'entitlement'])
+        .where('teacherId', '=', body.employeeId)
+        .where('year', '=', currentYear)
+        .executeTakeFirst();
+
+    if (!balance) {
+        await db.insertInto('employee_vacation_balance')
+        .values({
+            teacherId: body.employeeId,
+            year: currentYear,
+            entitlement: 25 + body.amount, // Default + adjustment
+            used: 0,
+            remaining: 25 + body.amount
+        })
+        .execute();
+    } else {
+        await db.updateTable('employee_vacation_balance')
+        .set({
+            entitlement: sql`entitlement + ${body.amount}`,
+            remaining: sql`remaining + ${body.amount}`
+        } as any)
+        .where('teacherId', '=', body.employeeId)
+        .where('year', '=', currentYear)
+        .execute();
+    }
+
+    return Response.json({ success: true });
+
+  }, {
+    body: t.Object({
+        employeeId: t.Number(),
+        amount: t.Number(), // Can be positive or negative
+        reason: t.Optional(t.String())
+    })
+  })
   // GET /employees/vacations/requests - Get vacation requests
-  .get('/employees/vacations/requests', async({ query, store }) => {
-    const user = (store as any).user;
+  .get('/employees/vacations/requests', async({ query, store, cookie }) => {
+    const token = cookie.token?.value as string;
+    if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+    const user = await db
+      .selectFrom('tokens')
+      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', new Date())
+      .executeTakeFirst();
     
     if (!user) {
       return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
     }
     
-    const canViewAll = user.manager >= 1;
+    const canViewAll = user.manager == 1;
     
     let queryBuilder = db.selectFrom('employee_vacation_requests')
       .leftJoin('teachers', 'employee_vacation_requests.teacherId', 'teachers.personId')
@@ -126,14 +214,20 @@ const vacationsRouter = new Elysia()
     if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
     
     // Calculate number of days
-    const startDate = new Date(body.startDate);
-    const endDate = new Date(body.endDate);
-    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    let diffDays = 0;
+    
+    if (body.days) {
+        diffDays = body.days;
+    } else {
+        const startDate = new Date(body.startDate);
+        const endDate = new Date(body.endDate);
+        const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+        diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    }
 
     // Check vacation balance for vacation type
     if (body.type === 'vacation') {
-      const year = startDate.getFullYear();
+      const year = new Date(body.startDate).getFullYear();
       const balance = await db.selectFrom('employee_vacation_balance')
         .select('remaining')
         .where('teacherId', '=', auth.person)
@@ -175,6 +269,7 @@ const vacationsRouter = new Elysia()
       startDate: t.String(),
       endDate: t.String(),
       type: t.String(), // vacation, sick, personal, unpaid, study, parental
+      days: t.Optional(t.Number()),
       reason: t.Optional(t.String()),
     })
   })
@@ -195,7 +290,8 @@ const vacationsRouter = new Elysia()
 
     if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
     
-    const canManage = auth.manager == -1;
+    // Authorization check
+    const canManage = auth.manager == 1;
     
     if (!canManage) {
       return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
@@ -203,7 +299,7 @@ const vacationsRouter = new Elysia()
 
     // Get request details
     const request = await db.selectFrom('employee_vacation_requests')
-      .select(['teacherId', 'days', 'type', 'startDate'])
+      .select(['teacherId', 'days', 'type', 'startDate', 'endDate'])
       .where('requestId', '=', requestId)
       .executeTakeFirst();
 
@@ -220,7 +316,8 @@ const vacationsRouter = new Elysia()
       })
       .where('requestId', '=', requestId)
       .execute();
-
+      
+    // Create attendance records logic here if needed (omitted for brevity, handled by user request scope)
     // Update vacation balance for vacation type
     if (request.type === 'vacation') {
       const year = new Date(request.startDate).getFullYear();
@@ -254,7 +351,7 @@ const vacationsRouter = new Elysia()
 
     if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
     
-    const canManage = auth.manager == -1;
+    const canManage = auth.manager == 1;
     
     if (!canManage) {
       return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });

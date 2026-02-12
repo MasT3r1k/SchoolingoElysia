@@ -13,14 +13,14 @@ const app = new Elysia({ prefix: '/polls' })
         const auth = await db
             .selectFrom('tokens')
             .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.manager', 'users.principal', 'users.userId'])
+            .select(['users.person', 'users.manager', 'users.principal', 'users.userId', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
         if (!auth?.person) return { error: 'no_user', details: 'no_db' };
 
-        const canCreate = auth.manager !== -1 || auth.principal;
+        const canCreate = auth.manager == -1 || auth.role == "teacher" || auth.principal;
 
         // 1. Definujeme dotaz pro vlastní pollly
         const ownPollsQuery = db
