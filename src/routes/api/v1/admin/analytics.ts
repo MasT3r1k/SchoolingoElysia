@@ -2,6 +2,46 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
 
+// Helper functions to parse user agent
+function parseBrowser(userAgent: string | null): string {
+    if (!userAgent) return 'Unknown';
+    
+    const ua = userAgent.toLowerCase();
+    
+    // Check for specific browsers (order matters - check more specific first)
+    if (ua.includes('edg/') || ua.includes('edge/')) return 'Edge';
+    if (ua.includes('opr/') || ua.includes('opera/')) return 'Opera';
+    if (ua.includes('chrome/') && !ua.includes('edg')) return 'Chrome';
+    if (ua.includes('firefox/')) return 'Firefox';
+    if (ua.includes('safari/') && !ua.includes('chrome')) return 'Safari';
+    if (ua.includes('msie') || ua.includes('trident/')) return 'Internet Explorer';
+    
+    return 'Other';
+}
+
+function parseOS(userAgent: string | null): string {
+    if (!userAgent) return 'Unknown';
+    
+    const ua = userAgent.toLowerCase();
+    
+    // Check for OS
+    if (ua.includes('windows nt 10.0')) return 'Windows 10/11';
+    if (ua.includes('windows nt 6.3')) return 'Windows 8.1';
+    if (ua.includes('windows nt 6.2')) return 'Windows 8';
+    if (ua.includes('windows nt 6.1')) return 'Windows 7';
+    if (ua.includes('windows')) return 'Windows (Other)';
+    
+    if (ua.includes('mac os x')) return 'macOS';
+    if (ua.includes('iphone') || ua.includes('ipad')) return 'iOS';
+    
+    if (ua.includes('android')) return 'Android';
+    
+    if (ua.includes('linux')) return 'Linux';
+    if (ua.includes('ubuntu')) return 'Ubuntu';
+    
+    return 'Other';
+}
+
 export default new Elysia({ prefix: '/admin/analytics' })
     .get('/stats', async ({ query, set }) => {
         const period = query.period || 'day'; // day, week, month
@@ -92,6 +132,77 @@ export default new Elysia({ prefix: '/admin/analytics' })
                 .limit(10)
                 .execute();
 
+            // Top Users - using sql.raw for simplicity
+            const topUsers: any[] = [];
+            try {
+                const topUsersRaw = await db
+                    .selectFrom('analytics_visits')
+                    .innerJoin('users', (join) => join.on(sql`users.userId`, '=', sql`analytics_visits.user_id`))
+                    .leftJoin('persons', 'persons.personId', 'users.person')
+                    .select([
+                        sql<number>`users.userId`.as('user_id'),
+                        sql<string>`CONCAT(persons.firstName, ' ', persons.lastName)`.as('username'),
+                        sql<number>`COUNT(*)`.as('visits'),
+                        sql<number>`COUNT(DISTINCT analytics_visits.path)`.as('actions')
+                    ])
+                    .where(dateCondition)
+                    .where('analytics_visits.user_id', 'is not', null)
+                    .groupBy([sql`users.userId`, sql`persons.firstName`, sql`persons.lastName`])
+                    .orderBy(sql`COUNT(*)`, 'desc')
+                    .limit(10)
+                    .execute();
+
+                topUsersRaw.forEach((u: any) => {
+                    topUsers.push({
+                        user_id: Number(u.user_id),
+                        username: String(u.username || ''),
+                        visits: Number(u.visits),
+                        actions: Number(u.actions)
+                    });
+                });
+            } catch (error) {
+                console.log('Top users unavailable:', error);
+            }
+
+            // Browser Stats
+            const userAgents = await db
+                .selectFrom('analytics_visits')
+                .select(['user_agent'])
+                .where(dateCondition)
+                .execute();
+
+            // Parse browsers and count
+            const browserCounts = new Map<string, number>();
+            const osCounts = new Map<string, number>();
+            let totalVisits = userAgents.length;
+
+            userAgents.forEach(visit => {
+                const browser = parseBrowser(visit.user_agent);
+                const os = parseOS(visit.user_agent);
+                
+                browserCounts.set(browser, (browserCounts.get(browser) || 0) + 1);
+                osCounts.set(os, (osCounts.get(os) || 0) + 1);
+            });
+
+            // Convert to array and calculate percentages
+            const browsers = Array.from(browserCounts.entries())
+                .map(([name, count]) => ({
+                    name,
+                    visits: count,
+                    percentage: totalVisits > 0 ? Math.round((count / totalVisits) * 100) : 0
+                }))
+                .sort((a, b) => b.visits - a.visits)
+                .slice(0, 5); // Top 5 browsers
+
+            const operatingSystems = Array.from(osCounts.entries())
+                .map(([name, count]) => ({
+                    name,
+                    visits: count,
+                    percentage: totalVisits > 0 ? Math.round((count / totalVisits) * 100) : 0
+                }))
+                .sort((a, b) => b.visits - a.visits)
+                .slice(0, 5); // Top 5 OS
+
             return {
                 nb_visits: summary?.nb_visits || 0,
                 nb_uniq_visitors: summary?.nb_uniq_visitors || 0,
@@ -101,7 +212,10 @@ export default new Elysia({ prefix: '/admin/analytics' })
                 pages: topPages.map(p => ({
                     ...p,
                     avg_time_on_page: Math.round(Number(p.avg_time_on_page || 0))
-                }))
+                })),
+                topUsers: topUsers,
+                browsers: browsers,
+                operatingSystems: operatingSystems
             };
         } catch (error) {
             console.error('Analytics stats error:', error);

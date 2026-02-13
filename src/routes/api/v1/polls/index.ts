@@ -20,7 +20,7 @@ const app = new Elysia({ prefix: '/polls' })
 
         if (!auth?.person) return { error: 'no_user', details: 'no_db' };
 
-        const canCreate = auth.manager == -1 || auth.role == "teacher" || auth.principal;
+        const canCreate = auth.manager == -1 || auth.role == "teacher" || auth.principal == true;
 
         // 1. Definujeme dotaz pro vlastní pollly
         const ownPollsQuery = db
@@ -32,14 +32,39 @@ const app = new Elysia({ prefix: '/polls' })
                 'polls.type',
                 'polls.time_limit',
                 'polls.created_at',
-                'polls.created_by'
+                'polls.created_by',
+                sql<Date | null>`null`.as('active_from'),
+                sql<Date | null>`null`.as('active_to'),
+                sql<number | null>`null`.as('assignmentId')
             ])
-            .where('polls.created_by', '=', auth.userId);
+            .where('polls.created_by', '=', auth.person);
 
         // 2. Definujeme dotaz pro sdílené polly
+        // 2. Definujeme dotaz pro přiřazené polly (studenti)
+        const assignedPollsQuery = db
+            .selectFrom('poll_assign_recipients')
+            .innerJoin('poll_assigns', 'poll_assigns.poll_assign_id', 'poll_assign_recipients.poll_assign_id')
+            .innerJoin('polls', 'poll_assigns.poll_id', 'polls.id')
+            .innerJoin('student_groups', 'student_groups.groupId', 'poll_assign_recipients.group_id')
+            .select([
+                'polls.id',
+                'polls.title',
+                'polls.description',
+                'polls.type',
+                'polls.time_limit', // Fallback
+                'polls.created_at',
+                'polls.created_by',
+                'poll_assigns.start as active_from',
+                'poll_assigns.end as active_to',
+                'poll_assigns.poll_assign_id as assignmentId'
+            ])
+            .where('poll_assign_recipients.assigned', '=', true)
+            .where('student_groups.student', '=', auth.person);
+
+        // 3. Definujeme dotaz pro sdílené polly (učitelé)
         const sharedPollsQuery = db
             .selectFrom('poll_shares')
-            .innerJoin('polls', 'poll_shares.poll_id', 'polls.id') // innerJoin je zde bezpečnější pro integritu
+            .innerJoin('polls', 'poll_shares.poll_id', 'polls.id')
             .select([
                 'polls.id',
                 'polls.title',
@@ -47,12 +72,17 @@ const app = new Elysia({ prefix: '/polls' })
                 'polls.type',
                 'polls.time_limit',
                 'polls.created_at',
-                'polls.created_by'
+                'polls.created_by',
+                sql<Date | null>`null`.as('active_from'),
+                sql<Date | null>`null`.as('active_to'),
+                sql<number | null>`null`.as('assignmentId')
             ])
-            .where('poll_shares.is_valid', '=', true);
+            .where('poll_shares.is_valid', '=', true)
+            .where('poll_shares.user_id', '=', auth.userId);
 
-        // 3. Spojíme je pomocí unionAll a seřadíme jako celek
+        // 4. Spojíme je pomocí unionAll a seřadíme jako celek
         const allPolls = await ownPollsQuery
+            .unionAll(assignedPollsQuery)
             .unionAll(sharedPollsQuery)
             .orderBy('created_at', 'desc')
             .execute();
@@ -73,12 +103,33 @@ const app = new Elysia({ prefix: '/polls' })
 
         const auth = await db.selectFrom('tokens')
             .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select('users.person')
+            .select(['users.person', 'users.userId'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
         if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+
+        // Check if user has an assignment for this poll
+        // Check if user has an assignment for this poll
+        const assignment = await db
+            .selectFrom('poll_assign_recipients')
+            .innerJoin('poll_assigns', 'poll_assigns.poll_assign_id', 'poll_assign_recipients.poll_assign_id')
+            .innerJoin('student_groups', 'student_groups.groupId', 'poll_assign_recipients.group_id')
+            .select([
+                'poll_assigns.poll_assign_id',
+                'poll_assigns.start',
+                'poll_assigns.end',
+                'poll_assigns.time_limit',
+                'poll_assigns.shuffle_questions',
+                'poll_assigns.shuffle_options',
+                'poll_assigns.show_results',
+                'poll_assigns.allow_review',
+            ])
+            .where('poll_assigns.poll_id', '=', Number(id))
+            .where('student_groups.student', '=', auth.person)
+            .where('poll_assign_recipients.assigned', '=', true)
+            .executeTakeFirst();
 
         const poll = await db
             .selectFrom('polls')
@@ -113,6 +164,48 @@ const app = new Elysia({ prefix: '/polls' })
                 .execute();
         }
 
+        if (submission) {
+             const storedQuestions = await db
+                .selectFrom('poll_response_questions')
+                .innerJoin('poll_questions', 'poll_questions.id', 'poll_response_questions.question_id')
+                .selectAll('poll_questions')
+                .select(['poll_response_questions.display_order', 'poll_response_questions.options_order'])
+                .where('poll_response_questions.response_id', '=', submission.id)
+                .orderBy('poll_response_questions.display_order', 'asc')
+                .execute();
+
+             if (storedQuestions.length > 0) {
+                 // Use stored order
+                 const questionsWithOptions = storedQuestions.map(q => {
+                     let qOptions = options.filter(o => o.question_id === q.id);
+                     if (q.options_order) {
+                         // Sort options based on stored order
+                         try {
+                             const order = JSON.parse(q.options_order); // array of IDs
+                             if (Array.isArray(order)) {
+                                 qOptions = qOptions.sort((a, b) => {
+                                     const idxA = order.indexOf(a.id);
+                                     const idxB = order.indexOf(b.id);
+                                     return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+                                 });
+                             }
+                         } catch (e) {}
+                     }
+                     return {
+                         ...q,
+                         options: qOptions
+                     };
+                 });
+                 
+                 return { 
+                    poll, 
+                    questions: questionsWithOptions, 
+                    submission: submission || null,
+                    assignment: assignment || null
+                 };
+             }
+        }
+
         const questionsWithOptions = questions.map(q => ({
             ...q,
             options: options.filter(o => o.question_id === q.id)
@@ -121,7 +214,8 @@ const app = new Elysia({ prefix: '/polls' })
         return { 
             poll, 
             questions: questionsWithOptions, 
-            submission: submission || null 
+            submission: submission || null,
+            assignment: assignment || null
         };
     }, {
         params: t.Object({
@@ -203,6 +297,230 @@ const app = new Elysia({ prefix: '/polls' })
         })
     })
 
+    // POST /assign - Assign poll to classes/students
+    .post('/assign', async ({ body, cookie }) => {
+        const token = cookie.token?.value as string;
+        if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+        const auth = await db
+            .selectFrom('tokens')
+            .leftJoin('users', 'users.userId', 'tokens.userId')
+            .select(['users.person', 'users.userId', 'users.manager', 'users.principal'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+
+        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (auth.manager === -1 && !auth.principal) return { error: 'no_permission' };
+
+        const { pollId, targets, settings } = body as any;
+
+        const assignResult = await db.insertInto('poll_assigns').values({
+            poll_id: Number(pollId),
+            assign_by: auth.userId!,
+            time_limit: settings.timeLimit ? Number(settings.timeLimit) : null,
+            start: settings.start ? new Date(settings.start) : new Date(),
+            end: settings.end ? new Date(settings.end) : null,
+            shuffle_questions: settings.shuffleQuestions ? true : false,
+            shuffle_options: settings.shuffleOptions ? true : false,
+            show_results: settings.showResults ? true : false,
+            allow_review: settings.allowReview ? true : false,
+            grade_column: settings.gradeColumn ? Number(settings.gradeColumn) : null
+        }).execute();
+        
+        const assignmentId = Number(assignResult[0].insertId);
+        
+        if (targets && Array.isArray(targets)) {
+            for (const target of targets) {
+                await db.insertInto('poll_assign_recipients').values({
+                    poll_assign_id: assignmentId,
+                    group_id: target.groupId,
+                    subject_id: target.subjectId,
+                    assigned: true
+                }).execute();
+            }
+        }
+
+        return { success: true, assignmentId, count: targets?.length || 0 };
+
+    }, {
+        body: t.Object({
+            pollId: t.Number(),
+            targets: t.Array(t.Object({
+                groupId: t.Number(),
+                subjectId: t.Number()
+            })),
+            settings: t.Object({
+                start: t.Optional(t.String()),
+                end: t.Optional(t.String()),
+                timeLimit: t.Optional(t.Nullable(t.Number())),
+                shuffleQuestions: t.Optional(t.Boolean()),
+                shuffleOptions: t.Optional(t.Boolean()),
+                showResults: t.Optional(t.Boolean()),
+                allowReview: t.Optional(t.Boolean()),
+                gradeColumn: t.Optional(t.Nullable(t.Number()))
+            })
+        })
+    })
+
+    // POST /:id/start - Start the poll attempt
+    .post('/:id/start', async ({ params: { id }, cookie, body }) => {
+        const token = cookie.token?.value as string;
+        if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+        const auth = await db.selectFrom('tokens')
+            .leftJoin('users', 'users.userId', 'tokens.userId')
+            .select(['users.person'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+            
+        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+
+        // Check if already started
+        const existing = await db.selectFrom('poll_responses')
+            .selectAll()
+            .where('poll_id', '=', Number(id))
+            .where('student_id', '=', auth.person)
+            .executeTakeFirst();
+            
+        if (existing) {
+             // Return existing state
+             return { success: true, continued: true, responseId: existing.id };
+        }
+
+        // Get assignment settings
+        const assignment = await db
+            .selectFrom('poll_assign_recipients')
+            .innerJoin('poll_assigns', 'poll_assigns.poll_assign_id', 'poll_assign_recipients.poll_assign_id')
+            .innerJoin('student_groups', 'student_groups.groupId', 'poll_assign_recipients.group_id')
+            .select([
+                'poll_assigns.shuffle_questions',
+                'poll_assigns.shuffle_options'
+            ])
+            .where('poll_assigns.poll_id', '=', Number(id))
+            .where('student_groups.student', '=', auth.person)
+            .where('poll_assign_recipients.assigned', '=', true)
+            .executeTakeFirst();
+
+        const questions = await db.selectFrom('poll_questions')
+            .selectAll()
+            .where('poll_id', '=', Number(id))
+            .orderBy('order', 'asc')
+            .execute();
+
+        let finalQuestions = questions.map(q => q);
+        if (assignment?.shuffle_questions) {
+            finalQuestions = finalQuestions.sort(() => Math.random() - 0.5);
+        }
+
+        const resResult = await db.insertInto('poll_responses').values({
+            poll_id: Number(id),
+            student_id: auth.person,
+            started_at: new Date(),
+            total_score: 0,
+            total_max_score: 0,
+            metadata: JSON.stringify(body || {})
+        }).execute();
+        
+        const responseId = Number(resResult[0].insertId);
+
+        // Save order
+        for (let i = 0; i < finalQuestions.length; i++) {
+            const q = finalQuestions[i];
+            let optionsOrder: string | null = null;
+            
+            if (assignment?.shuffle_options) {
+                 const opts = await db.selectFrom('poll_options').select('id').where('question_id', '=', q.id).execute();
+                 const shuffled = opts.map(o => o.id).sort(() => Math.random() - 0.5);
+                 optionsOrder = JSON.stringify(shuffled);
+            }
+
+            await db.insertInto('poll_response_questions').values({
+                response_id: responseId,
+                question_id: q.id,
+                display_order: i,
+                options_order: optionsOrder
+            }).execute();
+        }
+
+        return { success: true, responseId };
+    }, {
+         params: t.Object({
+            id: t.String()
+        }),
+        body: t.Optional(t.Any())
+    })
+
+    // POST /:id/answer - Save single answer
+    .post('/:id/answer', async ({ params: { id }, body, cookie }) => {
+        const token = cookie.token?.value as string;
+        if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+        const auth = await db.selectFrom('tokens')
+            .leftJoin('users', 'users.userId', 'tokens.userId')
+            .select(['users.person'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+            
+        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+
+        const response = await db.selectFrom('poll_responses')
+            .select('id')
+            .where('poll_id', '=', Number(id))
+            .where('student_id', '=', auth.person)
+            .executeTakeFirst();
+            
+        if (!response) return { error: 'not_started' };
+
+        const { questionId, answerText, optionId, optionIds } = body as any;
+
+        // Check if answer already exists
+        const existingAnswer = await db.selectFrom('poll_answers')
+            .select('id')
+            .where('response_id', '=', response.id)
+            .where('question_id', '=', questionId)
+            .executeTakeFirst();
+
+        if (existingAnswer) {
+             const updateData: any = {
+                selected_at: new Date()
+             };
+             if (answerText !== undefined) updateData.answer_text = answerText;
+             if (optionId !== undefined) updateData.option_id = optionId;
+             if (optionIds !== undefined) updateData.option_ids = JSON.stringify(optionIds);
+             
+            await db.updateTable('poll_answers')
+                .set(updateData)
+                .where('id', '=', existingAnswer.id)
+                .execute();
+        } else {
+            await db.insertInto('poll_answers').values({
+                response_id: response.id,
+                question_id: questionId,
+                answer_text: answerText || null,
+                option_id: optionId || null,
+                option_ids: optionIds ? JSON.stringify(optionIds) : null,
+                points_awarded: 0,
+                is_manually_graded: 0,
+                selected_at: new Date()
+            }).execute();
+        }
+
+        return { success: true };
+    }, {
+        params: t.Object({
+            id: t.String()
+        }),
+        body: t.Object({
+            questionId: t.Number(),
+            answerText: t.Optional(t.String()),
+            optionId: t.Optional(t.Number()),
+            optionIds: t.Optional(t.Array(t.Number()))
+        })
+    })
+
     // POST /:id/submit - Submit answers
     .post('/:id/submit', async ({ params: { id }, body, cookie }) => {
         const token = cookie.token?.value as string;
@@ -217,13 +535,22 @@ const app = new Elysia({ prefix: '/polls' })
              
         if (!auth?.person) return { error: 'no_user', details: 'no_db' };
 
-        const existing = await db.selectFrom('poll_responses')
-            .select('id')
+        const allResponses = await db.selectFrom('poll_responses')
+            .select(['id', 'submitted_at'])
             .where('poll_id', '=', Number(id))
             .where('student_id', '=', auth.person)
-            .executeTakeFirst();
-            
-        if (existing) return { error: 'invalid_data', details: 'Already submitted' };
+            .orderBy('id', 'desc')
+            .execute();
+
+        const active = allResponses.find(r => !r.submitted_at);
+        
+        if (!active) {
+            if (allResponses.length > 0) return { error: 'invalid_data', details: 'Already submitted' };
+            return { error: 'not_started' };
+        }
+
+        const responseId = active.id;
+        // Don't create new response, update existing one at the end
 
         const { answers } = body as any;
 
@@ -240,16 +567,7 @@ const app = new Elysia({ prefix: '/polls' })
         let totalScore = 0;
         let maxScore = 0;
 
-        const resResult = await db.insertInto('poll_responses').values({
-            poll_id: Number(id),
-            student_id: auth.person,
-            started_at: new Date().toISOString(),
-            submitted_at: new Date().toISOString(),
-            total_score: 0,
-            total_max_score: 0
-        }).execute();
-        
-        const responseId = Number(resResult[0].insertId);
+
 
         for (const ans of answers) {
             const q = questions.find(x => x.id === ans.questionId);
@@ -275,15 +593,36 @@ const app = new Elysia({ prefix: '/polls' })
 
             totalScore += pointsAwarded;
 
-            await db.insertInto('poll_answers').values({
-                response_id: responseId,
-                question_id: q.id,
-                answer_text: ans.answerText || null,
-                option_id: ans.optionId || null,
-                option_ids: ans.optionIds ? JSON.stringify(ans.optionIds) : null,
-                points_awarded: pointsAwarded,
-                is_manually_graded: 0
-            }).execute();
+            // Upsert answer
+            const existingAns = await db.selectFrom('poll_answers')
+                .select('id')
+                .where('response_id', '=', responseId)
+                .where('question_id', '=', q.id)
+                .executeTakeFirst();
+                
+            if (existingAns) {
+                await db.updateTable('poll_answers')
+                    .set({
+                        points_awarded: pointsAwarded,
+                        answer_text: ans.answerText || null,
+                        option_id: ans.optionId || null,
+                        option_ids: ans.optionIds ? JSON.stringify(ans.optionIds) : null,
+                        selected_at: new Date()
+                    })
+                    .where('id', '=', existingAns.id)
+                    .execute();
+            } else {
+                await db.insertInto('poll_answers').values({
+                    response_id: responseId,
+                    question_id: q.id,
+                    answer_text: ans.answerText || null,
+                    option_id: ans.optionId || null,
+                    option_ids: ans.optionIds ? JSON.stringify(ans.optionIds) : null,
+                    points_awarded: pointsAwarded,
+                    is_manually_graded: 0,
+                    selected_at: new Date()
+                }).execute();
+            }
         }
 
         const percentage = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
@@ -292,7 +631,8 @@ const app = new Elysia({ prefix: '/polls' })
             .set({ 
                 total_score: totalScore,
                 total_max_score: maxScore,
-                percentage: percentage
+                percentage: percentage,
+                submitted_at: new Date()
             })
             .where('id', '=', responseId)
             .execute();

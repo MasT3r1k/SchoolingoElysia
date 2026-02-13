@@ -1648,7 +1648,7 @@
             "noActiveSeason": "Žádná aktivní sezóna"
         },
         "monitoring": {
-            "title": "Monitorování (Matomo)",
+            "title": "Monitorování",
             "period": {
                 "today": "Dnes",
                 "week": "Týden",
@@ -1667,6 +1667,8 @@
             "total_interactions": "Celkem interakcí",
             "per_session": "Za relaci",
             "most_visited_pages": "Nejnavštěvovanější stránky",
+            "browsers": "Prohlížeče",
+            "operating_systems": "Operační systémy",
             "table": {
                 "page_name": "Název stránky",
                 "visits": "Návštěvy",

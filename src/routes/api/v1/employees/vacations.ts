@@ -11,14 +11,14 @@ const vacationsRouter = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .select(['tokens.userId', 'users.person', 'users.manager', 'users.principal'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
     if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
     
-    const canViewAll = auth.manager == 1;
+    const canViewAll = auth.manager == -1 || auth.principal == true;
     
     const employeeId = canViewAll && query.employeeId ? query.employeeId : auth.person;
     const year = query.year || new Date().getFullYear();

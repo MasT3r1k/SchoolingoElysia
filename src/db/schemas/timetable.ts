@@ -7,4 +7,5 @@ export interface TimetableTable {
   teacher: number
   room: number
   groupId: number
+  syId: number
 }

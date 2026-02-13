@@ -14,8 +14,8 @@ export interface PollAssignsTable {
   poll_assign_id: Generated<number>;
   poll_id: number;
   start: Generated<Date>;
-  end: Generated<Date>;
-  time_limit: Generated<number>;
+  end: Date | null;
+  time_limit: number | null;
   shuffle_questions: Generated<boolean>;
   shuffle_options: Generated<boolean>;
   show_results: Generated<boolean>;
@@ -23,6 +23,14 @@ export interface PollAssignsTable {
   grade_column: Generated<number | null>;
   assign_by: number;
   assign_at: Generated<Date>;
+}
+
+export interface PollAssignRecipientsTable {
+  poll_assign_recipient_id: Generated<number>;
+  poll_assign_id: number;
+  group_id: number;
+  subject_id: number;
+  assigned: Generated<boolean>;
 }
 
 export interface PollSharesTable {
@@ -53,12 +61,14 @@ export interface PollOptionsTable {
 export interface PollResponsesTable {
   id: Generated<number>
   poll_id: number
+  poll_assign_id: Generated<number | null>;
   student_id: number
-  started_at: ColumnType<Date, string | undefined, never>
-  submitted_at: ColumnType<Date, string | undefined, string | undefined> | null
+  started_at: Generated<Date>;
+  submitted_at: Generated<Date | null>
   total_score: number | null
   total_max_score: number | null
   percentage: number | null
+  metadata: string | null // JSON string
 }
 
 export interface PollAnswersTable {
@@ -70,4 +80,13 @@ export interface PollAnswersTable {
   option_ids: string | null // JSON array of selected option IDs
   points_awarded: number | null
   is_manually_graded: number // 0 or 1
+  selected_at: Generated<Date | null>
+}
+
+export interface PollResponseQuestionsTable {
+  id: Generated<number>
+  response_id: number
+  question_id: number
+  display_order: number
+  options_order: string | null // JSON array
 }
