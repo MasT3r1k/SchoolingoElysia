@@ -94,6 +94,16 @@ class GitVersionService {
         if (this.intervalId) clearInterval(this.intervalId);
         this.intervalId = null;
     }
+
+    async getAheadBehindCount(): Promise<{ ahead: number, behind: number }> {
+        return new Promise((resolve) => {
+            exec("git rev-list --left-right --count HEAD...origin/main", (err, stdout) => {
+                if (err) return resolve({ ahead: 0, behind: 0 });
+                const counts = stdout.toString().trim().split(/\s+/).map(Number);
+                resolve({ ahead: counts[0] || 0, behind: counts[1] || 0 });
+            });
+        });
+    }
 }
 
 
@@ -109,15 +119,23 @@ export const version = new Elysia({ prefix: "/api/v1" })
     .on('stop', () => {
         gitService.stopInterval();
     })
-    .get("/version", () => ({
-        version: changelog[0].version,
-        current: gitService.localCommit,
-        latest: gitService.remoteCommit,
-        isUpToDate: gitService.localCommit === gitService.remoteCommit
-    }))
+    .get("/version", async () => {
+        const counts = await gitService.getAheadBehindCount();
+        return {
+            version: changelog[0].version,
+            current: gitService.localCommit,
+            latest: gitService.remoteCommit,
+            isUpToDate: gitService.localCommit === gitService.remoteCommit,
+            isAhead: counts.ahead > 0,
+            isBehind: counts.behind > 0,
+            aheadCount: counts.ahead,
+            behindCount: counts.behind
+        };
+    })
     .post("/refresh", async () => {
         await gitService.refreshRemote();
         const remoteVersion = await gitService.loadRemoteVersion();
+        const counts = await gitService.getAheadBehindCount();
         
         return {
             ok: true,
@@ -125,7 +143,10 @@ export const version = new Elysia({ prefix: "/api/v1" })
             remoteVersion: remoteVersion,
             current: gitService.localCommit,
             latest: gitService.remoteCommit,
-            isUpToDate: gitService.localCommit === gitService.remoteCommit
+            isUpToDate: gitService.localCommit === gitService.remoteCommit,
+            isAhead: counts.ahead > 0,
+            isBehind: counts.behind > 0,
+            aheadCount: counts.ahead,
+            behindCount: counts.behind
         };
     });
-

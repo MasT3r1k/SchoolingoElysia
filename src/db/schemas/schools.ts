@@ -34,4 +34,7 @@ export interface schoolsTable {
   auth_passkeys: number // boolean
   session_lifetime_minutes: number
   max_login_attempts: number
+  backup_interval: number | null
+  auto_update: number // boolean
+  auto_update_interval: number
 }

@@ -15,7 +15,7 @@ import { version } from './version';
 import { ws } from './websocket';
 import { getAuthUser } from './src/utils/auth';
 import { uploadAPI } from './upload';
-  import { Mailer } from "./mailer.module";
+import { Mailer } from "./mailer.module";
 
 
 const UPLOAD_DIR = './uploads';
@@ -116,14 +116,49 @@ async function loadFolder(folder: string = modulePath) {
 
     Mailer.init({
       enabled: config.STMP_ENABLED == "true" ? true : false,
-      host: config.STMP_HOST,
-      port: parseInt(config.STMP_PORT),
-      secure: parseInt(config.STMP_PORT) == 465,
-      user: config.STMP_USER,
-      pass: config.STMP_PASS,
-      fromName: config.STMP_NAME,
+      host: config.STMP_HOST || '',
+      port: parseInt(config.STMP_PORT || '587'),
+      secure: parseInt(config.STMP_PORT || '587') == 465,
+      user: config.STMP_USER || '',
+      pass: config.STMP_PASS || '',
+      fromName: config.STMP_NAME || 'Schoolingo',
       debug: true
     });
+
+    // Initialize Backup Scheduler
+    try {
+        const { backupService } = await import('./src/functions/backup.service');
+        const { db } = await import('./database');
+        const school = await db.selectFrom('schools')
+            .select('backup_interval')
+            .executeTakeFirst();
+        
+        if (school && school.backup_interval !== null) {
+            let hours = 24;
+            if (school.backup_interval === 1) hours = 168;
+            if (school.backup_interval === 2) hours = 720;
+            await backupService.updateInterval(hours);
+        }
+        backupService.startScheduler();
+    } catch (err) {
+        console.warn('[Backup] Scheduler init failed (likely missing column):', err);
+    }
+
+    // Initialize Update Scheduler
+    try {
+        const { db } = await import('./database');
+        const autoUpdate = await db.selectFrom('schools')
+            .select(['auto_update', 'auto_update_interval'])
+            .executeTakeFirst();
+        
+        if (autoUpdate && autoUpdate.auto_update) {
+            const { updateService } = await import('./src/functions/update.service');
+            updateService.startScheduler(autoUpdate.auto_update_interval);
+        }
+    } catch (err) {
+        console.warn('[Update] Scheduler init failed (likely missing column):', err);
+    }
+
   } catch (error) {
     logger.log('Failed to start application:' + error);
     process.exit(1);

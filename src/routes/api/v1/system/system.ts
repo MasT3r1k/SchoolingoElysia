@@ -40,7 +40,10 @@ const app = new Elysia()
           'schools.auth_ldap',
           'schools.auth_passkeys',
           'schools.session_lifetime_minutes',
-          'schools.max_login_attempts'
+          'schools.max_login_attempts',
+          'schools.backup_interval',
+          'schools.auto_update',
+          'schools.auto_update_interval'
         ])
         .limit(1)
         .executeTakeFirst(),

@@ -19,6 +19,8 @@ const envSchema = z.object({
   STMP_PASS: z.optional(z.string()),
   STMP_EMAIL:z.optional(z.string()),
   STMP_NAME: z.optional(z.string()).default('Schoolingo'),
+  MYSQLDUMP_PATH: z.string().default('mysqldump'),
+  MYSQL_PATH: z.string().default('mysql'),
 });
 
 export const config = envSchema.parse(process.env);

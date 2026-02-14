@@ -11,13 +11,13 @@ const app = new Elysia()
         return Response.json({ error: 'no_user', details: 'no_cookie' });
       }
 
-      // Výpočet celkového počtu firem (bez ohledu na limit/offset)
-      const countResult = await db
-        .selectFrom('traineeship_companies as c')
-        .select(({ fn }) => [fn.count('c.companyId').as('total')])
-        .executeTakeFirst();
+      const { limit, offset, name, status } = query ?? {};
 
-      const companyBuilder = db
+      let countQuery = db
+        .selectFrom('traineeship_companies as c')
+        .select(({ fn }) => [fn.count('c.companyId').as('total')]);
+
+      let companyBuilder = db
         .selectFrom('traineeship_companies as c')
         .leftJoin('traineeship_company_rating as r', 'r.companyId', 'c.companyId')
         .leftJoin('addresses as a', 'a.addressId', 'c.addressOffice')
@@ -52,14 +52,28 @@ const app = new Elysia()
         .groupBy('c.companyId')
         .orderBy('c.name');
 
+      if (name) {
+        countQuery = countQuery.where('c.name', 'like', `%${name.trim()}%`);
+        companyBuilder = companyBuilder.where('c.name', 'like', `%${name.trim()}%`);
+      }
+
+      if (status) {
+        // @ts-ignore
+        countQuery = countQuery.where('c.status', '=', status);
+        // @ts-ignore
+        companyBuilder = companyBuilder.where('c.status', '=', status);
+      }
+
+      const countResult = await countQuery.executeTakeFirst();
+
       // Limit (pokud > 0)
-      if (query?.limit && query.limit > 0) {
-        companyBuilder.limit(query.limit);
+      if (limit && limit > 0) {
+        companyBuilder = companyBuilder.limit(limit);
       }
 
       // Offset (pokud existuje)
-      if (query?.offset) {
-        companyBuilder.offset(query.offset);
+      if (offset) {
+        companyBuilder = companyBuilder.offset(offset);
       }
 
       const companies = await companyBuilder.execute();
@@ -72,8 +86,15 @@ const app = new Elysia()
     {
       query: t.Optional(
         t.Object({
-          limit: t.Number({ default: 20 }),
-          offset: t.Number({ default: 0 }),
+          limit: t.Optional(t.Numeric({ default: 20 })),
+          offset: t.Optional(t.Numeric({ default: 0 })),
+          name: t.Optional(t.String()),
+          status: t.Optional(t.Union([
+            t.Literal('approved'),
+            t.Literal('acceptable'),
+            t.Literal('request'),
+            t.Literal('deleted')
+          ]))
         }),
       ),
     },

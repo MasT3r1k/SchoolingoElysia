@@ -2,7 +2,7 @@
  * Database Backup Service
  * Automatic database backup with scheduling and management
  */
-import { exec } from 'child_process';
+import { exec, execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
@@ -29,6 +29,7 @@ interface BackupInfo {
     size: number;
     createdAt: Date;
     compressed: boolean;
+    commitHash?: string;
 }
 
 class DatabaseBackupService {
@@ -68,7 +69,14 @@ class DatabaseBackupService {
         const filename = this.generateFilename();
         const filepath = path.join(this.backupDir, filename);
         
-        console.log(`[Backup] Starting backup: ${filename}`);
+        let commitHash: string | null = null;
+        try {
+            commitHash = execSync('git rev-parse HEAD').toString().trim();
+        } catch (e) {
+            console.warn('[Backup] Could not get current commit hash');
+        }
+
+        console.log(`[Backup] Starting backup: ${filename} (Commit: ${commitHash || 'unknown'})`);
 
         try {
             // Build mysqldump command
@@ -99,7 +107,7 @@ class DatabaseBackupService {
             const stats = fs.statSync(finalPath);
 
             // Log backup to database
-            await this.logBackup(path.basename(finalPath), stats.size, description);
+            await this.logBackup(path.basename(finalPath), stats.size, description, commitHash);
 
             // Cleanup old backups
             await this.cleanupOldBackups();
@@ -111,7 +119,8 @@ class DatabaseBackupService {
                 path: finalPath,
                 size: stats.size,
                 createdAt: new Date(),
-                compressed
+                compressed,
+                commitHash: commitHash || undefined
             };
         } catch (error: any) {
             console.error('[Backup] Failed:', error.message);
@@ -125,14 +134,69 @@ class DatabaseBackupService {
     async listBackups(): Promise<BackupInfo[]> {
         this.ensureBackupDirectory();
         
-        const files = fs.readdirSync(this.backupDir);
-        const backups: BackupInfo[] = [];
+        try {
+            // Get from DB to have commit_hash
+            const dbBackups = await db.selectFrom('backups')
+                .select(['filename', 'size', 'created', 'commit_hash'])
+                .orderBy('created', 'desc')
+                .execute();
 
-        for (const file of files) {
-            if (file.startsWith('schoolingo_backup_')) {
+            const backups: BackupInfo[] = [];
+
+            for (const b of dbBackups) {
+                const filepath = path.join(this.backupDir, b.filename);
+                // Only include if file actually exists on disk
+                if (fs.existsSync(filepath)) {
+                    backups.push({
+                        filename: b.filename,
+                        path: filepath,
+                        size: b.size,
+                        createdAt: b.created,
+                        compressed: b.filename.endsWith('.gz'),
+                        commitHash: b.commit_hash || undefined
+                    });
+                }
+                // Also check if .gz version exists if we recorded .sql
+                else if (fs.existsSync(filepath + '.gz')) {
+                    const gzPath = filepath + '.gz';
+                    const stats = fs.statSync(gzPath);
+                    backups.push({
+                        filename: b.filename + '.gz',
+                        path: gzPath,
+                        size: stats.size,
+                        createdAt: b.created,
+                        compressed: true,
+                        commitHash: b.commit_hash || undefined
+                    });
+                }
+            }
+
+            // Fallback: if DB is empty, read files (e.g. during migration)
+            if (backups.length === 0) {
+                const files = fs.readdirSync(this.backupDir);
+                for (const file of files) {
+                    if (file.startsWith('schoolingo_backup_')) {
+                        const filepath = path.join(this.backupDir, file);
+                        const stats = fs.statSync(filepath);
+                        backups.push({
+                            filename: file,
+                            path: filepath,
+                            size: stats.size,
+                            createdAt: stats.birthtime,
+                            compressed: file.endsWith('.gz')
+                        });
+                    }
+                }
+            }
+
+            return backups;
+        } catch (err) {
+            // Fallback to filesystem if DB fails
+            const files = fs.readdirSync(this.backupDir);
+            const backups: BackupInfo[] = [];
+            for (const file of files) {
                 const filepath = path.join(this.backupDir, file);
                 const stats = fs.statSync(filepath);
-                
                 backups.push({
                     filename: file,
                     path: filepath,
@@ -141,12 +205,8 @@ class DatabaseBackupService {
                     compressed: file.endsWith('.gz')
                 });
             }
+            return backups;
         }
-
-        // Sort by date (newest first)
-        backups.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
-        return backups;
     }
 
     /**
@@ -185,7 +245,8 @@ class DatabaseBackupService {
             }
 
             // Restore using mysql
-            const restoreCmd = `mysql -h ${config.DB_HOST} -P ${config.DB_PORT} -u ${config.DB_USER} -p${config.DB_PASS} ${config.DB_NAME} < "${sqlFile}"`;
+            const passFlag = config.DB_PASS ? `-p${config.DB_PASS}` : '';
+            const restoreCmd = `"${config.MYSQL_PATH}" -h ${config.DB_HOST} -P ${config.DB_PORT} -u ${config.DB_USER} ${passFlag} ${config.DB_NAME} < "${sqlFile}"`;
             await execAsync(restoreCmd);
 
             // Clean up decompressed file if it was compressed
@@ -197,6 +258,17 @@ class DatabaseBackupService {
         } catch (error: any) {
             console.error('[Backup] Restore failed:', error.message);
             throw new Error(`Restore failed: ${error.message}`);
+        }
+    }
+
+    /**
+     * Update the backup interval and restart scheduler if needed
+     */
+    updateInterval(hours: number): void {
+        BACKUP_CONFIG.backupIntervalHours = hours;
+        if (this.schedulerInterval) {
+            this.stopScheduler();
+            this.startScheduler();
         }
     }
 
@@ -219,21 +291,32 @@ class DatabaseBackupService {
     /**
      * Log backup to database
      */
-    private async logBackup(filename: string, size: number, description?: string): Promise<void> {
+    private async logBackup(filename: string, size: number, description?: string, commitHash?: string | null): Promise<void> {
         try {
-            // Log backup action to auditlog
+            // Log backup action to backups table
+            await db
+                .insertInto('backups')
+                .values({
+                    filename,
+                    size,
+                    type: description?.includes('Scheduled') ? 'auto' : 'manual',
+                    status: 'success',
+                    commit_hash: commitHash
+                })
+                .execute();
+
+            // Also log to auditlog
             await db
                 .insertInto('auditlog')
                 .values({
                     userId: 0, // System action
-                    type: 'reset_password' as any, // Closest type, backup is not in enum
-                    data: JSON.stringify({ action: 'database_backup', filename, size, description }),
+                    type: 'reset_password' as any,
+                    data: JSON.stringify({ action: 'database_backup', filename, size, description, commitHash }),
                     ip: null
                 })
                 .execute();
-        } catch {
-            // Table might not exist yet, just log to console
-            console.log(`[Backup] Logged: ${filename}`);
+        } catch (err) {
+            console.warn(`[Backup] Failed to log to DB: ${err}`);
         }
     }
 

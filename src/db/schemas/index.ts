@@ -1,5 +1,6 @@
 import { role_communication_permissionsTable } from './role_communication_permissions'
 import { AbsenceTable } from './absence'
+import { BackupsTable } from './backups'
 import { AddressesTable } from './addresses'
 import { AnalyticsVisitsTable } from './analytics'
 import { AuditlogTable } from './auditlog'
@@ -98,10 +99,12 @@ import { filesTable } from './files'
 import { filesTokensTable } from './files_tokens'
 import { messages_filesTable } from './messages_files'
 import { TimetableSchemasTable } from './timetable_schemas'
+import { MigrationsTable } from './migrations'
 
 export interface Database {
   absence: AbsenceTable
   addresses: AddressesTable
+  backups: BackupsTable
   analytics_visits: AnalyticsVisitsTable
   auditlog: AuditlogTable
   buildings: BuildingsTable
@@ -211,4 +214,5 @@ export interface Database {
 
   employee_bonuses: EmployeeBonusesTable
   role_communication_permissions: role_communication_permissionsTable
+  _migrations: MigrationsTable
 }

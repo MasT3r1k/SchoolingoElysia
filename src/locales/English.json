@@ -44,7 +44,12 @@
     },
     "or": "or",
     "system": {
-        "version": "System version"
+        "version": "System version",
+        "system_is_up_to_date": "System is up to date",
+        "system_has_update": "A new update is available",
+        "system_is_newer": "System is newer (dev)",
+        "ahead_count": "Ahead by %count% version(s)",
+        "behind_count": "Behind by %count% version(s)"
     },
     "library": {
         "title": "Library",
