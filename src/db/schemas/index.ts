@@ -1,3 +1,4 @@
+import { role_communication_permissionsTable } from './role_communication_permissions'
 import { AbsenceTable } from './absence'
 import { AddressesTable } from './addresses'
 import { AnalyticsVisitsTable } from './analytics'
@@ -207,5 +208,7 @@ export interface Database {
   employee_attendance: EmployeeAttendanceTable
   employee_vacation_balance: EmployeeVacationBalanceTable
   employee_vacation_requests: EmployeeVacationRequestsTable
+
   employee_bonuses: EmployeeBonusesTable
+  role_communication_permissions: role_communication_permissionsTable
 }

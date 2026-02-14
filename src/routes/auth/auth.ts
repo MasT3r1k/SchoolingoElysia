@@ -9,7 +9,7 @@ import { SecurityConfig } from '../../config/security.config';
 import { Mailer } from '../../../mailer.module';
 import { Utils } from '../../utils/utils';
 
-export async function authenticateUser(userId: number, cookie: any, userAgent: string, ip: string) {
+export async function authenticateUser(userId: number, cookie: any, userAgent: string | null, ip: string) {
   try {
     const user = await db.selectFrom("users")
       .leftJoin("persons", "persons.personId", "users.person")
@@ -245,22 +245,27 @@ const elysiaApp = new Elysia()
           .where('emails.is_verified', '=', true)
           .execute();
 
+          // Email notification is optional - don't fail login if email fails
           for(const email of emails) {
-            // TODO:!
-            await Mailer.sendFromTemplate(
-              "new_login.html",
-              {
-                to: email.email,
-                subject: "Nové přihlášení z neznámého zařízení",
-                data: {
-                  location: `${ipData?.city}, ${ipData?.country}`,
-                  security_url: "https://localhost:4200",
-                  device: `${Utils.getBrowser(userAgent)}, ${Utils.getOS(userAgent)}`,
-                  ip: ipData?.ip ?? ip,
-                  time: moment().format('DD. MM. YYYY HH:mm')
+            try {
+              await Mailer.sendFromTemplate(
+                "new_login.html",
+                {
+                  to: email.email,
+                  subject: "Nové přihlášení z neznámého zařízení",
+                  data: {
+                    location: `${ipData?.city}, ${ipData?.country}`,
+                    security_url: "https://localhost:4200",
+                    device: `${Utils.getBrowser(userAgent)}, ${Utils.getOS(userAgent)}`,
+                    ip: ipData?.ip ?? ip,
+                    time: moment().format('DD. MM. YYYY HH:mm')
+                  }
                 }
-              }
-            );
+              );
+            } catch (mailError) {
+              // Log but don't fail the login if email sending fails
+              console.warn('[Login] Failed to send new login email notification:', mailError instanceof Error ? mailError.message : 'Unknown error');
+            }
           }
         }
 
@@ -273,7 +278,14 @@ const elysiaApp = new Elysia()
         return Response.json({ error: res.error })
       }
     } catch (e) {
-      return Response.json({ error: ['SQL error'] })
+      // Lepší error logging pro debugging
+      console.error('[Login Error] Caught exception during login:', e);
+      if (e instanceof Error) {
+        console.error('[Login Error] Error message:', e.message);
+        console.error('[Login Error] Error stack:', e.stack);
+      }
+      
+      return Response.json({ error: ['Authentication failed. Please try again.'] })
     }
   }, {
     body: t.Optional(t.Object({

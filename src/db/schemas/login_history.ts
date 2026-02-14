@@ -8,13 +8,13 @@ export interface login_historyTable {
   error: string | null;
   ip: string | null;
   token_id: Generated<number | null>;
-  userAgent: string;
+  userAgent: string | null;
   created: Generated<Date>;
-  city: Generated<string>;
-  zip_code: Generated<string>;
-  region_name: Generated<string>;
-  country: Generated<string>;
-  country_code: Generated<string>;
-  continent: Generated<string>;
-  continent_code: Generated<string>;
+  city: string | null;
+  zip_code: string | null;
+  region_name: string | null;
+  country: string | null;
+  country_code: string | null;
+  continent: string | null;
+  continent_code: string | null;
 }

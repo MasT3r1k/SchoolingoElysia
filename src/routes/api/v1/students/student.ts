@@ -47,12 +47,30 @@ const fullName = sql`
 /* ---------------- ENDPOINT ---------------- */
 
 const elysiaApp = new Elysia()
+  .get('/student/parent/search', async ({ query: { q } }) => {
+    if (!q || q.length < 3) return [];
+    
+    return await db.selectFrom('persons')
+      .select(['personId', 'firstName', 'lastName', 'birthday'])
+      .where(sql<boolean>`(
+        firstName LIKE ${`%${q}%`} 
+        OR lastName LIKE ${`%${q}%`} 
+        OR concat(firstName, ' ', lastName) LIKE ${`%${q}%`}
+        OR concat(lastName, ' ', firstName) LIKE ${`%${q}%`}
+      )`)
+      .limit(10)
+      .execute();
+  }, {
+    query: t.Object({
+      q: t.String()
+    })
+  })
   .get('/student/:id', async ({ params: { id }, query }) => {
     try {
       const time = moment(query.time);
       const show = query.type.split(',');
 
-      const [student, groups] = await Promise.all([
+      const [student, groups, parents] = await Promise.all([
         db.selectFrom('students')
           .leftJoin('persons', 'students.personId', 'persons.personId')
           .leftJoin('classes', 'students.class', 'classes.classId')
@@ -61,6 +79,8 @@ const elysiaApp = new Elysia()
           .leftJoin('scopes', 'scopes.scopeId', 'classes.scopeId')
           .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
           .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
+          .leftJoin('addresses', 'persons.address', 'addresses.addressId')
+          .leftJoin('cities', 'addresses.cityId', 'cities.cityId')
           .select([
             'persons.personId',
             'persons.firstName',
@@ -82,6 +102,12 @@ const elysiaApp = new Elysia()
             'classes.scopeId',
             'classes.teacher',
             sql<string>`scopes.name`.as('fieldOfStudy'),
+            'addresses.addressId',
+            'addresses.street',
+            'addresses.houseNumber',
+            'cities.cityId',
+            'cities.cityName as city',
+            'cities.postcode',
             sql<string>`(
               SELECT email 
               FROM emails 
@@ -138,8 +164,31 @@ const elysiaApp = new Elysia()
             'groups.num',
           ])
           .where('student_groups.student', '=', id)
-          .where('sy.start', '<=', time.format("YYYY-MM-DD"))
-          .where('sy.end', '>=', time.format("YYYY-MM-DD"))
+          .where(sql<boolean>`sy.start <= ${time.format("YYYY-MM-DD")}`)
+          .where(sql<boolean>`sy.end >= ${time.format("YYYY-MM-DD")}`)
+          .execute(),
+        
+        db.selectFrom('family_relations')
+          .innerJoin('persons', 'family_relations.target', 'persons.personId')
+          .select([
+            'persons.personId as id',
+            'persons.firstName',
+            'persons.lastName',
+            'family_relations.role as relationship',
+            sql<string>`(
+              SELECT email 
+              FROM emails 
+              WHERE emails.personId = persons.personId 
+              LIMIT 1
+            )`.as('email'),
+            sql<string>`(
+              SELECT number 
+              FROM phone_numbers 
+              WHERE phone_numbers.personId = persons.personId 
+              LIMIT 1
+            )`.as('phone')
+          ])
+          .where('family_relations.source', '=', id)
           .execute()
       ]);
 
@@ -177,8 +226,8 @@ const elysiaApp = new Elysia()
             fullName.as('teacher')
           ])
           .where('substitution.groupId', 'in', groupIds)
-          .where('substitution.start_date', '>=', time.clone().startOf('isoWeek').format("YYYY-MM-DD"))
-          .where('substitution.end_date', '<=', time.clone().endOf('isoWeek').format("YYYY-MM-DD"))
+          .where(sql<boolean>`substitution.start_date >= ${time.clone().startOf('isoWeek').format("YYYY-MM-DD")}`)
+          .where(sql<boolean>`substitution.end_date <= ${time.clone().endOf('isoWeek').format("YYYY-MM-DD")}`)
           .execute()
       ]);
 
@@ -186,6 +235,7 @@ const elysiaApp = new Elysia()
 
       if (show.includes('basic')) Object.assign(result, student);
       if (show.includes('groups')) result.groups = groups;
+      if (show.includes('parents')) result.parents = parents;
       if (show.includes('timetable')) {
         result.timetable = timetable;
         result.substitution = substitution;
@@ -203,8 +253,176 @@ const elysiaApp = new Elysia()
       id: t.Number()
     }),
     query: t.Object({
-      type: t.String({ default: 'basic,groups,timetable' }),
+      type: t.String({ default: 'basic,groups,timetable,parents' }),
       time: t.String({ default: moment().format("YYYY-MM-DD") })
+    })
+  })
+  .post('/student/:id/parent', async ({ params: { id }, body }) => {
+    // @ts-ignore
+    const { mode, role, personId, firstName, lastName, email, phone } = body;
+
+    try {
+      if (mode === 'existing') {
+        if (!personId) throw new Error('Person ID is required for existing mode');
+        
+        await db.insertInto('family_relations')
+          .values({
+            source: id,
+            target: personId,
+            // @ts-ignore
+            role: role
+          })
+          .execute();
+
+        return { success: true };
+
+      } else if (mode === 'new') {
+        if (!firstName || !lastName) throw new Error('First name and last name are required');
+
+        const result = await db.transaction().execute(async (trx) => {
+          const newPerson = await trx.insertInto('persons')
+            .values({
+              firstName,
+              lastName,
+              gender: 1, // Default or need input? Assuming 1 (male) or 2 (female) or 0
+              GDPR: false
+            })
+            .executeTakeFirstOrThrow();
+          
+          const newPersonId = Number(newPerson.insertId);
+
+          await trx.insertInto('family_relations')
+            .values({
+              source: id,
+              target: newPersonId,
+              // @ts-ignore
+              role: role
+            })
+            .execute();
+
+          if (email) {
+            await trx.insertInto('emails')
+              .values({
+                personId: newPersonId,
+                email,
+                type: 'personal',
+                is_verified: false
+              })
+              .execute();
+          }
+
+          if (phone) {
+            await trx.insertInto('phone_numbers')
+              .values({
+                personId: newPersonId,
+                number: phone,
+                is_verified: false,
+                code: 420 // Default czech prefix
+              })
+              .execute();
+          }
+
+          return { success: true, personId: newPersonId };
+        });
+
+        return result;
+      }
+
+      throw new Error('Invalid mode');
+
+    } catch (e) {
+      console.error(e);
+      return new Response(JSON.stringify({ error: 'Failed to add parent', details: e }), { status: 500 });
+    }
+  }, {
+    params: t.Object({
+      id: t.Number()
+    }),
+    body: t.Object({
+      mode: t.Union([t.Literal('existing'), t.Literal('new')]),
+      role: t.String(),
+      personId: t.Optional(t.Number()),
+      firstName: t.Optional(t.String()),
+      lastName: t.Optional(t.String()),
+      email: t.Optional(t.String()),
+      phone: t.Optional(t.String())
+    })
+  })
+  .patch('/student/:id/address', async ({ params: { id }, body }) => {
+    const { street, houseNumber, city, postcode } = body;
+
+    try {
+      await db.transaction().execute(async (trx) => {
+        // 1. Find or create city
+        let cityId: number;
+        const existingCity = await trx.selectFrom('cities')
+          .select('cityId')
+          .where('cityName', '=', city)
+          .where('postcode', '=', postcode || null)
+          .executeTakeFirst();
+
+        if (existingCity) {
+          cityId = existingCity.cityId;
+        } else {
+          const newCity = await trx.insertInto('cities')
+            .values({
+              cityName: city,
+              postcode: postcode || null,
+              countryId: 1 // Default to Czech Republic for now, or could be passed
+            })
+            .executeTakeFirstOrThrow();
+          cityId = Number(newCity.insertId);
+        }
+
+        // 2. Get person and their addressId
+        const person = await trx.selectFrom('persons')
+          .select('address')
+          .where('personId', '=', id)
+          .executeTakeFirstOrThrow();
+
+        if (person.address) {
+          // Update existing address
+          await trx.updateTable('addresses')
+            .set({
+              cityId,
+              street,
+              houseNumber
+            })
+            .where('addressId', '=', person.address)
+            .execute();
+        } else {
+          // Create new address
+          const newAddress = await trx.insertInto('addresses')
+            .values({
+              cityId,
+              street,
+              houseNumber
+            })
+            .executeTakeFirstOrThrow();
+          const addressId = Number(newAddress.insertId);
+
+          // Link to person
+          await trx.updateTable('persons')
+            .set({ address: addressId })
+            .where('personId', '=', id)
+            .execute();
+        }
+      });
+
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      return new Response(JSON.stringify({ error: 'Failed to update address', details: e }), { status: 500 });
+    }
+  }, {
+    params: t.Object({
+      id: t.Number()
+    }),
+    body: t.Object({
+      street: t.String(),
+      houseNumber: t.String(),
+      city: t.String(),
+      postcode: t.Optional(t.String())
     })
   });
 

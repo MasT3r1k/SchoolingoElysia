@@ -4,6 +4,12 @@ import { db } from '../../../../../database';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
 import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 
+const mimeGroups: any = {
+    image: ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp'],
+    document: ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.txt', '.csv'],
+    archive: ['.zip', '.rar', '.7z', '.tar', '.gz'],
+};
+
 const app = new Elysia({ prefix: '/files' })
 
     // GET / - List available polls
@@ -41,10 +47,30 @@ const app = new Elysia({ prefix: '/files' })
         ])
         .offset(query.offset)
         .limit(query.limit)
+
+        if (query.name && query.name != '') {
+            const safeName = query.name.replace(/[%_]/g, '\\$&');
+            filesQuery = filesQuery.where('files.real_file_name', 'like', `%${safeName}%`);
+        }
         
         if (query.user_id != -1) {
-            filesQuery.where('files.owner_id', '=', query.user_id);
+            filesQuery = filesQuery.where('files.owner_id', '=', query.user_id);
         }
+
+        if (query.type && query.type !== 'all') {
+            const type = query.type;
+
+            if (type === 'other') {
+                // Vybere vše, co nepatří do definovaných skupin
+                const allKnownExtensions: any = Object.values(mimeGroups).flat();
+                filesQuery = filesQuery.where('files.file_format', 'not in', allKnownExtensions);
+            } 
+            else if (mimeGroups[type]) {
+                // Vybere přípony pro danou kategorii (image, document, atd.)
+                filesQuery = filesQuery.where('files.file_format', 'in', mimeGroups[type]);
+            }
+        }
+
         const filesData = await filesQuery.execute();
 
         const files = await Promise.all(
@@ -59,7 +85,9 @@ const app = new Elysia({ prefix: '/files' })
         query: t.Object({
             limit: t.Number({ default: 20, minimum: 0, maximum: 100 }),
             offset: t.Number({ default: 0, minimum: 0 }),
-            user_id: t.Number({ default: -1 })
+            user_id: t.Number({ default: -1 }),
+            name: t.Optional(t.String()),
+            type: t.Optional(t.String())
         })
     })
 

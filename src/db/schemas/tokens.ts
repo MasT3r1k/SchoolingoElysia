@@ -4,7 +4,7 @@ export interface TokensTable {
   tokenId: Generated<number>
   token: string
   password: number
-  userAgent: string
+  userAgent: string | null
   expires: Date // datetime
   created: Generated<Date> // datetime
   userId: number

@@ -243,7 +243,16 @@
         "subject_traslate_note": "Přidejte podporu pro více jazyků, automaticky se použije překlad předmětu, pokud se nenajde, bude použitý klasický název předmětu.",
         "save_subject": "Uložit předmět",
         "create_subject": "Vytvořit předmět",
-        "add_teacher": "Přidat učitele"
+        "add_teacher": "Přidat učitele",
+        "select_teacher": "Vybrat učitele",
+        "no_teachers_assigned": "Žádní učitelé nejsou přiřazeni k tomuto předmětu",
+        "manage_users": {
+            "login_method": {
+                "title": "Způsob přihlášení",
+                "local": "Lokální přihlášení (Schoolingo Auth)",
+                "ldap": "Pomocí LDAP protokolu"
+            }
+        }
     },
     "calendar": {
         "title": "%month%, %year%",
@@ -726,6 +735,8 @@
         "equipment": "Věci potřebné pro práci",
         "search": "Vyhledávejte firmu podle názvu",
         "note": "Poznámka",
+        "class": "Třída",
+        "student_list": "Seznam studentů",
         "settings": "Nastavení",
         "request_add_company": "Požádat o přidání firmy",
         "add_company": "Přidat firmu",
@@ -1676,9 +1687,21 @@
                 "avg_time": "Prům. čas"
             },
             "no_data": "Žádné stránky zatím nebyly zaznamenány."
+        },
+        "schoolYears": {
+            "title": "Školní roky",
+            "subtitle": "Správa akademických roků a období",
+            "new": "Nový školní rok",
+            "edit": "Upravit školní rok",
+            "noYears": "Žádné školní roky",
+            "noYearsDesc": "Zatím nebyly vytvořeny žádné školní roky. Klikněte na 'Nový školní rok' pro vytvoření prvního roku.",
+            "createFirst": "Vytvořit první rok",
+            "create": "Vytvořit",
+            "startDate": "Datum začátku",
+            "endDate": "Datum konce",
+            "midtermDate": "Datum pololetí",
+            "setAsCurrent": "Nastavit jako aktivní školní rok",
+            "setAsCurrentDesc": "Toto automaticky deaktivuje všechny ostatní školní roky"
         }
-    },
-    "common": {
-        "save": "Uložit"
     }
 }
