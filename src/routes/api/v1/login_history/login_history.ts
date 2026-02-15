@@ -34,12 +34,27 @@ const elysiaApp = new Elysia()
 
     try {
         const count = await db.selectFrom("login_history")
+          .select([
+              sql`COUNT(*)`.as('count')
+          ])
+          .where('login_history.userId', '=', user.userId)
+          .executeTakeFirst()
+          .then(r => Number(r?.count ?? 0));
+
+        const loginStats = await db.selectFrom("login_history")
             .select([
-                sql`COUNT(*)`.as('count')
+                // MariaDB verze: sečteme 1 tam, kde je success true
+                sql<number>`SUM(IF(success = true, 1, 0))`.as('successCount'),
+                // Sečteme 1 tam, kde je success false
+                sql<number>`SUM(IF(success = false, 1, 0))`.as('failureCount')
             ])
-            .where('login_history.userId', '=', user.userId)
-            .executeTakeFirst()
-            .then(r => Number(r?.count ?? 0));
+            .where('userId', '=', user.userId)
+            // Správná syntaxe pro MariaDB interval
+            .where('created', '>', sql`NOW() - INTERVAL 30 DAY`) 
+            .executeTakeFirst();
+
+        const validLogins = Number(loginStats?.successCount ?? 0);
+        const failedLogins = Number(loginStats?.failureCount ?? 0);
 
         const login_history = await db.selectFrom("login_history")
             .select([
@@ -63,7 +78,7 @@ const elysiaApp = new Elysia()
             .where('login_history.userId', '=', user.userId)
             .execute();
 
-        return Response.json({ count, data: login_history });
+        return Response.json({ count, data: login_history, validLogins, failedLogins });
     } catch (e) {
       return new Response(JSON.stringify({ error: "Failed load data", e }), {
         status: 404,

@@ -27,12 +27,45 @@ export const app = new Elysia({
     },
   })
   // Security Headers
-  .use(helmet())
-  .use(ip())
-  .use(cors({
-    origin: ['http://localhost:4200', 'http://localhost:5173', 'http://localhost:8100', 'http://192.168.1.102:4200', 'capacitor://localhost', 'ionic://localhost'],
+.use(cors({
+    origin: (request) => {
+      const origin = request.headers.get('origin');
+      
+      // Allow requests with no origin
+      if (!origin) {
+        return true;
+      }
+      
+      // Allow any localhost origin or Capacitor/Ionic
+      if (origin.startsWith('http://localhost:') || 
+          origin.startsWith('https://localhost:') || 
+          origin.startsWith('http://127.0.0.1:') ||
+          origin.startsWith('capacitor://') || 
+          origin.startsWith('ionic://')) {
+        return true;
+      }
+
+      const allowedOrigins = [
+        'http://localhost:4200', 
+        'http://localhost:4222', 
+        'http://localhost:5173', 
+        'http://localhost:8100', 
+        'http://127.0.0.1:4200',
+        'capacitor://localhost', 
+        'ionic://localhost'
+      ];
+      
+      if (allowedOrigins.includes(origin)) return true;
+      return false;
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
     credentials: true,
   }))
+  .use(helmet({
+    contentSecurityPolicy: false,
+  }))
+  .use(ip())
   .use(errorHandler)
   .use(requestLogger)
   .use(rateLimit)

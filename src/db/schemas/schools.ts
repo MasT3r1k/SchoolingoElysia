@@ -37,4 +37,16 @@ export interface schoolsTable {
   backup_interval: number | null
   auto_update: number // boolean
   auto_update_interval: number
+  country: number | null
+  red_izo: string
+  ico: string
+  school_type: string
+  izo: string
+  online_enabled: number // boolean
+  online_default_platform: string
+  practices_enabled: number // boolean
+  messages_enabled: number // boolean
+  tests_enabled: number // boolean
+  rewards_enabled: number // boolean
+  tutoring_enabled: number // boolean
 }

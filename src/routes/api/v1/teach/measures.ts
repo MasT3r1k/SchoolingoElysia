@@ -8,6 +8,7 @@ import { validateBody, createEducationMeasureSchema } from '../../../../utils/va
 import { MainConfig } from '../../../../config/main.config';
 import { sql } from 'kysely';
 import moment from 'moment';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
     // Get education measure behaviour grade
@@ -119,7 +120,21 @@ const app = new Elysia()
 
         const measures = await q.orderBy('education_measures.issued_at', 'desc').limit(50).execute();
 
-        return Response.json({ measures });
+        const personIds = new Set<number>();
+        measures.forEach(m => {
+            if (m.student_id) personIds.add(m.student_id);
+            if (m.issued_by) personIds.add(m.issued_by);
+        });
+
+        const namesMap = await format_person_map_by_ids(Array.from(personIds));
+
+        const measuresWithNames = measures.map(m => ({
+            ...m,
+            student_name: m.student_id ? namesMap.get(m.student_id) || '' : '',
+            issued_by_name: m.issued_by ? namesMap.get(m.issued_by) || '' : ''
+        }));
+
+        return Response.json({ measures: measuresWithNames });
     })
 
     // Create education measure (teacher only)
@@ -154,7 +169,6 @@ const app = new Elysia()
                 student_id: studentId,
                 type: type as any,
                 reason,
-                issued_at: new Date(date),
                 description: note || null,
                 issued_by: auth.userId
             })

@@ -15,7 +15,7 @@ const app = new Elysia()
     }
 
 
-    const [school_info, districts, student_count, subjects, scopes, ldap_config, email_config] = await Promise.all([
+    const [school_info, districts, student_count, subjects, scopes, ldap_config, email_config, countries] = await Promise.all([
       // School settings
       db.selectFrom('schools')
         .leftJoin('districts', 'districts.districtId', 'schools.district')
@@ -43,7 +43,21 @@ const app = new Elysia()
           'schools.max_login_attempts',
           'schools.backup_interval',
           'schools.auto_update',
-          'schools.auto_update_interval'
+          'schools.auto_update_interval',
+          'schools.country',
+          'schools.red_izo',
+          'schools.ico',
+          'schools.school_type',
+          'schools.izo',
+          'schools.online_enabled',
+          'schools.online_default_platform',
+          'schools.gdpr_firstname',
+          'schools.gdpr_lastname',
+          'schools.gdpr_phone',
+          'schools.gdpr_email',
+          'schools.gdpr_mobile',
+          'schools.gdpr_databox',
+          'schools.gdpr_web',
         ])
         .limit(1)
         .executeTakeFirst(),
@@ -95,7 +109,13 @@ const app = new Elysia()
       db.selectFrom('email_config')
         .selectAll()
         .limit(1)
-        .executeTakeFirst()
+        .executeTakeFirst(),
+      
+      // Countries
+      db.selectFrom('countries')
+        .select(['countryId', 'nationality', 'code2'])
+        .orderBy('nationality', 'asc')
+        .execute()
     ]);
 
     if (!school_info) {
@@ -107,6 +127,7 @@ const app = new Elysia()
       ldap_config: ldap_config || null,
       email_config: email_config || null,
       districts,
+      countries: countries,
       student_count,
       subjects,
       scopes

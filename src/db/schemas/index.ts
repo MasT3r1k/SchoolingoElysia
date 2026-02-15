@@ -100,6 +100,8 @@ import { filesTokensTable } from './files_tokens'
 import { messages_filesTable } from './messages_files'
 import { TimetableSchemasTable } from './timetable_schemas'
 import { MigrationsTable } from './migrations'
+import { OnlineLessonsTable } from './online_lessons'
+import { OAuthTokensTable } from './oauth_tokens'
 
 export interface Database {
   absence: AbsenceTable
@@ -215,4 +217,6 @@ export interface Database {
   employee_bonuses: EmployeeBonusesTable
   role_communication_permissions: role_communication_permissionsTable
   _migrations: MigrationsTable
+  online_lessons: OnlineLessonsTable
+  oauth_tokens: OAuthTokensTable
 }

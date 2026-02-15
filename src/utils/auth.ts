@@ -17,7 +17,8 @@ export async function getAuthUser(token: string | undefined, cookie: any = null)
         'users.locale',
         'users.principal',
         'users.manager',
-        'users.role'
+        'users.role',
+        'users.school'
       ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
@@ -58,6 +59,7 @@ export async function getAuthUser(token: string | undefined, cookie: any = null)
         locale: session.locale,
         isPrincipal: !!session.principal,
         manager: session.manager,
-        role: session.role
+        role: session.role,
+        school: session.school
     };
 }

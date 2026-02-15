@@ -121,7 +121,6 @@ export const createEducationMeasureSchema = z.object({
     type: z.enum(['praise', 'reprimand', 'warning', 'reduced_behavior', 'other']),
     reason: z.string().min(1).max(1000),
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    issuedBy: z.number().int().positive(),
     note: z.string().max(500).optional()
 });
 

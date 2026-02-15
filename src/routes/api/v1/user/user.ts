@@ -45,8 +45,13 @@ const fullName = sql`
 `;
 
 const app = new Elysia()
-  .get('/user', async ({ cookie }) => {
-      const token = cookie.token?.value as string;
+  .get('/user', async ({ cookie, headers }) => {
+      let token = cookie.token?.value as string;
+      
+      if (!token && headers['authorization']) {
+          token = headers['authorization'].replace('Bearer ', '');
+      }
+
       if (!token) {
         return createErrorResponse('no_user', 'no_cookie');
       }

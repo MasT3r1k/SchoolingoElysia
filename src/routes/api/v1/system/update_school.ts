@@ -13,7 +13,12 @@ const app = new Elysia()
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
-    const { name, shortcut, district, lesson_start, lesson_length, break_time, warn_absence, fastlogin, resetPasswordWithEmail } = body;
+    const { 
+      name, shortcut, district, lesson_start, lesson_length, break_time, warn_absence, fastlogin, resetPasswordWithEmail, country, red_izo, ico, school_type, izo, 
+      online_enabled, online_default_platform, modules,
+      gdpr_firstname, gdpr_lastname, gdpr_phone, gdpr_email, gdpr_mobile, gdpr_databox, gdpr_web,
+      practices_enabled, messages_enabled, tests_enabled, rewards_enabled, tutoring_enabled
+    } = body;
 
     // Parse lesson_start (HH:MM) to hours and minutes
     const [startHour, startMinute] = lesson_start.split(':').map(Number);
@@ -34,13 +39,33 @@ const app = new Elysia()
         name,
         shortName: shortcut,
         district: districtId ?? undefined,
+        country: country,
+        red_izo,
+        ico,
+        school_type,
+        izo,
+        modules,
         startHour,
         startMinute: startMinute || 0,
         lessonHour: lesson_length,
         breakTime: break_time,
         warningAbsencePercent: warn_absence,
         fastlogin: fastlogin,
-        resetPasswordWithEmail: resetPasswordWithEmail
+        resetPasswordWithEmail: resetPasswordWithEmail,
+        online_enabled: online_enabled ? 1 : 0,
+        online_default_platform,
+        gdpr_firstname: gdpr_firstname || '',
+        gdpr_lastname: gdpr_lastname || '',
+        gdpr_phone: gdpr_phone || '',
+        gdpr_email: gdpr_email || '',
+        gdpr_mobile: gdpr_mobile || '',
+        gdpr_databox: gdpr_databox || '',
+        gdpr_web: gdpr_web || '',
+        practices_enabled: practices_enabled ? 1 : 0,
+        messages_enabled: messages_enabled ? 1 : 0,
+        tests_enabled: tests_enabled ? 1 : 0,
+        rewards_enabled: rewards_enabled ? 1 : 0,
+        tutoring_enabled: tutoring_enabled ? 1 : 0
       })
       .execute();
 
@@ -50,12 +75,32 @@ const app = new Elysia()
       name: t.String(),
       shortcut: t.String(),
       district: t.Optional(t.String()),
+      country: t.Union([t.Number(), t.Null()]),
+      red_izo: t.String(),
+      ico: t.String(),
+      school_type: t.String(),
+      izo: t.String(),
       lesson_start: t.String(),
       lesson_length: t.Number(),
       break_time: t.Number(),
       warn_absence: t.Number(),
       fastlogin: t.Boolean(),
-      resetPasswordWithEmail: t.Boolean()
+      resetPasswordWithEmail: t.Boolean(),
+      online_enabled: t.Boolean(),
+      online_default_platform: t.String(),
+      modules: t.String(),
+      gdpr_firstname: t.Optional(t.Nullable(t.String())),
+      gdpr_lastname: t.Optional(t.Nullable(t.String())),
+      gdpr_phone: t.Optional(t.Nullable(t.String())),
+      gdpr_email: t.Optional(t.Nullable(t.String())),
+      gdpr_mobile: t.Optional(t.Nullable(t.String())),
+      gdpr_databox: t.Optional(t.Nullable(t.String())),
+      gdpr_web: t.Optional(t.Nullable(t.String())),
+      practices_enabled: t.Boolean(),
+      messages_enabled: t.Boolean(),
+      tests_enabled: t.Boolean(),
+      rewards_enabled: t.Boolean(),
+      tutoring_enabled: t.Boolean()
     })
   });
 

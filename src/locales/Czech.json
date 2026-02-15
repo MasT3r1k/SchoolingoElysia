@@ -183,6 +183,13 @@
         "files_settings": "Nastavení souborů",
         "list_scopes": "Seznam oborů",
         "list_subjects": "Seznam předmětů",
+        "online_settings": "Nastavení online výuky",
+        "gdpr_settings": "Nastavení GDPR",
+        "practices_settings": "Nastavení odborných praxí",
+        "messages_settings": "Nastavení zpráv",
+        "tests_settings": "Nastavení testů",
+        "rewards_settings": "Nastavení odměn",
+        "tutoring_settings": "Nastavení doučování",
         "section_modules": "Nastavení modulů",
         "version": "Verze systému",
         "version_available": "Nová verze",
@@ -211,6 +218,18 @@
         "school_fastlogin": "Přihlášování pomocí QR kódu",
         "school_reset_password_with_email": "Resetování hesla pomocí emailové adresy",
         "warn_above_absence": "Varovat při absenci vyšší než (v %)",
+        "ico": "IČO",
+        "red_izo": "RED_IZO",
+        "izo": "IZO",
+        "school_type": "Typ školy",
+        "school_types": {
+            "grammar_school": "Gymnázium",
+            "high_school": "Střední škola",
+            "secondary_professional_school": "Střední odborná škola",
+            "vocational_school": "Učiliště",
+            "higher_professional_school": "Vyšší odborná škola",
+            "conservatory": "Konzervatoř"
+        },
         "save_school_info": "Uložit nastavení školy",
         "scope_details": "Máte přidaných %scopes% oborů na této škole.",
         "table_subjects": "Tabulka předmětů",
@@ -301,6 +320,12 @@
         "birthday": "Datum narození",
         "gender": "Pohlaví"
     },
+    "address": {
+        "street": "Ulice",
+        "house_number": "Číslo popisné",
+        "city": "Město",
+        "postcode": "PSČ"
+    },
     "absence": {
         "absence": "Absence",
         "excused": "Omluvená absence",
@@ -342,7 +367,8 @@
             "subjects": "Přehled předmětů",
             "classbook": "Třídní kniha",
             "rewards": "Odměny",
-            "tests": "Testy"
+            "tests": "Testy",
+            "my_class": "Správa třídy"
         },
         "marks": {
             "main": "Hodnocení",
@@ -381,6 +407,9 @@
             "cookies": "Nastavení Cookies"
         },
         "archive": "Archiv systému",
+        "online": {
+            "main": "Online výuka"
+        },
         "system": {
             "main": "Správa systému",
             "settings": "Nastavení systému",
@@ -486,6 +515,7 @@
         },
         "select_timetable": {
             "my_timetable": "Můj rozvrh",
+            "supervision": "Dozor",
             "class_timetable": "Rozvrh mé třídy"
         },
         "add": {
@@ -739,6 +769,7 @@
         "search": "Vyhledávejte firmu podle názvu",
         "note": "Poznámka",
         "class": "Třída",
+        "contact": "Kontakt",
         "student_list": "Seznam studentů",
         "settings": "Nastavení",
         "request_add_company": "Požádat o přidání firmy",
@@ -947,6 +978,8 @@
         "title": "Titulek",
         "title_placeholder": "Vyplňte titulek známky",
         "mark": "Známka",
+        "class_average": "Průměr třídy",
+        "class_rank": "Pořadí ve třídě",
         "marking_scale": "Tabulka hodnocení",
         "percentage": "Procenta %",
         "mark_placeholder": "Známka, např.: 1, 1.5=1-, 2, 2-, 4, .., 5",
@@ -1705,6 +1738,27 @@
             "midtermDate": "Datum pololetí",
             "setAsCurrent": "Nastavit jako aktivní školní rok",
             "setAsCurrentDesc": "Toto automaticky deaktivuje všechny ostatní školní roky"
+        }
+    },
+    "online": {
+        "title": "Online výuka",
+        "lessons": "Online hodiny",
+        "create_lesson": "Vytvořit online hodinu",
+        "join": "Připojit se",
+        "platform": "Platforma",
+        "link": "Odkaz",
+        "target": "Cíl",
+        "generate": "Vygenerovat",
+        "fill_required": "Vyplňte prosím název, čas a platformu",
+        "connect_prompt": "Pro generování odkazů musíte propojit svůj účet s %provider%. Chcete to udělat nyní?",
+        "no_lessons": "Žádné naplánované online hodiny",
+        "start": "Začátek",
+        "end": "Konec",
+        "description": "Popis",
+        "create": {
+            "title": "Naplánovat online hodinu",
+            "success": "Hodina byla úspěšně naplánována",
+            "error": "Chyba při plánování hodiny"
         }
     }
 }

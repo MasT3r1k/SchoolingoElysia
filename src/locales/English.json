@@ -3,34 +3,97 @@
         "cs": "Czech"
     },
     "auth": {
+        "install_app": {
+            "title": "Install application",
+            "android": {
+                "step1": "Open Google Play Store on your Android device",
+                "step2": "Search for Schoolingo app",
+                "step3": "Click 'Install' or use the button below"
+            },
+            "ios": {
+                "step1": "Open App Store on your iOS device",
+                "step2": "Search for Schoolingo app",
+                "step3": "Click 'Get' or use the button below"
+            }
+        },
         "login": {
-            "title": "Login to the school system",
-            "subtitle": [
-                "Using login credentials",
-                "Login using QR code"
-            ],
-            "qrcode": "Scan the QR code in the mobile app for quick login",
+            "title": "Login to school system",
+            "qrcode": "Scan QR code in mobile app for quick login",
+            "qrcode_hint": "In the app, go to settings and find 'Login with QR Code'",
             "username": "Username",
             "username_placeholder": "Username",
             "password": "Password",
             "password_placeholder": "Your password",
             "button": "Log in",
-            "downloadApp": "Download %app% to your phone"
+            "login_with_passkey": "Login with passkey",
+            "downloadApp": "Download %app% to your phone",
+            "back_to_login": "Back to login",
+            "success": "Login successful",
+            "loading_data": "Loading user data..."
         },
         "forgotpass": {
-            "click": "Forgot your password?"
+            "click": "Forgot your password?",
+            "title": "Password reset request",
+            "not_available": "Forgot password functionality is not available, please contact your class teacher or administrator for a new password.",
+            "email_not_found": "Email not found",
+            "no_emails": "No verified emails found, please ask your class teacher or administrator for a new password",
+            "email_sent": "Email with instructions has been sent",
+            "select_email": "Select email to send the code to",
+            "email_error": "An error occurred while sending the email",
+            "http_error": "Failed to request a new password",
+            "send_email": "Send email with code",
+            "token_expired": "Password reset time has expired",
+            "missing_selected_email": "You must select an email to send the code to",
+            "invalid_selected_email": "Invalid email, please select a valid email",
+            "set_email_failed": "Failed to select email",
+            "code_from_email": "Enter the code we sent to your email.",
+            "verify_code": "Verify code",
+            "invalid_code": "Invalid code",
+            "new_password": "Enter new password, if you have two-factor authentication, you will also need to enter the code from the mobile app",
+            "request_new_password": "Change password",
+            "require_tfa": "This account has active two-factor authentication, enter the code from the mobile app.",
+            "done": "Password successfully reset. You can now log in."
         },
+        "passkey": {
+            "authenticating": "Authenticating",
+            "use_device": "Use biometrics or your device PIN",
+            "cancelled": "Login with passkey was cancelled",
+            "no_account": "The entered Passkey was not linked to any account",
+            "error": "An error occurred during passkey login"
+        },
+        "2fa": {
+            "click": "Another way to log in?",
+            "authentication_code": "Authentication code",
+            "verify_code": "Verify code",
+            "verify_code_action": "Verifying code",
+            "description": "Open your two-factor authenticator app (TOTP) or browser extension to view your authentication code. Alternatively, you can use a backup code.",
+            "note": "Enter code from mobile app"
+        },
+        "session_expires_in": "Your session will expire in %time%",
+        "session_expiring_description": "For security reasons, your session will end soon. Do you want to extend the session?",
+        "extend_session": "Extend session",
+        "session_expired": "Your session has expired",
+        "session_expired_message": "For security reasons, you have been automatically logged out.",
+        "redirecting_to_login": "You will be redirected to the login page momentarily...",
+        "session_expired_alert": "You have been automatically logged out for security reasons.",
+        "logout_success_alert": "Logout was successful.",
         "errors": {
-            "longLoadingQR": "Loading the QR code is taking longer than expected, we apologize for the inconvenience",
+            "longLoadingQR": "Loading the QR code is taking longer than expecting, we apologize for the inconvenience",
             "429": "Too many login attempts, please try again in a few minutes",
             "invalid_username": "User not found",
-            "invalid_password": "Incorrect password"
+            "invalid_password": "Incorrect password",
+            "invalid_tfa": "Incorrect code"
         }
     },
     "form": {
         "required": "Required",
         "minLength": "Minimum length %min%",
-        "maxLength": "Maximum length %max%"
+        "minValue": "Minimum value %min%",
+        "maxLength": "Maximum length %max%",
+        "maxValue": "Maximum value %max%",
+        "invalid": "Invalid",
+        "passwords_is_same": "Passwords match",
+        "passwords_not_same": "Passwords do not match"
     },
     "schools": {
         "errors": {
@@ -39,32 +102,1435 @@
     },
     "themes": {
         "system": "System theme",
-        "dark": "Dark mode",
-        "light": "Light mode"
+        "dark": "Dark",
+        "light": "Light",
+        "moon": "Midnight"
     },
+    "genders": {
+        "male": "Male",
+        "female": "Female"
+    },
+    "weeks": {
+        "even": "Even week",
+        "odd": "Odd week"
+    },
+    "days": [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+    ],
+    "short_days": [
+        "Sun",
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat"
+    ],
+    "months": [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    ],
+    "date": "Date",
+    "total": "Total",
     "or": "or",
+    "yes": "Yes",
+    "no": "No",
+    "subject": "Subject",
+    "subjects": "Subjects",
+    "subject_translations": {
+        "maths": "Mathematics",
+        "history": "History"
+    },
+    "selected": "Selected",
+    "loading": "Loading",
+    "cancel": "Cancel",
+    "close": "Close",
+    "activated": "Activated",
+    "activate": "Activate",
+    "delete": "Delete",
+    "actions": "Actions",
+    "unknown": "Unknown",
+    "cookies": {
+        "title": "We use cookies – but in a friendly way!",
+        "description": "We use cookies and other network identifiers on this website, which may contain personal data (e.g., information about website usage). These data are used to ensure the operation of the website, to improve our services, and for their further development. Some processing relies on your consent, which you can grant by clicking 'I agree to everything'. By clicking 'Detailed settings', you can enable or disable individual processing purposes. Selecting 'Only necessary' will allow only cookies necessary for the correct functioning of the website.",
+        "consent": "I agree to everything",
+        "settings": "Detailed settings",
+        "only_necessary": "Only necessary"
+    },
     "system": {
+        "section_main": "Main menu",
+        "system_settings": "System settings",
+        "login_settings": "Login settings",
+        "ldap_settings": "LDAP settings",
+        "school_settings": "School settings",
+        "email_settings": "Email settings",
+        "files_settings": "File settings",
+        "list_scopes": "List of scopes",
+        "list_subjects": "List of subjects",
+        "section_modules": "Module settings",
         "version": "System version",
-        "system_is_up_to_date": "System is up to date",
+        "version_available": "New version",
+        "system_is_up_to_date": "You are using the latest version",
         "system_has_update": "A new update is available",
-        "system_is_newer": "System is newer (dev)",
-        "ahead_count": "Ahead by %count% version(s)",
-        "behind_count": "Behind by %count% version(s)"
+        "system_is_newer": "System is newer",
+        "ahead_count": "Ahead by %count% versions",
+        "behind_count": "Behind by %count% versions",
+        "system_update_loading": "Loading latest version information.",
+        "system_error_loading_version": "An unexpected error occurred while loading the system version.",
+        "system_has_valid_license": "School has a valid system license!",
+        "activated": "Activated",
+        "deactivated": "Deactivated",
+        "email_types": {
+            "basic_smtp_server": "SMTP Server - login with username and password",
+            "google_smtp_server": "Google SMTP Server - login with OAuth2 authentication"
+        },
+        "changelog": "System changelog",
+        "school_name": "School name",
+        "school_short_name": "School abbreviation",
+        "school_code": "School code",
+        "school_district": "School district",
+        "school_start": "Start of classes",
+        "school_lesson_length": "Length of lesson",
+        "school_break_length": "Default break length",
+        "school_fastlogin": "QR code login",
+        "school_reset_password_with_email": "Password reset via email address",
+        "warn_above_absence": "Warn when absence is above (in %)",
+        "save_school_info": "Save school settings",
+        "scope_details": "You have added %scopes% scopes at this school.",
+        "table_subjects": "Subjects table",
+        "add_scope": "New",
+        "remove_scope": "Remove",
+        "search_scopes": "Search by name, abbreviation or code…",
+        "scope_years": "%years% years",
+        "scope_name": "Scope name",
+        "scope_name_placeholder": "E.g. Information Technology",
+        "scope_no_name": "No name",
+        "scope_shortcut": "Scope abbreviation",
+        "scope_shortcut_placeholder": "E.g. IT",
+        "scope_no_shortcut": "No abbreviation",
+        "scope_code": "Scope code",
+        "scope_code_placeholder": "Scope code",
+        "scope_no_code": "No code",
+        "scope_number_years_study": "Number of years of study",
+        "scope_capacity_students_in_one_class": "Capacity of students in 1 class",
+        "scope_count_classes_in_year": "Number of classes per year",
+        "hours_per_week_for_year": "%year%. year (hours/week)",
+        "save_scope": "Save scope",
+        "create_scope": "Create scope",
+        "select_scope": "No scope selected",
+        "select_scope_desc": "Select a scope on the left to view its information here.",
+        "add_subject": "New",
+        "subject_details": "You have added %subjects% subjects at this school.",
+        "search_subjects": "Search by name",
+        "subject_name": "Subject name",
+        "subject_no_name": "Unnamed subject",
+        "subject_shortcut": "Subject abbreviation",
+        "subject_no_shortcut": "No subject abbreviation",
+        "subject_traslate": "Translation for subject",
+        "subject_traslate_note": "Add support for multiple languages, subject translation will be used automatically, if not found, classic subject name will be used.",
+        "save_subject": "Save subject",
+        "create_subject": "Create subject",
+        "add_teacher": "Add teacher",
+        "select_teacher": "Select teacher",
+        "no_teachers_assigned": "No teachers are assigned to this subject",
+        "manage_users": {
+            "login_method": {
+                "title": "Login method",
+                "local": "Local login (Schoolingo Auth)",
+                "ldap": "Via LDAP protocol"
+            }
+        }
+    },
+    "calendar": {
+        "title": "%month%, %year%",
+        "date": "Date",
+        "placeholder": "Select date and time",
+        "from": "From",
+        "to": "To"
+    },
+    "time": {
+        "minute": "minute",
+        "minutes": "minutes",
+        "daily": "Daily",
+        "week": "Week",
+        "weekly": "Weekly",
+        "month": "Month",
+        "monthly": "Monthly",
+        "to_today": "To today",
+        "first_term": "1st term",
+        "second_term": "2nd term",
+        "school_year": "School year",
+        "older": "Older"
+    },
+    "roles": {
+        "all": "All roles",
+        "teacher": "Teacher",
+        "student": "Student",
+        "parent": "Parent",
+        "classteacher": "Class teacher",
+        "system": "System",
+        "manager": "Manager",
+        "admin_staff": "Administration",
+        "maintenance": "Maintenance",
+        "management": "Management",
+        "personnel": "Personnel",
+        "other": "Other",
+        "unknown": "Unknown",
+        "undefined": "Unknown"
+    },
+    "person": {
+        "first_name": "First name",
+        "last_name": "Last name",
+        "full_name": "Name",
+        "birthday": "Date of birth",
+        "gender": "Gender"
+    },
+    "absence": {
+        "absence": "Absence",
+        "excused": "Excused absence",
+        "unexcused": "Unexcused absence",
+        "non_count": "Uncounted absence",
+        "late": "Late arrival",
+        "early": "Early departure",
+        "distance": "Distance learning",
+        "trash": "Remove absence",
+        "overview_absence": "Absence overview"
+    },
+    "sidebar": {
+        "library": {
+            "main": "Library",
+            "catalog": "Catalog",
+            "manage": "Manage"
+        },
+        "main": "Sidebar",
+        "home": "My Overview",
+        "absence": "Absence",
+        "management": "School Management",
+        "students": "Student Card",
+        "employees": "Employees",
+        "account": "My Account",
+        "calendar": "Calendar",
+        "documents": "Documents",
+        "schedule": {
+            "main": "Schedule Management",
+            "template_timetable": "Schedule Scheme",
+            "template_subject": "Subject Templates",
+            "builder": "Schedule Builder"
+        },
+        "teach": {
+            "main": "Teaching",
+            "timetable": "Timetable",
+            "homeworks": "Homework",
+            "substitution": "Substitution",
+            "tutoring": "Tutoring",
+            "subjects": "Subject Overview",
+            "classbook": "Classbook",
+            "rewards": "Rewards",
+            "tests": "Tests"
+        },
+        "marks": {
+            "main": "Grading",
+            "interm": "Continuous Classification",
+            "marks_record": "Grade Entry",
+            "midterm": "Midterm Classification",
+            "education_measures": "Educational Measures"
+        },
+        "settings": "Settings",
+        "messages": {
+            "main": "Messages",
+            "send": "Send Message",
+            "received": "Inbox",
+            "sent": "Sent",
+            "groups": "Discussions",
+            "noticeboard": "Noticeboard"
+        },
+        "traineeship": {
+            "overview": "My Overview",
+            "main": "Traineeship",
+            "companies": "Company List",
+            "diary": "Diary List",
+            "manage": "Traineeship Management",
+            "settings": "Traineeship Settings"
+        },
+        "fleetVehicles": {
+            "main": "Fleet",
+            "overview": "Overview",
+            "vehicles": "Vehicles",
+            "reservations": "Reservations",
+            "settings": "Settings"
+        },
+        "user": {
+            "notifications": "Notification Settings",
+            "gdpr": "GDPR - Data Protection",
+            "cookies": "Cookie Settings"
+        },
+        "archive": "System Archive",
+        "system": {
+            "main": "System Administration",
+            "settings": "System Settings",
+            "manage_users": "User Management",
+            "manage_files": "File Management",
+            "manage_messages": "Message Management",
+            "monitoring": "Monitoring",
+            "auditlog": "Auditlog"
+        }
+    },
+    "user": {
+        "logout": "Log out",
+        "personal_information": "Personal information",
+        "parents": "Parents",
+        "devices": "Logged in devices",
+        "login_history": "Login history",
+        "login_history_description": "Track logins to your account including information such as system, browser, IP address...",
+        "login_history_action": "View history",
+        "show_logged_devices": "Show logged in devices",
+        "logins_for_7days": "Logins in last 7 days",
+        "failed_logins_for_7days": "Failed logins in last 7 days",
+        "unknown_login": "Unknown login",
+        "notifications": "Notifications",
+        "connections": "Linked accounts",
+        "gdpr": "GDPR",
+        "security": "Security",
+        "password_authenticator": {
+            "title": "Password security",
+            "description": "Password is a basic security element. We recommend changing it regularly and using a unique password.",
+            "last_updated": "Last password change: %time%"
+        },
+        "app_authenticator": {
+            "description": "Adding two-factor authentication is a good way to add an extra layer of security to your account to ensure only you can log in."
+        },
+        "generator_password": {
+            "title": "Password generator",
+            "description": "This tool will automatically generate a strong and random password meeting all security requirements. You can then simply copy the password and paste it into the form.",
+            "generated_password": "Suggested password",
+            "generated_password_placeholder": "Click 'Suggest password' to view password.",
+            "generate_password": "Suggest password",
+            "put_in_input": "Insert into password input"
+        },
+        "add_email": {
+            "title": "Add email to your account",
+            "email": "Email address",
+            "type": "Email type",
+            "types": {
+                "personal": "Personal email",
+                "school": "School email",
+                "work": "Work email",
+                "other": "Other"
+            },
+            "save_email": "Save email"
+        },
+        "delete_email": {
+            "title": "Remove email address?",
+            "placeholder": "Enter email to confirm",
+            "delete_email": "Permanently delete email"
+        },
+        "add_phone": {
+            "title": "Add phone to your account",
+            "code": "Area code",
+            "number": "Phone number",
+            "save_phone": "Save phone",
+            "save_changes": "Save changes"
+        }
+    },
+    "notifications": {
+        "title": "Notifications",
+        "empty": "No incoming notifications",
+        "mark_all_read": "Read all notifications"
+    },
+    "devices": {
+        "current_device": "Current session",
+        "active_now": "Active now",
+        "logout_all_other": "Log out all others"
+    },
+    "buttons": {
+        "add_email": "Add email",
+        "add_phone": "Add phone",
+        "change_avatar": "Change avatar",
+        "change_password": "Change password",
+        "achievements": "My achievements",
+        "show_backup_codes": "Show backup codes",
+        "refresh_backup_codes": "Regenerate backup codes",
+        "remove_authenticator_app": "Remove authenticator app",
+        "jump_to_2FA_settings": "Go to 2FA settings",
+        "upload_files": "Upload files",
+        "back": "Back",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "view_all": "View all",
+        "save": "Save",
+        "save_changes": "Save changes",
+        "reset": "Reset"
+    },
+    "dropdown": {
+        "child": {
+            "empty": "You have no children",
+            "label": "Select child",
+            "son": "son",
+            "daughter": "daughter"
+        },
+        "select_timetable": {
+            "my_timetable": "My timetable",
+            "class_timetable": "Class timetable"
+        },
+        "add": {
+            "mark": "Add grade",
+            "note": "Add personal note",
+            "message": "Send message",
+            "homework": "Assign homework",
+            "event": "Create event",
+            "excuse": "Excuse absence",
+            "anketa": "Create poll",
+            "request": "Create request",
+            "company": "Add company to traineeship"
+        }
+    },
+    "schedule": {
+        "builder": {
+            "creation": "Creation",
+            "substitution": "Substitution",
+            "add_event": "Add event",
+            "add_subject": "Add subject",
+            "clear_timetable": "Clear timetable",
+            "settings": "Settings",
+            "export": "Export",
+            "import": "Import",
+            "print": "Print",
+            "stats": "Statistics",
+            "select_class": "Select class",
+            "edit_lesson": "Edit lesson",
+            "class": "Class",
+            "room": "Room",
+            "week_hours": "Hours per week",
+            "week": "Week",
+            "week_both": "Both weeks",
+            "week_odd": "Odd week",
+            "week_even": "Even week",
+            "occupied_hours": "Occupied slot",
+            "substitution_week": "Substitution in week",
+            "available_subjects": "Available subjects",
+            "add_subject_modal": {
+                "name_subject": "Subject name",
+                "short_subject": "Subject abbreviation",
+                "subject_placeholder": "Click to select subject",
+                "choose_subject": "Select subject",
+                "search_subject": "Search subjects",
+                "no_subjects": "No subjects",
+                "no_subjects_description": "This school has not created any subjects yet. Create them first.",
+                "no_search_description": "No search results found.",
+                "new_subject": "New subject",
+                "teachers": "Teachers (you can add multiple)",
+                "choose_teacher": "Select teacher",
+                "search_teacher": "Search teachers",
+                "no_teachers": "No teachers",
+                "no_teachers_description": "No teacher is assigned to this subject. Assign a teacher to this subject.",
+                "assign_teacher": "Assign teacher",
+                "hours_per_week": "Hours/week",
+                "exercise_hours": "Practical hours",
+                "default_room": "Default room",
+                "color_subject": "Subject color",
+                "assign_subject": "Assign subject",
+                "scope": "Class stream",
+                "grade_level": "Class year"
+            }
+        },
+        "template_timetable": {
+            "title": "Class timetable scheme",
+            "save_scheme": "Save scheme",
+            "types": {
+                "title": "Mark in timetable",
+                "empty": "Unmark",
+                "disabled": "Do not schedule",
+                "maybe": "Prefer not to schedule",
+                "lunch": "Lunch break",
+                "continuous": "Continuous teaching"
+            },
+            "multi_settings": {
+                "title": "Bulk settings",
+                "save_scope": "Set this scheme for group of classes",
+                "save_all": "Set this scheme for all classes"
+            }
+        },
+        "edit_lesson": {
+            "types": {
+                "substitution": "Substitution",
+                "cancel": "Cancel lesson",
+                "classroom_lesson": "Homeroom lesson",
+                "change_timetable": "Timetable change"
+            }
+        }
+    },
+    "student_summary": {
+        "title": "Summary for school year %year%"
+    },
+    "documents": {
+        "types": {
+            "folder": "Folder",
+            "file": "File"
+        },
+        "folders": "Folders",
+        "create_folder": "New folder",
+        "create_file": "New file",
+        "name_folder": "Folder name",
+        "name_file": "File name",
+        "new_folder": "Create folder",
+        "new_file": "Create file",
+        "all_files": "All files",
+        "search_files": "Search files in this folder..",
+        "upload": "Upload",
+        "upload_files": "Upload files",
+        "folder_already_created": "Folder already exists",
+        "folder_empty": "This folder is empty",
+        "file_details": "Details",
+        "file_name": "Name",
+        "file_type": "Type",
+        "file_size": "Size",
+        "file_modified": "Modified",
+        "file_created": "Created",
+        "open_folder": "Open folder",
+        "open_file": "Open file",
+        "rename_file": "Rename file",
+        "rename_folder": "Rename folder",
+        "permissions_file": "Permissions",
+        "delete": "Delete",
+        "delete_file": "Delete file",
+        "delete_folder": "Delete folder",
+        "download_file": "Download file",
+        "save_file": "Save file",
+        "save_folder": "Save folder"
+    },
+    "classbook": {
+        "class_service": "Class monitor",
+        "write_lesson": "Record lesson",
+        "absence": "Attendance",
+        "notes": "Notes",
+        "lesson_number": "Lesson number",
+        "placeholder_number": "Click the arrow to the right of this field to insert lesson number",
+        "lesson_topic": "Lesson topic",
+        "placeholder_topic": "Enter lesson topic",
+        "lesson_note": "Lesson note",
+        "placeholder_note": "Enter note for lesson (optional)",
+        "lesson_teacher_note": "Teacher note for lesson",
+        "placeholder_teacher_note": "Enter teacher note for lesson (optional)",
+        "lesson_teacher_note_note": "This note is not visible to students.",
+        "save_lesson": "Save lesson",
+        "save_absence": "Save attendance",
+        "last_lesson": "Previous lesson",
+        "total_students": "Total students",
+        "present_students": "Present",
+        "missing_students": "Absent",
+        "copy_from_previous_lesson": "Copy from previous lesson",
+        "add_homework_btn": "Add homework",
+        "homework_timeline": "Assigned: %start% | Due: %end% | Submitted: %submitted%/%total%",
+        "add_note_btn": "Add note",
+        "last_lesson_not_written": "Previous lesson not recorded yet.",
+        "add_homework": {
+            "title": "New homework",
+            "homework_title": "Homework title",
+            "assignment": "Assignment text",
+            "note": "Note for teacher",
+            "assign_at": "Assigned at",
+            "submit_at": "Submit by",
+            "type": "Homework type",
+            "types": {
+                "info": "Informational",
+                "submit": "With submission tracking"
+            },
+            "types_submit": {
+                "at_school": "Submit at school",
+                "electrically": "Electronic submission"
+            },
+            "mark_as_finished": "Mark homework as closed",
+            "save_homework": "Save homework"
+        },
+        "add_note": {
+            "title": "New note",
+            "no_title": "No title",
+            "note_title": "Note title",
+            "note": "Note",
+            "save_note": "Save note"
+        },
+        "add_absence": {
+            "title": "Student absence details",
+            "minutes": "Minutes",
+            "type": "Absence type",
+            "reason": "Reason",
+            "note": "Note regarding absence",
+            "unknown_error": "An unknown error occurred",
+            "no_perm": "You do not have permission to edit this absence",
+            "no_delete_perm": "You do not have permission to delete this absence",
+            "minutes_cant_be_smaller_than_1": "Minutes cannot be less than 1",
+            "minutes_cant_be_grater_than_lesson": "Minutes cannot exceed lesson length",
+            "no_classbook_found": "Classbook record not found",
+            "is_same": "No changes found",
+            "student_not_found": "Student not found",
+            "already_set": "This absence is already set",
+            "descriptions": {
+                "late_arrival": "Arrival at %time%",
+                "early_departure": "Departure at %time%"
+            },
+            "reasons": {
+                "illness": "Illness",
+                "family": "Family reasons",
+                "doctor": "Doctor visit",
+                "oversleep": "Overslept",
+                "connection": "Transport connection",
+                "school_event": "School event",
+                "hospitalization": "Hospitalization",
+                "other": "Other (see note)",
+                "unknown": "Select reason for absence"
+            }
+        }
+    },
+    "login_history": {
+        "table": {
+            "attempt": "Attempt",
+            "state": "Status",
+            "ip": "IP address",
+            "created": "Created",
+            "system": "Operating system",
+            "browser": "Browser",
+            "type": "Login type"
+        },
+        "state": {
+            "success": "Successful",
+            "invalid_password": "Incorrect password",
+            "invalid_2fa": "Incorrect code",
+            "error": "Error"
+        },
+        "types": {
+            "password": "Logged in with password",
+            "passkey": "Logged in with passkey",
+            "qrcode": "Logged in with QR code",
+            "unknown": "Unknown login"
+        },
+        "buttons": {
+            "details": "Details"
+        }
+    },
+    "traineeship": {
+        "no_traineeship": "No traineeship",
+        "no_traineeship_desc": "You do not have the following traineeship",
+        "country": "Country of company headquarters",
+        "company_name": "Company name",
+        "selected_company": "Selected company",
+        "office_address": "Branch address",
+        "trainee_address": "Traineeship address",
+        "CIN": "Company ID (IČO)",
+        "DIC": "Tax ID (DIČ)",
+        "description": "Description",
+        "activity": "Activities in company",
+        "equipment": "Items needed for work",
+        "search": "Search company by name",
+        "note": "Note",
+        "class": "Class",
+        "contact": "Contact",
+        "student_list": "Student list",
+        "settings": "Settings",
+        "request_add_company": "Request to add company",
+        "add_company": "Add company",
+        "adding_company": "Adding company",
+        "no_CIN": "No Company ID entered",
+        "no_rating": "No rating",
+        "from": "From",
+        "to": "To",
+        "city": "City",
+        "web": "Website",
+        "phone": "Phone",
+        "email": "Email address",
+        "no_web": "Website not set",
+        "no_email": "Email not set",
+        "no_phone": "Phone not set",
+        "no_mark": "Not graded",
+        "no_description": "No description",
+        "no_activity": "No activities",
+        "no_equipment": "No items needed",
+        "no_note": "No note",
+        "no_role": "Unknown position in company",
+        "no_name": "No name",
+        "no_weeks": "No available traineeships",
+        "no_incoming_weeks": "You have no upcoming traineeships to choose from.",
+        "day": "day",
+        "number_of_days": "Number of days",
+        "number_of_days_value": "%days% days",
+        "working_hours": "Working hours",
+        "select_dairy": "Select period",
+        "choose_dairy": "Select period",
+        "no_dairy_selected": "Period not selected",
+        "final_write": "Final summary",
+        "company_info": "Company information",
+        "back_to_list": "Back to list",
+        "average_rate": "Average rating",
+        "rate": "Rating",
+        "role": "Position in company",
+        "company_rating": "Company rating",
+        "anon_student": "Anonymous student",
+        "no_review": "No verbal assessment",
+        "register_to_company": "Register with company",
+        "request_company": "Request to add new company",
+        "scopes": "Suitable for scopes",
+        "click_to_select_scopes": "Click to select scopes",
+        "added_in": "Added",
+        "no_scopes": "Company has no specified suitable scopes",
+        "removed": "Removed",
+        "scopes_suitable": "Suitable",
+        "scopes_inappropriate": "Unsuitable",
+        "responsible_person": "Responsible person",
+        "instructor": "Instructor",
+        "edit_instructor": "Edit instructor",
+        "remove_instructor": "Delete instructor",
+        "new_instructor": "New instructor",
+        "save_instructor": "Save instructor",
+        "no_instructor_selected": "Instructor not selected",
+        "instructors": "Instructors",
+        "dont_know_instructor": "Instructor not yet known",
+        "no_instructors": "No instructors",
+        "no_instructors_description": "This company has no added instructors yet.",
+        "no_instructors_select": "This company has no added instructors yet. Ask a teacher to add an instructor.",
+        "edit_company": "Edit company",
+        "remove_company": "Remove company",
+        "update_instructor": "Update instructor",
+        "choose_instructor": "Select instructor",
+        "not_requested_from_student": "Company addition not requested",
+        "create_instructor": "Create instructor",
+        "requested": "Request submitted",
+        "created": "Added to list",
+        "last_updated": "Last updated",
+        "only_working_days": "Only working days",
+        "only_weekend": "Only weekends",
+        "approved_company": "Approved company",
+        "recommend": "Recommends",
+        "not_recommend": "Does not recommend",
+        "status_company": {
+            "main": "Company status",
+            "request": "Waiting for approval",
+            "acceptable": "Acceptable",
+            "approved": "Approved",
+            "deleted": "Archived"
+        },
+        "select_company": {
+            "bottom_information": "Company and instructor can be changed later"
+        },
+        "overview": {
+            "nearest_diary": "Nearest diary",
+            "diary_help": "Planning and progress of professional practice",
+            "diary_week": "Practice from %start% to %end%",
+            "no_next_dairy": "No following practices",
+            "boxes": {
+                "companies": "Number of approved companies",
+                "weeks": "Total practice periods",
+                "scopes": "Total scopes at school",
+                "company_waiting": "Companies waiting for approval"
+            }
+        },
+        "diary": {
+            "main": "Diary",
+            "description": "From %start% to %end%",
+            "wanna_change_company": "If you want to change company, you must go to company list.",
+            "status": {
+                "planned": "Planned practice",
+                "ongoing": "Ongoing practice",
+                "finished": "Completed practice",
+                "canceled": "Canceled practice"
+            }
+        },
+        "write_diary": {
+            "main": "Write diary (%day%)"
+        },
+        "manage": {
+            "title": "Practice in school year %year%",
+            "new_traineeship": "New practice",
+            "enrolled_students": "Enrolled students",
+            "done_students": "Handled students",
+            "total_students": "Total students"
+        },
+        "alerts": {
+            "week_info": "Period from %start% to %end% you are registered with company %instructor%",
+            "success_updated_instructor": "You updated instructor at company %companyName% to %instructor%",
+            "success_selected_company": "You registered with company %companyName% %instructor%",
+            "success_selected_company_no_instructor": "without instructor",
+            "success_selected_company_with_instructor": "with instructor: %instructorName%",
+            "no_company": "You have no selected company.",
+            "first_select_company": "❌ You must first select a company to print the contract",
+            "no_traineeship": "You have no selected practice period.",
+            "no_instructor": "You have no selected instructor",
+            "selected_company": "You have selected company %companyName% %instructor%",
+            "already_selected": "You already have this selected",
+            "too_many_students_in_company": "❌ This company already has maximum number of students in selected period",
+            "company_not_suitable_for_you": "❌ This company is not marked as suitable for your scope",
+            "no_traineeship_found": "Practice period not found",
+            "no_error_found": "An unknown error occurred",
+            "company_found_title": "Company found",
+            "company_found_description": "Company %companyName% was found. Do you wish to fill in the data into the form?",
+            "company_found_agree": "Yes, fill in",
+            "company_found_cancel": "No, I'll fill manually",
+            "company_found_notFound": "Company not found",
+            "remove_company_title": "Do you wish to remove this company from the list?",
+            "remove_company_description": "The company will be marked as deleted, students will no longer be able to choose it. Practice managers can restore it anytime.",
+            "remove_company_description_warning": "This company is currently selected by some students.\nIf you remove it, students will no longer see it and won't be able to use it. Teachers will still have access to it and can restore it anytime.",
+            "selected_company_deleted_instructor": "You have selected this company, but the selected instructor is not available.",
+            "change_instructor_because_removed": "This instructor was removed, you must select another one."
+        },
+        "buttons": {
+            "print_contract": "Print contract",
+            "print_guide": "Print guide",
+            "select_company": "Select company",
+            "select_instructor": "Select instructor",
+            "change_instructor": "Change instructor",
+            "save_changes": "Save changes",
+            "restore": "Restore"
+        },
+        "tabs": {
+            "detail_company": {
+                "main": "Basic information",
+                "activity": "Activity"
+            }
+        },
+        "status": {
+            "main": "Status",
+            "unlisted": "Unlisted",
+            "filed": "Filed"
+        }
+    },
+    "homework": {
+        "active": "Active",
+        "all": "All",
+        "homework": "Homework",
+        "no_homework_to_submit": "You have no homework to submit",
+        "detail": {
+            "title": "Homework details"
+        }
+    },
+    "tests": {
+        "title": "Tests",
+        "description": "Browse your tests",
+        "question_types": {
+            "title": "Question type",
+            "text": "Text answer",
+            "uni": "Single correct answer",
+            "multi": "Multiple correct answers"
+        },
+        "test_types": {
+            "all": "All questions",
+            "random": "Random questions"
+        },
+        "require_types": {
+            "points": "Points",
+            "questions": "Questions"
+        }
+    },
+    "upload": {
+        "drag_files_description": "Drag files or click",
+        "no_files": "No files",
+        "upload_failed": "%files% files will not be uploaded",
+        "errors": {
+            "file_too_big": "File is too big.",
+            "format_not_supported": "File format not supported.",
+            "error_while_uploading": "Error while uploading."
+        }
+    },
+    "marks": {
+        "title": "Title",
+        "title_placeholder": "Enter grade title",
+        "mark": "Grade",
+        "class_average": "Class average",
+        "class_rank": "Class rank",
+        "marking_scale": "Grading scale",
+        "percentage": "Percentage %",
+        "mark_placeholder": "Grade, e.g.: 1, 1.5=1-, 2, 2-, 4, .., 5",
+        "quarter": "Quarter",
+        "midterm_grade": "Quarter grade",
+        "edit_column": "Edit column",
+        "create_column": "Create column",
+        "edit_mark": "Edit grade",
+        "create_mark": "Create grade",
+        "topic": "Title",
+        "type": "Grading type",
+        "types": {
+            "marks": "By grades",
+            "points": "By points"
+        },
+        "marks_text": [
+            "Excellent",
+            "Commendable",
+            "Good",
+            "Sufficient",
+            "Insufficient"
+        ],
+        "cant_edit_after_creation": "Cannot edit after creation",
+        "max_points": "Maximum points",
+        "max_points_placeholder": "Enter maximum achievable points",
+        "include_in_grade_even_if_no_points": "Include in grade even if no points recorded",
+        "prefill": "Prefill grade",
+        "prefill_placeholder": "Example: ?, N",
+        "planned_mark": "Planned classification",
+        "weight": "Weight",
+        "description": "Description",
+        "no_subjects": "No grades",
+        "interm": {
+            "by_subjects": "By subjects",
+            "chronologically": "Chronologically",
+            "predictor": "Predictor"
+        },
+        "edit_marking_scale": {
+            "title": "Edit grading scale",
+            "table": "Grading scale",
+            "name_table": "Scale name",
+            "edit_table": "Edit scale",
+            "default_name": "Default scale",
+            "change_table": "Change scale",
+            "save_table": "Save scale",
+            "new_table": "New scale",
+            "create_table": "Create scale",
+            "usage_count": "Used",
+            "description": "Here you can set the conversion of point assessment to grades based on percentage success.",
+            "auto_update": "Student grades update automatically after change",
+            "subject_auto_complete": "Subject auto-completes",
+            "badges": {
+                "default": "Default",
+                "active": "In use"
+            },
+            "last_updated": "Last updated"
+        },
+        "edit_midterm": {
+            "title_midterm": "Edit quarter grade",
+            "save_midterm": "Save quarter grade",
+            "edit_midterm": "Edit quarter grade",
+            "delete_midterm": "Remove quarter grade"
+        },
+        "interm_record": {
+            "select_group": "Select group for grade entry",
+            "no_group_selected": "No group selected",
+            "select_group_desc": "Select a group to view grades",
+            "select_group_placeholder": "Select group",
+            "group": "Group",
+            "student_count": "%count% students",
+            "no_group": "You have no available groups!"
+        },
+        "midterm": {
+            "tabs": {
+                "marks": "Grades",
+                "reports": "Reports"
+            },
+            "years": [
+                "First",
+                "Second",
+                "Third",
+                "Fourth",
+                "Fifth",
+                "Sixth",
+                "Seventh",
+                "Eighth",
+                "Ninth"
+            ],
+            "year": "%year% year",
+            "mandatory_subjects": "Mandatory subjects",
+            "optional_subjects": "Optional subjects",
+            "report": {
+                "year_label": "year",
+                "semester": "term",
+                "average": "Average",
+                "hours": "hours",
+                "absence_excused": "Excused",
+                "absence_unexcused": "Unexcused",
+                "issued": "Report card issued",
+                "not_yet_evaluated": "Not yet evaluated",
+                "evaluation_types": {
+                    "honors": "With honors",
+                    "standard": "Passed",
+                    "failed": "Failed",
+                    "not_evaluated": "Not evaluated"
+                }
+            }
+        },
+        "predictor": {
+            "title": "Grade predictor",
+            "old_average": "Old average",
+            "new_average": "New average",
+            "add_mark": "Add grade",
+            "edit_mark": "Edit grade",
+            "stop_edit_mark": "Cancel editing",
+            "reset": "Reset predictor",
+            "edit": "Edit",
+            "remove": "Delete",
+            "no_subjects": "You have no grades in any subject. Predictor cannot be used!",
+            "already_editing_mark": "You cannot remove a grade you are currently editing."
+        },
+        "alerts": {
+            "empty_topic": "Empty",
+            "too_long_name": "Scale name too long",
+            "invalid_grades": "Invalid percentage for grades"
+        }
+    },
+    "messages": {
+        "privacy": "Messages sent via %app% application cannot be considered private. Messages are accessible to recipients as well as school management and system administrators.",
+        "excuse_message": "This type of message is sent directly to class teacher's absence notes.",
+        "type": "Message type",
+        "write_message_on_noticeboard": "Write message on noticeboard",
+        "message": "Message",
+        "messages": "messages",
+        "message_placeholder": "Enter your message here",
+        "send_description": "Send messages between Schoolingo system users – students, teachers, parents and other school members – simply and in one place.",
+        "select_message": "No message selected",
+        "select_message_desc": "Select one of the incoming messages on the left to view its content here.",
+        "no_messages": "No messages found.",
+        "topic": "Title",
+        "receiver": "Message recipient",
+        "student": "Student",
+        "search_messages": "Search by author",
+        "findreceiver": "Search recipient name",
+        "findstudent": "Search student name",
+        "no_selected": "You have not selected any recipient",
+        "attachments": "Attached files",
+        "add_attachments": "Attach files",
+        "suppress": "Suppress",
+        "excuse_label": "Excuse student for",
+        "confirm_read": "Confirm read",
+        "no_type_available": "You have no options available",
+        "no_type_access": "You do not have permission to send this type of message",
+        "child": "Child",
+        "no_child_selected": "You have not selected any child",
+        "select_receiver": "Select message recipient",
+        "search_receiver": "Search recipients",
+        "selected_receivers": "Selected recipients:",
+        "no_selected_receivers": "You have no selected recipients.",
+        "hide_selected_receivers": "Select more recipients (%count%)",
+        "show_selected_receivers": "Show selected recipients (%count%)",
+        "file_limit_info": "You have selected %count% files out of %limit%.",
+        "rating": {
+            "main": "Assessment",
+            "positive": "Praise",
+            "negative": "Reprimand"
+        },
+        "homeworks": {
+            "empty": "You have no homework",
+            "not_selected": "No homework selected. Please select a homework first to display message recipients."
+        },
+        "receivers": {
+            "all_selected_noticeboard": "Message will be displayed on noticeboard to everyone",
+            "from_class": "from %class%",
+            "from_child": "student %child%"
+        },
+        "tags": {
+            "main": "Tags",
+            "require_confirmation": "Requires confirmation",
+            "important": "Important"
+        },
+        "copy_classteacher": "Copy to class teacher",
+        "copy_parents": "Copy to parents",
+        "as_principal": "As principal",
+        "to_all": "To all",
+        "sus_error": "Some weird error occurred, click to reset to basic type",
+        "excuse": "Excuse",
+        "excuse_myself": "Excuse myself",
+        "types": {
+            "message": "Classic message",
+            "homework": "Homework submission",
+            "excusestudent": "Excuse note",
+            "ratestudent": "Student assessment",
+            "noticeboard": "Noticeboard message",
+            "system": "System",
+            "error": "No message types found"
+        },
+        "buttons": {
+            "send_message": "Send message"
+        },
+        "upload": {
+            "note": "Files are automatically attached to the message.",
+            "upload_info": "Maximum size for 1 file is %max_size% MB. Larger files will not be attached. Total of up to %max_files% files can be attached. Executable files (.exe) cannot be sent."
+        },
+        "noticeboard_description": "Current announcements, messages and reminders",
+        "new_announcement": "New noticeboard message",
+        "mark_as_read": "Mark as read",
+        "marked_as_read": "Read",
+        "details": "Message details",
+        "error_loading": "Failed to load message information"
+    },
+    "settings": {
+        "alerts": {
+            "change_password_warning": "Changing password will automatically log you out of all logged in devices except this one!"
+        },
+        "change_password": "Change password",
+        "passwords": {
+            "old_password": "Old password",
+            "new_password": "New password",
+            "again_new_password": "New password again",
+            "success_changed": "Password successfully changed!",
+            "invalid_new_password": "You cannot choose this password",
+            "429": "Too many password change attempts, please try again later"
+        },
+        "language": "Language",
+        "languages": {
+            "selector": {
+                "description": "Select application language. Change will take effect immediately."
+            },
+            "loading": "Loading and setting new language",
+            "error": "Error"
+        },
+        "emails": {
+            "title": "Your email addresses",
+            "empty": "No email",
+            "empty_description": "You have no assigned email."
+        },
+        "phones": {
+            "title": "Your phone numbers",
+            "empty": "No phone",
+            "empty_description": "You have no assigned phone number."
+        },
+        "theme": "Theme",
+        "themes": {
+            "saving": "Saving",
+            "error": "Error",
+            "selector": {
+                "description": "Select preferred mode. Appearance will be saved automatically."
+            },
+            "preview": {
+                "title": "Preview",
+                "description": "How the application will look in current theme."
+            },
+            "sample": {
+                "title": "Sample card",
+                "description": "This is a preview of text and buttons — serves for quick check of readability and contrast.",
+                "actions": [
+                    "Main action",
+                    "Second action"
+                ],
+                "contrast": "Contrast (text / surface): 15.4:1 — recommended (≥4.5)",
+                "footer": "Tip: Recommended to check contrast between background and text, especially for older users or when using on mobile phone."
+            },
+            "system_settings": {
+                "title": "System appearance settings",
+                "description": "Select what appearance we should show you based on your system?"
+            }
+        },
+        "themes_description": {
+            "system": "Automatically uses dark/light theme based on OS.",
+            "dark": "Dark background for comfortable night use.",
+            "light": "Light background, traditional light colors.",
+            "moon": "Pure black background for OLED displays."
+        },
+        "other": "Other",
+        "security": "Security",
+        "2fa": {
+            "already_activated": "You already have two-factor authentication activated!",
+            "successful_activated": "Two-factor authentication was successfully activated.",
+            "successful_deactivated": "Two-factor authentication was successfully deactivated.",
+            "deactivate": "Remove two-factor authentication",
+            "validSince": "Active since %date% at %time%",
+            "methods": {
+                "mobile_app": "Mobile application"
+            },
+            "title": "Two-factor authentication",
+            "description": "Two-factor authentication serves to better secure your account, for every critical action it will require a verification code from your authenticator app on phone.",
+            "descriptions": {
+                "show_backup_codes": "Entering code below will show backup codes. Do not show or send codes to anyone!",
+                "refresh_backup_codes": "Entering code below will regenerate backup codes. Existing codes will be deleted and new ones created, which will then be shown to you so you can save them. Do not show or send to anyone!",
+                "deactivate2FA": "Entering code below will deactivate two-factor authentication. Thus it will no longer be active.",
+                "add_to_phone": "Scan QR code in mobile app and enter authentication code from mobile app.",
+                "verify_code": "Enter code from mobile app to verify your identity."
+            },
+            "backup_codes": {
+                "title": "🔐 Backup codes",
+                "description": "Use these codes if you lose access to mobile app. Download them using button below and save them somewhere safe.",
+                "note": "You have %remain% remaining backup codes out of %all% total.",
+                "used": "Used",
+                "download_backup_codes": "Download backup codes",
+                "file_header": "Valid backup codes for Schoolingo:",
+                "generate_new_codes": "Generate new codes",
+                "empty": "You have created no backup codes."
+            }
+        },
+        "passkeys": {
+            "add": "Add passkey",
+            "title": "Passkeys",
+            "description": "Passkeys are webauthn credentials that verify your identity using touch, face recognition, device password or PIN. They can be used as password replacement or as 2FA method.",
+            "list": "List of your passkeys",
+            "empty": "You have created no passkeys.",
+            "alerts": {
+                "not_supported": "That didn't work. Passkeys function is not supported on your device."
+            },
+            "edit": {
+                "title": "Editing passkey",
+                "description": "Editing name below will only modify the passkey label you see here in settings. It has no effect on passkey login functionality.",
+                "form": {
+                    "name": {
+                        "label": "Passkey description",
+                        "placeholder": "Enter passkey label"
+                    },
+                    "button": "Edit passkey"
+                },
+                "success_title": "Passkey updated!",
+                "success_description": "You successfully updated passkey name to %passkey%."
+            },
+            "remove": {
+                "title": "Delete %passkey% passkey?",
+                "description": "Do you really wish to delete passkey? This action cannot be undone!",
+                "success_title": "Deleted!",
+                "success_description": "You successfully deleted passkey %passkey%."
+            }
+        }
+    },
+    "timetable": {
+        "this_week": "This week",
+        "next_week": "Next week",
+        "permanent": "Permanent timetable",
+        "free_time": "Free period",
+        "end_class": "End of classes",
+        "no_class": "No classes",
+        "no_class_desc": "No reason to go to school on this day."
+    },
+    "components": {
+        "datalist": {
+            "no_data": "No data to display",
+            "info": "Showing %start% to %end% (total %rows%), page %page% of %max_pages%"
+        }
+    },
+    "modules": {
+        "attendance": "Attendance",
+        "timetable": "Timetable",
+        "marks": "Grades overview",
+        "announcements": "Announcements",
+        "homework": "Homework",
+        "events": "Event plan",
+        "substitutions": "Substitutions",
+        "traineeship": "Professional practice",
+        "cafeteria": "Cafeteria",
+        "vehicles": "Vehicle reservations",
+        "seasonal": {
+            "countdown": "Holiday countdown",
+            "yearReview": "Year 2024 in a nutshell"
+        }
+    },
+    "fleetvehicles": {
+        "overview": "Vehicle overview",
+        "overview_desc": "Track your fleet status in one place",
+        "vehicles": "Vehicles",
+        "add_vehicle": "Add vehicle",
+        "add_vehicle_title": "Add new vehicle",
+        "new_reservation": "New reservation",
+        "view_vehicles": "View vehicles",
+        "search_placeholder": "Search vehicle...",
+        "all_statuses": "All statuses",
+        "all_types": "All types",
+        "all_vehicles": "All vehicles",
+        "no_vehicles": "No vehicles",
+        "no_vehicles_desc": "No vehicles added to fleet yet.",
+        "no_reservations": "No reservations",
+        "no_reservations_desc": "No reservations created yet.",
+        "create_first_reservation": "Create first reservation",
+        "no_upcoming_reservations": "No upcoming reservations",
+        "no_expiring_documents": "All documents are valid",
+        "no_reservations_for_vehicle": "This vehicle has no reservations",
+        "no_history": "No history",
+        "stats": {
+            "total": "Total vehicles",
+            "available": "Available",
+            "reserved": "Reserved",
+            "maintenance": "In service"
+        },
+        "status": {
+            "available": "Available",
+            "reserved": "Reserved",
+            "maintenance": "In service",
+            "unavailable": "Unavailable",
+            "pending": "Waiting for approval",
+            "approved": "Approved",
+            "rejected": "Rejected",
+            "active": "Ongoing",
+            "completed": "Completed",
+            "cancelled": "Cancelled"
+        },
+        "type": {
+            "car": "Passenger car",
+            "van": "Van",
+            "bus": "Bus",
+            "minibus": "Minibus",
+            "truck": "Truck",
+            "motorcycle": "Motorcycle"
+        },
+        "gearbox": {
+            "manual": "Manual gearbox",
+            "automatic": "Automatic gearbox"
+        },
+        "fuel": {
+            "petrol": "Petrol",
+            "diesel": "Diesel",
+            "electric": "Electric",
+            "hybrid": "Hybrid",
+            "lpg": "LPG",
+            "cng": "CNG"
+        },
+        "document": {
+            "highway_sticker": "Highway vignette",
+            "insurance": "Insurance",
+            "inspection": "Technical inspection (MOT)",
+            "emission": "Emission check",
+            "other": "Other"
+        },
+        "brand": "Brand",
+        "model": "Model",
+        "year": "Year of manufacture",
+        "color": "Color",
+        "fuel_type": "Fuel type",
+        "mileage": "Mileage",
+        "capacity": "Capacity",
+        "seats": "seats",
+        "vehicle": "Vehicle",
+        "select_vehicle": "Select vehicle",
+        "vehicle_manager": "Vehicle manager",
+        "notes": "Notes",
+        "tab": {
+            "info": "Information",
+            "documents": "Documents",
+            "reservations": "Reservations",
+            "history": "History"
+        },
+        "documents": "Documents",
+        "add_document": "Add document",
+        "highway_stickers": "Highway vignettes",
+        "other_documents": "Other documents",
+        "stickers_note": "Below you can find overview of highway vignettes added to this vehicle.",
+        "valid": "Valid",
+        "expired": "Expired",
+        "expires_today": "Expires today!",
+        "expires_tomorrow": "Expires tomorrow",
+        "days_left": "days left",
+        "expiring_documents": "Expiring documents",
+        "upcoming_reservations": "Upcoming reservations",
+        "pending_approvals": "Pending approvals",
+        "pending_approvals_message": "You have %count% reservation requests waiting for approval.",
+        "review_requests": "Review requests",
+        "reservations": {
+            "title": "Reservations",
+            "upcoming": "Upcoming",
+            "past": "Past",
+            "all": "All"
+        },
+        "start_date": "Start date",
+        "end_date": "End date",
+        "purpose": "Purpose",
+        "purpose_placeholder": "E.g. Training, excursion, business trip...",
+        "destination": "Destination",
+        "destination_placeholder": "E.g. London, Manchester...",
+        "notes_placeholder": "Optional notes for reservation...",
+        "create_reservation": "Create reservation",
+        "reserved_by": "Reserved by",
+        "approve": "Approve",
+        "reject": "Reject",
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "yesterday": "Yesterday",
+        "days_ago": "days ago",
+        "in": "In",
+        "days": "days",
+        "vehicle_reservations": "Vehicle reservations",
+        "settings_saved": "Settings saved",
+        "settings_desc": "Set basic settings for Fleet module here",
+        "settings": {
+            "title": "Settings",
+            "approval": "Reservation approval",
+            "approval_desc": "Set how vehicle reservations will be approved.",
+            "default_manager": "Default manager",
+            "default_manager_desc": "Default fleet manager assigned to vehicles without their own manager.",
+            "reservations": "Reservation rules",
+            "reservations_desc": "Set rules for creating reservations.",
+            "vehicle_types": "Vehicle types",
+            "vehicle_types_desc": "Select which vehicle types are in your fleet.",
+            "notifications": "Notifications",
+            "notifications_desc": "Set what notifications you want to receive.",
+            "highway_stickers": "Highway vignettes",
+            "highway_stickers_desc": "Overview of countries with paid highway vignettes."
+        },
+        "approval_mode": {
+            "auto": "Automatic approval",
+            "auto_desc": "Reservations will be automatically approved without need for confirmation.",
+            "manager_approval": "Manager approval",
+            "manager_approval_desc": "Reservations must be approved by fleet manager.",
+            "free": "Free access",
+            "free_desc": "Anyone can reserve vehicle without limitation."
+        },
+        "new_vehicle": {
+            "basic_info": "Basic data",
+            "operating_and_technical_data": "Technical data",
+            "administration_and_deadlines": "Administration and Deadlines",
+            "assignment": "Assignment"
+        },
+        "default_manager": "Default manager",
+        "search_manager": "Search manager...",
+        "max_reservation_days": "Maximum reservation length (days)",
+        "max_reservation_days_hint": "Maximum number of days a vehicle can be reserved for.",
+        "advance_booking_days": "Reservation lead time (days)",
+        "advance_booking_days_hint": "Maximum number of days in advance for reservation.",
+        "require_purpose": "Require reservation purpose",
+        "require_destination": "Require destination",
+        "document_reminder_days": "Notify before expiration (days)",
+        "document_reminder_days_hint": "How many days in advance to notify about expiring documents.",
+        "notify_on_reservation": "Notify on new reservation",
+        "notify_on_approval": "Notify on approval/rejection",
+        "notify_on_document_expiry": "Notify on expiring documents",
+        "countries_with_sticker": "Countries with highway vignette",
+        "countries_toll_free": "Countries with toll-free highways",
+        "countries_pay_per_use": "Countries with toll system",
+        "toll_free_note": "In these countries passenger cars do not pay for highways.",
+        "pay_per_use_note": "In these countries toll is paid for used sections (no vignette)."
+    },
+    "substitution": {
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "yesterday": "Yesterday",
+        "total": "Total",
+        "loading": "Loading substitutions...",
+        "create": "Create substitution",
+        "hour": "Hour",
+        "class": "Class",
+        "subject": "Subject",
+        "type": "Type",
+        "original_teacher": "Original teacher",
+        "substitute_teacher": "Substitute teacher",
+        "room": "Room",
+        "search": "Search substitutions...",
+        "no_substitutions": "No substitutions",
+        "no_substitutions_desc": "No substitutions recorded for selected day.",
+        "filters": {
+            "all": "All substitutions",
+            "by_type": "By type"
+        },
+        "types": {
+            "cancelled": "Cancelled lesson",
+            "substitution": "Substitution",
+            "room_change": "Room change",
+            "other": "Other"
+        }
     },
     "library": {
         "title": "Library",
-        "catalog": "Book Catalog",
-        "catalog_subtitle": "Browse and search books in the school library",
-        "librarian_dashboard": "Librarian Dashboard",
+        "catalog": "Book catalog",
+        "catalog_subtitle": "Browse and search books in school library",
+        "librarian_dashboard": "Library management",
         "loans": "Loans",
         "books": "Books",
-        "loan_console": "Loan Console",
-        "add_new_book": "Add New Book",
-        "search_placeholder": "Search by title, author, or ISBN...",
-        "all_genres": "All Genres",
-        "my_books": "My Books",
+        "loan_console": "Loan console",
+        "add_new_book": "Add new book",
+        "search_placeholder": "Search by title, author or ISBN...",
+        "all_genres": "All genres",
+        "my_books": "My books",
         "no_books_found": "No books found",
-        "try_adjusting_filters": "Try adjusting your search or filters",
+        "try_adjusting_filters": "Try adjusting search or filters",
         "available": "available",
         "unavailable": "Unavailable",
         "no_active_loans": "You have no active loans",
@@ -74,20 +1540,87 @@
         "borrow": "Borrow",
         "return": "Return",
         "lookup": "Lookup ISBN",
-        "save_book": "Save Book",
-        "success_borrow": "Book borrowed successfully",
-        "success_return": "Book returned successfully",
+        "save_book": "Save book",
+        "success_borrow": "Book successfully borrowed",
+        "success_return": "Book successfully returned",
         "success_add": "Book added to library",
-        "error_borrow": "Failed to borrow book (Unavailable or Invalid User)",
+        "error_borrow": "Failed to borrow book (Unavailable or invalid user)",
         "error_return": "Failed to return book (No active loan)",
         "error_lookup": "Book not found in Open Library",
         "error_add": "Failed to add book"
     },
-    "sidebar": {
-        "library": {
-            "main": "Library",
-            "catalog": "Catalog",
-            "manage": "Manage"
+    "announcements": {
+        "no_announcements": "No announcements",
+        "no_announcements_desc": "You have no new announcements"
+    },
+    "events": {
+        "no_events": "No events",
+        "no_events_desc": "You have no upcoming events"
+    },
+    "substitutions": {
+        "no_substitutions": "No substitutions",
+        "no_substitutions_desc": "You have no upcoming substitutions"
+    },
+    "cafeteria": {
+        "no_menu": "No menu",
+        "no_menu_desc": "No menu recorded"
+    },
+    "vehicles": {
+        "no_reservations": "No reservations",
+        "no_reservations_desc": "No reservation created yet."
+    },
+    "dashboard": {
+        "overview": "Overview",
+        "classes": "Classes",
+        "teachers": "Teachers",
+        "risks": "Risks"
+    },
+    "employees": {
+        "list": "List",
+        "attendance": "Attendance",
+        "vacations": "Vacations",
+        "salaries": "Salaries",
+        "bonuses": "Bonuses",
+        "overview": "Overview",
+        "salary": "Salary",
+        "status": {
+            "all": "All statuses",
+            "active": "Active",
+            "inactive": "Inactive",
+            "terminated": "Terminated"
+        },
+        "add_employee": {
+            "title": "Add employee",
+            "roles": {
+                "teacher_male": "Teacher (male)",
+                "teacher_female": "Teacher (female)",
+                "admin_staff_male": "Administrative staff (male)",
+                "admin_staff_female": "Administrative staff (female)",
+                "management_male": "Management (male)",
+                "management_female": "Management (female)",
+                "personnel_male": "HR (male)",
+                "personnel_female": "HR (female)",
+                "maintenance_male": "Maintenance (male)",
+                "maintenance_female": "Maintenance (female)",
+                "cook_male": "Cook (male)",
+                "cook_female": "Cook (female)",
+                "other": "Other"
+            }
+        },
+        "request_vacation": {
+            "title": "Request vacation",
+            "types": {
+                "title": "Vacation type",
+                "vacation": "Vacation",
+                "sick_leave": "Sick leave",
+                "personal_leave": "Personal leave",
+                "unpaid_leave": "Unpaid leave",
+                "study_leave": "Study leave"
+            },
+            "reason": "Reason (optional)"
+        },
+        "edit_attendance": {
+            "title": "Edit attendance"
         }
     },
     "seasonal": {
@@ -103,7 +1636,7 @@
         "countdown": {
             "daysLeft": "days until break",
             "dateRange": "December 23 – January 3",
-            "viewCalendar": "View Calendar"
+            "viewCalendar": "View advent calendar"
         },
         "yearReview": {
             "lessonsAttended": "lessons attended",
@@ -111,83 +1644,70 @@
             "averageGrade": "average grade"
         },
         "christmas": {
-            "greeting": "Season's greetings! ☕ Stay warm and focused."
-        }
-    },
-    "modules": {
-        "seasonal": {
-            "countdown": "Winter Break Countdown",
-            "yearReview": "Your 2024 Highlights"
+            "greeting": "Happy Holidays! ☕ Stay warm and focused."
         }
     },
     "admin": {
         "seasonal": {
-            "title": "Seasonal Themes",
-            "description": "Configure seasonal effects and widgets for the school",
-            "globalSettings": "Global Settings",
+            "title": "Seasonal themes",
+            "description": "Configure seasonal effects and widgets for school",
+            "globalSettings": "Global settings",
             "enableGlobally": "Enable seasonal themes",
-            "enableDescription": "Activates seasonal effects for the entire school",
-            "allowUserOverride": "Allow users to opt-out",
-            "allowUserDescription": "Users can individually disable seasonal effects",
-            "seasonConfig": "Season Configuration",
-            "startDate": "Start Date",
-            "endDate": "End Date",
+            "enableDescription": "Activates seasonal effects for whole school",
+            "allowUserOverride": "Allow users to turn off",
+            "allowUserDescription": "Users can individually turn off seasonal effects",
+            "seasonConfig": "Season configuration",
+            "startDate": "Start date",
+            "endDate": "End date",
             "preview": "Preview",
-            "currentStatus": "Current Status",
-            "activeSeason": "Active Season",
+            "currentStatus": "Current status",
+            "activeSeason": "Active season",
             "noActiveSeason": "No active season"
         },
         "monitoring": {
-            "title": "Monitoring (Matomo)",
+            "title": "Monitoring",
             "period": {
                 "today": "Today",
                 "week": "Week",
                 "month": "Month"
             },
-            "loading": "Loading Analytics...",
+            "loading": "Loading analytics...",
             "error": "Failed to load statistics.",
-            "retry": "Retry",
-            "visits_overview": "Visits Overview",
+            "retry": "Try again",
+            "visits_overview": "Visits overview",
             "visits": "Visits",
-            "unique_visitors": "Unique Visitors",
-            "page_views": "Page Views",
-            "avg_duration": "Avg. Duration",
+            "unique_visitors": "Unique visitors",
+            "page_views": "Page views",
+            "avg_duration": "Avg. duration",
             "total_sessions": "Total sessions",
             "individual_users": "Individual users",
             "total_interactions": "Total interactions",
             "per_session": "Per session",
-            "most_visited_pages": "Most Visited Pages",
+            "most_visited_pages": "Most visited pages",
+            "browsers": "Browsers",
+            "operating_systems": "Operating systems",
             "table": {
-                "page_name": "Page Name",
+                "page_name": "Page name",
                 "visits": "Visits",
                 "unique": "Unique",
-                "avg_time": "Avg Time"
+                "avg_time": "Avg. time"
             },
             "no_data": "No pages recorded yet."
-        }
-    },
-    "user": {
-        "add_email": {
-            "title": "Add Email to Your Account",
-            "email": "Email Address",
-            "type": "Email Type",
-            "types": {
-                "personal": "Personal Email",
-                "school": "School Email",
-                "work": "Work Email",
-                "other": "Other"
-            },
-            "save_email": "Save Email"
         },
-        "add_phone": {
-            "title": "Add Phone to Your Account",
-            "code": "Area Code",
-            "number": "Phone Number",
-            "save_phone": "Save Phone",
-            "save_changes": "Save Changes"
+        "schoolYears": {
+            "title": "School years",
+            "subtitle": "Manage academic years and terms",
+            "new": "New school year",
+            "edit": "Edit school year",
+            "noYears": "No school years",
+            "noYearsDesc": "No school years created yet. Click 'New school year' to create the first year.",
+            "createFirst": "Create first year",
+            "create": "Create",
+            "startDate": "Start date",
+            "endDate": "End date",
+            "midtermDate": "Midterm date",
+            "setAsCurrent": "Set as active school year",
+            "setAsCurrentDesc": "This will automatically deactivate all other school years"
         }
-    },
-    "common": {
-        "save": "Save"
     }
 }

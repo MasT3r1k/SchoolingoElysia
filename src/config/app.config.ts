@@ -21,6 +21,11 @@ const envSchema = z.object({
   STMP_NAME: z.optional(z.string()).default('Schoolingo'),
   MYSQLDUMP_PATH: z.string().default('mysqldump'),
   MYSQL_PATH: z.string().default('mysql'),
+  GOOGLE_CLIENT_ID: z.optional(z.string()),
+  GOOGLE_CLIENT_SECRET: z.optional(z.string()),
+  MICROSOFT_CLIENT_ID: z.optional(z.string()),
+  MICROSOFT_CLIENT_SECRET: z.optional(z.string()),
+  MICROSOFT_TENANT_ID: z.optional(z.string()),
 });
 
 export const config = envSchema.parse(process.env);
