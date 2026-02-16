@@ -1,9 +1,15 @@
+import { Generated } from "kysely"
+
 export interface Student_rewardsTable {
-  rewardId: number
-  studentId: number
-  reward: string
+  reward_id: Generated<number>
+  student_id: number
+  title: string
+  description: string;
   amount: number | null
-  teacherId: number
-  created: string // timestamp
-  isReceived: boolean
+  type: 'financial' | 'certificate' | 'prize' | 'other'
+  status: 'pending' | 'received';
+  created_by: number
+  created_at: Generated<Date>
+  collected_at: Date | null
+
 }

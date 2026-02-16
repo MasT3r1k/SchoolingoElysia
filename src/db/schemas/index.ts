@@ -178,7 +178,7 @@ export interface Database {
   students: StudentsTable
   student_groups: Student_groupsTable
   student_homework: Student_homeworkTable
-  student_rewards: Student_rewardsTable
+  rewards: Student_rewardsTable
   subjects: SubjectsTable
   substitution: SubstitutionTable
   teachers: TeachersTable

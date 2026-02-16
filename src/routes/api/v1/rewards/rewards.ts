@@ -5,6 +5,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { notificationBroadcaster } from '../../../../functions/notification-broadcaster';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
     // Get rewards for current user (student view) or all rewards (teacher view)
@@ -17,7 +18,12 @@ const app = new Elysia()
         const auth = await db
             .selectFrom('tokens')
             .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.person', 'users.role'])
+            .select([
+                'tokens.userId',
+                'users.person',
+                'users.role',
+                'users.manager'
+            ])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -27,13 +33,12 @@ const app = new Elysia()
         }
 
         // Check if user is teacher/admin
-        const isTeacher = auth.role === 'teacher' || auth.role === 'admin';
+        const isTeacher = auth.role === 'teacher' || auth.manager == -1 || auth.role === 'admin_staff';
 
         let query = db
             .selectFrom('rewards')
-            .leftJoin('persons', 'persons.person', 'rewards.student_id')
+            .leftJoin('persons', 'persons.personId', 'rewards.student_id')
             .leftJoin('users as creator', 'creator.userId', 'rewards.created_by')
-            .leftJoin('persons as creator_person', 'creator_person.person', 'creator.person')
             .select([
                 'rewards.reward_id as id',
                 'rewards.title',
@@ -42,10 +47,9 @@ const app = new Elysia()
                 'rewards.type',
                 'rewards.status',
                 'rewards.created_at as createdAt',
+                'rewards.created_by as teacherId',
                 'rewards.collected_at as collectedAt',
-                'rewards.student_id as studentId',
-                db.fn('concat', ['persons.firstname', db.val(' '), 'persons.lastname']).as('studentName'),
-                db.fn('concat', ['creator_person.firstname', db.val(' '), 'creator_person.lastname']).as('createdByName'),
+                'rewards.student_id as studentId'
             ]);
 
         if (!isTeacher) {
@@ -53,9 +57,15 @@ const app = new Elysia()
             query = query.where('rewards.student_id', '=', auth.person);
         }
 
-        const rewards = await query.orderBy('rewards.created_at', 'desc').execute();
+        const rewards = await query
+        .orderBy('rewards.created_at', 'desc')
+        .execute();
 
-        return Response.json({ rewards });
+        const peopleIds = rewards.map((reward) => (reward.studentId, reward.teacherId));
+
+        const peopleNames = await format_person_map_by_ids(peopleIds);
+
+        return Response.json({ rewards: rewards.map((reward) => ({...reward, teacherName: peopleNames.get(reward.teacherId), studentName: peopleNames.get(reward.studentId) })) });
     })
 
     // Create a new reward (teacher only)
@@ -78,7 +88,7 @@ const app = new Elysia()
         }
 
         // Only teachers can create rewards
-        if (auth.role !== 'teacher' && auth.role !== 'admin') {
+        if (auth.role !== 'teacher' && auth.role !== 'admin_staff') {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 
@@ -171,7 +181,7 @@ const app = new Elysia()
         }
 
         // Only teachers can mark as collected, or the student themselves
-        const isTeacher = auth.role === 'teacher' || auth.role === 'admin';
+        const isTeacher = auth.role === 'teacher' || auth.role === 'admin_staff';
         const isOwner = reward.student_id === auth.person;
 
         if (!isTeacher && !isOwner) {
@@ -223,7 +233,7 @@ const app = new Elysia()
         }
 
         // Only teachers can delete rewards
-        if (auth.role !== 'teacher' && auth.role !== 'admin') {
+        if (auth.role !== 'teacher' && auth.role !== 'admin_staff') {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 

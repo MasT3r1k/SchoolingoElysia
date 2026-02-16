@@ -35,7 +35,8 @@ const app = new Elysia({ prefix: '/polls' })
                 'polls.created_by',
                 sql<Date | null>`null`.as('active_from'),
                 sql<Date | null>`null`.as('active_to'),
-                sql<number | null>`null`.as('assignmentId')
+                sql<number | null>`null`.as('assignmentId'),
+                sql<Date | null>`null`.as('submitted_at'),
             ])
             .where('polls.created_by', '=', auth.person);
 
@@ -46,6 +47,10 @@ const app = new Elysia({ prefix: '/polls' })
             .innerJoin('poll_assigns', 'poll_assigns.poll_assign_id', 'poll_assign_recipients.poll_assign_id')
             .innerJoin('polls', 'poll_assigns.poll_id', 'polls.id')
             .innerJoin('student_groups', 'student_groups.groupId', 'poll_assign_recipients.group_id')
+            .leftJoin('poll_responses', (join) => join
+                .on('poll_responses.student_id', '=', auth.person)
+                .onRef('poll_responses.poll_id', '=', 'poll_assigns.poll_id')
+            )
             .select([
                 'polls.id',
                 'polls.title',
@@ -56,7 +61,8 @@ const app = new Elysia({ prefix: '/polls' })
                 'polls.created_by',
                 'poll_assigns.start as active_from',
                 'poll_assigns.end as active_to',
-                'poll_assigns.poll_assign_id as assignmentId'
+                'poll_assigns.poll_assign_id as assignmentId',
+                'poll_responses.submitted_at'
             ])
             .where('poll_assign_recipients.assigned', '=', true)
             .where('student_groups.student', '=', auth.person);
@@ -75,7 +81,8 @@ const app = new Elysia({ prefix: '/polls' })
                 'polls.created_by',
                 sql<Date | null>`null`.as('active_from'),
                 sql<Date | null>`null`.as('active_to'),
-                sql<number | null>`null`.as('assignmentId')
+                sql<number | null>`null`.as('assignmentId'),
+                sql<Date | null>`null`.as('submitted_at'),
             ])
             .where('poll_shares.is_valid', '=', true)
             .where('poll_shares.user_id', '=', auth.userId);

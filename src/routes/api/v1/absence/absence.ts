@@ -20,44 +20,6 @@ interface lessonInfo {
     total_lessons: number;
 }
 
-const titlesBefore = db.selectFrom('persons_degree as pd')
-  .innerJoin('degrees as d', 'pd.degree', 'd.degreeID')
-  .select([
-    'pd.person as person',
-    sql`TRIM(GROUP_CONCAT(d.shortcut ORDER BY d.weight SEPARATOR ' '))`.as('titles_before')
-  ])
-  .where('d.isBefore', '=', true)
-  .groupBy('pd.person')
-  .as('tb');
-
-const titlesAfter = db.selectFrom('persons_degree as pd')
-  .innerJoin('degrees as d', 'pd.degree', 'd.degreeID') 
-  .select([
-    'pd.person as person',
-    sql`TRIM(GROUP_CONCAT(d.shortcut ORDER BY d.weight SEPARATOR ' '))`.as('titles_after')
-  ])
-  .where('d.isBefore', '=', false)
-  .groupBy('pd.person')
-  .as('ta');
-
-const fullName = sql`
-  concat(
-    COALESCE(
-      CASE WHEN tb.titles_before IS NULL OR tb.titles_before = '' THEN ''
-      ELSE CONCAT(tb.titles_before, ' ')
-      END,
-    ''
-    ),
-    persons.firstName, ' ', persons.lastName,
-    COALESCE(
-      CASE WHEN ta.titles_after IS NULL OR ta.titles_after = '' THEN ''
-      ELSE CONCAT(' ', ta.titles_after)
-      END,
-    ''
-    )
-  )
-`;
-
 const elysiaApp = new Elysia()
   .get('/absence/:id', async ({ params: { id }, query }) => {
     try {
@@ -85,7 +47,7 @@ const elysiaApp = new Elysia()
           });
         }
 
-        const absences: AbsenceType[] = [
+        const ignored_absences: AbsenceType[] = [
           AbsenceType.EARLY,
           AbsenceType.LATE,
           AbsenceType.NON_COUNT
@@ -96,10 +58,7 @@ const elysiaApp = new Elysia()
             .leftJoin('persons', 'students.personId', 'persons.personId')
             .leftJoin('classes', 'students.class', 'classes.classId')
             .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
-            .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-            .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
             .select([
-                fullName.as('fullName'),
                 'students.status',
                 sql`DATE_FORMAT(students.startStudy, '%d. %m. %Y')`.as('startStudy'),
                 sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
@@ -117,8 +76,7 @@ const elysiaApp = new Elysia()
                 'groups.num',
             ])
             .where('student_groups.student', '=', id)
-            .where('sy.start', '<=', moment().format("YYYY-MM-DD") as any)
-            .where('sy.end', '>=', moment().format("YYYY-MM-DD") as any)
+            .where('sy.current', '=', true)
             .execute()
         ]);
 
@@ -149,7 +107,7 @@ const elysiaApp = new Elysia()
             .where('classbook.date', '>=', start.format("YYYY-MM-DD"))
             .where('classbook.date', '<=', end.format("YYYY-MM-DD"))
             .where('absence.student', '=', id)
-            .where('absence.type', 'not in', absences)
+            .where('absence.type', 'not in', ignored_absences as number[])
             .execute(),
 
           db.selectFrom('timetable')
@@ -199,9 +157,9 @@ const elysiaApp = new Elysia()
         });
 
         absence.forEach((absence: any) => {
-            let lessonData = lessons[absence.subjectId];
+            let lessonData = lessons[absence.subject];
             if (lessonData) {
-                lessonData.absence = absence.count;
+              lessons[absence.subject].absence = absence.count;
             }
         });
 
