@@ -79,14 +79,56 @@ class DatabaseBackupService {
         console.log(`[Backup] Starting backup: ${filename} (Commit: ${commitHash || 'unknown'})`);
 
         try {
-            // Build mysqldump command
-            const dumpCmd = `mysqldump -h ${config.DB_HOST} -P ${config.DB_PORT} -u ${config.DB_USER} -p${config.DB_PASS} ${config.DB_NAME} --single-transaction --routines --triggers`;
+            const { spawn } = require('child_process');
             
-            // Execute backup
-            const { stdout } = await execAsync(dumpCmd);
+            // Prepare arguments for spawn
+            const args = [
+                '-h', config.DB_HOST,
+                '-P', config.DB_PORT,
+                '-u', config.DB_USER,
+                config.DB_NAME,
+                '--single-transaction',
+                '--routines',
+                '--triggers'
+            ];
             
-            // Write to file
-            fs.writeFileSync(filepath, stdout);
+            // Add password if exists (be careful with process listing)
+            // Note: passing password in args is insecure in shared environments, 
+            // but config file is also an option. For now sticking to args to match previous logic
+            if (config.DB_PASS) {
+                args.push(`-p${config.DB_PASS}`);
+            }
+
+            // Create write stream
+            const fileStream = fs.createWriteStream(filepath);
+
+            await new Promise<void>((resolve, reject) => {
+                const dumpProcess = spawn(config.MYSQLDUMP_PATH, args);
+
+                dumpProcess.stdout.pipe(fileStream);
+
+                dumpProcess.stderr.on('data', (data) => {
+                    // Log stderr but don't fail immediately unless exit code is non-zero
+                    // mysqldump often writes info to stderr
+                    console.log(`[Backup] mysqldump stderr: ${data}`);
+                });
+
+                dumpProcess.on('error', (err) => {
+                    reject(err);
+                });
+
+                dumpProcess.on('close', (code) => {
+                    if (code === 0) {
+                        resolve();
+                    } else {
+                        reject(new Error(`mysqldump exited with code ${code}`));
+                    }
+                });
+                
+                fileStream.on('error', (err) => {
+                    reject(err);
+                });
+            });
 
             // Compress if enabled
             let finalPath = filepath;
@@ -124,6 +166,10 @@ class DatabaseBackupService {
             };
         } catch (error: any) {
             console.error('[Backup] Failed:', error.message);
+            // Clean up partial file on failure
+            if (fs.existsSync(filepath)) {
+                try { fs.unlinkSync(filepath); } catch {}
+            }
             throw new Error(`Backup failed: ${error.message}`);
         }
     }
@@ -219,6 +265,16 @@ class DatabaseBackupService {
             throw new Error('Backup not found');
         }
 
+        await db
+            .insertInto('auditlog')
+            .values({
+                userId: null, // System action
+                type: 'backup_deleted',
+                data: JSON.stringify({ action: 'database_backup', filename }),
+                ip: null
+            })
+            .execute();
+
         fs.unlinkSync(filepath);
         console.log(`[Backup] Deleted: ${filename}`);
     }
@@ -253,6 +309,16 @@ class DatabaseBackupService {
             if (filename.endsWith('.gz') && fs.existsSync(sqlFile)) {
                 fs.unlinkSync(sqlFile);
             }
+
+            await db
+                .insertInto('auditlog')
+                .values({
+                    userId: null, // System action
+                    type: 'backup_restored',
+                    data: JSON.stringify({ action: 'database_backup', filename }),
+                    ip: null
+                })
+                .execute();
 
             console.log(`[Backup] Restore completed from: ${filename}`);
         } catch (error: any) {
@@ -309,8 +375,8 @@ class DatabaseBackupService {
             await db
                 .insertInto('auditlog')
                 .values({
-                    userId: 0, // System action
-                    type: 'reset_password' as any,
+                    userId: null, // System action
+                    type: 'backup_created',
                     data: JSON.stringify({ action: 'database_backup', filename, size, description, commitHash }),
                     ip: null
                 })
@@ -337,9 +403,48 @@ class DatabaseBackupService {
     }
 
     /**
+     * Check if backup is needed based on last backup time
+     */
+    async checkAndBackup(): Promise<void> {
+        try {
+            const lastBackup = await db.selectFrom('backups')
+                .select('created')
+                .where('status', '=', 'success')
+                .orderBy('created', 'desc')
+                .executeTakeFirst();
+
+            let shouldBackup = false;
+            
+            if (!lastBackup) {
+                console.log('[Backup] No previous backups found. Initiating startup backup...');
+                shouldBackup = true;
+            } else {
+                const now = new Date();
+                const last = new Date(lastBackup.created);
+                const diffMs = now.getTime() - last.getTime();
+                const diffHours = diffMs / (1000 * 60 * 60);
+
+                if (diffHours >= BACKUP_CONFIG.backupIntervalHours) {
+                    console.log(`[Backup] Last backup was ${diffHours.toFixed(2)} hours ago (Interval: ${BACKUP_CONFIG.backupIntervalHours}h). Initiating startup backup...`);
+                    shouldBackup = true;
+                }
+            }
+
+            if (shouldBackup) {
+                await this.createBackup('Scheduled automatic backup (Startup check)');
+            }
+        } catch (error) {
+            console.error('[Backup] Startup check failed:', error);
+        }
+    }
+
+    /**
      * Start automatic backup scheduler
      */
-    startScheduler(): void {
+    async startScheduler(): Promise<void> {
+        // Run startup check
+        await this.checkAndBackup();
+
         const intervalMs = BACKUP_CONFIG.backupIntervalHours * 60 * 60 * 1000;
         
         console.log(`[Backup] Starting scheduler: every ${BACKUP_CONFIG.backupIntervalHours} hours`);

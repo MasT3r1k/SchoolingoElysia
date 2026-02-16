@@ -55,12 +55,8 @@ const elysiaApp = new Elysia()
       let targetId = body.id;
       let time = moment(body.time)
 
-      // SECURITY: Access Control Check
-      // Block users from viewing other people's timetables unless authorized
       if (user.person !== targetId) {
           const isPrincipal = user.isPrincipal;
-          // Note: Assuming manager might also have rights, but Principal is safer check for now
-          
           if (!isPrincipal) {
               // Check if requester is a teacher
               const isTeacher = await db.selectFrom('teachers')
@@ -80,11 +76,9 @@ const elysiaApp = new Elysia()
                       return Response.json({ error: 'forbidden', details: 'You are not allowed to view this timetable' }, { status: 403 });
                   }
               }
-              // Teachers allowed to view anyone's timetable (or restrict to their class? Leaving open for staff flexibility)
           }
       }
 
-      // Determine Target's Roles (Student/Teacher/Parent) to decide what to show
       const perms = await db.selectFrom("tokens")
       .leftJoin('users', 'users.userId', 'tokens.userId')
       .leftJoin('students', 'students.personId', 'users.person')
@@ -98,23 +92,10 @@ const elysiaApp = new Elysia()
       .where('users.person', '=', targetId)
       .limit(1)
       .executeTakeFirst()
-      // Note: This query relies on 'tokens' but we are querying by 'person'. 
-      // It might be safer to query 'users' table directly instead of joining tokens if the target isn't logged in?
-      // But original code joined tokens. It implies target must have a token?
-      // Wait, original code: `.where('users.person', '=', id)`.
-      // If user has multiple tokens, it returns multiple rows? `.limit(1)` handles it.
-      // If user has NO tokens (never logged in), this returns undefined?
-      // Then `perms?.student` is undefined.
-      // And nothing is returned.
-      // Better to query 'users' directly for roles.
-      
-      // Improved Role Check for Target (removing token dependency)
-      // Actually, perms logic below uses `perms?.student` etc.
-      // I'll keep original logic structure but switch to 'users' table base to be robust.
+
       const targetRoles = await db.selectFrom('users')
          .leftJoin('students', 'students.personId', 'users.person')
          .leftJoin('teachers', 'teachers.personId', 'users.person')
-         // .leftJoin('family_relations', ... ) // Parent logic not used in branches below?
          .select([
              'students.personId as student',
              'teachers.personId as teacher'
@@ -122,8 +103,7 @@ const elysiaApp = new Elysia()
          .where('users.person', '=', targetId)
          .executeTakeFirst();
       
-      // Use targetRoles instead of perms
-      
+
       if (targetRoles?.student) {
           const groups = await db.selectFrom('student_groups')
               .innerJoin('groups', 'student_groups.groupId', 'groups.groupId')
@@ -134,8 +114,8 @@ const elysiaApp = new Elysia()
                   'groups.num',
               ])
               .where('student_groups.student', '=', targetId)
-              .where('sy.start', '<=', time.format("YYYY-MM-DD"))
-              .where('sy.end', '>=', time.format("YYYY-MM-DD"))
+              .where('sy.start', '<=', time.toDate())
+              .where('sy.end', '>=', time.toDate())
               .execute()
           
           let groupNumbers: number[] = [];
@@ -146,7 +126,7 @@ const elysiaApp = new Elysia()
               groupNumbers = [-1];
           }
 
-          const [timetable, substitution] = await Promise.all([
+          const [timetable, substitution, absences] = await Promise.all([
               db.selectFrom('timetable')
                   .innerJoin('subjects', 'timetable.subject', 'subjects.subjectId')
                   .leftJoin('persons', 'timetable.teacher', 'persons.personId')
@@ -181,6 +161,7 @@ const elysiaApp = new Elysia()
                 .leftJoin('events', 'substitution.event_id', 'events.event_id')
                 .leftJoin('groups', 'groups.groupId', 'substitution.groupId')
                 .leftJoin('classes', 'classes.classId', 'groups.class')
+                .leftJoin('building_rooms', 'building_rooms.br_id', 'substitution.roomId')
                 .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
                 .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                 .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
@@ -195,6 +176,7 @@ const elysiaApp = new Elysia()
                   'substitution.type',
                   'events.event_name',
                   'events.event_description',
+                  'building_rooms.name as room',
                   sql`subjects.label`.as('subjectName'),
                   sql`subjects.shortcut`.as('subjectShortcut'),
                   sql`persons.lastName`.as('lastName'),
@@ -208,14 +190,27 @@ const elysiaApp = new Elysia()
                       eb('substitution.groupId', 'in', groupNumbers),
                       eb('substitution.groupId', 'is', null)
                     ]),
-                    eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').format('YYYY-MM-DD')),
-                    eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').format('YYYY-MM-DD'))
+                    eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').toDate()),
+                    eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').toDate())
                   ])
                 )
+                .execute(),
+
+              db.selectFrom('absence')
+                .innerJoin('classbook', 'classbook.cbId', 'absence.lesson')
+                .select([
+                  'classbook.date',
+                  'classbook.dayHour as hour',
+                  'absence.type'
+                ])
+                .where('absence.student', '=', targetId)
+                // Use the same date logic as substitutions
+                .where('classbook.date', '>=', time.clone().startOf('isoWeek').format('YYYY-MM-DD')) 
+                .where('classbook.date', '<=', time.clone().endOf('isoWeek').format('YYYY-MM-DD'))
                 .execute()
           ])
 
-          return Response.json({timetable, substitution});
+          return Response.json({timetable, substitution, absences});
       } else if (targetRoles?.teacher) {
         if (type == "person") {
           const [timetable, substitution] = await Promise.all([
@@ -245,8 +240,8 @@ const elysiaApp = new Elysia()
                   .where((eb) =>
                     eb.and([
                       eb('timetable.teacher', '=', targetId),
-                      eb('syGroup.start', '<=',  time.clone().format("YYYY-MM-DD")),
-                      eb('syGroup.end', '>=',    time.clone().format("YYYY-MM-DD"))
+                      eb('syGroup.start', '<=',  time.clone().toDate()),
+                      eb('syGroup.end', '>=',    time.clone().toDate())
                     ])
                   )
                   .execute(),
@@ -257,6 +252,7 @@ const elysiaApp = new Elysia()
                 .leftJoin('classes', 'groups.class', 'classes.classId')
                 .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
                 .leftJoin('persons',  'substitution.teacherId', 'persons.personId')
+                .leftJoin('building_rooms', 'building_rooms.br_id', 'substitution.roomId')
                 .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                 .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
                 .select([
@@ -269,6 +265,7 @@ const elysiaApp = new Elysia()
                   'substitution.end_hour',
                   'subjects.subjectId',
                   'substitution.teacherId',
+                  'building_rooms.name as room',
                   sql`subjects.label`.as('subjectName'),
                   sql`subjects.shortcut`.as('subjectShortcut'),
                   sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
@@ -279,8 +276,8 @@ const elysiaApp = new Elysia()
                       eb('substitution.teacherId', '=', targetId),
                       eb('substitution.groupId', 'is', null)
                     ]),
-                    eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').format('YYYY-MM-DD')),
-                    eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').format('YYYY-MM-DD'))
+                    eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').toDate()),
+                    eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').toDate())
                   ])
                 )
                 .execute()
@@ -319,8 +316,8 @@ const elysiaApp = new Elysia()
                   .where((eb) => eb.exists(
                       db.selectFrom('school_years as syGroup').select('syGroup.start')
                       .whereRef('syGroup.syId', '=', 'groups.year')
-                      .where('syGroup.start', '<=', time.clone().format("YYYY-MM-DD"))
-                      .where('syGroup.end', '>=', time.clone().format("YYYY-MM-DD"))
+                      .where('syGroup.start', '<=', time.clone().toDate())
+                      .where('syGroup.end', '>=', time.clone().toDate())
                    ))
                   .execute(),
 
@@ -330,6 +327,7 @@ const elysiaApp = new Elysia()
                 .leftJoin('classes', 'classes.classId', 'groups.class')
                 .leftJoin('persons', 'substitution.teacherId', 'persons.personId')
                 .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
+                .leftJoin('building_rooms', 'building_rooms.br_id', 'substitution.roomId')
                 .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                 .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
                 .select([
@@ -342,6 +340,7 @@ const elysiaApp = new Elysia()
                   'substitution.end_hour',
                   'subjects.subjectId',
                   'substitution.teacherId',
+                  'building_rooms.name as room',
                   sql`subjects.label`.as('subjectName'),
                   sql`subjects.shortcut`.as('subjectShortcut'),
                   fullName.as('teacher'),
@@ -353,14 +352,36 @@ const elysiaApp = new Elysia()
                       eb('groups.class', '=', targetId),
                       eb('substitution.groupId', '=', null)
                     ]),
-                    eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').format('YYYY-MM-DD')),
-                    eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').format('YYYY-MM-DD'))
+                    eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').toDate()),
+                    eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').toDate())
                   ])
                 )
                 .execute()
           ])
 
           return Response.json({timetable, substitution});
+        } else if (type == "supervision") {
+          const timetable = await db.selectFrom('supervisions')
+            .innerJoin('persons', 'persons.personId', 'supervisions.teacherId')
+            .innerJoin('supervision_places', 'supervision_places.placeId', 'supervisions.placeId')
+            .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
+            .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
+            .select([
+              'supervisions.supervisionId',
+              'supervisions.teacherId',
+              'supervision_places.name as room',
+              sql`(supervisions.day + 1) % 7`.as('day'),
+              'supervisions.hour',
+              'supervisions.description as className',
+              sql`'supervision'`.as('type'),
+              sql`'Dozor'`.as('subjectName'),
+              sql`'Dozor'`.as('subjectShortcut'),
+              fullName.as('teacher')
+            ])
+            .where('supervisions.teacherId', '=', targetId)
+            .execute();
+
+          return Response.json({ timetable, substitution: [] });
         }
       }
       

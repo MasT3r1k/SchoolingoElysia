@@ -10,6 +10,7 @@ export interface SubstitutionTable {
   type: Generated<string | null>
   subjectId: Generated<number | null>
   teacherId: Generated<number | null>
+  roomId: Generated<number | null>
   created: Generated<Date> // timestamp
   event_id: Generated<number | null>
 }

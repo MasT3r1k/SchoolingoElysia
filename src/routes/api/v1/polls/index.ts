@@ -85,7 +85,7 @@ const app = new Elysia({ prefix: '/polls' })
                 sql<Date | null>`null`.as('submitted_at'),
             ])
             .where('poll_shares.is_valid', '=', true)
-            .where('poll_shares.user_id', '=', auth.userId);
+            .where('poll_shares.person_id', '=', auth.person);
 
         // 4. Spojíme je pomocí unionAll a seřadíme jako celek
         const allPolls = await ownPollsQuery
@@ -834,6 +834,80 @@ const app = new Elysia({ prefix: '/polls' })
                 answerId: t.Number(),
                 points: t.Number()
             }))
+        })
+    })
+
+    // POST /:id/share - Share poll with another teacher
+    .post('/:id/share', async ({ params: { id }, body, cookie }) => {
+        const token = cookie.token?.value as string;
+        if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+        const auth = await db
+            .selectFrom('tokens')
+            .leftJoin('users', 'users.userId', 'tokens.userId')
+            .select(['users.person', 'users.manager', 'users.principal'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+
+        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        
+        const pollId = Number(id);
+        const { teacherId } = body as any;
+
+        // Verify ownership
+        const poll = await db
+            .selectFrom('polls')
+            .select(['created_by'])
+            .where('id', '=', pollId)
+            .executeTakeFirst();
+
+        if (!poll) return { error: 'not_found' };
+
+        if (poll.created_by !== auth.person) {
+            return { error: 'no_permission', details: 'not_owner' };
+        }
+
+        // Get target user ID from person ID
+        const targetUser = await db
+            .selectFrom('teachers')
+            .select('teachers.personId')
+            .where('teachers.personId', '=', Number(teacherId))
+            .executeTakeFirst();
+            
+        if (!targetUser) return { error: 'target_user_not_found' };
+
+        // Check if already shared
+        const existingShare = await db
+            .selectFrom('poll_shares')
+            .select('poll_share_id')
+            .where('poll_id', '=', pollId)
+            .where('person_id', '=', targetUser.personId)
+            .executeTakeFirst();
+
+        if (existingShare) {
+             await db.updateTable('poll_shares')
+                .set({ is_valid: true })
+                .where('poll_share_id', '=', existingShare.poll_share_id)
+                .execute();
+             return { success: true };
+        }
+
+        await db.insertInto('poll_shares').values({
+            poll_id: pollId,
+            person_id: targetUser.personId,
+            is_valid: true,
+            added_at: new Date()
+        }).execute();
+
+        return { success: true };
+
+    }, {
+        params: t.Object({
+            id: t.String()
+        }),
+        body: t.Object({
+            teacherId: t.Number()
         })
     })
 

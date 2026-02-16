@@ -102,6 +102,8 @@ import { TimetableSchemasTable } from './timetable_schemas'
 import { MigrationsTable } from './migrations'
 import { OnlineLessonsTable } from './online_lessons'
 import { OAuthTokensTable } from './oauth_tokens'
+import { SupervisionsTable } from './supervisions'
+import { SupervisionPlacesTable } from './supervision_places'
 
 export interface Database {
   absence: AbsenceTable
@@ -219,4 +221,6 @@ export interface Database {
   _migrations: MigrationsTable
   online_lessons: OnlineLessonsTable
   oauth_tokens: OAuthTokensTable
+  supervisions: SupervisionsTable
+  supervision_places: SupervisionPlacesTable
 }

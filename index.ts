@@ -172,7 +172,7 @@ async function loadFolder(folder: string = modulePath) {
             if (school.backup_interval === 2) hours = 720;
             await backupService.updateInterval(hours);
         }
-        backupService.startScheduler();
+        await backupService.startScheduler();
     } catch (err) {
         console.warn('[Backup] Scheduler init failed (likely missing column):', err);
     }

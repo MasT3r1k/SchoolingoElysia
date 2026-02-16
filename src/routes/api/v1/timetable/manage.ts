@@ -5,7 +5,7 @@ import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia()
     .derive(async ({ cookie }) => ({
-        user: await getAuthUser(cookie?.token?.value)
+        user: await getAuthUser(cookie?.token?.value as string)
     }))
     // Manage Timetable (Create/Update/Delete)
     .post('/timetable/manage', async ({ body, user }) => {
@@ -37,6 +37,8 @@ const app = new Elysia()
                     return { error: 'missing_fields' };
                 }
 
+                const type = body.type ?? 0;
+
                 const lessonData = {
                     day: day,
                     hour: hour,
@@ -44,21 +46,49 @@ const app = new Elysia()
                     teacher: teacherId || undefined, // Optional if not assigned
                     room: roomId || undefined,
                     groupId: groupId,
-                    type: 0 // Default Normal
+                    type: type // Default Normal or provided
                 };
 
-                if (action === 'update' && lessonId) {
+                // Check if lesson in this slot already exists
+                const existing = await db.selectFrom('timetable')
+                    .select('lessonId')
+                    .where('day', '=', day)
+                    .where('hour', '=', hour)
+                    .where('groupId', '=', groupId)
+                    .where('type', '=', type)
+                    .executeTakeFirst();
+
+                if (existing) {
+                    // Update the existing lesson at this slot
                     await db.updateTable('timetable')
                         .set(lessonData)
-                        .where('lessonId', '=', lessonId)
+                        .where('lessonId', '=', existing.lessonId)
                         .execute();
-                    return { success: true, action: 'updated', lessonId };
+                    
+                    // If we were moving a different lesson here (lessonId provided), remove the old one
+                    if (lessonId && lessonId != existing.lessonId) {
+                         await db.deleteFrom('timetable')
+                             .where('lessonId', '=', lessonId)
+                             .execute();
+                    }
+
+                    return { success: true, action: 'updated', lessonId: existing.lessonId };
                 } else {
-                    const result = await db.insertInto('timetable')
-                        // @ts-ignore - Kysely types might complain about auto-increment omitted
-                        .values(lessonData)
-                        .executeTakeFirst();
-                    return { success: true, action: 'created', id: Number(result.insertId) };
+                    if (lessonId) {
+                        // Move existing lesson to empty slot
+                        await db.updateTable('timetable')
+                            .set(lessonData)
+                            .where('lessonId', '=', lessonId)
+                            .execute();
+                        return { success: true, action: 'updated', lessonId };
+                    } else {
+                        // Create new lesson in empty slot
+                        const result = await db.insertInto('timetable')
+                            // @ts-ignore - Kysely types might complain about auto-increment omitted
+                            .values(lessonData)
+                            .executeTakeFirst();
+                        return { success: true, action: 'created', id: Number(result.insertId) };
+                    }
                 }
             }
         
@@ -78,7 +108,8 @@ const app = new Elysia()
             subjectId: t.Optional(t.Number()),
             teacherId: t.Optional(t.Number()),
             roomId: t.Optional(t.Number()),
-            groupId: t.Optional(t.Number())
+            groupId: t.Optional(t.Number()),
+            type: t.Optional(t.Number())
         })
     });
 

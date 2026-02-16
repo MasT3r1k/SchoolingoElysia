@@ -356,7 +356,8 @@
             "main": "Správa rozvrhu",
             "template_timetable": "Schéma rozvrhu",
             "template_subject": "Šablony předměty",
-            "builder": "Tvorba rozvrhu"
+            "builder": "Správa rozvrhu",
+            "supervision": "Správa dozoru"
         },
         "teach": {
             "main": "Výuka",

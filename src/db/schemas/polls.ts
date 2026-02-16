@@ -36,7 +36,7 @@ export interface PollAssignRecipientsTable {
 export interface PollSharesTable {
   poll_share_id: Generated<number>;
   poll_id: number;
-  user_id: number;
+  person_id: number;
   is_valid: Generated<boolean>;
   added_at: Generated<Date>;
 }

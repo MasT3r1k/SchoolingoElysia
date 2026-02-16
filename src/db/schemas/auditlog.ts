@@ -2,7 +2,7 @@ import { ColumnType, Generated } from 'kysely';
 
 export interface AuditlogTable {
   auditId: Generated<number>;
-  userId: number;
+  userId: Generated<number | null>;
   type:
     | 'reset_password'
     | 'change_password'
@@ -14,6 +14,9 @@ export interface AuditlogTable {
     | 'created_group'
     | 'removed_group'
     | 'edited_group'
+    | 'backup_created'
+    | 'backup_restored'
+    | 'backup_deleted'
   data: string;
   ip: string | null;
   created: ColumnType<Date, string | undefined, never>;
