@@ -137,6 +137,7 @@ const elysiaApp = new Elysia()
                   .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                   .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
                   .select([
+                      'timetable.lessonId',
                       'groups.groupId',
                       'groups.name as groupName',
                       'groups.num as groupNum',
@@ -223,6 +224,7 @@ const elysiaApp = new Elysia()
                   .leftJoin('school_years as syClass', 'syClass.syId', 'classes.yearId')
                   .leftJoin('school_years as syGroup', 'syGroup.syId', 'groups.year')
                   .select([
+                    'timetable.lessonId',
                     'groups.groupId',
                     'groups.name as groupName',
                     'groups.num as groupNum',
@@ -297,6 +299,7 @@ const elysiaApp = new Elysia()
                   .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
                   .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
                   .select([
+                    'timetable.lessonId',
                     'groups.groupId',
                     'groups.name as groupName',
                     'groups.num as groupNum',

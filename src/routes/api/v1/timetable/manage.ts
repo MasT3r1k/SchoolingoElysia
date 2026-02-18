@@ -7,14 +7,9 @@ const app = new Elysia()
     .derive(async ({ cookie }) => ({
         user: await getAuthUser(cookie?.token?.value as string)
     }))
-    // Manage Timetable (Create/Update/Delete)
+
     .post('/timetable/manage', async ({ body, user }) => {
-        // Auth Check: Only Admins or Scheduler (Permission Check needed? assuming Admin/Manager for now)
         if (!user || (!user.isPrincipal && user.manager != -1)) { 
-            // Strict check: Must be Principal or Independent (Admin)? 
-            // Determine "Scheduler" role later. For now match Dashboard Admin logic.
-            // Or if user is "Teacher" but has permissions? 
-            // I'll stick to basic Auth for now.
             if (!user) return { error: 'unauthorized', status: 401 };
         }
 
@@ -33,20 +28,20 @@ const app = new Elysia()
             
             if (action === 'create' || action === 'update') {
                 // Validation
-                if (day === undefined || hour === undefined || !subjectId || !groupId) {
+                if (day === undefined || hour === undefined || subjectId == undefined || groupId == undefined) {
                     return { error: 'missing_fields' };
                 }
 
                 const type = body.type ?? 0;
 
                 const lessonData = {
-                    day: day,
-                    hour: hour,
+                    day,
+                    hour,
                     subject: subjectId,
                     teacher: teacherId || undefined, // Optional if not assigned
                     room: roomId || undefined,
-                    groupId: groupId,
-                    type: type // Default Normal or provided
+                    groupId,
+                    type // Default Normal or provided
                 };
 
                 // Check if lesson in this slot already exists
@@ -59,13 +54,11 @@ const app = new Elysia()
                     .executeTakeFirst();
 
                 if (existing) {
-                    // Update the existing lesson at this slot
                     await db.updateTable('timetable')
                         .set(lessonData)
                         .where('lessonId', '=', existing.lessonId)
                         .execute();
                     
-                    // If we were moving a different lesson here (lessonId provided), remove the old one
                     if (lessonId && lessonId != existing.lessonId) {
                          await db.deleteFrom('timetable')
                              .where('lessonId', '=', lessonId)
@@ -80,7 +73,7 @@ const app = new Elysia()
                             .set(lessonData)
                             .where('lessonId', '=', lessonId)
                             .execute();
-                        return { success: true, action: 'updated', lessonId };
+                        return { success: true, action: 'updated' };
                     } else {
                         // Create new lesson in empty slot
                         const result = await db.insertInto('timetable')
@@ -102,7 +95,7 @@ const app = new Elysia()
     }, {
         body: t.Object({
             action: t.String(), // 'create', 'update', 'delete'
-            lessonId: t.Optional(t.Number()),
+            lessonId: t.Optional(t.Nullable(t.Number())),
             day: t.Optional(t.Number()),
             hour: t.Optional(t.Number()),
             subjectId: t.Optional(t.Number()),

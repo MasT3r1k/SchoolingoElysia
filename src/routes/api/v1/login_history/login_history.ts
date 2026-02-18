@@ -50,7 +50,7 @@ const elysiaApp = new Elysia()
             ])
             .where('userId', '=', user.userId)
             // Správná syntaxe pro MariaDB interval
-            .where('created', '>', sql`NOW() - INTERVAL 30 DAY`) 
+            .where('created', '>', sql`NOW() - INTERVAL 30 DAY` as any) 
             .executeTakeFirst();
 
         const validLogins = Number(loginStats?.successCount ?? 0);
