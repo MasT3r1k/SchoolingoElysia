@@ -6,9 +6,11 @@ import { format_people_by_ids } from '../../../../functions/format_person_by_ids
 
 const elysiaAp = new Elysia()
   
-  .get('/teachers', async({ query }) => {
+  .get('/teachers', async({ query, school }: any) => {
     const result = await db.selectFrom('teachers')
+      .innerJoin('users', 'users.person', 'teachers.personId')
       .innerJoin('persons', 'teachers.personId', 'persons.personId')
+      .where('users.school', '=', (school as any).schoolId)
       .select([
           'teachers.personId',
           'persons.firstName',

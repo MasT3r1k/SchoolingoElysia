@@ -33,7 +33,10 @@ const app = new Elysia()
             result = await db.insertInto('subjects')
                 .values({
                     label: subjectName,
-                    shortcut: shortcut
+                    shortcut: shortcut,
+                    school_id: user.school as number,
+                    isMain: 1, // Default value
+                    primaryHours: '' // Default value
                 })
                 .executeTakeFirst();
             
@@ -61,12 +64,14 @@ const app = new Elysia()
 
         const teachers = await db.selectFrom('teachers_subject')
             .innerJoin('persons', 'persons.personId', 'teachers_subject.teacher_id')
+            .innerJoin('users', 'users.person', 'teachers_subject.teacher_id')
             .select([
                 'teachers_subject.teacher_id',
                 'persons.firstName',
                 'persons.lastName'
             ])
             .where('teachers_subject.subject_id', '=', query.subjectId)
+            .where('users.school', '=', user.school)
             .execute();
 
         // Use helper to format name consistently if needed, or just return first/last
@@ -89,6 +94,17 @@ const app = new Elysia()
         if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
         if (user.manager === -1 && !user.isPrincipal && user.role !== 'admin_staff') {
             return Response.json({ error: 'no_permission' }, { status: 403 });
+        }
+
+        // Verify teacher belongs to current school
+        const teacherUser = await db.selectFrom('users')
+            .select('userId')
+            .where('person', '=', body.teacherId)
+            .where('school', '=', user.school)
+            .executeTakeFirst();
+        
+        if (!teacherUser) {
+            return Response.json({ error: 'invalid_teacher', message: 'Teacher not found in your school' }, { status: 400 });
         }
 
         // Check if already exists
@@ -122,6 +138,17 @@ const app = new Elysia()
         if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
         if (user.manager === -1 && !user.isPrincipal && user.role !== 'admin_staff') {
             return Response.json({ error: 'no_permission' }, { status: 403 });
+        }
+
+        // Verify teacher belongs to current school
+        const teacherUser = await db.selectFrom('users')
+            .select('userId')
+            .where('person', '=', body.teacherId)
+            .where('school', '=', user.school)
+            .executeTakeFirst();
+        
+        if (!teacherUser) {
+            return Response.json({ error: 'invalid_teacher', message: 'Teacher not found in your school' }, { status: 400 });
         }
 
         await db.deleteFrom('teachers_subject')

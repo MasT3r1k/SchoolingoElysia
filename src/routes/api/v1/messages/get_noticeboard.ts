@@ -11,7 +11,7 @@ const app = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person'])
+      .select(['tokens.userId', 'users.person', 'users.school'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -26,11 +26,14 @@ const app = new Elysia()
 
     const messagesDB = await db.selectFrom('messages')
     .leftJoin('persons', 'messages.author_id', 'persons.personId')
-    .leftJoin('messages_receivers', (join) =>
-        join
+    .leftJoin('messages_receivers', (join) => join
         .onRef('messages.message_id', '=', 'messages_receivers.message_id')
         .on('messages_receivers.receiver_id', '=', auth.person)
   )
+    .innerJoin('users as author_user', (join) => 
+        join.onRef('author_user.person', '=', 'messages.author_id')
+            .on('author_user.school', '=', auth.school)
+    )
     .select([
         'messages.message_id',
         'messages.topic',

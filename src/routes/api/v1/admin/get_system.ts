@@ -3,20 +3,18 @@ import { db } from '../../../../../database';
 import { sql } from 'kysely';
 
 const app = new Elysia()
-  .get('/system', async ({ cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
+  .get('/system', async ({ user, school }: any) => {
+    if (!user) return { error: 'no_user', details: 'no_cookie' };
+    if (!school) return { error: 'no_school', details: 'school_not_found' };
 
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.tokenId', 'tokens.userId', 'users.person', 'users.manager', 'users.principal'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
+    const auth = user; // Alias for compatibility with existing variable usage if needed, or refactor usages.
+    // user object from auth.ts: { userId, person, username, locale, isPrincipal, manager, role, school }
+    // existing auth var had: tokens.tokenId, tokens.userId, users.person, users.manager, users.principal, users.school
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
-    if (auth.manager != -1 && auth.principal == false) return { error: 'no_permission' };
+    if (!auth.person) return { error: 'no_user', details: 'no_db' };
+    if (auth.manager != -1 && !auth.isPrincipal) return { error: 'no_permission' };
+
+
 
     const school_advanced_info = await db.selectFrom('schools')
     .leftJoin('districts', 'districts.districtId', 'schools.district')
@@ -37,6 +35,7 @@ const app = new Elysia()
         'schools.studentsLimit',
         'schools.modules'
     ])
+    .where('schools.schoolId', '=', auth.school)
     .limit(1)
     .executeTakeFirst();
 
@@ -49,8 +48,10 @@ const app = new Elysia()
     .execute();
 
     const student_count = await db.selectFrom('students')
+        .innerJoin('users', 'users.person', 'students.personId')
         .select(sql`COUNT(*)`.as('count'))
         .where('students.status', '=', 'active')
+        .where('users.school', '=', auth.school)
         .executeTakeFirst()
         .then(r => Number(r?.count ?? 0));
 
@@ -78,8 +79,13 @@ const app = new Elysia()
     .orderBy('scopes.name', 'asc')
     .execute();
 
+    const domains = await db.selectFrom('school_domains')
+    .select(['domain', 'domainId'])
+    .where('school', '=', auth.school)
+    .execute();
+
     return {
-        settings: school_advanced_info,
+        settings: { ...school_advanced_info, domains },
         districts,
         student_count,
         subjects,

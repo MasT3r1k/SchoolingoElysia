@@ -125,6 +125,15 @@ const app = new Elysia()
     let includeLogin = true;
     let includeAudit = true;
 
+
+    // Filter by School
+    if (user.school) {
+        // @ts-ignore
+        loginQuery = loginQuery.where('users.school', '=', user.school);
+        // @ts-ignore
+        auditQuery = auditQuery.where('users.school', '=', user.school);
+    } 
+
     if (actionFilter) {
       if (['login', 'failed_login'].includes(actionFilter)) {
         includeAudit = false;

@@ -57,6 +57,12 @@ const app = new Elysia()
       ]));
     }
 
+    // Filter by School
+    if (user.school) {
+        // @ts-ignore
+        dbQuery = dbQuery.where('users.school', '=', user.school);
+    }
+    
     // Get Total Count
     const countQuery = dbQuery
       .clearSelect()

@@ -20,7 +20,7 @@ const app = new Elysia({ prefix: '/files' })
         const auth = await db
             .selectFrom('tokens')
             .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.manager', 'users.principal'])
+            .select(['users.person', 'users.manager', 'users.principal', 'users.school'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -33,6 +33,8 @@ const app = new Elysia({ prefix: '/files' })
         }
 
         let filesQuery = db.selectFrom('files')
+        .leftJoin('users', 'users.person', 'files.owner_id')
+        .where('users.school', '=', auth.school)
         .select([
             'files.file_id',
             'files.file_uuid',
@@ -98,7 +100,7 @@ const app = new Elysia({ prefix: '/files' })
 
         const auth = await db.selectFrom('tokens')
             .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.manager', 'users.principal'])
+            .select(['users.person', 'users.manager', 'users.principal', 'users.school'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -117,11 +119,13 @@ const app = new Elysia({ prefix: '/files' })
         .executeTakeFirst();
 
         const stats = await db.selectFrom('files')
+        .innerJoin('users', 'users.person', 'files.owner_id')
         .select((eb) => [
             eb.fn.countAll<number>().as('files_count'),
             sql<number>`COALESCE(SUM(${eb.ref('files.file_size')}), 0)`.as('total_file_size'),
             sql<number>`COUNT(DISTINCT ${eb.ref('files.owner_id')})`.as('unique_owners')
         ])
+        .where('users.school', '=', auth.school)
         .executeTakeFirst();
 
         return {

@@ -48,6 +48,7 @@ const app = new Elysia()
     
     await db.deleteFrom('school_domains')
         .where('domainId', '=', domainId)
+        .where('school', '=', user.school)
         .execute();
 
     return Response.json({ success: true });

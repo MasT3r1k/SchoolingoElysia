@@ -4,7 +4,7 @@ import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia()
   .derive(async ({ cookie }) => ({
-      user: await getAuthUser(cookie?.token?.value)
+      user: await getAuthUser(cookie?.token?.value as string)
   }))
   // POST /system/update_scope - Vytvoření/Aktualizace oboru
   .post('/system/update_scope', async ({ user, body }) => {
@@ -26,7 +26,8 @@ const app = new Elysia()
           code,
           years,
           students_per_class,
-          number_of_classes
+          number_of_classes,
+          school_id: user.school as number
         })
         .executeTakeFirst();
       

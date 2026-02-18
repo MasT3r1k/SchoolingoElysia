@@ -3,11 +3,13 @@ import { db } from '../../../../../database';
 import { sql } from 'kysely';
 
 const app = new Elysia()
-    .get('/timetable/groups', async ({query}) => {
+    .get('/timetable/groups', async ({query, school}: any) => {
         let groupsQuery = db.selectFrom('groups')
             .leftJoin('classes', 'groups.class', 'classes.classId')
+            .innerJoin('users', 'users.person', 'classes.teacher')
             .leftJoin('school_years as syClass', 'syClass.syId', 'classes.yearId')
             .leftJoin('school_years', 'school_years.syId', 'groups.year')
+            .where('users.school', '=', (school as any).schoolId)
             .select([
                 'groupId',
                 'name',

@@ -228,7 +228,11 @@
             "secondary_professional_school": "Střední odborná škola",
             "vocational_school": "Učiliště",
             "higher_professional_school": "Vyšší odborná škola",
-            "conservatory": "Konzervatoř"
+            "conservatory": "Konzervatoř",
+            "primary_school": "Základní škola",
+            "kindergarten": "Mateřská škola",
+            "university": "Vysoká škola",
+            "art_school": "ZUŠ"
         },
         "save_school_info": "Uložit nastavení školy",
         "scope_details": "Máte přidaných %scopes% oborů na této škole.",
@@ -1809,15 +1813,16 @@
             "contact_info": "Kontaktní údaje",
             "available_branches": "Obory vzdělání",
             "school_types": {
-                "zakladni": "Základní škola",
-                "stredni": "Střední škola",
-                "gymnazium": "Gymnázium",
-                "sos": "SOŠ",
-                "sps": "SPŠ",
-                "sou": "SOU",
-                "vysoka": "Vysoká škola",
-                "skolka": "Mateřská škola",
-                "zus": "ZUŠ"
+                "grammar_school": "Gymnázium",
+                "high_school": "Střední škola",
+                "secondary_professional_school": "Střední odborná škola",
+                "vocational_school": "Učiliště",
+                "higher_professional_school": "Vyšší odborná škola",
+                "conservatory": "Konzervatoř",
+                "primary_school": "Základní škola",
+                "kindergarten": "Mateřská škola",
+                "university": "Vysoká škola",
+                "art_school": "ZUŠ"
             }
         },
         "step3": {

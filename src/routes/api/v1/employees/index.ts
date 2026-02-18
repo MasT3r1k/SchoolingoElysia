@@ -117,7 +117,7 @@ const employeesRouter = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .select(['tokens.userId', 'users.person', 'users.manager', 'users.school'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -142,6 +142,7 @@ const employeesRouter = new Elysia()
         sql<string>`(SELECT email FROM emails WHERE emails.personId = persons.personId LIMIT 1)`.as('email'),
         sql<string>`(SELECT number FROM phone_numbers WHERE phone_numbers.personId = persons.personId LIMIT 1)`.as('phone'),
       ])
+      .where('users.school', '=', auth.school)
 
     // Search by name
     if (query.search) {
@@ -201,7 +202,7 @@ const employeesRouter = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .select(['tokens.userId', 'users.person', 'users.manager', 'users.school'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -217,6 +218,7 @@ const employeesRouter = new Elysia()
 
     const employee = await db.selectFrom('teachers')
       .leftJoin('persons', 'teachers.personId', 'persons.personId')
+      .innerJoin('users', 'users.person', 'persons.personId')
       .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
       .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
       .select([
@@ -229,6 +231,7 @@ const employeesRouter = new Elysia()
         sql<string>`DATE_FORMAT(persons.birthday, '%Y-%m-%d')`.as('dateOfBirth'),
       ])
       .where('teachers.personId', '=', employeeId)
+      .where('users.school', '=', auth.school)
       .executeTakeFirst();
 
     if (!employee) {

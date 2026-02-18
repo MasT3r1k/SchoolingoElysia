@@ -6,4 +6,5 @@ export interface SubjectsTable {
   shortcut: string
   isMain: number
   primaryHours: string
+  school_id: number
 }

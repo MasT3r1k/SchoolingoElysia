@@ -7,7 +7,7 @@ import moment from 'moment';
 
 const elysiaApp = new Elysia()
   
-  .get('/schedule/classes', async ({ cookie, query }) => {
+  .get('/schedule/classes', async ({ cookie, query, school }: any) => {
     const token = cookie.token?.value as string;
     if (!token) {
         return Response.json({ error: 'no_user', details: 'no_cookie' });
@@ -33,12 +33,14 @@ const elysiaApp = new Elysia()
     }
 
     const classes = await db.selectFrom("classes")
+    .innerJoin('users', 'users.person', 'classes.teacher')
     .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
     .leftJoin('scopes', 'scopes.scopeId', 'classes.scopeId')
     .select([
         'classes.classId',
         sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
     ])
+    .where('users.school', '=', (school as any).schoolId)
     .where(sql`TIMESTAMPDIFF(YEAR, school_years.start, CURDATE())`, '<', sql`scopes.years`)
     .execute()
 

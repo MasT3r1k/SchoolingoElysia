@@ -41,8 +41,10 @@ const fullName = sql`
   `.as('fullName')
 
 const elysiaApp = new Elysia()
-  .get('/students', async({ query }) => {
+  .get('/students', async({ query, school }: any) => {
     let queryBuilder = db.selectFrom('students')
+      .innerJoin('users', 'users.person', 'students.personId')
+      .where('users.school', '=', (school as any).schoolId)
       .leftJoin('persons', 'students.personId', 'persons.personId')
       .leftJoin('classes', 'students.class', 'classes.classId')
       .leftJoin('school_years', 'school_years.syId', 'classes.yearId')

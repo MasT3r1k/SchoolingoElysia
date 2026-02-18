@@ -211,6 +211,19 @@
         "school_fastlogin": "QR code login",
         "school_reset_password_with_email": "Password reset via email address",
         "warn_above_absence": "Warn when absence is above (in %)",
+        "school_type": "School Type",
+        "school_types": {
+            "grammar_school": "Grammar School",
+            "high_school": "Secondary School",
+            "secondary_professional_school": "Secondary Professional School",
+            "vocational_school": "Vocational School",
+            "higher_professional_school": "Higher Professional School",
+            "conservatory": "Conservatory",
+            "primary_school": "Primary School",
+            "kindergarten": "Kindergarten",
+            "university": "University",
+            "art_school": "Art School"
+        },
         "save_school_info": "Save school settings",
         "scope_details": "You have added %scopes% scopes at this school.",
         "table_subjects": "Subjects table",
@@ -1753,15 +1766,16 @@
                 "contact_info": "Contact Info",
                 "available_branches": "Available Branches",
                 "school_types": {
-                    "zakladni": "Primary School",
-                    "stredni": "Secondary School",
-                    "gymnazium": "Grammar School",
-                    "sos": "Secondary Professional School",
-                    "sps": "Secondary Industrial School",
-                    "sou": "Vocational School",
-                    "vysoka": "University/Higher Education",
-                    "skolka": "Kindergarten",
-                    "zus": "Art School"
+                    "grammar_school": "Grammar School",
+                    "high_school": "Secondary School",
+                    "secondary_professional_school": "Secondary Professional School",
+                    "vocational_school": "Vocational School",
+                    "higher_professional_school": "Higher Professional School",
+                    "conservatory": "Conservatory",
+                    "primary_school": "Primary School",
+                    "kindergarten": "Kindergarten",
+                    "university": "University",
+                    "art_school": "Art School"
                 }
             },
             "step3": {

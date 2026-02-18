@@ -9,4 +9,5 @@ export interface ScopesTable {
   students_per_class: number;
   number_of_classes: number;
   is_active: Generated<boolean>
+  school_id: number
 }

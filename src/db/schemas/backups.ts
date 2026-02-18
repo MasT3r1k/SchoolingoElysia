@@ -8,4 +8,5 @@ export interface BackupsTable {
   status: string // 'success', 'failed'
   commit_hash?: string | null
   created: Generated<Date>
+  school_id: number
 }

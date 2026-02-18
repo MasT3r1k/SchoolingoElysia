@@ -27,6 +27,7 @@ const app = new Elysia()
           .set({
             backup_interval: interval
           })
+          .where('schoolId', '=', user.school)
           .execute(),
         backupService.updateInterval(hours)
     ]);
@@ -54,7 +55,8 @@ const app = new Elysia()
                 filename: backup.filename,
                 size: backup.size,
                 type: 'manual',
-                status: 'success'
+                status: 'success',
+                school_id: user.school as number
             })
             .execute();
 
@@ -66,7 +68,8 @@ const app = new Elysia()
              filename: 'failed_backup_' + Date.now(),
              size: 0,
              type: 'manual',
-             status: 'failed'
+             status: 'failed',
+             school_id: user.school as number
          })
          .execute();
 
@@ -85,7 +88,12 @@ const app = new Elysia()
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
-    const backups = await backupService.listBackups();
+    const backups = await db.selectFrom('backups')
+      .selectAll()
+      .where('school_id', '=', user.school)
+      .orderBy('created', 'desc')
+      .execute();
+      
     return backups;
   });
 

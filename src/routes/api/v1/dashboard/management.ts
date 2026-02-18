@@ -4,7 +4,7 @@ import { sql } from 'kysely';
 import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
-  .get('/dashboard/admin', async ({ user }) => {
+  .get('/dashboard/admin', async ({ user }: any) => {
     // Auth Check
     if (!user) return { error: 'no_user', details: 'unauthorized' };
     
@@ -17,22 +17,27 @@ const app = new Elysia()
     
     // Total students
     const totalStudentsQuery = db.selectFrom('students')
+        .innerJoin('users', 'users.person', 'students.personId')
         .select([sql`COUNT(*)`.as('count')])
         .where('students.status', '=', 'active')
+        .where('users.school', '=', user.school)
         .executeTakeFirst()
         .then(r => Number(r?.count ?? 0));
 
     // Limit students
     const limitStudentsQuery = db.selectFrom('schools')
         .select(['schools.studentsLimit'])
+        .where('schools.schoolId', '=', user.school)
         .executeTakeFirst()
         .then(r => Number(r?.studentsLimit ?? 0));
 
     // Average grade
     const averageGradeQuery = db.selectFrom('grades')
         .leftJoin('grades_columns', 'grades_columns.gcId', 'grades.columnId')
+        .innerJoin('users', 'users.person', 'grades.studentId')
         .select(sql<number>`SUM(grades.mark * grades_columns.weight) / NULLIF(SUM(grades_columns.weight),0)`.as('weighted_average_grade'))
         .where('grades.mark', 'is not', null)
+        .where('users.school', '=', user.school)
         .executeTakeFirst()
         .then(r => Number(r?.weighted_average_grade ?? 0));
 
@@ -46,6 +51,10 @@ const app = new Elysia()
             .as('a'),
             'a.lesson', 'c.cbId'
         )
+        .leftJoin('groups', 'groups.groupId', 'c.groupId')
+        .leftJoin('classes', 'classes.classId', 'groups.class')
+        .innerJoin('users', 'users.person', 'classes.teacher')
+        .where('users.school', '=', user.school)
         .select(['c.cbId', sql`COUNT(sg.student)`.as('lesson_expected'), sql`COALESCE(a.absent_count, 0)`.as('lesson_absent')])
         .groupBy('c.cbId')
         .as('stats');
@@ -84,6 +93,8 @@ const app = new Elysia()
         .groupBy('s.personId').as('riskStats')
     )
     .where(sql<boolean>`riskStats.riskScore >= 60`)
+    .innerJoin('users', 'users.person', 'riskStats.personId')
+    .where('users.school', '=', user.school)
     .select(sql<number>`COUNT(*)`.as('atRiskStudents'))
     .executeTakeFirst()
     .then(r => Number(r?.atRiskStudents ?? 0));
@@ -96,6 +107,7 @@ const app = new Elysia()
       .leftJoin('grades', 'grades.studentId', 'student_groups.student')
       .leftJoin('grades_columns', 'grades_columns.gcId', 'grades.columnId')
       .leftJoin('classes', 'classes.classId', 'groups.class')
+      .innerJoin('users', 'users.person', 'classes.teacher')
       .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
       .select([
         'classes.classId',
@@ -109,6 +121,7 @@ const app = new Elysia()
         sql`'stable'`.as('trend')
       ])
       .where('groups.year', '=', 1)
+      .where('users.school', '=', user.school)
       .groupBy('groups.groupId')
       .execute()
       .then(rows => rows.map(row => ({
@@ -128,6 +141,8 @@ const app = new Elysia()
       .leftJoin('grades_columns', 'grades_columns.subjectId', 'subjects.subjectId')
       .leftJoin('grades', 'grades.columnId', 'grades_columns.gcId')
       .leftJoin('teachers_subject', 'teachers_subject.subject_id', 'subjects.subjectId')
+      .innerJoin('users', 'users.person', 'teachers_subject.teacher_id')
+      .where('users.school', '=', user.school)
       .select([
         'subjects.subjectId as subject_id',
         'subjects.label as subject_name',
@@ -150,10 +165,12 @@ const app = new Elysia()
     // Teacher Stats
     const teacherStatsQuery = db.selectFrom('teachers')
       .innerJoin('persons', 'persons.personId', 'teachers.personId')
+      .innerJoin('users', 'users.person', 'teachers.personId')
       .leftJoin('teachers_subject', 'teachers_subject.teacher_id', 'teachers.personId')
       .leftJoin('subjects', 'subjects.subjectId', 'teachers_subject.subject_id')
       .leftJoin('classbook', 'classbook.teacher', 'teachers.personId')
       .leftJoin('absence', 'absence.lesson', 'classbook.cbId')
+      .where('users.school', '=', user.school)
       .select([
         'teachers.personId as teacher_id',
         sql`CONCAT(persons.firstName, ' ', persons.lastName)`.as('full_name'),
@@ -176,6 +193,10 @@ const app = new Elysia()
     // Absence Heatmap
     const absenceHeatmapQuery = db.selectFrom('absence')
       .innerJoin('classbook', 'classbook.cbId', 'absence.lesson')
+      .leftJoin('groups', 'groups.groupId', 'classbook.groupId')
+      .leftJoin('classes', 'classes.classId', 'groups.class')
+      .innerJoin('users', 'users.person', 'classes.teacher')
+      .where('users.school', '=', user.school)
       .select([sql`DAYOFWEEK(classbook.date)`.as('day'), 'classbook.dayHour as hour', sql`COUNT(*)`.as('count')])
       .groupBy(['day', 'hour'])
       .execute()
@@ -211,6 +232,8 @@ const app = new Elysia()
        .groupBy('s.personId')
        .as('riskStats')
     )
+    .innerJoin('users', 'users.person', 'riskStats.personId')
+    .where('users.school', '=', user.school)
     .select([
         sql<number>`riskStats.personId`.as('student_id'),
         'riskStats.absenceScore', 'riskStats.gradeScore', 'riskStats.riskScore', 'riskStats.avgGrade', 'riskStats.absenceRate'

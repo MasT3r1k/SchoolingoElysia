@@ -4,16 +4,16 @@ import { sql } from 'kysely';
 import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia()
-  .derive(async ({ cookie }) => ({
-      user: await getAuthUser(cookie?.token?.value as string)
-  }))
   // GET /system - Načtení všech systémových nastavení
-  .get('/system', async ({ user }) => {
+  .get('/system', async ({ user, school }: any) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
+    if (!school) return Response.json({ error: 'no_school' }, { status: 404 });
+    
     if (user.manager !== -1 && !user.isPrincipal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
+    const schoolId = school.schoolId;
 
     const [school_info, districts, student_count, subjects, scopes, ldap_config, email_config, countries, domains] = await Promise.all([
       // School settings
@@ -57,6 +57,7 @@ const app = new Elysia()
           'schools.gdpr_databox',
           'schools.gdpr_web',
         ])
+        .where('schools.schoolId', '=', schoolId)
         .limit(1)
         .executeTakeFirst(),
 
@@ -68,8 +69,10 @@ const app = new Elysia()
 
       // Student count
       db.selectFrom('students')
+        .innerJoin('users', 'users.person', 'students.personId')
         .select(sql`COUNT(*)`.as('count'))
         .where('students.status', '=', 'active')
+        .where('users.school', '=', schoolId)
         .executeTakeFirst()
         .then(r => Number(r?.count ?? 0)),
 
@@ -81,6 +84,7 @@ const app = new Elysia()
           'subjects.shortcut'
         ])
         .orderBy('subjectName', 'asc')
+        .where('subjects.school_id', '=', schoolId)
         .execute(),
 
       // Scopes
@@ -94,18 +98,21 @@ const app = new Elysia()
           'scopes.number_of_classes',
           'scopes.students_per_class'
         ])
+        .where('scopes.school_id', '=', schoolId)
         .orderBy('scopes.name', 'asc')
         .execute(),
 
       // LDAP Config
       db.selectFrom('ldap_config')
         .selectAll()
+        .where('school_id', '=', schoolId)
         .limit(1)
         .executeTakeFirst(),
 
       // Email Config
       db.selectFrom('email_config')
         .selectAll()
+        .where('school_id', '=', schoolId)
         .limit(1)
         .executeTakeFirst(),
       
@@ -117,6 +124,7 @@ const app = new Elysia()
       // School Domains
       db.selectFrom('school_domains')
         .select(['domainId', 'domain'])
+        .where('school', '=', schoolId)
         .execute()
     ]);
 
@@ -138,7 +146,7 @@ const app = new Elysia()
   })
 
   // GET /system/scope - Načtení předmětů pro konkrétní obor
-  .get('/system/scope', async ({ user, query }) => {
+  .get('/system/scope', async ({ user, query }: any) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
     if (user.manager !== -1 && !user.isPrincipal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
