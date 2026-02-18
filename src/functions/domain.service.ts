@@ -1,4 +1,3 @@
-
 import { db } from '../../database';
 import { ConflictError, InternalServerError, NotFoundError } from '../utils/errors';
 import bcrypt from 'bcryptjs';
@@ -12,6 +11,27 @@ export interface InstallationData {
     adminFirstName: string;
     adminLastName: string;
     adminEmail?: string;
+    ico?: string;
+    schoolShortName?: string;
+    schoolType?: string;
+    street?: string;
+    city?: string;
+    zip?: string;
+    houseNumber?: string;
+    orientationNumber?: string;
+    districtId?: number;
+    country?: number;
+    redIzo?: string;
+    izo?: string;
+    schoolEmail?: string;
+    schoolPhone?: string;
+    schoolWeb?: string;
+    databox?: string;
+    director?: string;
+    auth_classic?: boolean;
+    auth_ldap?: boolean;
+    auth_qr?: boolean;
+    auth_passkeys?: boolean;
 }
 
 export class DomainService {
@@ -38,6 +58,7 @@ export class DomainService {
      */
     async isDomainAvailable(domain: string): Promise<boolean> {
         const existing = await db.selectFrom('school_domains')
+            .select('domain')
             .where('domain', '=', domain)
             .executeTakeFirst();
         return !existing;
@@ -53,13 +74,12 @@ export class DomainService {
         }
 
         // We need a transaction for this multi-step process
-        return await db.transaction().status('read write').execute(async (trx) => {
+        return await db.transaction().execute(async (trx) => {
             // 1. Create Password
             const hashedPassword = await bcrypt.hash(data.adminPassword, 10);
             const passwordRecord = await trx.insertInto('passwords')
                 .values({
-                    password: hashedPassword,
-                    last_update: new Date()
+                    password: hashedPassword
                 })
                 .executeTakeFirstOrThrow();
             const passwordId = Number(passwordRecord.insertId);
@@ -69,12 +89,13 @@ export class DomainService {
                 .values({
                     firstName: data.adminFirstName,
                     lastName: data.adminLastName,
-                    birthday: null, // Optional
-                    birth_place_city: null, // Optional
-                    birth_place_country: null, // Optional
-                    citizenship: null, // Optional
-                    gender: 'other', // Default
-                    bank_account: null
+                    birthday: null, 
+                    birthplace: null,
+                    gender: 0, // 0 = unknown/other
+                    birthnum: null,
+                    address: null,
+                    GDPR: true,
+                    insuranceId: null
                 })
                 .executeTakeFirstOrThrow();
             const personId = Number(personRecord.insertId);
@@ -87,24 +108,21 @@ export class DomainService {
                         email: data.adminEmail,
                         type: 'personal',
                         is_verified: true, // Auto-verify for admin setup
-                        notify: true
+                        description: 'Admin Email'
                     })
                     .execute();
             }
 
             // 4. Create School
-            // We insert with a dummy owner first (or 0) if allowed, or we need to rely on it being nullable/not constrained.
-            // Assuming we can update it later.
             const schoolRecord = await trx.insertInto('schools')
                 .values({
                     name: data.schoolName,
-                    shortName: data.schoolName.substring(0, 10), // Auto-generate short name
-                    domain: data.domain, // Wait, schools table doesn't have domain column, school_domains does.
-                    // But we might need to fill required fields:
-                    district: 0, // Placeholder
-                    code: 'SETUP-' + Date.now(), // Placeholder
-                    owner: 0, // Placeholder, will update
-                    total_storage_limit: 10737418240, // 10GB default?
+                    shortName: data.schoolShortName || data.schoolName.substring(0, 10),
+                    district: data.districtId || 0,
+                    country: data.country || null,
+                    code: 'SETUP-' + Date.now(), 
+                    owner: personId, // Link to admin person
+                    total_storage_limit: 10737418240, 
                     apiToken: Bun.randomUUIDv7(),
                     license_type: 'FREE',
                     startHour: 8,
@@ -113,38 +131,29 @@ export class DomainService {
                     breakTime: 10,
                     resetPasswordWithEmail: data.adminEmail ? true : false,
                     warningAbsencePercent: 20,
-                    fastlogin: false,
-                    modules: '[]',
+                    fastlogin: data.auth_qr ? true : false,
+                    modules: 0,
                     studentsLimit: 100,
-                    // Auth settings defaults
-                    auth_classic: 1,
-                    auth_ldap: 0,
-                    auth_passkeys: 0,
+                    auth_classic: data.auth_classic === false ? 0 : 1,
+                    auth_ldap: data.auth_ldap ? 1 : 0,
+                    auth_passkeys: data.auth_passkeys ? 1 : 0,
                     session_lifetime_minutes: 120,
                     max_login_attempts: 5,
                     backup_interval: 24,
                     auto_update: 1, 
                     auto_update_interval: 24,
-                    // Additional required fields based on schema view earlier
                     gdpr_firstname: data.adminFirstName,
                     gdpr_lastname: data.adminLastName,
-                    gdpr_phone: '',
-                    gdpr_email: data.adminEmail || '',
+                    gdpr_phone: data.schoolPhone || '',
+                    gdpr_email: data.schoolEmail || data.adminEmail || '',
                     gdpr_mobile: '',
-                    gdpr_databox: '',
-                    gdpr_web: '',
-                    red_izo: '',
-                    ico: '',
-                    school_type: 'other',
-                    izo: '',
-                    online_enabled: 0,
-                    online_default_platform: '',
-                    practices_enabled: 0,
-                    messages_enabled: 1,
-                    tests_enabled: 1,
-                    rewards_enabled: 1,
-                    tutoring_enabled: 0
-                } as any) // Casting as any to avoid strict type checks if I missed optional fields
+                    gdpr_databox: data.databox || '',
+                    gdpr_web: data.schoolWeb || '',
+                    red_izo: data.redIzo || '',
+                    ico: data.ico || '',
+                    school_type: data.schoolType || 'other',
+                    izo: data.izo || ''
+                } as any) 
                 .executeTakeFirstOrThrow();
             
             const schoolId = Number(schoolRecord.insertId);
@@ -156,14 +165,14 @@ export class DomainService {
                     username: data.adminUsername,
                     password: passwordId,
                     login_type: 'local',
-                    role: 'management', // Admin role?
-                    manager: 0,
-                    principal: true, // Is principal
+                    role: 'teacher',
+                    manager: -1,
+                    principal: true,
                     theme: 0,
-                    locale: 'en', // Default
+                    locale: 'en',
                     passwordChanged: null,
                     recommendChangePassword: false,
-                    cookies: 1, // Default consent
+                    cookies: 0,
                     school: schoolId,
                     autoSelectNextWeek: true,
                     fastlogin: false,
@@ -177,13 +186,7 @@ export class DomainService {
             
             const userId = Number(userRecord.insertId);
 
-            // 6. Update School Owner
-            await trx.updateTable('schools')
-                .set({ owner: userId })
-                .where('schoolId', '=', schoolId)
-                .execute();
-
-            // 7. Link Domain
+            // 6. Link Domain
             await trx.insertInto('school_domains')
                 .values({
                     school: schoolId,
@@ -194,6 +197,163 @@ export class DomainService {
             return { schoolId, userId };
         });
     }
-}
 
+    async getFromAres(ico: string) {
+        try {
+            // First try to get detailed school info from Rejstřík škol (RS)
+            const rsResponse = await fetch(`https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty-rs/${ico}`);
+            let rsData: any = null;
+            if (rsResponse.ok) {
+                const rsJson: any = await rsResponse.json();
+                if (rsJson.zaznamy && rsJson.zaznamy.length > 0) {
+                    rsData = rsJson.zaznamy[0];
+                }
+            }
+
+            // Then get base info (including NACE codes for type detection)
+            const baseResponse = await fetch(`https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/${ico}`);
+            if (!baseResponse.ok && !rsData) return null;
+            
+            const baseData: any = baseResponse.ok ? await baseResponse.json() : {};
+            
+            // Merge data preference to RS for specific fields
+            const finalData = {
+                name: rsData?.obchodniJmeno || baseData.obchodniJmeno || '',
+                shortName: rsData?.obchodniJmenoZkracene || '',
+                ico: baseData.ico || rsData?.ico || ico,
+                city: rsData?.sidlo?.nazevObce || baseData.sidlo?.nazevObce || '',
+                street: rsData?.sidlo?.nazevUlice || baseData.sidlo?.nazevUlice || '',
+                zip: rsData?.sidlo?.psc || baseData.sidlo?.psc || '',
+                houseNumber: rsData?.sidlo?.cisloDomovni || baseData.sidlo?.cisloDomovni || '',
+                orientationNumber: rsData?.sidlo?.cisloOrientacni || baseData.sidlo?.cisloOrientacni || '',
+                czNace: baseData.czNace || [],
+                redIzo: rsData?.redizo || '',
+                izo: rsData?.skolyAZarizeni?.[0]?.izo || '',
+                email: rsData?.kontakty?.email?.[0] || '',
+                web: rsData?.kontakty?.www || '',
+                director: rsData?.angazovanaOsoba?.find((o: any) => o.typAngazma.includes('REDITEL')) ? 
+                          `${rsData.angazovanaOsoba.find((o: any) => o.typAngazma.includes('REDITEL')).titulPredJmenem || ''} ${rsData.angazovanaOsoba.find((o: any) => o.typAngazma.includes('REDITEL')).jmeno} ${rsData.angazovanaOsoba.find((o: any) => o.typAngazma.includes('REDITEL')).prijmeni}`.trim() : '',
+                data: { ...baseData, rs: rsData }
+            };
+
+            return finalData;
+        } catch (e) {
+            console.error('ARES fetch error:', e);
+            return null;
+        }
+    }
+
+    async searchFromAres(query: string, start: number = 0, count: number = 20) {
+        try {
+            const isIco = /^\d{8}$/.test(query);
+            
+            let url = 'https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/vyhledat';
+            let body: any;
+
+            if (isIco) {
+                // Use RS (Rejstřík škol) endpoint for IČO search (returns detailed school info)
+                url = 'https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty-rs/vyhledat';
+                body = {
+                    ico: [query]
+                };
+            } else {
+                // Use standard ARES endpoint for name search
+                body = {
+                    obchodniJmeno: query,
+                    pocet: count,
+                    start: start,
+                    razeni: []
+                };
+            }
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) return null;
+            const data: any = await response.json();
+            
+            if (isIco && data.ekonomickeSubjekty && data.ekonomickeSubjekty.length > 0) {
+                // RS endpoint returns nested structure for IČO search:
+                // { ekonomickeSubjekty: [ { icoId: "123", zaznamy: [ { obchodniJmeno: "..." } ] } ] }
+                // We need to flatten this to return the actual school record
+                return data.ekonomickeSubjekty.flatMap((item: any) => item.zaznamy || []);
+            }
+
+            return data.ekonomickeSubjekty || [];
+        } catch (e) {
+            console.error('ARES Search error:', e);
+            return null;
+        }
+    }
+
+    async searchFromIsv(query: string) {
+        try {
+            const today = '2026-02-18';
+            const isIco = /^\d{8}$/.test(query);
+
+            let body: any;
+            if (isIco) {
+                body = {
+                    aplikace: "Schoolingo",
+                    stavKeDni: today,
+                    ico: [query],
+                    zobrazit: "PLATNE"
+                };
+            } else {
+                body = {
+                    aplikace: "Schoolingo",
+                    stavKeDni: today,
+                    nazev: query,
+                    pravniForma: [],
+                    typZrizovatele: [],
+                    spravniUrad: [],
+                    adresaSubjektuKraj: [],
+                    adresaSubjektuKrajLov: [],
+                    adresaSubjektuOkres: [],
+                    adresaSubjektuOkresLov: [],
+                    adresaSubjektuObec: [],
+                    druhSkoly: [],
+                    vyucovaciJazykSkoly: [],
+                    vyukaVCizimJazyce: "VSE",
+                    ovm: "VSE",
+                    skupinaOboru: [],
+                    obor: [],
+                    vyucovaciJazykOboru: [],
+                    formaVzdelavani: [],
+                    kategorieVzdelani: [],
+                    delkaVzdelavani: [],
+                    typMistaVyuky: [],
+                    adresaMistaVyukyObec: [],
+                    adresaMistaVyukyOkres: [],
+                    adresaMistaVyukyOkresLov: [],
+                    adresaMistaVyukyKraj: [],
+                    adresaMistaVyukyKrajLov: [],
+                    zobrazit: "PLATNE"
+                };
+            }
+
+            const response = await fetch('https://isv.gov.cz/rssz/api/v1/sub/vyhledej', {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) return null;
+            const data: any = await response.json();
+            return data.polozky || [];
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
+    }
+}
 export const domainService = new DomainService();

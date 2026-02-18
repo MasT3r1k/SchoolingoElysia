@@ -1764,5 +1764,87 @@
             "success": "Hodina byla úspěšně naplánována",
             "error": "Chyba při plánování hodiny"
         }
+    },
+    "setup": {
+        "title": "Průvodce instalací Schoolingo",
+        "subtitle": "Nastavte svou novou školní instanci v několika krocích",
+        "steps": {
+            "identification": "Identifikace",
+            "school": "Škola",
+            "admin": "Admin",
+            "finish": "Dokončení"
+        },
+        "step1": {
+            "title": "Identifikace školy",
+            "description": "Pro načtení údajů o škole zadejte IČO, nebo zvolte manuální zadání.",
+            "ico_label": "IČO školy",
+            "ico_placeholder": "Zadejte IČO (8 číslic)",
+            "school_search_label": "Hledat školu (Název / IČO / Obec)",
+            "load_ares": "Načíst z ARES",
+            "or": "NEBO",
+            "manual_btn": "Zadat údaje manuálně",
+            "error_ares": "Chyba při komunikaci s ARES",
+            "error_not_found": "Škola nebyla nalezena v ARES",
+            "error_ico_invalid": "Neplatné IČO",
+            "school_search_placeholder": "Zadejte název školy...",
+            "loading": "Načítání...",
+            "no_results": "Žádné školy nebyly nalezeny"
+        },
+        "step2": {
+            "title": "Údaje o škole",
+            "school_name": "Název školy",
+            "country": "Stát",
+            "select_country": "Vyberte stát",
+            "district": "Okres",
+            "select_district": "Vyberte okres",
+            "school_type": "Typ školy",
+            "domain": "Doména",
+            "street": "Ulice",
+            "house_number": "Číslo popisné",
+            "orientation_number": "Číslo orientační",
+            "city": "Město/Obec",
+            "zip": "PSČ",
+            "school_short_name": "Zkrácený název",
+            "identifiers": "Identifikátory",
+            "contact_info": "Kontaktní údaje",
+            "available_branches": "Obory vzdělání",
+            "school_types": {
+                "zakladni": "Základní škola",
+                "stredni": "Střední škola",
+                "gymnazium": "Gymnázium",
+                "sos": "SOŠ",
+                "sps": "SPŠ",
+                "sou": "SOU",
+                "vysoka": "Vysoká škola",
+                "skolka": "Mateřská škola",
+                "zus": "ZUŠ"
+            }
+        },
+        "step3": {
+            "title": "Účet administrátora",
+            "description": "Osoba, která bude mít plný přístup k systému.",
+            "login_settings": "Možnosti přihlášení",
+            "auth_classic": "Klasické přihlášení",
+            "auth_qr": "Přihlášení přes QR kód",
+            "auth_ldap": "Přihlášení přes LDAP",
+            "auth_passkeys": "Passkeys"
+        },
+        "step4": {
+            "title": "Kontrola údajů",
+            "school": "Škola",
+            "address": "Adresa",
+            "domain": "Doména",
+            "admin": "Administrátor",
+            "branches": "Vybrané obory",
+            "location": "Lokalita",
+            "contacts_and_management": "Vedení a Kontakt",
+            "system_and_admin": "Systém a Správce",
+            "login_methods": "Metody přihlášení"
+        },
+        "actions": {
+            "back": "Zpět",
+            "continue": "Pokračovat",
+            "finish": "Dokončit instalaci"
+        }
     }
 }

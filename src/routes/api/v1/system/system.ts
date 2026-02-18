@@ -49,8 +49,6 @@ const app = new Elysia()
           'schools.ico',
           'schools.school_type',
           'schools.izo',
-          'schools.online_enabled',
-          'schools.online_default_platform',
           'schools.gdpr_firstname',
           'schools.gdpr_lastname',
           'schools.gdpr_phone',

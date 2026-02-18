@@ -4,7 +4,7 @@ import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia()
   .derive(async ({ cookie }) => ({
-      user: await getAuthUser(cookie?.token?.value)
+      user: await getAuthUser(cookie?.token?.value as string)
   }))
   // POST /system/update_school - Aktualizace nastavení školy
   .post('/system/update_school', async ({ user, body }) => {
@@ -16,8 +16,7 @@ const app = new Elysia()
     const { 
       name, shortcut, district, lesson_start, lesson_length, break_time, warn_absence, fastlogin, resetPasswordWithEmail, country, red_izo, ico, school_type, izo, 
       online_enabled, online_default_platform, modules,
-      gdpr_firstname, gdpr_lastname, gdpr_phone, gdpr_email, gdpr_mobile, gdpr_databox, gdpr_web,
-      practices_enabled, messages_enabled, tests_enabled, rewards_enabled, tutoring_enabled
+      gdpr_firstname, gdpr_lastname, gdpr_phone, gdpr_email, gdpr_mobile, gdpr_databox, gdpr_web
     } = body;
 
     // Parse lesson_start (HH:MM) to hours and minutes
@@ -52,20 +51,13 @@ const app = new Elysia()
         warningAbsencePercent: warn_absence,
         fastlogin: fastlogin,
         resetPasswordWithEmail: resetPasswordWithEmail,
-        online_enabled: online_enabled ? 1 : 0,
-        online_default_platform,
         gdpr_firstname: gdpr_firstname || '',
         gdpr_lastname: gdpr_lastname || '',
         gdpr_phone: gdpr_phone || '',
         gdpr_email: gdpr_email || '',
         gdpr_mobile: gdpr_mobile || '',
         gdpr_databox: gdpr_databox || '',
-        gdpr_web: gdpr_web || '',
-        practices_enabled: practices_enabled ? 1 : 0,
-        messages_enabled: messages_enabled ? 1 : 0,
-        tests_enabled: tests_enabled ? 1 : 0,
-        rewards_enabled: rewards_enabled ? 1 : 0,
-        tutoring_enabled: tutoring_enabled ? 1 : 0
+        gdpr_web: gdpr_web || ''
       })
       .execute();
 
@@ -95,12 +87,7 @@ const app = new Elysia()
       gdpr_email: t.Optional(t.Nullable(t.String())),
       gdpr_mobile: t.Optional(t.Nullable(t.String())),
       gdpr_databox: t.Optional(t.Nullable(t.String())),
-      gdpr_web: t.Optional(t.Nullable(t.String())),
-      practices_enabled: t.Boolean(),
-      messages_enabled: t.Boolean(),
-      tests_enabled: t.Boolean(),
-      rewards_enabled: t.Boolean(),
-      tutoring_enabled: t.Boolean()
+      gdpr_web: t.Optional(t.Nullable(t.String()))
     })
   });
 

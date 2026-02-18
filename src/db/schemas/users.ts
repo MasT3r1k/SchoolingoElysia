@@ -1,7 +1,7 @@
 import { Generated } from "kysely"
 
 export interface UsersTable {
-  userId: number
+  userId: Generated<number>
   person: number
   username: string
   password: number

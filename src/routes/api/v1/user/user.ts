@@ -72,6 +72,7 @@ const app = new Elysia()
               'users.avatar',
               'users.passwordChanged',
               'users.manager',
+              'users.role',
               'users.locale',
               'users.levels_exp',
               'users.theme',
@@ -105,7 +106,7 @@ const app = new Elysia()
       .limit(1)
       .executeTakeFirst()
 
-      let userType: 'student' | 'teacher' | 'parent' | null = null;
+      let userType: 'student' | 'teacher' | 'parent' | string = tokenDB.role;
       if (perms) {
           if (perms.student !== null) {
               userType = "student";
@@ -120,7 +121,11 @@ const app = new Elysia()
 
       let user: any = tokenDB;
       user.role = userType;
-      user.avatar = JSON.parse(tokenDB.avatar);
+      try {
+        user.avatar = JSON.parse(tokenDB.avatar);
+      } catch (e) {
+        user.avatar = null;
+      }
       user.level = calculateLevelFromXP(tokenDB.levels_exp);
       user.xp = tokenDB.levels_exp - calculatestartXPFromLevel(user.level);
       user.requiredXP = calculateXPForNextLevel(user.level);

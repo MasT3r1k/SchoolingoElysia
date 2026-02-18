@@ -20,7 +20,7 @@ export interface schoolsTable {
   warningAbsencePercent: number
   fastlogin: boolean
   modules: string
-  studentsLimit: number 
+  studentsLimit: number
   gdpr_firstname: string
   gdpr_lastname: string
   gdpr_phone: string
@@ -42,11 +42,4 @@ export interface schoolsTable {
   ico: string
   school_type: string
   izo: string
-  online_enabled: number // boolean
-  online_default_platform: string
-  practices_enabled: number // boolean
-  messages_enabled: number // boolean
-  tests_enabled: number // boolean
-  rewards_enabled: number // boolean
-  tutoring_enabled: number // boolean
 }

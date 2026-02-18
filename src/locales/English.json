@@ -1708,6 +1708,88 @@
             "midtermDate": "Midterm date",
             "setAsCurrent": "Set as active school year",
             "setAsCurrentDesc": "This will automatically deactivate all other school years"
+        },
+        "setup": {
+            "title": "Schoolingo Installation Wizard",
+            "subtitle": "Set up your new school instance in a few steps",
+            "steps": {
+                "identification": "Identification",
+                "school": "School",
+                "admin": "Admin",
+                "finish": "Finish"
+            },
+            "step1": {
+                "title": "School Identification",
+                "description": "Enter the school's ID (IČO) to fetch data from the registry, or choose manual entry.",
+                "ico_label": "School IČO",
+                "ico_placeholder": "Enter IČO (8 digits)",
+                "school_search_label": "Search for school (Name / IČO / City)",
+                "load_ares": "Load from ARES",
+                "or": "OR",
+                "manual_btn": "Enter manually",
+                "error_ares": "Error communicating with ARES",
+                "error_not_found": "School not found in ARES",
+                "error_ico_invalid": "Invalid IČO",
+                "school_search_placeholder": "Enter school name...",
+                "loading": "Loading...",
+                "no_results": "No schools found"
+            },
+            "step2": {
+                "title": "School Details",
+                "school_name": "School Name",
+                "school_short_name": "Short Name",
+                "country": "Country",
+                "select_country": "Select country",
+                "district": "District",
+                "select_district": "Select district",
+                "school_type": "School Type",
+                "domain": "Domain",
+                "street": "Street",
+                "house_number": "House Number",
+                "orientation_number": "Orientation Number",
+                "city": "City/Town",
+                "zip": "ZIP/Postal Code",
+                "identifiers": "Identifiers",
+                "contact_info": "Contact Info",
+                "available_branches": "Available Branches",
+                "school_types": {
+                    "zakladni": "Primary School",
+                    "stredni": "Secondary School",
+                    "gymnazium": "Grammar School",
+                    "sos": "Secondary Professional School",
+                    "sps": "Secondary Industrial School",
+                    "sou": "Vocational School",
+                    "vysoka": "University/Higher Education",
+                    "skolka": "Kindergarten",
+                    "zus": "Art School"
+                }
+            },
+            "step3": {
+                "title": "Admin Account",
+                "description": "The person who will have full access to the system.",
+                "login_settings": "Login Options",
+                "auth_classic": "Classic Login",
+                "auth_qr": "QR Code Login",
+                "auth_ldap": "LDAP Login",
+                "auth_passkeys": "Passkeys"
+            },
+            "step4": {
+                "title": "Confirm Details",
+                "school": "School",
+                "address": "Address",
+                "domain": "Domain",
+                "admin": "Administrator",
+                "branches": "Selected Branches",
+                "location": "Location",
+                "contacts_and_management": "Management & Contact",
+                "system_and_admin": "System & Admin",
+                "login_methods": "Login Methods"
+            },
+            "actions": {
+                "back": "Back",
+                "continue": "Continue",
+                "finish": "Finish Installation"
+            }
         }
     }
 }

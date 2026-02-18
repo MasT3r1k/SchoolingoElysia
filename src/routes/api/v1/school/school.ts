@@ -3,12 +3,17 @@ import { db } from '../../../../../database'
 import moment from 'moment';
 
 const elysiaApp = new Elysia()
-  .get('/school/', async () => {
+  .get('/school/', async ({ school, set }: any) => {
+    if (!school) {
+        set.status = 412;
+        return { error: 'School not configured' };
+    }
+
     const now = moment().format("YYYY-MM-DD");
 
-    const [school, breaks, year] = await Promise.all([
+    const [schoolData, breaks, year] = await Promise.all([
         db.selectFrom("schools")
-        .innerJoin('districts', 'districts.districtId', 'schools.district')
+        .leftJoin('districts', 'districts.districtId', 'schools.district') // Use leftJoin in case district is 0/null
         .select([
             'schools.name',
             'schools.shortName',
@@ -34,12 +39,14 @@ const elysiaApp = new Elysia()
             'schools.gdpr_databox',
             'schools.gdpr_web'
         ])
+        .where('schools.schoolId', '=', school.schoolId)
         .executeTakeFirst(),
         db.selectFrom("school_breaks")
         .select([
             "school_breaks.hour",
             "school_breaks.minutes"
         ])
+        .where('school_breaks.school', '=', school.schoolId)
         .execute(),
         db.selectFrom("school_years")
         .select([
@@ -47,13 +54,13 @@ const elysiaApp = new Elysia()
           'school_years.midterm',
           'school_years.end'
         ])
-        .where('school_years.start', '<=', now)
-        .where('school_years.end', '>=', now)
+        .where('school_years.start', '<=', new Date(now))
+        .where('school_years.end', '>=', new Date(now))
         .executeTakeFirst()
     ])
 
     return Response.json({
-      ...school,
+      ...schoolData,
       year,
       breaks,
       loginExpires: 15000

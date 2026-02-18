@@ -74,9 +74,23 @@ export const app = new Elysia({
   .use(version)
   
   // Authentication & Context Derivation
-  .derive(async ({ cookie }) => {
+  .derive(async ({ request, cookie }) => {
+    // 1. Domain Resolution
+    const origin = request.headers.get('origin') || request.headers.get('host') || '';
+    const domain = origin.replace(/^https?:\/\//, '');
+    
+    const { domainService } = await import('./src/functions/domain.service');
+    const school = await domainService.getSchoolByDomain(domain);
+
+    // 2. User Authentication
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
-    return { user };
+    
+    // 3. School Validation
+    if (user && school && user.school !== school.schoolId) {
+       return { user: null, school };
+    }
+
+    return { user, school };
   })
   
   .use(ws)

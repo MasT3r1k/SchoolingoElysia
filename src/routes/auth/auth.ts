@@ -96,7 +96,12 @@ export async function authenticateUser(userId: number, cookie: any, userAgent: s
 }
 
 const elysiaApp = new Elysia()
-  .post('/auth', async ({ body, store, request, cookie }: any) => {
+  .post('/auth', async ({ body, store, request, cookie, school, set }: any) => {
+    if (!school) {
+        set.status = 412;
+        return Response.json({ error: ['School not configured'] });
+    }
+
     const { username, password, TFA } = body;
     let err = [];
 
@@ -122,6 +127,7 @@ const elysiaApp = new Elysia()
           'passwords.passwordId'
         ])
         .where(sql`LOWER(users.username)`, '=', username.toLowerCase())
+        .where('users.school', '=', school.schoolId)
         .limit(1)
         .executeTakeFirst()
 
