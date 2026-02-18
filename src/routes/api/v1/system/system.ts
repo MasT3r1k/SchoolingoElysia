@@ -15,7 +15,7 @@ const app = new Elysia()
     }
 
 
-    const [school_info, districts, student_count, subjects, scopes, ldap_config, email_config, countries] = await Promise.all([
+    const [school_info, districts, student_count, subjects, scopes, ldap_config, email_config, countries, domains] = await Promise.all([
       // School settings
       db.selectFrom('schools')
         .leftJoin('districts', 'districts.districtId', 'schools.district')
@@ -115,6 +115,10 @@ const app = new Elysia()
       db.selectFrom('countries')
         .select(['countryId', 'nationality', 'code2'])
         .orderBy('nationality', 'asc')
+        .execute(),
+      // School Domains
+      db.selectFrom('school_domains')
+        .select(['domainId', 'domain'])
         .execute()
     ]);
 
@@ -130,7 +134,8 @@ const app = new Elysia()
       countries: countries,
       student_count,
       subjects,
-      scopes
+      scopes,
+      domains: domains || []
     });
   })
 

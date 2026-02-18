@@ -601,8 +601,10 @@
         "edit_lesson": {
             "types": {
                 "substitution": "Suplování",
+                "cancel_substitution": "Zrušit suplování",
                 "cancel": "Zrušit hodinu",
                 "classroom_lesson": "Třídnická hodina",
+                "add_timetable": "Přidat do rozvrhu",
                 "change_timetable": "Změna rozvrhu"
             }
         }

@@ -30,6 +30,7 @@ const elysiaAp = new Elysia()
         group_id,
         subject_id,
         teacher_id,
+        room_id,
         start_date, start_hour,
         end_date, end_hour
     } = body;
@@ -48,9 +49,9 @@ const elysiaAp = new Elysia()
         'substitution.end_date',
         'substitution.end_hour',
     ])
-    .where('substitution.start_date', '=', moment(start_date).format('YYYY-MM-DD'))
+    .where('substitution.start_date', '=', start_date)
     .where('substitution.start_hour', '=', start_hour)
-    .where('substitution.end_date', '=', moment(end_date).format('YYYY-MM-DD'))
+    .where('substitution.end_date', '=', end_date)
     .where('substitution.end_hour', '=', end_hour)
     .where('substitution.groupId', '=', group_id)
     .executeTakeFirst()
@@ -62,9 +63,9 @@ const elysiaAp = new Elysia()
                 subjectId: subject_id,
                 teacherId: teacher_id
             })
-            .where('substitution.start_date', '=', moment(start_date).format('YYYY-MM-DD'))
+            .where('substitution.start_date', '=', start_date)
             .where('substitution.start_hour', '=', start_hour)
-            .where('substitution.end_date', '=', moment(end_date).format('YYYY-MM-DD'))
+            .where('substitution.end_date', '=', end_date)
             .where('substitution.end_hour', '=', end_hour)
             .where('substitution.groupId', '=', group_id)
             .executeTakeFirst();
@@ -74,6 +75,7 @@ const elysiaAp = new Elysia()
                 groupId: group_id,
                 subjectId: subject_id,
                 teacherId: teacher_id,
+                roomId: room_id,
                 start_date,
                 start_hour,
                 end_date,
@@ -90,6 +92,7 @@ const elysiaAp = new Elysia()
         group_id: t.Optional(t.Number()),
         subject_id: t.Optional(t.Nullable(t.Number())),
         teacher_id: t.Optional(t.Nullable(t.Number())),
+        room_id: t.Optional(t.Nullable(t.Number())),
         start_date: t.Optional(t.Date()),
         start_hour: t.Optional(t.Number()),
         end_date: t.Optional(t.Date()),
