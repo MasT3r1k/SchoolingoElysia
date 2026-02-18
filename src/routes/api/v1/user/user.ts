@@ -56,6 +56,17 @@ const app = new Elysia()
         return createErrorResponse('no_user', 'no_cookie');
       }
 
+      // Resolve School from Domain
+      const origin = headers['origin'] || headers['host'] || '';
+      const domain = origin.replace(/^https?:\/\//, '');
+
+      const { domainService } = await import('../../../../functions/domain.service');
+      const school = await domainService.getSchoolByDomain(domain);
+
+      if (!school) {
+        return createErrorResponse('no_school', 'school_not_found');
+      }
+
       const tokenDB = await db.selectFrom("tokens")
           .innerJoin('users', 'users.userId', 'tokens.userId')
           .leftJoin('persons', 'persons.personId', 'users.person')
@@ -73,6 +84,7 @@ const app = new Elysia()
               'users.passwordChanged',
               'users.manager',
               'users.role',
+              'users.school',
               'users.locale',
               'users.levels_exp',
               'users.theme',
@@ -82,6 +94,10 @@ const app = new Elysia()
           .where('tokens.expires', '>=', moment().toDate())
           .limit(1)
           .executeTakeFirst()
+          
+      if (tokenDB && tokenDB.school !== school.schoolId) {
+        return createErrorResponse('invalid_school', 'user_belongs_to_diff_school');
+      }
 
       if (!tokenDB) {
         try {
