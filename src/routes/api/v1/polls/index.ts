@@ -661,78 +661,160 @@ const app = new Elysia({ prefix: '/polls' })
 
     // GET /:id/results - Aggregated results
     .get('/:id/results', async ({ params: { id }, cookie }) => {
-         const token = cookie.token?.value as string;
-         if (!token) return { error: 'no_user', details: 'no_cookie' };
- 
-         const auth = await db.selectFrom('tokens')
-              .leftJoin('users', 'users.userId', 'tokens.userId')
-              .select(['users.person', 'users.manager', 'users.principal'])
-              .where('tokens.token', '=', token)
-              .where('tokens.expires', '>=', new Date())
-              .executeTakeFirst();
-              
-         if (!auth?.person) return { error: 'no_user', details: 'no_db' };
-         
-         const isTeacher = auth.manager !== -1 || auth.principal;
-         
-         if (!isTeacher) { 
+        const token = cookie.token?.value as string;
+        if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+        const auth = await db.selectFrom('tokens')
+            .leftJoin('users', 'users.userId', 'tokens.userId')
+            .select(['users.person', 'users.manager', 'users.principal', 'users.role'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+
+        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+
+        const isTeacher = auth.manager !== -1 || auth.principal || auth.role === 'teacher';
+
+        if (!isTeacher) {
             const submission = await db.selectFrom('poll_responses')
                 .select('id')
                 .where('poll_id', '=', Number(id))
                 .where('student_id', '=', auth.person)
                 .executeTakeFirst();
-            
+
             if (!submission) return { error: 'no_permission', details: 'Submit first' };
-            
+
             const questions = await db.selectFrom('poll_questions').selectAll().where('poll_id', '=', Number(id)).execute();
             const options = await db.selectFrom('poll_options').selectAll().where('question_id', 'in', questions.map(q => q.id)).execute();
-             
-            return { 
+
+            return {
                 questions: questions.map(q => ({
                     ...q,
                     options: options.filter(o => o.question_id === q.id)
                 }))
             };
-         }
+        }
 
-         const responses = await db.selectFrom('poll_responses')
-            .select([
-                'poll_responses.id',
-                'poll_responses.total_score', 
-                'poll_responses.total_max_score', 
-                'poll_responses.percentage',
-                'poll_responses.submitted_at',
-                'poll_responses.student_id',
-            ])
+        // 1. Get all assignments for this poll
+        const assignments = await db.selectFrom('poll_assigns')
+            .selectAll()
             .where('poll_id', '=', Number(id))
             .execute();
 
-         const responsesWithNames = await Promise.all(responses.map(async r => ({
-             ...r,
-             studentId: r.student_id,
-             studentName: await format_person_by_id(r.student_id)
-         })));
+        const assignmentIds = assignments.map(a => a.poll_assign_id);
 
-         const answers = await db.selectFrom('poll_answers')
-            .leftJoin('poll_responses', 'poll_responses.id', 'poll_answers.response_id')
-            .leftJoin('poll_questions', 'poll_questions.id', 'poll_answers.question_id')
-            .select(['poll_answers.question_id', 'poll_answers.points_awarded', 'poll_questions.points as maxPoints'])
-            .where('poll_responses.poll_id', '=', Number(id))
+        if (assignmentIds.length === 0) {
+            // No assignments yet, return only responses (if any)
+            const responses = await db.selectFrom('poll_responses')
+                .select(['id', 'total_score', 'total_max_score', 'percentage', 'submitted_at', 'started_at', 'student_id'])
+                .where('poll_id', '=', Number(id))
+                .execute();
+
+            const responsesWithNames = await Promise.all(responses.map(async r => ({
+                ...r,
+                studentId: r.student_id,
+                studentName: await format_person_by_id(r.student_id),
+                status: r.submitted_at ? 'Finished' : (r.started_at ? 'Started' : 'Not started')
+            })));
+
+            return { responses: responsesWithNames, questionStats: {} };
+        }
+
+        // 2. Get all assigned groups/subjects
+        const recipients = await db.selectFrom('poll_assign_recipients')
+            .selectAll()
+            .where('poll_assign_id', 'in', assignmentIds)
+            .where('assigned', '=', true)
             .execute();
-            
-         const questionStats: Record<number, { correct: number, wrong: number, total: number }> = {};
-         answers.forEach(a => {
-             if (!questionStats[a.question_id]) questionStats[a.question_id] = { correct: 0, wrong: 0, total: 0 };
-             questionStats[a.question_id].total++;
-             const max = a.maxPoints ?? 0;
-             if (a.points_awarded === max && max > 0) {
-                 questionStats[a.question_id].correct++;
-             } else {
-                 questionStats[a.question_id].wrong++;
-             }
-         });
 
-         return { responses: responsesWithNames, questionStats };
+        const uniqueGroupIds = [...new Set(recipients.map(r => r.group_id))];
+
+        // 3. Get all students in these groups
+        let studentIds: number[] = [];
+        if (uniqueGroupIds.length > 0) {
+            const studentsInGroups = await db.selectFrom('student_groups')
+                .select('student')
+                .where('groupId', 'in', uniqueGroupIds)
+                .execute();
+            studentIds = [...new Set(studentsInGroups.map(s => s.student))];
+        }
+
+        // 4. Get all questions for this poll
+        const questions = await db.selectFrom('poll_questions')
+            .selectAll()
+            .where('poll_id', '=', Number(id))
+            .orderBy('order', 'asc')
+            .execute();
+
+        // 5. Get all responses for this poll
+        const submissions = await db.selectFrom('poll_responses')
+            .selectAll()
+            .where('poll_id', '=', Number(id))
+            .execute();
+
+        // 6. Get all answers for these responses
+        const submissionIds = submissions.map(s => s.id);
+        let allAnswers: any[] = [];
+        if (submissionIds.length > 0) {
+            allAnswers = await db.selectFrom('poll_answers')
+                .select(['response_id', 'question_id', 'points_awarded', 'is_manually_graded'])
+                .where('response_id', 'in', submissionIds)
+                .execute();
+        }
+
+        // 7. Process each student
+        const finalResponses = await Promise.all(studentIds.map(async sid => {
+            const submission = submissions.find(s => s.student_id === sid);
+            const studentName = await format_person_by_id(sid);
+
+            let questionResults: { questionId: number, correct: boolean | null, points: number | null }[] = [];
+            
+            questions.forEach(q => {
+                const answer = submission ? allAnswers.find(a => a.response_id === submission.id && a.question_id === q.id) : null;
+                let correct: boolean | null = null;
+                if (answer) {
+                    correct = answer.points_awarded === q.points && q.points > 0;
+                }
+                questionResults.push({
+                    questionId: q.id,
+                    correct,
+                    points: answer ? answer.points_awarded : null
+                });
+            });
+
+            return {
+                id: submission?.id || null,
+                studentId: sid,
+                studentName,
+                total_score: submission?.total_score || 0,
+                total_max_score: submission?.total_max_score || 0,
+                percentage: submission?.percentage || 0,
+                started_at: submission?.started_at || null,
+                submitted_at: submission?.submitted_at || null,
+                status: submission?.submitted_at ? 'Finished' : (submission?.started_at ? 'Started' : 'Not started'),
+                questionResults
+            };
+        }));
+
+        // 8. Calculate question stats
+        const questionStats: Record<number, { correct: number, wrong: number, total: number }> = {};
+        questions.forEach(q => {
+            questionStats[q.id] = { correct: 0, wrong: 0, total: 0 };
+            allAnswers.filter(a => a.question_id === q.id).forEach(a => {
+                questionStats[q.id].total++;
+                if (a.points_awarded === q.points && q.points > 0) {
+                    questionStats[q.id].correct++;
+                } else {
+                    questionStats[q.id].wrong++;
+                }
+            });
+        });
+
+        return { 
+            responses: finalResponses.sort((a, b) => a.studentName.localeCompare(b.studentName)), 
+            questionStats,
+            questionsCount: questions.length
+        };
     }, {
         params: t.Object({
             id: t.String()
@@ -908,6 +990,95 @@ const app = new Elysia({ prefix: '/polls' })
         }),
         body: t.Object({
             teacherId: t.Number()
+        })
+    })
+
+    // GET /:id/shares - Get list of shared teachers
+    .get('/:id/shares', async ({ params: { id }, cookie }) => {
+        const token = cookie.token?.value as string;
+        if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+        const auth = await db
+            .selectFrom('tokens')
+            .leftJoin('users', 'users.userId', 'tokens.userId')
+            .select(['users.person', 'users.manager', 'users.principal'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+
+        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+
+        const pollId = Number(id);
+
+        // Verify ownership/permission
+        const poll = await db
+            .selectFrom('polls')
+            .select(['created_by'])
+            .where('id', '=', pollId)
+            .executeTakeFirst();
+
+        if (!poll) return { error: 'not_found' };
+        if (poll.created_by !== auth.person) return { error: 'no_permission' };
+
+        const sharesList = await db
+            .selectFrom('poll_shares')
+            .select([
+                'poll_shares.poll_share_id as id',
+                'poll_shares.person_id as personId',
+                'poll_shares.added_at',
+                'poll_shares.is_valid',
+            ])
+            .where('poll_id', '=', pollId)
+            .where('is_valid', '=', true)
+            .execute();
+
+        const shares = await Promise.all(sharesList.map(async (s) => ({
+            ...s,
+            teacherName: await format_person_by_id(s.personId)
+        })));
+
+        return { shares };
+    }, {
+        params: t.Object({
+            id: t.String()
+        })
+    })
+
+    // DELETE /:id/shares/:shareId - Remove a share
+    .delete('/:id/shares/:shareId', async ({ params: { id, shareId }, cookie }) => {
+        const token = cookie.token?.value as string;
+        if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+        const auth = await db
+            .selectFrom('tokens')
+            .leftJoin('users', 'users.userId', 'tokens.userId')
+            .select(['users.person'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+
+        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+
+        // Verify ownership
+        const poll = await db
+            .selectFrom('polls')
+            .select(['created_by'])
+            .where('id', '=', Number(id))
+            .executeTakeFirst();
+
+        if (!poll) return { error: 'not_found' };
+        if (poll.created_by !== auth.person) return { error: 'no_permission' };
+
+        await db.updateTable('poll_shares')
+            .set({ is_valid: false })
+            .where('poll_share_id', '=', Number(shareId))
+            .execute();
+
+        return { success: true };
+    }, {
+        params: t.Object({
+            id: t.String(),
+            shareId: t.String()
         })
     })
 

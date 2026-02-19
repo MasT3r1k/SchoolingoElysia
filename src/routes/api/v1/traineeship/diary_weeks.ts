@@ -16,7 +16,7 @@ const app = new Elysia()
       const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'tokens.userId', 'users.userId')
-      .select(['tokens.userId', 'users.person'])
+      .select(['tokens.userId', 'users.person', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', moment().toDate())
       .limit(1)
@@ -96,11 +96,18 @@ const app = new Elysia()
       .where('personId', '=', auth.person)
       .executeTakeFirst()
       if (teacher) {
-        const weeks = await db
+        // Check if user is admin/traineeship manager
+        // manager & 64 (traineeship:manage) or manager == -1
+        const isTraineeshipManager = auth.manager === -1 || (auth.manager && (auth.manager & 64));
+
+        let query = db
         .selectFrom('traineeship_weeks as tw')
         .leftJoin('traineeship_students as ts', 'ts.traineeship', 'tw.trWeekId')
         .leftJoin('student_groups as sg', 'sg.groupId', 'tw.groupId')
+        .leftJoin('groups as g', 'g.groupId', 'tw.groupId')
+        .leftJoin('classes as cl', 'cl.classId', 'g.class')
         .select([
+            'tw.trWeekId',
             'tw.state',
             'tw.start',
             'tw.end',
@@ -116,13 +123,32 @@ const app = new Elysia()
 
             // COUNT DISTINCT student
             sql<number>`COUNT(DISTINCT sg.student)`.as('celkemStudentu')
-        ])
+        ]);
+
+        if (!isTraineeshipManager) {
+            // If they are a teacher, check if they are a class teacher
+            const classTeacherClasses = await db
+                .selectFrom('classes')
+                .select('classId')
+                .where('teacher', '=', teacher.personId)
+                .execute();
+            
+            if (classTeacherClasses.length > 0) {
+                const classIds = classTeacherClasses.map(c => c.classId);
+                query = query.where('cl.classId', 'in', classIds);
+            } else {
+                // If not a class teacher and not manager, return empty
+                return Response.json([]);
+            }
+        }
+
+        const weeks = await query
         .groupBy('tw.trWeekId')
         .orderBy('tw.start', 'desc')
         .execute()
         return Response.json(weeks)
       }
-      return Response.json({});
+      return Response.json([]);
     },
     {
     },

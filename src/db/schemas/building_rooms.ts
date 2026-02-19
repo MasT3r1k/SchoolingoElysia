@@ -5,6 +5,7 @@ export interface Building_roomsTable {
   floor_id: number;
   name: string;
   type: string; // default 'classroom' by DB
+  capacity: number | null;
   pos_x: number;
   pos_y: number;
 }

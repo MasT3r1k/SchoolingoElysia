@@ -69,10 +69,12 @@ const app = new Elysia()
 
       // Student count
       db.selectFrom('students')
-        .innerJoin('users', 'users.person', 'students.personId')
+        .leftJoin('users', 'users.person', 'students.personId')
+        .leftJoin('classes', 'classes.classId', 'students.class')
+        .leftJoin('scopes', 'scopes.scopeId', 'classes.scopeId')
         .select(sql`COUNT(*)`.as('count'))
         .where('students.status', '=', 'active')
-        .where('users.school', '=', schoolId)
+        .where('scopes.school_id', '=', schoolId)
         .executeTakeFirst()
         .then(r => Number(r?.count ?? 0)),
 

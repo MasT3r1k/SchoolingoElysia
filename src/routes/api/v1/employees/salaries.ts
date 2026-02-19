@@ -119,7 +119,7 @@ const salariesRouter = new Elysia()
       role: t.Optional(t.String()),
       salary: t.Number(),
       validFrom: t.String(),
-      validTo: t.Optional(t.String()),
+      validTo: t.Optional(t.Nullable(t.String())),
       currency: t.Optional(t.String()),
       deductions: t.Optional(t.Number()),
     })
@@ -165,7 +165,7 @@ const salariesRouter = new Elysia()
       role: t.Optional(t.String()),
       salary: t.Optional(t.Number()),
       validFrom: t.Optional(t.String()),
-      validTo: t.Optional(t.String()),
+      validTo: t.Optional(t.Nullable(t.String())),
       deductions: t.Optional(t.Number()),
     })
   })

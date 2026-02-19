@@ -8,9 +8,9 @@ const elysiaAp = new Elysia()
   
   .get('/teachers', async({ query, school }: any) => {
     const result = await db.selectFrom('teachers')
-      .innerJoin('users', 'users.person', 'teachers.personId')
+      .leftJoin('users', 'users.person', 'teachers.personId')
       .innerJoin('persons', 'teachers.personId', 'persons.personId')
-      .where('users.school', '=', (school as any).schoolId)
+      .where('teachers.school_id', '=', school.schoolId)
       .select([
           'teachers.personId',
           'persons.firstName',

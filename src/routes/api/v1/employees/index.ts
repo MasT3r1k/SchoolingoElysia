@@ -141,6 +141,8 @@ const employeesRouter = new Elysia()
         'teachers.cabinet',
         sql<string>`(SELECT email FROM emails WHERE emails.personId = persons.personId LIMIT 1)`.as('email'),
         sql<string>`(SELECT number FROM phone_numbers WHERE phone_numbers.personId = persons.personId LIMIT 1)`.as('phone'),
+        'teachers.department',
+        'teachers.contractType',
       ])
       .where((eb) => eb.or([
         eb('users.school', '=', auth.school),
@@ -231,6 +233,8 @@ const employeesRouter = new Elysia()
         fullName,
         'teachers.role',
         'teachers.cabinet',
+        'teachers.department',
+        'teachers.contractType',
         sql<string>`DATE_FORMAT(persons.birthday, '%Y-%m-%d')`.as('dateOfBirth'),
       ])
       .where('teachers.personId', '=', employeeId)
@@ -274,7 +278,7 @@ const employeesRouter = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .select(['tokens.userId', 'users.person', 'users.manager', 'users.school'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -346,7 +350,10 @@ const employeesRouter = new Elysia()
       .values({
         personId: personId,
         role: body.role!,
-        cabinet: body.cabinet || null
+        cabinet: body.cabinet || null,
+        department: body.department || null,
+        contractType: body.contractType || null,
+        school_id: auth.school!
       })
       .execute();
 
@@ -372,6 +379,8 @@ const employeesRouter = new Elysia()
       phoneCode: t.Optional(t.Number()),
       role: t.Optional(t.UnionEnum(['teacher', 'admin_staff', 'maintenance', 'management', 'personnel', 'other'])),
       cabinet: t.Optional(t.Number()),
+      department: t.Optional(t.String()),
+      contractType: t.Optional(t.UnionEnum(['fulltime', 'parttime', 'dpp', 'dpc'])),
       degrees: t.Optional(t.Array(t.Number())),
     })
   })
@@ -385,7 +394,7 @@ const employeesRouter = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .select(['tokens.userId', 'users.person', 'users.manager', 'users.school'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -401,6 +410,7 @@ const employeesRouter = new Elysia()
     const employee = await db.selectFrom('teachers')
       .select('personId')
       .where('personId', '=', employeeId)
+      .where('teachers.school_id', '=', auth.school!)
       .executeTakeFirst();
 
     if (!employee) {
@@ -412,8 +422,11 @@ const employeesRouter = new Elysia()
       .set({
         role: body.role,
         cabinet: body.cabinet,
+        department: body.department,
+        contractType: body.contractType,
       })
       .where('personId', '=', employeeId)
+      .where('school_id', '=', auth.school!)
       .execute();
 
     return Response.json({ success: true, message: 'Employee updated' });
@@ -422,6 +435,8 @@ const employeesRouter = new Elysia()
     body: t.Object({
       role: t.Optional(t.UnionEnum(['teacher', 'admin_staff', 'maintenance', 'management', 'personnel', 'other'])),
       cabinet: t.Optional(t.Number()),
+      department: t.Optional(t.String()),
+      contractType: t.Optional(t.UnionEnum(['fulltime', 'parttime', 'dpp', 'dpc'])),
     })
   })
   // DELETE /employees/:id - Remove employee (admin only)
@@ -434,7 +449,7 @@ const employeesRouter = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .select(['tokens.userId', 'users.person', 'users.manager', 'users.school'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -450,6 +465,7 @@ const employeesRouter = new Elysia()
     const employee = await db.selectFrom('teachers')
       .select('personId')
       .where('personId', '=', employeeId)
+      .where('teachers.school_id', '=', auth.school!)
       .executeTakeFirst();
 
     if (!employee) {
@@ -459,6 +475,7 @@ const employeesRouter = new Elysia()
     // Delete from teachers table
     await db.deleteFrom('teachers')
       .where('personId', '=', employeeId)
+      .where('school_id', '=', auth.school!)
       .execute();
 
     return Response.json({ success: true, message: 'Employee removed' });

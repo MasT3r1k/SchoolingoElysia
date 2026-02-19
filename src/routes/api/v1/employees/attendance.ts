@@ -11,7 +11,7 @@ const attendanceRouter = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .select(['tokens.userId', 'users.person', 'users.manager', 'users.principal'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -19,7 +19,7 @@ const attendanceRouter = new Elysia()
     if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
 
     // Check permissions - only admins can view all
-    const canViewAll = auth.manager == -1;
+    const canViewAll = auth.manager == -1 || auth.principal;
     
     let queryBuilder = db.selectFrom('employee_attendance')
       .leftJoin('teachers', 'employee_attendance.teacherId', 'teachers.personId')
@@ -153,12 +153,13 @@ const attendanceRouter = new Elysia()
     const today = now.toISOString().split('T')[0];
     const timeNow = now.toTimeString().split(' ')[0].substring(0, 5);
 
-    // Find open check-in
+    // Find recent record for today
     const existing = await db.selectFrom('employee_attendance')
-      .select(['attendanceId', 'checkIn'])
+      .select(['attendanceId', 'checkIn', 'checkOut'])
       .where('teacherId', '=', auth.person)
       .where('date', '=', today)
-      .where('checkOut', 'is', null)
+      .orderBy(sql`checkOut IS NULL`, 'desc')
+      .orderBy('checkIn', 'desc')
       .executeTakeFirst();
 
     if (!existing) {

@@ -402,6 +402,9 @@
             "manage_messages": "Message Management",
             "monitoring": "Monitoring",
             "auditlog": "Auditlog"
+        },
+        "architecture": {
+            "title": "School Architecture"
         }
     },
     "user": {
@@ -1804,6 +1807,33 @@
                 "continue": "Continue",
                 "finish": "Finish Installation"
             }
+        }
+    },
+    "architecture": {
+        "dashboard": "Architecture Overview",
+        "buildings": "Buildings",
+        "rooms": "Rooms",
+        "new_building": "New Building",
+        "new_room": "New Room",
+        "building_name": "Building Name",
+        "building_type": "Building Type",
+        "room_name": "Room Name",
+        "room_type": "Room Type",
+        "capacity": "Capacity",
+        "total_buildings": "Total Buildings",
+        "total_rooms": "Total Rooms",
+        "total_hallways": "Total Hallways",
+        "active_objects": "Active Objects",
+        "manage": "Manage",
+        "types": {
+            "school": "School",
+            "canteen": "Canteen",
+            "workshop": "Workshop",
+            "other": "Other",
+            "classroom": "Classroom",
+            "cabinet": "Cabinet",
+            "office": "Office",
+            "hallway": "Hallway"
         }
     }
 }

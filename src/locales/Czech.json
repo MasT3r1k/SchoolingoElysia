@@ -423,6 +423,9 @@
             "manage_messages": "Správa zpráv",
             "monitoring": "Monitorování",
             "auditlog": "Auditlog"
+        },
+        "architecture": {
+            "title": "Architektura školy"
         }
     },
     "user": {
@@ -1851,6 +1854,34 @@
             "back": "Zpět",
             "continue": "Pokračovat",
             "finish": "Dokončit instalaci"
+        }
+    },
+    "architecture": {
+        "title": "Správa budov",
+        "dashboard": "Přehled architektury",
+        "buildings": "Budovy",
+        "rooms": "Místnosti",
+        "new_building": "Nová budova",
+        "new_room": "Nová místnost",
+        "building_name": "Název budovy",
+        "building_type": "Typ budovy",
+        "room_name": "Název místnosti",
+        "room_type": "Typ místnosti",
+        "capacity": "Kapacita",
+        "total_buildings": "Celkem budov",
+        "total_rooms": "Celkem místností",
+        "total_hallways": "Celkem chodeb",
+        "active_objects": "Aktivní objekty",
+        "manage": "Spravovat",
+        "types": {
+            "school": "Škola",
+            "canteen": "Jídelna",
+            "workshop": "Dílna",
+            "other": "Ostatní",
+            "classroom": "Třída",
+            "cabinet": "Kabinet",
+            "office": "Kancelář",
+            "hallway": "Chodba"
         }
     }
 }

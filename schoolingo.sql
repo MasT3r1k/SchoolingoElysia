@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1
--- Vytvořeno: Čtv 19. úno 2026, 15:18
+-- Vytvořeno: Čtv 19. úno 2026, 23:54
 -- Verze serveru: 12.0.2-MariaDB
 -- Verze PHP: 8.2.12
 
@@ -3197,7 +3197,560 @@ INSERT INTO `analytics_visits` (`id`, `user_id`, `visitor_id`, `url`, `path`, `m
 (3050, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 10:17:31', 2),
 (3051, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 10:17:34', 14),
 (3052, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/login', '/login', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 10:17:48', 3),
-(3053, 1, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 10:17:52', NULL);
+(3053, 1, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 10:17:52', NULL),
+(3054, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:31:42', 0),
+(3055, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:31:44', NULL),
+(3056, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:31:44', 10),
+(3057, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:31:55', 0),
+(3058, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:31:56', 5),
+(3059, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:32:01', 0),
+(3060, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:32:02', 5),
+(3061, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/school-years', '/admin/school-years', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:32:07', 0),
+(3062, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/monitoring', '/admin/monitoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:32:08', 34),
+(3063, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/settings', '/system/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:32:43', 22),
+(3064, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/manageusers', '/system/manageusers', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:33:06', 5),
+(3065, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/managemessages', '/system/managemessages', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:33:11', 0),
+(3066, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/managefiles', '/system/managefiles', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:33:11', 5),
+(3067, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/managemessages', '/system/managemessages', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:33:17', 0),
+(3068, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/auditlog', '/system/auditlog', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:33:17', 1),
+(3069, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/monitoring', '/admin/monitoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:33:19', 0),
+(3070, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/school-years', '/admin/school-years', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:33:19', 0),
+(3071, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:46:03', NULL),
+(3072, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:46:03', 0),
+(3073, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:46:04', 0),
+(3074, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:46:04', 0),
+(3075, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:46:05', 0),
+(3076, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:46:05', 1),
+(3077, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:46:06', 0),
+(3078, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:46:07', 0),
+(3079, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:46:08', 0),
+(3080, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:46:08', NULL),
+(3081, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:46:09', 0),
+(3082, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:46:09', 203),
+(3083, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:06:04', 1),
+(3084, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:06:05', 0),
+(3085, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:06:06', 0),
+(3086, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:06:07', 0),
+(3087, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:06:07', 275),
+(3088, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/login?returnUrl=%2Fdashboard', '/login?returnUrl=%2Fdashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:25:45', 61),
+(3089, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:26:47', 522),
+(3090, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:36:38', 0),
+(3091, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:36:39', 0),
+(3092, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:36:39', NULL),
+(3093, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:36:39', 64),
+(3094, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:39:27', 1050),
+(3095, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:14:01', NULL),
+(3096, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:14:01', 6),
+(3097, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:14:07', 1),
+(3098, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:14:08', 0),
+(3099, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:14:09', 0),
+(3100, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:14:10', 6),
+(3101, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:14:16', 424),
+(3102, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:41:59', NULL),
+(3103, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:41:59', 1),
+(3104, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:42:00', 463),
+(3105, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:49:44', 169),
+(3106, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/login?returnUrl=%2Femployees', '/login?returnUrl=%2Femployees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:52:33', 805),
+(3107, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:05:59', 0);
+INSERT INTO `analytics_visits` (`id`, `user_id`, `visitor_id`, `url`, `path`, `method`, `ip_address`, `user_agent`, `timestamp`, `duration`) VALUES
+(3108, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:12:33', NULL),
+(3109, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:12:33', 11),
+(3110, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:12:45', 494),
+(3111, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/login?returnUrl=%2Femployees', '/login?returnUrl=%2Femployees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:21:00', 62),
+(3112, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:22:17', NULL),
+(3113, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:22:18', 63),
+(3114, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:23:21', 0),
+(3115, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:23:22', 1),
+(3116, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:23:23', 0),
+(3117, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:23:23', 3),
+(3118, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:23:27', 0),
+(3119, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:23:29', NULL),
+(3120, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:23:30', NULL),
+(3121, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:23:30', 0),
+(3122, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:34:27', NULL),
+(3123, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:34:27', 2),
+(3124, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:34:30', 0),
+(3125, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:35:47', NULL),
+(3126, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:35:47', 3),
+(3127, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:35:50', 765),
+(3128, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/login', '/login', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 18:54:05', 4),
+(3129, 2, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 18:54:07', NULL),
+(3130, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:25:29', NULL),
+(3131, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:25:29', 0),
+(3132, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/results', '/tests/1/results', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:25:30', 19),
+(3133, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:23', 3),
+(3134, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:26', 0),
+(3135, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:26', NULL),
+(3136, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:26', 0),
+(3137, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:27', 0),
+(3138, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:27', 0),
+(3139, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/educationmeasures', '/marks/educationmeasures', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:28', NULL),
+(3140, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:28', 1),
+(3141, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/supervision', '/schedule/supervision', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:29', 0),
+(3142, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:30', 0),
+(3143, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:30', 0),
+(3144, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:31', 0),
+(3145, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:32', 0),
+(3146, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:33', 0),
+(3147, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:33', 0),
+(3148, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:34', 0),
+(3149, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:35', 1),
+(3150, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:36', 4),
+(3151, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:40', 1),
+(3152, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:41', 1),
+(3153, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/results', '/tests/1/results', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:43', 14),
+(3154, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:58', 0),
+(3155, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:35:58', 1),
+(3156, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/settings', '/system/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:00', 0),
+(3157, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/archive', '/archive', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:00', 0),
+(3158, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/settings', '/user/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:01', 0),
+(3159, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/notifications', '/user/notifications', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:01', 0),
+(3160, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/logins', '/user/logins', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:02', 0),
+(3161, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/devices', '/user/devices', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:02', 0),
+(3162, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/gdpr', '/user/gdpr', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:03', 2),
+(3163, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:05', 0),
+(3164, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:06', 0),
+(3165, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:06', 2),
+(3166, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:09', 0),
+(3167, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:12', 1),
+(3168, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/received', '/messages/received', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:13', 0),
+(3169, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies', '/traineeship/companies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:13', NULL),
+(3170, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/overview', '/traineeship/overview', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:14', 0),
+(3171, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/manage', '/traineeship/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:14', 0),
+(3172, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/calendar', '/calendar', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:16', NULL),
+(3173, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/documents', '/documents', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:16', NULL),
+(3174, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user', '/user', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:16', NULL),
+(3175, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/logins', '/user/logins', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:17', NULL),
+(3176, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/devices', '/user/devices', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:18', NULL),
+(3177, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/notifications', '/user/notifications', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:36:18', 428),
+(3178, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:43:25', 1),
+(3179, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:43:25', 0),
+(3180, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/results', '/tests/1/results', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:43:26', 24),
+(3181, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:43:51', 1),
+(3182, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:43:52', 1),
+(3183, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/assign', '/tests/1/assign', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:43:53', 2),
+(3184, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:43:55', 1),
+(3185, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:43:56', 0),
+(3186, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/results', '/tests/1/results', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:43:57', 59),
+(3187, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:46:52', 1),
+(3188, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:46:53', 2),
+(3189, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/assign', '/tests/1/assign', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:46:55', 2),
+(3190, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:46:57', 1),
+(3191, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:46:58', 0),
+(3192, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:46:59', 0),
+(3193, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:46:59', 0),
+(3194, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:47:00', 0),
+(3195, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:47:00', 0),
+(3196, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:47:00', 1),
+(3197, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:47:02', 0),
+(3198, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/results', '/tests/1/results', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:47:03', 27),
+(3199, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:47:50', 0),
+(3200, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/results', '/tests/1/results', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:47:51', 19),
+(3201, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:48:10', 21),
+(3202, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:48:32', 2),
+(3203, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/edit', '/tests/1/edit', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:48:35', 1),
+(3204, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:48:36', 398),
+(3205, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/results', '/tests/1/results', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:55:34', 7),
+(3206, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:55:41', 4),
+(3207, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/results', '/tests/1/results', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:55:46', 31),
+(3208, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:56:17', 1),
+(3209, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/results', '/tests/1/results', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:56:19', 1),
+(3210, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:56:20', 1),
+(3211, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:56:22', 21),
+(3212, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:56:44', 1),
+(3213, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/results', '/tests/1/results', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:56:45', 67),
+(3214, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:57:53', 17),
+(3215, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/results', '/tests/1/results', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:58:10', 38),
+(3216, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:58:49', 86),
+(3217, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:16', 1),
+(3218, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:17', 0),
+(3219, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:17', 0),
+(3220, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:18', 0),
+(3221, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:18', 0),
+(3222, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:19', 0),
+(3223, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:22', NULL),
+(3224, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/online', '/online', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:23', 0),
+(3225, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/sent', '/messages/sent', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:23', NULL),
+(3226, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/received', '/messages/received', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:23', 0),
+(3227, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/noticeboard', '/messages/noticeboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:23', 0),
+(3228, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/overview', '/traineeship/overview', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:24', 0),
+(3229, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies', '/traineeship/companies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:24', 0),
+(3230, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/manage', '/traineeship/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:25', 0),
+(3231, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user', '/user', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:30', 0),
+(3232, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/documents', '/documents', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:30', NULL),
+(3233, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/calendar', '/calendar', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:30', 1),
+(3234, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:31', 0),
+(3235, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:32', 0),
+(3236, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:32', 0),
+(3237, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:33', 1),
+(3238, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:34', 0),
+(3239, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:35', 2),
+(3240, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:00:38', 53),
+(3241, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:01:32', 157),
+(3242, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:05:42', 1),
+(3243, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:05:43', 1),
+(3244, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/shares', '/tests/1/shares', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:05:45', 10),
+(3245, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:05:56', 9),
+(3246, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:05', 2),
+(3247, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:07', 0),
+(3248, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:08', 0),
+(3249, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:09', 0),
+(3250, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:09', 0),
+(3251, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:10', 1),
+(3252, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/educationmeasures', '/marks/educationmeasures', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:11', 0),
+(3253, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:12', 1),
+(3254, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/supervision', '/schedule/supervision', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:13', 0),
+(3255, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:14', 1),
+(3256, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:15', 1),
+(3257, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:17', 5),
+(3258, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:22', 10),
+(3259, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:32', 0),
+(3260, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:33', 0),
+(3261, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:06:33', 58),
+(3262, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:33', 0),
+(3263, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:33', 6),
+(3264, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:39', 5),
+(3265, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:44', 2),
+(3266, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:47', 1),
+(3267, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:48', 0),
+(3268, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:48', 0),
+(3269, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:49', 0),
+(3270, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:49', 0),
+(3271, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:50', 3),
+(3272, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/educationmeasures', '/marks/educationmeasures', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:54', 0),
+(3273, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:54', 0),
+(3274, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:07:55', 502),
+(3275, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:16:17', 11),
+(3276, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:16:28', 0),
+(3277, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:16:29', 0),
+(3278, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:16:29', 0),
+(3279, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:16:29', 58),
+(3280, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:17:28', 146),
+(3281, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/login?returnUrl=%2Femployees', '/login?returnUrl=%2Femployees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:19:55', 1071),
+(3282, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:37:47', 152),
+(3283, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:02:27', NULL),
+(3284, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:02:27', 6),
+(3285, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:02:34', 0),
+(3286, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:02:35', 0),
+(3287, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:02:35', 0),
+(3288, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:02:35', 3),
+(3289, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:05:26', 2),
+(3290, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:05:29', 504),
+(3291, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:14:15', 1),
+(3292, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:14:15', 0),
+(3293, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:14:16', 0),
+(3294, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:14:17', 56),
+(3295, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:15:14', 1),
+(3296, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:15:15', 0),
+(3297, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:15:16', 52),
+(3298, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:16:09', 4),
+(3299, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:16:13', 121),
+(3300, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:18:21', 10),
+(3301, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:18:31', 0),
+(3302, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:18:32', 3),
+(3303, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:18:35', 4),
+(3304, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:18:39', 0),
+(3305, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:18:40', 3),
+(3306, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:18:43', 1),
+(3307, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:18:45', 0),
+(3308, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/educationmeasures', '/marks/educationmeasures', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:18:45', 360),
+(3309, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:24:51', 1),
+(3310, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:24:52', 0),
+(3311, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:24:53', 1),
+(3312, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/educationmeasures', '/marks/educationmeasures', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:24:54', 0),
+(3313, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:24:55', 1),
+(3314, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/overview', '/traineeship/overview', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:24:56', 0),
+(3315, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies', '/traineeship/companies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:24:56', 0),
+(3316, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/manage', '/traineeship/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:24:57', 1),
+(3317, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/documents', '/documents', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:24:58', 0),
+(3318, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/calendar', '/calendar', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:24:58', 0);
+INSERT INTO `analytics_visits` (`id`, `user_id`, `visitor_id`, `url`, `path`, `method`, `ip_address`, `user_agent`, `timestamp`, `duration`) VALUES
+(3319, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/logins', '/user/logins', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:24:59', 0),
+(3320, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/devices', '/user/devices', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:00', 0),
+(3321, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/notifications', '/user/notifications', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:00', 0),
+(3322, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/gdpr', '/user/gdpr', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:01', 0),
+(3323, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/cookies', '/user/cookies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:01', 0),
+(3324, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/settings', '/user/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:01', 1),
+(3325, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/archive', '/archive', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:02', 0),
+(3326, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/settings', '/system/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:03', 0),
+(3327, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/manageusers', '/system/manageusers', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:03', 1),
+(3328, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/managefiles', '/system/managefiles', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:05', 0),
+(3329, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/managemessages', '/system/managemessages', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:05', 0),
+(3330, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/managefiles', '/system/managefiles', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:06', 1),
+(3331, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/managemessages', '/system/managemessages', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:07', 0),
+(3332, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/auditlog', '/system/auditlog', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:07', 0),
+(3333, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/monitoring', '/admin/monitoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:08', NULL),
+(3334, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/school-years', '/admin/school-years', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:25:08', 19),
+(3335, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/received', '/messages/received', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:28:58', NULL),
+(3336, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:28:58', 1),
+(3337, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user', '/user', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:28:59', 0),
+(3338, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/documents', '/documents', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:00', 0),
+(3339, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/calendar', '/calendar', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:00', 0),
+(3340, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/manage', '/traineeship/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:01', 0),
+(3341, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies', '/traineeship/companies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:01', 0),
+(3342, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/overview', '/traineeship/overview', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:02', 1),
+(3343, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/sent', '/messages/sent', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:03', 0),
+(3344, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/received', '/messages/received', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:03', 0),
+(3345, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:03', 1),
+(3346, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies', '/traineeship/companies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:05', 0),
+(3347, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies/6', '/traineeship/companies/6', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:06', 6),
+(3348, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/monitoring', '/admin/monitoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:12', 0),
+(3349, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/school-years', '/admin/school-years', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:13', 0),
+(3350, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/auditlog', '/system/auditlog', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:13', 0),
+(3351, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/managemessages', '/system/managemessages', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:14', 1),
+(3352, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:15', 0),
+(3353, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/educationmeasures', '/marks/educationmeasures', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:16', 0),
+(3354, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:16', 0),
+(3355, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:17', 0),
+(3356, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:17', 0),
+(3357, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:18', 1),
+(3358, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:19', 0),
+(3359, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:20', 0),
+(3360, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:21', 0),
+(3361, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:22', 1),
+(3362, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:29:23', 1650),
+(3363, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:35', NULL),
+(3364, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:35', 3),
+(3365, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:38', 0),
+(3366, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:39', 0),
+(3367, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:39', 0),
+(3368, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/supervision', '/schedule/supervision', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:40', 0),
+(3369, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:41', 0),
+(3370, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/educationmeasures', '/marks/educationmeasures', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:41', 0),
+(3371, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:42', 0),
+(3372, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:42', 0),
+(3373, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:43', 0),
+(3374, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:43', 2),
+(3375, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:46', 0),
+(3376, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:46', 10),
+(3377, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:05:57', 4),
+(3378, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:06:01', 1),
+(3379, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:06:03', 128),
+(3380, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:08:12', 1),
+(3381, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:08:13', 1),
+(3382, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/assign', '/tests/1/assign', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:08:14', 1),
+(3383, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:08:16', 1),
+(3384, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:08:17', 0),
+(3385, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/results', '/tests/1/results', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:08:18', 9),
+(3386, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests/1/manage', '/tests/1/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:08:27', 53),
+(3387, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/noticeboard', '/messages/noticeboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:21', 2),
+(3388, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/sent', '/messages/sent', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:23', 1),
+(3389, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/received', '/messages/received', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:24', 2),
+(3390, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:26', 0),
+(3391, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:27', 1),
+(3392, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:28', 0),
+(3393, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:29', 0),
+(3394, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:29', 0),
+(3395, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:30', 0),
+(3396, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:30', 0),
+(3397, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/online', '/online', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:31', 4),
+(3398, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:36', 0),
+(3399, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:36', 0),
+(3400, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/supervision', '/schedule/supervision', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:37', 0),
+(3401, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:38', 0),
+(3402, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:38', 1),
+(3403, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:40', 1),
+(3404, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:41', 1),
+(3405, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:09:43', 156),
+(3406, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:17:15', 59),
+(3407, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:18:23', 132),
+(3408, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:17', 0),
+(3409, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:17', 0),
+(3410, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:18', NULL),
+(3411, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:18', 0),
+(3412, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:18', 0),
+(3413, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:19', 2),
+(3414, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:21', 0),
+(3415, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:21', 2),
+(3416, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/online', '/online', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:23', 3),
+(3417, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:27', 3),
+(3418, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/sent', '/messages/sent', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:31', 0),
+(3419, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/received', '/messages/received', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:31', 0),
+(3420, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/noticeboard', '/messages/noticeboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:32', 2),
+(3421, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/overview', '/traineeship/overview', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:35', 0),
+(3422, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies', '/traineeship/companies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:35', 1),
+(3423, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies/new', '/traineeship/companies/new', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:27:37', 101),
+(3424, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies', '/traineeship/companies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:18', 5),
+(3425, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/manage', '/traineeship/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:24', 22),
+(3426, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies', '/traineeship/companies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:46', 0),
+(3427, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/overview', '/traineeship/overview', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:47', 0),
+(3428, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/noticeboard', '/messages/noticeboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:48', 0),
+(3429, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/sent', '/messages/sent', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:49', 0),
+(3430, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/received', '/messages/received', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:49', 0),
+(3431, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:50', 0),
+(3432, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/online', '/online', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:51', 0),
+(3433, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:51', 1),
+(3434, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:53', 0),
+(3435, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:53', 3),
+(3436, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:57', 0),
+(3437, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:57', 1),
+(3438, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:58', 0),
+(3439, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/educationmeasures', '/marks/educationmeasures', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:59', 0),
+(3440, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:29:59', 1),
+(3441, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:00', 0),
+(3442, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:01', 0),
+(3443, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:01', 0),
+(3444, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/supervision', '/schedule/supervision', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:02', 0),
+(3445, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:03', 0),
+(3446, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:04', 27),
+(3447, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:31', 0),
+(3448, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:32', 0),
+(3449, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:32', 0),
+(3450, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:33', 0),
+(3451, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:33', 1),
+(3452, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:35', 5),
+(3453, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:41', 12),
+(3454, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:30:53', 23),
+(3455, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:16', 2),
+(3456, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:19', 1),
+(3457, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:20', 0),
+(3458, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/educationmeasures', '/marks/educationmeasures', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:20', 1),
+(3459, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:22', 4),
+(3460, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:26', 1),
+(3461, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:27', 0),
+(3462, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:28', 0),
+(3463, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:28', 0),
+(3464, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:29', 0),
+(3465, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:29', 0),
+(3466, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:29', 0),
+(3467, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:30', 0),
+(3468, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:31', 0),
+(3469, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:31', 1),
+(3470, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:33', 7),
+(3471, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/overview', '/traineeship/overview', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:40', 3),
+(3472, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies', '/traineeship/companies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:43', 1),
+(3473, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/manage', '/traineeship/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:45', 1),
+(3474, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/calendar', '/calendar', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:46', 0),
+(3475, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/manage', '/traineeship/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:46', 2),
+(3476, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/calendar', '/calendar', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:49', 0),
+(3477, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/documents', '/documents', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:50', 0),
+(3478, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user', '/user', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:50', 2),
+(3479, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/logins', '/user/logins', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:53', 0),
+(3480, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/notifications', '/user/notifications', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:56', NULL),
+(3481, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/devices', '/user/devices', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:56', 2),
+(3482, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:31:59', 3),
+(3483, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:32:02', 0),
+(3484, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:32:03', 1),
+(3485, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students/24', '/students/24', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:32:04', 2),
+(3486, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:32:06', 0),
+(3487, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:32:07', 5),
+(3488, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:32:13', 3),
+(3489, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:32:16', 1),
+(3490, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:32:17', 470),
+(3491, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:41:44', 0),
+(3492, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:41:44', 0),
+(3493, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/supervision', '/schedule/supervision', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:41:45', 0),
+(3494, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:41:46', 0),
+(3495, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/educationmeasures', '/marks/educationmeasures', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:41:46', 26),
+(3496, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:42:12', 0),
+(3497, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/supervision', '/schedule/supervision', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:42:13', 0),
+(3498, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:42:14', 0),
+(3499, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/supervision', '/schedule/supervision', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:42:14', 0),
+(3500, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:43:10', NULL),
+(3501, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:43:10', 0),
+(3502, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:43:11', 0),
+(3503, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:43:12', 0),
+(3504, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:43:12', 0),
+(3505, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:43:13', 61),
+(3506, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:44:15', 1),
+(3507, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:44:16', 0),
+(3508, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:44:17', 0),
+(3509, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:44:17', 1),
+(3510, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:44:19', 3),
+(3511, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:44:22', 0),
+(3512, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:44:22', 0),
+(3513, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:44:23', 39),
+(3514, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:45:07', 2),
+(3515, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:45:10', 0),
+(3516, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:45:10', 1),
+(3517, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:45:12', 0),
+(3518, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:45:12', 131),
+(3519, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:24', 0),
+(3520, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:24', 0),
+(3521, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:25', 0),
+(3522, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:26', 3),
+(3523, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:29', 1),
+(3524, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:30', 0),
+(3525, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:30', 0),
+(3526, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:31', 0);
+INSERT INTO `analytics_visits` (`id`, `user_id`, `visitor_id`, `url`, `path`, `method`, `ip_address`, `user_agent`, `timestamp`, `duration`) VALUES
+(3527, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:31', 0),
+(3528, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:32', 9),
+(3529, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:42', 0),
+(3530, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:43', 0),
+(3531, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:43', 0),
+(3532, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:43', 0),
+(3533, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:43', 0),
+(3534, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:47:44', 0),
+(3535, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:15', NULL),
+(3536, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:15', 0),
+(3537, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:15', 0),
+(3538, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:16', 0),
+(3539, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:16', 6),
+(3540, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:22', 0),
+(3541, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:23', 0),
+(3542, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/supervision', '/schedule/supervision', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:24', 0),
+(3543, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:24', 12),
+(3544, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_subject', '/schedule/template_subject', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:38', 0),
+(3545, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/builder', '/schedule/builder', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:38', 0),
+(3546, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/supervision', '/schedule/supervision', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:38', 1),
+(3547, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:40', 0),
+(3548, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/educationmeasures', '/marks/educationmeasures', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:40', 0),
+(3549, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:41', 0),
+(3550, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:42', 1),
+(3551, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:43', 0),
+(3552, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:43', 0),
+(3553, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:43', 0),
+(3554, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:43', 0),
+(3555, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/online', '/online', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:44', 0),
+(3556, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:45', 0),
+(3557, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/received', '/messages/received', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:45', NULL),
+(3558, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/sent', '/messages/sent', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:45', 0),
+(3559, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/noticeboard', '/messages/noticeboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:46', 0),
+(3560, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/overview', '/traineeship/overview', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:47', 0),
+(3561, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies', '/traineeship/companies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:47', 0),
+(3562, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/manage', '/traineeship/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:47', 0),
+(3563, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/documents', '/documents', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:48', 0),
+(3564, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/calendar', '/calendar', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:49', 1),
+(3565, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user', '/user', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:50', 1),
+(3566, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/logins', '/user/logins', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:51', 0),
+(3567, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/devices', '/user/devices', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:52', 0),
+(3568, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/notifications', '/user/notifications', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:52', 0),
+(3569, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/gdpr', '/user/gdpr', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:53', 0),
+(3570, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/cookies', '/user/cookies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:53', 0),
+(3571, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/settings', '/user/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:54', 0),
+(3572, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/archive', '/archive', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:55', 0),
+(3573, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/settings', '/system/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:48:58', NULL),
+(3574, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/manageusers', '/system/manageusers', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:49:01', NULL),
+(3575, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/system/settings', '/system/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:49:01', 90),
+(3576, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/settings', '/user/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:50:59', 2),
+(3577, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/gdpr', '/user/gdpr', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:02', 0),
+(3578, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/notifications', '/user/notifications', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:02', 0),
+(3579, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/devices', '/user/devices', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:03', 0),
+(3580, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/logins', '/user/logins', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:03', 0),
+(3581, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user', '/user', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:04', 1),
+(3582, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/documents', '/documents', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:05', 0),
+(3583, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/manage', '/traineeship/manage', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:06', 0),
+(3584, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/companies', '/traineeship/companies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:06', 0),
+(3585, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/traineeship/overview', '/traineeship/overview', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:07', 0),
+(3586, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:07', 0),
+(3587, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/received', '/messages/received', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:08', 0),
+(3588, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/sent', '/messages/sent', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:08', 0),
+(3589, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/noticeboard', '/messages/noticeboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:09', 0),
+(3590, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:09', 0),
+(3591, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:10', 0),
+(3592, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:11', 0),
+(3593, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/rewards', '/teach/rewards', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:11', 3),
+(3594, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:15', 0),
+(3595, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:16', 0),
+(3596, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:16', 0),
+(3597, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:17', 0),
+(3598, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:17', 0),
+(3599, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:17', 4),
+(3600, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:21', 0),
+(3601, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:51:22', 0),
+(3602, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/tests', '/tests', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:53:36', NULL),
+(3603, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/online', '/online', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 22:53:36', NULL);
 
 -- --------------------------------------------------------
 
@@ -3267,15 +3820,16 @@ INSERT INTO `backups` (`backupId`, `filename`, `size`, `type`, `status`, `create
 CREATE TABLE `buildings` (
   `building_id` int(11) NOT NULL,
   `name` text NOT NULL,
-  `type` enum('school','canteen','workshop','other') NOT NULL DEFAULT 'school'
+  `type` enum('school','canteen','workshop','other') NOT NULL DEFAULT 'school',
+  `school_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 --
 -- Vypisuji data pro tabulku `buildings`
 --
 
-INSERT INTO `buildings` (`building_id`, `name`, `type`) VALUES
-(1, 'Hlavní budova', 'school');
+INSERT INTO `buildings` (`building_id`, `name`, `type`, `school_id`) VALUES
+(1, 'Hlavní budova', 'school', 1);
 
 -- --------------------------------------------------------
 
@@ -4259,7 +4813,7 @@ INSERT INTO `employee_attendance` (`attendanceId`, `teacherId`, `date`, `checkIn
 (10, 4, '2026-02-13', '21:03', NULL, 0, 0, 'regular', NULL, 0, NULL),
 (11, 4, '2026-02-14', '11:20', '19:53', 0, 513, 'regular', NULL, 0, NULL),
 (12, 4, '2026-02-14', '20:18', '21:41', 0, 83, 'regular', NULL, 0, NULL),
-(13, 4, '2026-02-19', '11:08', '19:00', 30, 442, 'regular', '', 0, NULL);
+(13, 4, '2026-02-19', '11:08', '20:08', 30, 510, 'regular', '', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -4304,7 +4858,14 @@ INSERT INTO `employee_vacation_balance` (`balanceId`, `teacherId`, `year`, `enti
 (3, 7, 2026, 25, 0, 25),
 (4, 10, 2026, 25, 0, 25),
 (5, 5, 2026, 25, 0, 25),
-(6, 20, 2026, 25, 0, 25);
+(6, 20, 2026, 25, 0, 25),
+(7, 36, 2026, 25, 0, 25),
+(8, 17, 2026, 25, 0, 25),
+(9, 2, 2026, 25, 0, 25),
+(10, 6, 2026, 25, 0, 25),
+(11, 8, 2026, 25, 0, 25),
+(12, 34, 2026, 25, 0, 25),
+(13, 21, 2026, 25, 0, 25);
 
 -- --------------------------------------------------------
 
@@ -6838,7 +7399,14 @@ INSERT INTO `login_history` (`loginId`, `userId`, `type`, `success`, `error`, `i
 INSERT INTO `login_history` (`loginId`, `userId`, `type`, `success`, `error`, `ip`, `token_id`, `userAgent`, `created`, `city`, `zip_code`, `region_name`, `country`, `country_code`, `continent`, `continent_code`) VALUES
 (1760, 1, 'password', 1, NULL, '195.113.101.227', 1718, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 10:50:05.552540', 'Ostrava', '710 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
 (1761, 1, 'password', 1, NULL, '195.113.101.227', 1719, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 11:05:53.468263', 'Ostrava', '710 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
-(1762, 1, 'password', 1, NULL, '195.113.101.227', 1720, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 11:07:08.686501', 'Ostrava', '710 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL);
+(1762, 1, 'password', 1, NULL, '195.113.101.227', 1720, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 11:07:08.686501', 'Ostrava', '710 00', 'Moravskoslezský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1763, 4, 'password', 1, NULL, '109.164.51.14', 1721, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 14:31:28.517519', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1764, 4, 'password', 1, NULL, '109.164.51.14', 1722, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 15:26:46.764455', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1765, 4, 'password', 1, NULL, '109.164.51.14', 1723, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:05:58.949323', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1766, 4, 'password', 1, NULL, '109.164.51.14', 1724, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:22:16.044602', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1767, 2, 'password', 1, NULL, '109.164.51.14', 1725, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 18:54:07.030240', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1768, 4, 'password', 1, NULL, '109.164.51.14', 1726, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:25:27.320509', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(1769, 4, 'password', 1, NULL, '109.164.51.14', 1727, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:37:46.432066', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -10218,6 +10786,7 @@ CREATE TABLE `subjects` (
   `label` text NOT NULL,
   `shortcut` varchar(6) NOT NULL,
   `isMain` tinyint(1) NOT NULL DEFAULT 0,
+  `isClassTime` tinyint(1) NOT NULL DEFAULT 0,
   `primaryHours` text NOT NULL,
   `school_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -10226,44 +10795,44 @@ CREATE TABLE `subjects` (
 -- Vypisuji data pro tabulku `subjects`
 --
 
-INSERT INTO `subjects` (`subjectId`, `label`, `shortcut`, `isMain`, `primaryHours`, `school_id`) VALUES
-(1, 'Anglický jazyk', 'AJ1', 0, '', 1),
-(2, 'Český jazyk a literatura', 'CJL', 0, '', 1),
-(3, 'Něměcký jazyk', 'NJ2', 0, '', 1),
-(4, 'Občanská nauka', 'OBN', 0, '', 1),
-(5, 'Dějepis', 'DEJ', 0, '', 1),
-(6, 'Matematika', 'MAT', 0, '', 1),
-(7, 'Fyzika', 'FYZI', 0, '', 1),
-(8, 'Chemie', 'CHE', 0, '', 1),
-(9, 'Základy ekologie', 'ZEK', 0, '', 1),
-(10, 'Ekonomika', 'EKOI', 0, '', 1),
-(11, 'Informační a komunikační technologie', 'ICT', 0, '', 1),
-(12, 'Tělesná výchova', 'TEV', 0, '', 1),
-(13, 'Základy elektrotechniky', 'ZAE', 0, '', 1),
-(14, 'Elektrotechnická zařízení', 'EZ', 0, '', 1),
-(15, 'Elektronika', 'ELT', 0, '', 1),
-(16, 'Mikroprocesorová technika', 'MIT', 0, '', 1),
-(17, 'Praktická cvičení ', 'PRAE', 0, '', 1),
-(18, 'Přenosové a automatické systémy', 'PAS', 0, '', 1),
-(19, 'Elektrotechnická měření', 'ELM', 0, '', 1),
-(20, 'Technické kreslení ', 'TEK', 0, '', 1),
-(21, 'Strojní systémy', 'STS', 0, '', 1),
-(22, 'Elektronické řídící systémy', 'ERS', 0, '', 1),
-(23, 'Automatizační cvičení', 'AUC', 0, '', 1),
-(24, 'Komerční elektronické systémy', 'KES', 0, '', 1),
-(25, 'Obnovitelné zdroje', 'OBZ', 0, '', 1),
-(26, 'Elektronické systémy budov', 'ESB', 0, '', 1),
-(27, 'Anglická konverzace', 'AJK', 0, '', 1),
-(28, 'Německá konverzace', 'NJK', 0, '', 1),
-(29, 'Hardware', 'HW', 0, '', 1),
-(30, 'Počítačové sítě', 'PS', 0, '', 1),
-(31, 'Programování a vývoj aplikací ', 'PVA', 0, '', 1),
-(32, 'Aplikační software', 'APS', 0, '', 1),
-(33, 'Operační systémy', 'OSY', 0, '', 1),
-(34, 'Praktická cvičení', 'PRAI', 0, '', 1),
-(35, 'Kybernetická bezpečnost systémů', 'KBS', 0, '', 1),
-(36, 'Anglický jazyk odborný', 'AJO', 0, '', 1),
-(37, 'Třídnícká hodina', 'TH', 0, '', 1);
+INSERT INTO `subjects` (`subjectId`, `label`, `shortcut`, `isMain`, `isClassTime`, `primaryHours`, `school_id`) VALUES
+(1, 'Anglický jazyk', 'AJ1', 0, 0, '', 1),
+(2, 'Český jazyk a literatura', 'CJL', 0, 0, '', 1),
+(3, 'Něměcký jazyk', 'NJ2', 0, 0, '', 1),
+(4, 'Občanská nauka', 'OBN', 0, 0, '', 1),
+(5, 'Dějepis', 'DEJ', 0, 0, '', 1),
+(6, 'Matematika', 'MAT', 0, 0, '', 1),
+(7, 'Fyzika', 'FYZI', 0, 0, '', 1),
+(8, 'Chemie', 'CHE', 0, 0, '', 1),
+(9, 'Základy ekologie', 'ZEK', 0, 0, '', 1),
+(10, 'Ekonomika', 'EKOI', 0, 0, '', 1),
+(11, 'Informační a komunikační technologie', 'ICT', 0, 0, '', 1),
+(12, 'Tělesná výchova', 'TEV', 0, 0, '', 1),
+(13, 'Základy elektrotechniky', 'ZAE', 0, 0, '', 1),
+(14, 'Elektrotechnická zařízení', 'EZ', 0, 0, '', 1),
+(15, 'Elektronika', 'ELT', 0, 0, '', 1),
+(16, 'Mikroprocesorová technika', 'MIT', 0, 0, '', 1),
+(17, 'Praktická cvičení ', 'PRAE', 0, 0, '', 1),
+(18, 'Přenosové a automatické systémy', 'PAS', 0, 0, '', 1),
+(19, 'Elektrotechnická měření', 'ELM', 0, 0, '', 1),
+(20, 'Technické kreslení ', 'TEK', 0, 0, '', 1),
+(21, 'Strojní systémy', 'STS', 0, 0, '', 1),
+(22, 'Elektronické řídící systémy', 'ERS', 0, 0, '', 1),
+(23, 'Automatizační cvičení', 'AUC', 0, 0, '', 1),
+(24, 'Komerční elektronické systémy', 'KES', 0, 0, '', 1),
+(25, 'Obnovitelné zdroje', 'OBZ', 0, 0, '', 1),
+(26, 'Elektronické systémy budov', 'ESB', 0, 0, '', 1),
+(27, 'Anglická konverzace', 'AJK', 0, 0, '', 1),
+(28, 'Německá konverzace', 'NJK', 0, 0, '', 1),
+(29, 'Hardware', 'HW', 0, 0, '', 1),
+(30, 'Počítačové sítě', 'PS', 0, 0, '', 1),
+(31, 'Programování a vývoj aplikací ', 'PVA', 0, 0, '', 1),
+(32, 'Aplikační software', 'APS', 0, 0, '', 1),
+(33, 'Operační systémy', 'OSY', 0, 0, '', 1),
+(34, 'Praktická cvičení', 'PRAI', 0, 0, '', 1),
+(35, 'Kybernetická bezpečnost systémů', 'KBS', 0, 0, '', 1),
+(36, 'Anglický jazyk odborný', 'AJO', 0, 0, '', 1),
+(37, 'Třídnícká hodina', 'TH', 0, 1, '', 1);
 
 -- --------------------------------------------------------
 
@@ -10296,8 +10865,7 @@ INSERT INTO `substitution` (`substitutionId`, `groupId`, `start_date`, `start_ho
 (3, 9, '2024-11-19', -1, '2024-11-19', 0, NULL, NULL, NULL, 1, '2024-11-18 20:41:11', NULL),
 (4, NULL, '2026-06-28', -1, '2026-08-31', -1, 'holiday', NULL, NULL, 1, '2025-06-30 16:56:09', 1),
 (6, 9, '2025-12-01', 1, '2025-12-01', 1, NULL, 1, 15, 1, '2025-12-03 13:53:00', NULL),
-(7, 9, '2026-02-16', 1, '2026-02-16', 1, NULL, 36, 15, 1, '2026-02-16 19:12:23', NULL),
-(8, 10, '2026-02-16', 3, '2026-02-16', 3, NULL, 35, 3, 1, '2026-02-16 20:46:03', NULL);
+(7, 9, '2026-02-16', 1, '2026-02-16', 1, NULL, 36, 15, 1, '2026-02-16 19:12:23', NULL);
 
 -- --------------------------------------------------------
 
@@ -10323,7 +10891,8 @@ CREATE TABLE `supervisions` (
 CREATE TABLE `supervision_places` (
   `placeId` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL
+  `description` text DEFAULT NULL,
+  `school_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -10353,9 +10922,9 @@ CREATE TABLE `teachers` (
 INSERT INTO `teachers` (`personId`, `cabinet`, `role`, `employeeNumber`, `department`, `contractType`, `startDate`, `endDate`, `status`, `hoursPerWeek`, `school_id`) VALUES
 (2, 1, 'teacher', NULL, NULL, NULL, NULL, NULL, 'active', 40, 1),
 (3, 1, 'teacher', NULL, NULL, NULL, NULL, NULL, 'active', 40, 1),
-(4, 1, 'teacher', NULL, NULL, NULL, NULL, NULL, 'active', 40, 1),
+(4, 1, 'teacher', NULL, 'IT', 'fulltime', NULL, NULL, 'active', 40, 1),
 (5, 1, 'teacher', NULL, NULL, NULL, NULL, NULL, 'active', 40, 1),
-(6, 1, 'teacher', NULL, NULL, NULL, NULL, NULL, 'active', 40, 1),
+(6, 1, 'teacher', NULL, 'IT', 'fulltime', NULL, NULL, 'active', 40, 1),
 (7, 1, 'teacher', NULL, NULL, NULL, NULL, NULL, 'active', 40, 1),
 (8, 1, 'teacher', NULL, NULL, NULL, NULL, NULL, 'active', 40, 1),
 (9, 1, 'teacher', NULL, NULL, NULL, NULL, NULL, 'active', 40, 1),
@@ -11661,7 +12230,14 @@ INSERT INTO `tokens` (`tokenId`, `token`, `password`, `userAgent`, `expires`, `c
 (1717, '$2b$04$QHEPdxtGb5g.pdUEQprB8ec2UMlXgH2Kjq/Ow9aZ1YhhGzjBAQaH2', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 11:48:59.483000', '2026-02-19 11:17:51.815000', 1, NULL, '195.113.101.227'),
 (1718, '$2b$04$Ae/xDxtVlblUzAVVNMtUbeiOTp/2OiUhvC0ssEplfQja/67URHZjC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 12:05:06.423000', '2026-02-19 11:50:05.499000', 1, NULL, '195.113.101.227'),
 (1719, '$2b$04$SFo6SYiAaZTDi6FVR1LqiOglWq5h.7bVC9D5BTa6UInUAdMs42VL.', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 12:05:56.158000', '2026-02-19 12:05:53.443000', 1, NULL, '195.113.101.227'),
-(1720, '$2b$04$12b.LKWgo2JjgLFls22z7uFB15TG1K.DCoG/FthiCHUAi4oHx8Hvu', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 12:39:34.172000', '2026-02-19 12:07:08.663000', 1, NULL, '195.113.101.227');
+(1720, '$2b$04$12b.LKWgo2JjgLFls22z7uFB15TG1K.DCoG/FthiCHUAi4oHx8Hvu', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-02-19 12:39:34.172000', '2026-02-19 12:07:08.663000', 1, NULL, '195.113.101.227'),
+(1721, '$2b$04$YcFUsJsO.N1BTCM9jdBaA.LL2BeXohQXETCCYhjbAAgdlRsQRpu1q', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 16:40:44.980000', '2026-02-19 15:31:28.510000', 4, NULL, '109.164.51.14'),
+(1722, '$2b$04$9Cy2zrZpwT53ey6uL.9P1O5EwAUM/TsTuc4xt14kiiKcET8wsmvF6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 17:52:33.565000', '2026-02-19 16:26:46.757000', 4, NULL, '109.164.51.14'),
+(1723, '$2b$04$7e3ULx8A8ZsNPRMqUj53v.xK706M9cdVIkrn7uuSQEFMnS6oZ8Dyq', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 18:35:59.766000', '2026-02-19 18:05:58.944000', 4, NULL, '109.164.51.14'),
+(1724, '$2b$04$Kj1AJmABOJdDo7joSFkCkestST5aNOpMZKX7JDK1aJ.7l7ozsUaSa', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 19:54:02.866000', '2026-02-19 18:22:16.038000', 4, NULL, '109.164.51.14'),
+(1725, '$2b$04$FYA.id5VnVtr9zSOQv2XSOq64BnNH2gFMOaVH/cwxl4HoksRskxhi', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 20:16:40.926000', '2026-02-19 19:54:07.024000', 2, NULL, '109.164.51.14'),
+(1726, '$2b$04$FOV1qsxoHBcQf4NkdctJMuys.R9l2hq0JF2NWme/RstxtTyRfUfX2', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-19 21:19:54.805000', '2026-02-19 20:25:27.314000', 4, NULL, '109.164.51.14'),
+(1727, '$2b$04$ShuFSxh0/CGsWOnJZ5FrK.l7Kqvaq4..AvJhRPwMwNg4/bzwGj.D2', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0', '2026-02-20 00:08:36.577000', '2026-02-19 21:37:46.423000', 4, NULL, '109.164.51.14');
 
 -- --------------------------------------------------------
 
@@ -12110,7 +12686,8 @@ ALTER TABLE `backups`
 -- Indexy pro tabulku `buildings`
 --
 ALTER TABLE `buildings`
-  ADD PRIMARY KEY (`building_id`);
+  ADD PRIMARY KEY (`building_id`),
+  ADD KEY `school_id` (`school_id`);
 
 --
 -- Indexy pro tabulku `building_exits`
@@ -12809,7 +13386,8 @@ ALTER TABLE `supervisions`
 -- Indexy pro tabulku `supervision_places`
 --
 ALTER TABLE `supervision_places`
-  ADD PRIMARY KEY (`placeId`);
+  ADD PRIMARY KEY (`placeId`),
+  ADD KEY `supervision_places_ibfk_1` (`school_id`);
 
 --
 -- Indexy pro tabulku `teachers`
@@ -12979,7 +13557,7 @@ ALTER TABLE `addresses`
 -- AUTO_INCREMENT pro tabulku `analytics_visits`
 --
 ALTER TABLE `analytics_visits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3054;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3604;
 
 --
 -- AUTO_INCREMENT pro tabulku `auditlog`
@@ -13129,7 +13707,7 @@ ALTER TABLE `employee_bonuses`
 -- AUTO_INCREMENT pro tabulku `employee_vacation_balance`
 --
 ALTER TABLE `employee_vacation_balance`
-  MODIFY `balanceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `balanceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT pro tabulku `employee_vacation_requests`
@@ -13273,7 +13851,7 @@ ALTER TABLE `library_reservations`
 -- AUTO_INCREMENT pro tabulku `login_history`
 --
 ALTER TABLE `login_history`
-  MODIFY `loginId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1763;
+  MODIFY `loginId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1770;
 
 --
 -- AUTO_INCREMENT pro tabulku `marking_scales`
@@ -13513,7 +14091,7 @@ ALTER TABLE `timetable_schemas`
 -- AUTO_INCREMENT pro tabulku `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1721;
+  MODIFY `tokenId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1728;
 
 --
 -- AUTO_INCREMENT pro tabulku `traineeship_companies`
@@ -13615,6 +14193,12 @@ ALTER TABLE `auditlog`
 --
 ALTER TABLE `backups`
   ADD CONSTRAINT `backups_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`schoolId`);
+
+--
+-- Omezení pro tabulku `buildings`
+--
+ALTER TABLE `buildings`
+  ADD CONSTRAINT `buildings_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`schoolId`);
 
 --
 -- Omezení pro tabulku `building_exits`
@@ -14095,6 +14679,12 @@ ALTER TABLE `substitution`
 ALTER TABLE `supervisions`
   ADD CONSTRAINT `fk_supervisions_place` FOREIGN KEY (`placeId`) REFERENCES `supervision_places` (`placeId`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_supervisions_teacher` FOREIGN KEY (`teacherId`) REFERENCES `persons` (`personId`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Omezení pro tabulku `supervision_places`
+--
+ALTER TABLE `supervision_places`
+  ADD CONSTRAINT `supervision_places_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`schoolId`);
 
 --
 -- Omezení pro tabulku `teachers`
