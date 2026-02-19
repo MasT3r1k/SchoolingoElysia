@@ -830,6 +830,7 @@
         "scopes_inappropriate": "Nevhodné",
         "responsible_person": "Zodpovědná osoba",
         "instructor": "Instruktor",
+        "instructor_detail": "Podrobnosti o instruktorovi",
         "edit_instructor": "Upravit instruktor",
         "remove_instructor": "Smazat instruktor",
         "new_instructor": "Nový instruktor",

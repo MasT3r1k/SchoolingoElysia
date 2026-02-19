@@ -117,7 +117,7 @@ const employeesRouter = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager', 'users.school'])
+      .select(['tokens.userId', 'users.person', 'users.manager', 'users.school', 'users.principal'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -125,7 +125,7 @@ const employeesRouter = new Elysia()
     if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
 
     // Check permissions - only admins can view all
-    const canViewAll = auth.manager == -1;
+    const canViewAll = auth.manager == -1 || auth.principal;
     
     let queryBuilder = db.selectFrom('teachers')
       .leftJoin('persons', 'teachers.personId', 'persons.personId')
@@ -142,7 +142,10 @@ const employeesRouter = new Elysia()
         sql<string>`(SELECT email FROM emails WHERE emails.personId = persons.personId LIMIT 1)`.as('email'),
         sql<string>`(SELECT number FROM phone_numbers WHERE phone_numbers.personId = persons.personId LIMIT 1)`.as('phone'),
       ])
-      .where('users.school', '=', auth.school)
+      .where((eb) => eb.or([
+        eb('users.school', '=', auth.school),
+        eb('teachers.school_id', '=', auth.school)
+      ]))
 
     // Search by name
     if (query.search) {

@@ -12,4 +12,5 @@ export interface TeachersTable {
   endDate: Generated<string | null>
   status: Generated<'active' | 'inactive' | 'terminated'>
   hoursPerWeek: Generated<number | null>
+  school_id: number;
 }
