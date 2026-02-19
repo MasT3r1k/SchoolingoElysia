@@ -341,6 +341,15 @@
         "trash": "Odebrat absenci",
         "overview_absence": "Přehled absence"
     },
+    "working_mode": {
+        "inability_to_work": "Pracovní neschopnost",
+        "vacation": "Dovolená",
+        "school_event": "Školní akce",
+        "education": "Vzdělávání",
+        "business_trip": "Pracovní cesta",
+        "personal_obstacle": "Osobní překážka",
+        "other": "Jiné"
+    },
     "sidebar": {
         "library": {
             "main": "Knihovna",
@@ -654,6 +663,13 @@
         "download_file": "Stáhnout soubor",
         "save_file": "Uložit soubor",
         "save_folder": "Uložit složku"
+    },
+    "rewards": {
+        "status": {
+            "all": "Všechny",
+            "pending": "K vyzvednutí",
+            "collected": "Vyzvednuto"
+        }
     },
     "classbook": {
         "class_service": "Pořádková služba",
@@ -1334,7 +1350,8 @@
         "free_time": "Volná hodina",
         "end_class": "Konec vyučování",
         "no_class": "Žádná výuka",
-        "no_class_desc": "Tento den není důvod chodit do školy."
+        "no_class_desc": "Tento den není důvod chodit do školy.",
+        "timetable_working_mode": "Pracovní režim"
     },
     "components": {
         "datalist": {
