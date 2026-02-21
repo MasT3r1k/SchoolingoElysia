@@ -2,7 +2,7 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 
 const app = new Elysia()
-  .post('/marks/teacher/marking_scale_create', async ({ cookie, body }) => {
+  .post('/marks/teacher/marking_scale_create', async ({ cookie, body }: any) => {
     const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
@@ -21,13 +21,13 @@ const app = new Elysia()
         return { error: 'invalid_grades' };
     }
 
-    // validace tokenu → získání teacher.personId
+    // validace tokenu → získání teacher.person_id
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
         'users.role'
       ])
       .where('tokens.token', '=', token)
@@ -43,7 +43,7 @@ const app = new Elysia()
 
       const new_marking_scale = await db.insertInto("marking_scales")
       .values({
-        teacher_id: auth.person || null,
+        teacher_id: auth.person_id || null,
         is_default: false,
         name: name == "" ? null : name,
         grade_1_min: grades[0],

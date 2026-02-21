@@ -9,13 +9,13 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.tokenId', 'tokens.userId', 'users.person', 'users.manager', 'users.principal'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.token_id', 'tokens.user_id', 'users.person_id', 'users.manager', 'users.principal'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     // === Check permissions ===
     if (auth.manager != -1 && auth.principal == false) return { error: 'no_permission' };
@@ -23,13 +23,22 @@ const app = new Elysia()
     // === Check school ===
     const school = await db.selectFrom('schools')
     .select([
-        'schoolId'
+        'school_id'
     ])
     .executeTakeFirst();
     if (!school) return { error: 'invalid_school' };
 
     // === Get Body ===
-    const { scopeId, name, shortcut, code, years, students_per_class, number_of_classes, subjects } = body;
+    const {
+      scopeId,
+      name,
+      shortcut,
+      code,
+      years,
+      students_per_class,
+      number_of_classes,
+      subjects
+    } = body;
 
     try {
       let subjects_sql_builder: any = [];
@@ -43,7 +52,8 @@ const app = new Elysia()
           code,
           years,
           students_per_class,
-          number_of_classes
+          number_of_classes,
+          school_id: school.school_id
         })
         .executeTakeFirst();
 
@@ -69,9 +79,9 @@ const app = new Elysia()
         // === Check if scope is valid ===
         const scope = await db.selectFrom('scopes')
         .select([
-          'scopes.scopeId'
+          'scopes.scope_id'
         ])
-        .where('scopes.scopeId', '=', scopeId)
+        .where('scopes.scope_id', '=', scopeId)
         .executeTakeFirst();
 
         if (!scope) return { error: 'invalid_scope' };
@@ -85,7 +95,7 @@ const app = new Elysia()
           students_per_class,
           number_of_classes
         })
-        .where('scopes.scopeId', '=', scopeId)
+        .where('scopes.scope_id', '=', scopeId)
         .executeTakeFirst();
 
         // === Update subjects ===

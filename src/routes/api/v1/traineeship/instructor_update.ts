@@ -14,8 +14,8 @@ const app = new Elysia()
 
       const auth = await db
         .selectFrom('tokens')
-        .leftJoin('users', 'tokens.userId', 'users.userId')
-        .select(['tokens.userId', 'users.person', 'users.role'])
+        .leftJoin('users', 'tokens.user_id', 'users.user_id')
+        .select(['tokens.user_id', 'users.person_id', 'users.role'])
         .where('tokens.token', '=', token)
         .where('tokens.expires', '>=', moment().toDate())
         .limit(1)
@@ -40,7 +40,7 @@ const app = new Elysia()
         await db
           .updateTable('traineeship_instructors')
           .set({
-            firstname,
+            first_name,
             lastname,
             email,
             phone,
@@ -48,7 +48,7 @@ const app = new Elysia()
             status: status as "active" | "deleted",
             last_updated: moment().toDate()
           })
-          .where('instructorId', '=', instructorId)
+          .where('instructor_id', '=', instructorId)
           .execute();
 
         return Response.json({ status: 'success' });

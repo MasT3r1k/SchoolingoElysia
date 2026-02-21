@@ -12,9 +12,9 @@ const elysiaApp = new Elysia()
     if (!token) return Response.json({ error: 'no_user', details: 'no_cookie' });
 
     const user = await db.selectFrom("tokens")
-      .innerJoin('users', 'users.userId', 'tokens.userId')
-      .innerJoin("passwords", "passwords.passwordId", "users.password")
-      .select(['users.userId', 'users.username'])
+      .innerJoin('users', 'users.user_id', 'tokens.user_id')
+      .innerJoin("passwords", "passwords.password_id", 'users.password_id')
+      .select(['users.user_id', 'users.username'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', moment().toDate())
       .limit(1)
@@ -30,8 +30,8 @@ const elysiaApp = new Elysia()
     // Získání dat z DB/session (např. challenge, user atd.)
     const expectedChallenge = await db.selectFrom("webauthn_challenges")
     .select(["challenge"])
-    .where("userId", '=', user.userId)
-    .orderBy("createdAt", "desc")
+    .where("user_id", '=', user.user_id)
+    .orderBy("created_at", "desc")
     .limit(1)
     .executeTakeFirst();
 
@@ -66,7 +66,7 @@ const elysiaApp = new Elysia()
       } = registrationInfo;
 
       await db.insertInto('users_credentials').values({
-        userId: user.userId,
+        user_id: user.user_id,
         credential_id: credentialID,
         public_key: Buffer.from(credentialPublicKey).toString('base64'),
         counter,

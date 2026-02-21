@@ -1,7 +1,7 @@
 import { Generated } from "kysely";
 
 export interface OnlineLessonsTable {
-  lessonId: Generated<number>;
+  lesson_id: Generated<number>;
   school: number;
   title: string;
   description: string | null;

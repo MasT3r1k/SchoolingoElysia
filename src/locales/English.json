@@ -1308,7 +1308,9 @@
         "free_time": "Free period",
         "end_class": "End of classes",
         "no_class": "No classes",
-        "no_class_desc": "No reason to go to school on this day."
+        "no_class_desc": "No reason to go to school on this day.",
+        "room_timetable": "Room timetable",
+        "no_lessons": "No lessons to display"
     },
     "components": {
         "datalist": {
@@ -1810,21 +1812,65 @@
         }
     },
     "architecture": {
+        "title": "Architecture Management",
         "dashboard": "Architecture Overview",
         "buildings": "Buildings",
         "rooms": "Rooms",
-        "new_building": "New Building",
-        "new_room": "New Room",
-        "building_name": "Building Name",
-        "building_type": "Building Type",
-        "room_name": "Room Name",
-        "room_type": "Room Type",
-        "capacity": "Capacity",
+        "inventory": "School Inventory",
+        "inventory_desc": "Complete inventory of assets and their movements across the school.",
+        "rooms_desc": "Management of rooms within the school campus.",
         "total_buildings": "Total Buildings",
         "total_rooms": "Total Rooms",
-        "total_hallways": "Total Hallways",
-        "active_objects": "Active Objects",
-        "manage": "Manage",
+        "total_hallways": "Control Points",
+        "new_building": "New Building",
+        "new_room": "New Room",
+        "new_item": "New Item",
+        "edit_room": "Edit Room",
+        "edit_item": "Edit Item",
+        "room_name": "Room Name",
+        "room_type": "Room Type",
+        "room_manager": "Room Manager",
+        "capacity": "Capacity",
+        "building_floor": "Building & Floor",
+        "room_description_label": "Room Description",
+        "unassigned_room": "Warehouse (Unassigned)",
+        "no_manager": "No Manager",
+        "inventory_fields": {
+            "name": "Item Name",
+            "category": "Category",
+            "serial_number": "Serial Number",
+            "status": "Status",
+            "room": "Room",
+            "acquisition_date": "Acquisition Date",
+            "purchase_price": "Purchase Price",
+            "description": "Description/Note"
+        },
+        "inventory_status": {
+            "active": "Active",
+            "broken": "Broken",
+            "discarded": "Discarded",
+            "maintenance": "Under maintenance"
+        },
+        "empty": {
+            "inventory": "No inventory items found",
+            "inventory_desc": "Start by adding your first item to the inventory.",
+            "rooms": "No rooms found",
+            "rooms_desc": "Start by adding your first room."
+        },
+        "placeholders": {
+            "item_name": "e.g. Epson L520 Projector, Wooden Chair...",
+            "category": "e.g. Electronics, Furniture...",
+            "serial_number": "SN / Serial Number",
+            "room_description": "Optional description..."
+        },
+        "history": {
+            "title": "Item History",
+            "empty": "No history found for this item.",
+            "created": "created the item",
+            "moved": "moved the item from %from% to %to%",
+            "status_updated": "changed status to %status%",
+            "data_updated": "updated item data"
+        },
         "types": {
             "school": "School",
             "canteen": "Canteen",

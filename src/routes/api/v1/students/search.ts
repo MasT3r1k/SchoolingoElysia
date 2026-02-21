@@ -1,66 +1,20 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
-import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../../../index';
-
-const titlesBefore = db.selectFrom('persons_degree as pd')
-  .innerJoin('degrees as d', 'pd.degree', 'd.degreeID')
-  .select([
-      'pd.person as person',
-      sql`TRIM(GROUP_CONCAT(d.shortcut ORDER BY d.weight SEPARATOR ' '))`.as('titles_before')
-  ])
-  .where('d.isBefore', '=', true)
-  .groupBy('pd.person')
-  .as('tb')
-
-const titlesAfter = db.selectFrom('persons_degree as pd')
-  .innerJoin('degrees as d', 'pd.degree', 'd.degreeID')
-  .select([
-      'pd.person as person',
-      sql`TRIM(GROUP_CONCAT(d.shortcut ORDER BY d.weight SEPARATOR ' '))`.as('titles_after')
-  ])
-  .where('d.isBefore', '=', false)
-  .groupBy('pd.person')
-  .as('ta');
-
-const fullName = sql`
-  concat(
-      COALESCE(
-      CASE WHEN tb.titles_before IS NULL OR tb.titles_before = '' THEN ''
-      ELSE CONCAT(tb.titles_before, ' ')
-      END,
-      ''
-      ),
-      persons.firstName, ' ', persons.lastName,
-      COALESCE(
-      CASE WHEN ta.titles_after IS NULL OR ta.titles_after = '' THEN ''
-      ELSE CONCAT(' ', ta.titles_after)
-      END,
-      ''
-      )
-  )
-  `.as('fullName')
+import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 
 const elysiaAp = new Elysia()
   .post('/students/search', async({ body }) => {
     let queryBuilder = db.selectFrom('students')
-      .leftJoin('persons', 'students.personId', 'persons.personId')
-      .leftJoin('classes', 'students.class', 'classes.classId')
-      .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
-      .leftJoin(
-        titlesBefore,
-        'tb.person',
-        'persons.personId'
-      )
-      .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
-      .leftJoin('scopes', 'scopes.scopeId', 'classes.scopeId')
+      .leftJoin('persons', 'students.person_id', 'persons.person_id')
+      .leftJoin('classes', 'students.class_id', 'classes.class_id')
+      .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
+      .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
       .select([
-        'persons.personId',
-        'persons.firstName',
-        'persons.lastName',
-        fullName,
-        sql<string>`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className'),
+        'persons.person_id',
+        'persons.first_name',
+        'persons.last_name',
+        sql<string>`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('class_name'),
         sql<number>`TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1`.as('year'),
       ])
 
@@ -68,32 +22,28 @@ const elysiaAp = new Elysia()
     if (body.search) {
       const search = `%${body.search}%`;
       queryBuilder = queryBuilder.where((eb) => eb.or([
-        eb('persons.firstName', 'like', search),
-        eb('persons.lastName', 'like', search),
+        eb('persons.first_name', 'like', search),
+        eb('persons.last_name', 'like', search),
       ]))
     }
 
     if (body.status && body.status !== 'all') {
-      // API expects 'active', 'former', 'suspended'
-      // DB stores... let's assume it matches or map it.
-      // Based on frontend 'mapStatus', DB might have different values.
-      // Assuming 'active', 'archive' (former), 'suspended'.
       let dbStatus = body.status;
       queryBuilder = queryBuilder.where('students.status', '=', dbStatus);
     }
 
     if (body.classId) {
-       queryBuilder = queryBuilder.where('classes.classId', '=', body.classId);
+       queryBuilder = queryBuilder.where('classes.class_id', '=', body.classId);
     }
 
-    if (body.scopeId) {
-      queryBuilder = queryBuilder.where('classes.scopeId', '=', body.scopeId);
+    if (body.scope_id) {
+      queryBuilder = queryBuilder.where('classes.scope_id', '=', body.scope_id);
     }
     
     // Sort
     queryBuilder = queryBuilder
-      .orderBy('persons.lastName', 'asc')
-      .orderBy('persons.firstName', 'asc')
+      .orderBy('persons.last_name', 'asc')
+      .orderBy('persons.first_name', 'asc')
 
     // Count Total (using a subquery to handle HAVING clauses)
     const countResult = await db.selectFrom(queryBuilder.as('filtered_students'))
@@ -108,8 +58,17 @@ const elysiaAp = new Elysia()
       .offset(body.offset!)
       .execute();
 
+    const personIds = results.map(r => r.person_id).filter((id): id is number => id !== null);
+    const formattedNames = await format_people_by_ids(personIds);
+    const personNameMap = new Map(personIds.map((id, i) => [id, formattedNames[i]]));
+
+    const data = results.map(r => ({
+      ...r,
+      full_name: r.person_id ? personNameMap.get(r.person_id) : `${r.first_name} ${r.last_name}`
+    }));
+
     return Response.json({
-      data: results,
+      data,
       meta: {
         total,
         page: Math.floor(body.offset! / body.limit!) + 1,

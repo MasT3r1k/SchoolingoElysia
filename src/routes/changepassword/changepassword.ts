@@ -18,10 +18,10 @@ const elysiaApp = new Elysia()
     }
 
     const user = await db.selectFrom("tokens")
-        .innerJoin('users', 'users.userId', 'tokens.userId')
-        .innerJoin("passwords", "passwords.passwordId", "users.password")
+        .innerJoin('users', 'users.user_id', 'tokens.user_id')
+        .innerJoin("passwords", 'passwords.password_id', 'users.password_id')
         .select([
-            'users.userId',
+            'users.user_id',
             'users.username',
             'users.2fa',
             'users.2fa_secret',
@@ -74,7 +74,7 @@ const elysiaApp = new Elysia()
           return Response.json({ error: ["Missing 2FA"] });
         }
 
-        const isApproved2FA = await verifyTFA(TFA, user.userId);
+        const isApproved2FA = await verifyTFA(TFA, user.user_id);
         if (!isApproved2FA) return Response.json({ error: ['Invalid TFA code'] });
       }
 
@@ -90,16 +90,16 @@ const elysiaApp = new Elysia()
         const passwordId = parseInt(passwordQuery.insertId?.toString()!);
 
         db.updateTable("users")
-        .set("users.password", passwordId)
+        .set('users.password_id', passwordId)
         .set("users.passwordChanged", sql`NOW()`)
         .set('users.recommendChangePassword', false)
-        .where('users.userId', '=', user.userId)
+        .where('users.user_id', '=', user.user_id)
         .limit(1)
         .execute();
 
         db.insertInto("auditlog")
         .values({
-          userId: user.userId,
+          user_id: user.user_id,
           type: 'change_password',
           data: {}
         });

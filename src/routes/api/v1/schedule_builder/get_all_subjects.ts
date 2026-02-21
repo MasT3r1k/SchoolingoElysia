@@ -1,13 +1,11 @@
 import { Elysia } from 'elysia';
 import { db } from "../../../../../database";
-import { rateLimit } from 'elysia-rate-limit';
-import { app } from '../../../../../index';
 import moment from 'moment';
-import { format_person_by_id } from '../../../../functions/format_person_by_id';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const elysiaApp = new Elysia()
   
-  .get('/schedule/all_subjects', async ({ cookie }) => {
+  .get('/schedule/all_subjects', async ({ cookie }: any) => {
     const token = cookie.token?.value as string;
     if (!token) {
       return Response.json({ error: 'no_user', details: 'no_cookie' });
@@ -15,10 +13,10 @@ const elysiaApp = new Elysia()
 
     // === Najdeme uživatele podle tokenu
     const user = await db.selectFrom("tokens")
-      .innerJoin('users', 'users.userId', 'tokens.userId')
-      .innerJoin("passwords", "passwords.passwordId", "users.password")
+      .innerJoin('users', 'users.user_id', 'tokens.user_id')
+      .innerJoin("passwords", "passwords.password_id", 'users.password_id')
       .select([
-        'users.userId',
+        'users.user_id',
         'users.username',
         'users.2fa',
         'users.2fa_secret',
@@ -36,45 +34,58 @@ const elysiaApp = new Elysia()
     // === Načteme předměty s učiteli
     const rows = await db
       .selectFrom('subjects')
-      .leftJoin('teachers_subject', 'teachers_subject.subject_id', 'subjects.subjectId')
-      .leftJoin('teachers', 'teachers.personId', 'teachers_subject.teacher_id') // uprav název tabulky podle DB
-      .leftJoin('persons', 'persons.personId', 'teachers.personId')
+      .leftJoin('teachers_subject', 'teachers_subject.subject_id', 'subjects.subject_id')
+      .leftJoin('teachers', 'teachers.person_id', 'teachers_subject.teacher_id')
+      .leftJoin('persons', 'persons.person_id', 'teachers.person_id')
       .select([
-        'subjects.subjectId',
-        'subjects.label as subjectName',
-        'subjects.shortcut as subjectShort',
-        'teachers.personId as teacherId'
+        'subjects.subject_id',
+        'subjects.label as subject_name',
+        'subjects.shortcut as subject_short',
+        'teachers.person_id as teacher_id'
       ])
       .execute();
 
+    // Collect all unique teacher IDs
+    const teacherIds = Array.from(new Set(rows.map(r => r.teacher_id).filter((id): id is number => id !== null)));
+    
+    // Fetch all teacher names at once
+    const teacherNameMap = teacherIds.length > 0 ? await format_person_map_by_ids(teacherIds) : new Map<number, string>();
+
     // === Seskupíme učitele k jednotlivým předmětům
-    const subjectsMap: Record<string, any> = {};
-    const teachersMap: Record<string, any> = {};
+    const subjectsMap: Record<number, any> = {};
+    const teachersList: Record<number, any> = {};
+
     for (const row of rows) {
-      if (!subjectsMap[row.subjectId]) {
-        subjectsMap[row.subjectId] = {
-          subjectId: row.subjectId,
-          subjectName: row.subjectName,
-          subjectShort: row.subjectShort,
+      if (!subjectsMap[row.subject_id]) {
+        subjectsMap[row.subject_id] = {
+          subject_id: row.subject_id,
+          subject_name: row.subject_name,
+          subject_short: row.subject_short,
           teachers: []
         };
       }
-      if (row.teacherId) {
-        teachersMap[row.teacherId] = {
-          teacherId: row.teacherId,
-          teacherName: await format_person_by_id(row.teacherId)
+      if (row.teacher_id) {
+        const teacherName = teacherNameMap.get(row.teacher_id) || '';
+        if (!teachersList[row.teacher_id]) {
+            teachersList[row.teacher_id] = {
+                teacher_id: row.teacher_id,
+                teacher_name: teacherName
+            };
         }
-        subjectsMap[row.subjectId].teachers.push({
-          teacherId: row.teacherId,
-          teacherName: await format_person_by_id(row.teacherId)
-        });
+        
+        // Avoid duplicates in subjects.teachers
+        if (!subjectsMap[row.subject_id].teachers.some((t: any) => t.teacher_id === row.teacher_id)) {
+            subjectsMap[row.subject_id].teachers.push({
+                teacher_id: row.teacher_id,
+                teacher_name: teacherName
+            });
+        }
       }
     }
 
     const subjects = Object.values(subjectsMap)
-    const teachers = teachersMap
 
-    return { subjects, teachers };
+    return { subjects, teachers: teachersList };
   });
 
 export default elysiaApp;

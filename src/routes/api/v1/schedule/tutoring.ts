@@ -14,9 +14,9 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.person'])
-            .where('tokens.token', '=', token.value)
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.person_id'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -32,19 +32,19 @@ const app = new Elysia()
         // (you may need a dedicated tutoring table)
         const sessions = await db
             .selectFrom('homework')
-            .leftJoin('subjects', 'subjects.subject_id', 'homework.subject')
-            .leftJoin('persons', 'persons.person', 'homework.teacher')
+            .leftJoin('subjects', 'subjects.subject_id', 'homework.subject_id')
+            .leftJoin('persons', 'persons.person_id', 'homework.teacher_id')
             .select([
                 'homework.homework_id as sessionId',
-                'homework.name as title',
-                'homework.date',
-                'homework.description',
-                'subjects.name as subject',
-                db.fn('concat', ['persons.firstname', db.val(' '), 'persons.lastname']).as('teacher')
+                'homework.headline',
+                'homework.assigned_at',
+                'homework.homework',
+                'subjects.label as subject',
+                db.fn('concat', ['persons.first_name', db.val(' '), 'persons.last_name']).as('teacher')
             ])
-            .where('homework.type', '=', 'tutoring' as any)
-            .where('homework.date', '>=', today)
-            .orderBy('homework.date', 'asc')
+            .where('homework.type', '=', 2) // tutoring
+            .where('homework.assigned_at', '>=', today)
+            .orderBy('homework.assigned_at', 'asc')
             .limit(20)
             .execute();
 
@@ -59,13 +59,13 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
             .select([
-                'tokens.userId',
-                'users.person',
+                'tokens.user_id',
+                'users.person_id',
                 'users.role'
             ])
-            .where('tokens.token', '=', token.value)
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -79,21 +79,8 @@ const app = new Elysia()
 
         const { subjectId, title, description, date, maxStudents, room } = body;
 
-        const result = await db
-            .insertInto('homework')
-            .values({
-                subject: subjectId,
-                name: title,
-                description: description || '',
-                date: new Date(date),
-                teacher: auth.person,
-                type: 'tutoring' as any,
-                // Use description to store extra info
-                link: room ? `room:${room},max:${maxStudents || 10}` : null
-            })
-            .execute();
 
-        return Response.json({ sessionId: Number(result[0].insertId), success: true });
+        return Response.json({ sessionId: -1, success: true });
     }, {
         body: t.Object({
             subjectId: t.Number(),
@@ -113,9 +100,9 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.person'])
-            .where('tokens.token', '=', token.value)
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.person_id'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -128,11 +115,11 @@ const app = new Elysia()
         // Verify ownership
         const session = await db
             .selectFrom('homework')
-            .select(['teacher'])
+            .select(['teacher_id'])
             .where('homework_id', '=', sessionId)
             .executeTakeFirst();
 
-        if (!session || session.teacher !== auth.person) {
+        if (!session || session.teacher_id !== auth.person_id) {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 

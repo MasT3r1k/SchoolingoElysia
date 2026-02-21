@@ -51,16 +51,16 @@ const elysiaApp = new Elysia()
         // Log user history
         db.insertInto("login_history")
         .values({
-            userId: credential.userId,
+            user_id: credential.user_id,
             success: true,
             type: 'passkey',
             ip,
-            userAgent: request.headers.get("user-agent") || null
+            user_agent: request.headers.get("user-agent") || null
         })
         .execute()
 
         const res = await authenticateUser(
-          credential.userId,
+          credential.user_id,
           cookie,
           request.headers.get('user-agent'),
           ip

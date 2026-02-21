@@ -9,7 +9,7 @@ const app = new Elysia()
   // POST /system/update_login - Update Authentication Settings
   .post('/system/update_login', async ({ user, body }) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.isPrincipal) {
+    if (user.manager !== -1 && !user.is_principal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
@@ -30,7 +30,7 @@ const app = new Elysia()
         auth_ldap: auth_ldap ? 1 : 0,
         fastlogin: auth_qr ? true : false,
         auth_passkeys: auth_passkeys ? 1 : 0,
-        resetPasswordWithEmail: reset_password_with_email ? true : false,
+        reset_password_with_email: reset_password_with_email ? true : false,
         session_lifetime_minutes,
         max_login_attempts
       })

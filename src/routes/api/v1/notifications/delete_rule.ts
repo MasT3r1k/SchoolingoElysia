@@ -10,23 +10,23 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
     ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     const { id } = params;
 
     await db
       .deleteFrom('notification_rules')
       .where('rule_id', '=', Number(id))
-      .where('user_id', '=', auth.userId)
+      .where('user_id', '=', auth.user_id)
       .execute();
 
     return Response.json({ success: true });

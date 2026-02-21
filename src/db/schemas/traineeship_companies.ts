@@ -1,22 +1,24 @@
+import { Generated } from "kysely"
+
 export interface Traineeship_companiesTable {
-  companyId: number
+  company_id: Generated<number>
   name: string
-  addressOffice: number
-  addressTrainee: number
-  countryCode: string
+  address_office: number
+  address_trainee: number
+  country_code: string
   ico: string
   dic: string
-  vatId: string
-  web: string | null
-  rp_firstName: string | null
-  rp_lastName: string | null
-  phone: string | null
-  email: string | null
-  status: 'request' | 'approved' | 'deleted' | 'acceptable'
-  requested: string | null // timestamp
-  created: string // timestamp
-  contact: string | null
-  description: string | null
-  activity: string | null
-  equipment: string | null
+  vat_id: string
+  web: Generated<string | null>
+  rp_first_name: Generated<string | null>
+  rp_last_name: Generated<string | null>
+  phone: Generated<string | null>
+  email: Generated<string | null>
+  status: Generated<'request' | 'approved' | 'deleted' | 'acceptable'>;
+  requested: Generated<Date | null> 
+  created: Generated<Date>
+  contact: Generated<string | null>
+  description: Generated<string | null>
+  activity: Generated<string | null>
+  equipment: Generated<string | null>
 }

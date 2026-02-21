@@ -10,10 +10,10 @@ const app = new Elysia()
 
     const user = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
     ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
@@ -37,7 +37,7 @@ const app = new Elysia()
       .updateTable('notification_rules')
       .set(updateData)
       .where('rule_id', '=', Number(id))
-      .where('user_id', '=', user.userId)
+      .where('user_id', '=', user.user_id)
       .execute();
 
     return Response.json({ success: true });

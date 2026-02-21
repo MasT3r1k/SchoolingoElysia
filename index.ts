@@ -86,7 +86,7 @@ export const app = new Elysia({
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     
     // 3. School Validation
-    if (user && school && user.school !== school.schoolId) {
+    if (user && school && user.school_id !== school.school_id) {
        return { user: null, school };
     }
 
@@ -204,6 +204,18 @@ async function loadFolder(folder: string = modulePath) {
         }
     } catch (err) {
         console.warn('[Update] Scheduler init failed (likely missing column):', err);
+    }
+
+    // Initialize Heartbeat Service
+    try {
+        const { heartbeatService } = await import('./src/functions/heartbeat.service');
+        await heartbeatService.start();
+
+        // Graceful shutdown
+        process.on('SIGTERM', async () => { await heartbeatService.stop(); process.exit(0); });
+        process.on('SIGINT',  async () => { await heartbeatService.stop(); process.exit(0); });
+    } catch (err) {
+        console.warn('[Heartbeat] Service init failed:', err);
     }
 
   } catch (error) {

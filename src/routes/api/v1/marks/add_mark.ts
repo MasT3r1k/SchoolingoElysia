@@ -5,7 +5,7 @@ import { MainConfig } from '../../../../config/main.config';
 
 const app = new Elysia().post(
   '/marks/add_mark',
-  async ({ cookie, body }) => {
+  async ({ cookie, body }: any) => {
     const token = cookie.token?.value as string;
     const { column_id, student_id, mark, description } = body;
     if (!token) {
@@ -14,10 +14,10 @@ const app = new Elysia().post(
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'tokens.userId', 'users.userId')
+      .leftJoin('users', 'tokens.user_id', 'users.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
         'users.role'
       ])
       .where('tokens.token', '=', token)
@@ -33,15 +33,15 @@ const app = new Elysia().post(
       return Response.json({ error: 'no_permission' });
     }
 
-    if (column_id == undefined || isNaN(column_id)) {
+    if (column_id === undefined || isNaN(column_id)) {
       return Response.json({ error: 'invalid_column_id' });
     }
 
-    if (student_id == undefined || isNaN(student_id)) {
+    if (student_id === undefined || isNaN(student_id)) {
       return Response.json({ error: 'invalid_student_id' });
     }
 
-    if (mark == undefined) {
+    if (mark === undefined) {
       return Response.json({ error: 'invalid_mark' });
     }
 
@@ -52,7 +52,7 @@ const app = new Elysia().post(
     }
 
     if (
-      mark_number == undefined ||
+      mark_number === undefined ||
       mark_number < MainConfig.MIN_MARK ||
       mark_number > MainConfig.MAX_MARK ||
       !MainConfig.ALLOWED_MARKS.includes(mark_number)
@@ -63,8 +63,8 @@ const app = new Elysia().post(
     // Check column
     const column = await db
       .selectFrom('grades_columns')
-      .select('gcId')
-      .where('gcId', '=', column_id)
+      .select('column_id')
+      .where('column_id', '=', column_id)
       .executeTakeFirst();
 
     if (!column) {
@@ -72,22 +72,23 @@ const app = new Elysia().post(
     }
 
     const checkGrade = await db.selectFrom('grades')
-    .select(['grades.gradeId'])
-    .where('grades.columnId', '=', column.gcId)
-    .where('grades.studentId', '=', student_id)
+    .select(['grades.grade_id'])
+    .where('grades.column_id', '=', column.column_id)
+    .where('grades.student_id', '=', student_id)
     .executeTakeFirst();
+    
     if (checkGrade) {
       await db.updateTable('grades')
       .set({ mark: mark_number })
-      .where('grades.columnId', '=', column.gcId)
-      .where('grades.studentId', '=', student_id)
+      .where('grades.column_id', '=', column.column_id)
+      .where('grades.student_id', '=', student_id)
       .execute();
     } else {
       await db.insertInto('grades').values({
-        columnId: column.gcId,
+        column_id: column.column_id,
         mark: mark_number,
-        studentId: student_id,
-        teacherId: auth.person!,
+        student_id: student_id,
+        teacher_id: auth.person_id as number,
       })
       .execute()
     }
@@ -95,7 +96,7 @@ const app = new Elysia().post(
     const notification = await db.selectFrom('notification_rules')
     .select('enabled')
     .where('type', '=', 'grade_new')
-    .where('user_id', '=', auth.userId)
+    .where('user_id', '=', auth.user_id)
     .executeTakeFirst();
     
     if (
@@ -104,21 +105,21 @@ const app = new Elysia().post(
       (!notification && MainConfig.DEFAULT_NOTIFICATION.includes('new_grade'))
     ) {
       const users = await db.selectFrom('users')
-      .select('users.userId')
-      .where('users.person', '=', student_id)
+      .select('users.user_id')
+      .where('users.person_id', '=', student_id)
       .execute();
 
-      users.forEach(async(user) => {
+      for (const user of users) {
         await db.insertInto('notifications')
         .values({
-          user_id: user.userId,
+          user_id: user.user_id,
           type: 'new_grade',
           data: JSON.stringify({
             mark: mark_number
           })
         })
         .executeTakeFirst();
-      })
+      }
     }
 
     return Response.json({ status: true });

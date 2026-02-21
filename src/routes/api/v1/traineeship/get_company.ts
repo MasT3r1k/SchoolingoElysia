@@ -15,8 +15,8 @@ const app = new Elysia()
 
       const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'tokens.userId', 'users.userId')
-      .select(['tokens.userId', 'users.person'])
+      .leftJoin('users', 'tokens.user_id', 'users.user_id')
+      .select(['tokens.user_id', 'users.person_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', moment().toDate())
       .limit(1)
@@ -35,21 +35,21 @@ const app = new Elysia()
       // Načti firmu
       const company = await db
         .selectFrom('traineeship_companies as c')
-        .leftJoin('traineeship_company_rating as r', 'r.companyId', 'c.companyId')
-        .leftJoin('addresses as a', 'a.addressId', 'c.addressOffice')
-        .leftJoin('cities as ci', 'ci.cityId', 'a.cityId')
-        .leftJoin('countries as co', 'co.countryId', 'ci.countryId')
-        .leftJoin('traineeship_company_scopes as cs', 'cs.companyId', 'c.companyId')
-        .leftJoin('scopes as s', 's.scopeId', 'cs.scopeId')
+        .leftJoin('traineeship_company_rating as r', 'r.company_id', 'c.company_id')
+        .leftJoin('addresses as a', 'a.address_id', 'c.address_office')
+        .leftJoin('cities as ci', 'ci.city_id', 'a.city_id')
+        .leftJoin('countries as co', 'co.country_id', 'ci.country_id')
+        .leftJoin('traineeship_company_scopes as cs', 'cs.company_id', 'c.company_id')
+        .leftJoin('scopes as s', 's.scope_id', 'cs.scope_id')
         .select((eb) => [
-          'c.companyId',
+          'c.company_id',
           'c.name',
-          'c.countryCode',
+          'c.country_code',
           'c.ico',
           'c.dic',
           'c.web',
-          'c.rp_firstName',
-          'c.rp_lastName',
+          'c.rp_first_name',
+          'c.rp_last_name',
           'c.email',
           'c.phone',
           'c.status',
@@ -60,8 +60,8 @@ const app = new Elysia()
           'c.activity',
           'c.equipment',
           'a.street',
-          'a.houseNumber',
-          'ci.cityName',
+          'a.house_number',
+          'ci.city_name',
           'ci.postcode',
           'co.code2',
           eb.fn.avg('r.rating').as('rating'),
@@ -69,7 +69,7 @@ const app = new Elysia()
           sql<string>`
             JSON_ARRAYAGG(
               DISTINCT JSON_OBJECT(
-                'scopeId', s.scopeId,
+                'scope_id', s.scope_id,
                 'scopeName', s.name,
                 'scopeShortcut', s.shortcut,
                 'status', IFNULL(cs.status, 0)
@@ -77,9 +77,9 @@ const app = new Elysia()
             )
           `.as('scopes'),
         ])
-        .groupBy('c.companyId')
+        .groupBy('c.company_id')
         .orderBy('c.name')
-        .where('c.companyId', '=', companyId)
+        .where('c.company_id', '=', companyId)
         .limit(1)
         .executeTakeFirst();
 
@@ -92,7 +92,7 @@ const app = new Elysia()
       const instructors = await db
         .selectFrom('traineeship_instructors')
         .select([
-          'traineeship_instructors.instructorId',
+          'traineeship_instructors.instructor_id',
           'traineeship_instructors.firstname',
           'traineeship_instructors.lastname',
           'traineeship_instructors.email',
@@ -102,13 +102,13 @@ const app = new Elysia()
           'traineeship_instructors.created',
           'traineeship_instructors.last_updated'
         ])
-        .where('companyId', '=', companyId)
+        .where('company_id', '=', companyId)
         .execute();
 
       return Response.json({
         ...company,
         instructors: instructors.map((instructor) => ({
-          instructorId: instructor.instructorId,
+          instructorId: instructor.instructor_id,
           name: `${instructor.firstname} ${instructor.lastname}`,
           firstname: instructor.firstname,
           lastname: instructor.lastname,

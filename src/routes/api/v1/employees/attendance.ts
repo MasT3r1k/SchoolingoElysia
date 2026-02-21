@@ -1,6 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const attendanceRouter = new Elysia()
   // GET /employees/attendance - Get attendance records
@@ -10,8 +11,8 @@ const attendanceRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager', 'users.principal'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.principal'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -22,18 +23,18 @@ const attendanceRouter = new Elysia()
     const canViewAll = auth.manager == -1 || auth.principal;
     
     let queryBuilder = db.selectFrom('employee_attendance')
-      .leftJoin('teachers', 'employee_attendance.teacherId', 'teachers.personId')
-      .leftJoin('persons', 'teachers.personId', 'persons.personId')
+      .leftJoin('teachers', 'employee_attendance.teacher_id', 'teachers.person_id')
+      .leftJoin('persons', 'teachers.person_id', 'persons.person_id')
       .select([
-        'employee_attendance.attendanceId',
-        'employee_attendance.teacherId',
-        'persons.firstName',
-        'persons.lastName',
+        'employee_attendance.attendance_id',
+        'employee_attendance.teacher_id',
+        'persons.first_name',
+        'persons.last_name',
         'employee_attendance.date',
-        'employee_attendance.checkIn',
-        'employee_attendance.checkOut',
-        'employee_attendance.breakMinutes',
-        'employee_attendance.workedMinutes',
+        'employee_attendance.check_in',
+        'employee_attendance.check_out',
+        'employee_attendance.break_minutes',
+        'employee_attendance.worked_minutes',
         'employee_attendance.type',
         'employee_attendance.notes',
         'employee_attendance.approved',
@@ -49,9 +50,9 @@ const attendanceRouter = new Elysia()
 
     // Filter by employee (if not admin, only show own records)
     if (!canViewAll) {
-      queryBuilder = queryBuilder.where('employee_attendance.teacherId', '=', auth.person);
+      queryBuilder = queryBuilder.where('employee_attendance.teacher_id', '=', auth.person_id);
     } else if (query.employeeId) {
-      queryBuilder = queryBuilder.where('employee_attendance.teacherId', '=', query.employeeId);
+      queryBuilder = queryBuilder.where('employee_attendance.teacher_id', '=', query.employeeId);
     }
 
     // Filter by type
@@ -61,12 +62,18 @@ const attendanceRouter = new Elysia()
 
     const results = await queryBuilder
       .orderBy('employee_attendance.date', 'desc')
-      .orderBy('employee_attendance.checkIn', 'desc')
+      .orderBy('employee_attendance.check_in', 'desc')
       .limit(query.limit!)
       .offset(query.offset!)
       .execute();
 
-    return Response.json({ data: results });
+    const peopleFullNames = await format_person_map_by_ids(results.map((result) => (result.teacher_id)));
+
+    return Response.json({ data: results.map((result) => ({
+        ...result,
+        full_name: peopleFullNames.get(result.teacher_id)
+      }))
+    });
 
   }, {
     query: t.Object({
@@ -85,8 +92,8 @@ const attendanceRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -99,10 +106,10 @@ const attendanceRouter = new Elysia()
 
     // Check if already checked in today
     const existing = await db.selectFrom('employee_attendance')
-      .select('attendanceId')
-      .where('teacherId', '=', auth.person)
+      .select('attendance_id')
+      .where('teacher_id', '=', auth.person_id)
       .where('date', '=', today)
-      .where('checkOut', 'is', null)
+      .where('check_out', 'is', null)
       .executeTakeFirst();
 
     if (existing) {
@@ -113,16 +120,16 @@ const attendanceRouter = new Elysia()
 
     await db.insertInto('employee_attendance')
       .values({
-        teacherId: auth.person!,
+        teacher_id: auth.person_id!,
         date: today,
-        checkIn: timeNow,
-        checkOut: null,
-        breakMinutes: 0,
-        workedMinutes: 0,
+        check_in: timeNow,
+        check_out: null,
+        break_minutes: 0,
+        worked_minutes: 0,
         type: (body.type || 'regular') as any,
         notes: body.notes || null,
         approved: false,
-        approvedBy: null,
+        approved_by: null,
       })
       .execute();
 
@@ -141,8 +148,8 @@ const attendanceRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -155,11 +162,11 @@ const attendanceRouter = new Elysia()
 
     // Find recent record for today
     const existing = await db.selectFrom('employee_attendance')
-      .select(['attendanceId', 'checkIn', 'checkOut'])
-      .where('teacherId', '=', auth.person)
+      .select(['attendance_id', 'check_in', 'check_out'])
+      .where('teacher_id', '=', auth.person_id)
       .where('date', '=', today)
-      .orderBy(sql`checkOut IS NULL`, 'desc')
-      .orderBy('checkIn', 'desc')
+      .orderBy(sql`check_out IS NULL`, 'desc')
+      .orderBy('check_in', 'desc')
       .executeTakeFirst();
 
     if (!existing) {
@@ -169,7 +176,7 @@ const attendanceRouter = new Elysia()
     }
 
     // Calculate worked minutes
-    const checkInParts = existing.checkIn!.split(':');
+    const checkInParts = existing.check_in!.split(':');
     const checkOutParts = timeNow.split(':');
     const checkInMinutes = parseInt(checkInParts[0]) * 60 + parseInt(checkInParts[1]);
     const checkOutMinutes = parseInt(checkOutParts[0]) * 60 + parseInt(checkOutParts[1]);
@@ -177,12 +184,12 @@ const attendanceRouter = new Elysia()
 
     await db.updateTable('employee_attendance')
       .set({
-        checkOut: timeNow,
-        breakMinutes: body.breakMinutes || 0,
-        workedMinutes: Math.max(0, workedMinutes),
+        check_out: timeNow,
+        break_minutes: body.breakMinutes || 0,
+        worked_minutes: Math.max(0, workedMinutes),
         notes: body.notes,
       })
-      .where('attendanceId', '=', existing.attendanceId)
+      .where('attendance_id', '=', existing.attendance_id)
       .execute();
 
     return Response.json({ 
@@ -207,8 +214,8 @@ const attendanceRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -223,16 +230,16 @@ const attendanceRouter = new Elysia()
 
     await db.updateTable('employee_attendance')
       .set({
-        checkIn: body.checkIn,
-        checkOut: body.checkOut,
-        breakMinutes: body.breakMinutes,
-        workedMinutes: body.workedMinutes,
+        check_in: body.checkIn,
+        check_out: body.checkOut,
+        break_minutes: body.breakMinutes,
+        worked_minutes: body.workedMinutes,
         type: body.type as any,
         notes: body.notes,
         approved: body.approved,
-        approvedBy: body.approved ? auth.userId : null,
+        approved_by: body.approved ? auth.user_id : null,
       })
-      .where('attendanceId', '=', attendanceId)
+      .where('attendance_id', '=', attendanceId)
       .execute();
 
     return Response.json({ success: true, message: 'Record updated' });

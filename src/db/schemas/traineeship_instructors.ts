@@ -1,15 +1,15 @@
 import { Generated } from "kysely";
 
 export interface Traineeship_instructorsTable {
-  instructorId: Generated<number>
-  companyId: number
+  instructor_id: Generated<number>
+  company_id: number
   firstname: string;
   lastname: string;
-  email: string | null
-  phone: string | null
-  role: string | null
-  status: 'active' | 'deleted'
-  addedBy: number | null
-  created: Date;
-  last_updated: Date;
+  email: Generated<string | null>
+  phone: Generated<string | null>
+  role: Generated<string | null>
+  status: Generated<'active' | 'deleted'>
+  added_by: Generated<number | null>
+  created: Generated<Date>;
+  last_updated: Generated<Date>;
 }

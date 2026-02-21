@@ -12,11 +12,11 @@ export async function format_person(name: string, degree_ids: (string | number)[
     const degrees = await db.selectFrom("degrees")
         .select([
             "degrees.degree",
-            "degrees.isBefore",
+            "degrees.is_before",
             "degrees.shortcut",
             "degrees.weight"
         ])
-        .where("degreeID", "in", degreeIdsNumeric)
+        .where("degree_id", "in", degreeIdsNumeric)
         .execute();
 
     let text: string = '';
@@ -24,7 +24,7 @@ export async function format_person(name: string, degree_ids: (string | number)[
     const degrees_ordered = degrees.sort((a, b) => a.weight - b.weight);
 
     degrees_ordered.forEach((degree: degree) => {
-        if (degree.isBefore) {
+        if (degree.is_before) {
             text += `${degree.shortcut} `;
         }
     });
@@ -32,7 +32,7 @@ export async function format_person(name: string, degree_ids: (string | number)[
     text += `${name}`;
 
     degrees_ordered.forEach((degree: degree) => {
-        if (!degree.isBefore) {
+        if (!degree.is_before) {
             text += `, ${degree.shortcut}`;
         }
     });

@@ -1,8 +1,8 @@
 import { Generated } from "kysely"
 
 export interface AddressesTable {
-  addressId: Generated<number>
-  cityId: number
+  address_id: Generated<number>
+  city_id: number
   street: string
-  houseNumber: string
+  house_number: string
 }

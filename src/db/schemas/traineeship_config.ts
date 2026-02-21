@@ -1,7 +1,9 @@
+import { Generated } from "kysely"
+
 export interface Traineeship_configTable {
-  trConfig: number
-  isActivated: boolean
-  manager: number | null
-  defaultIgnoreDays: string | null
-  allowMap: boolean
+  tr_config: Generated<number>
+  is_activated: Generated<boolean>
+  manager_id: Generated<number | null>
+  default_ignore_days: Generated<string | null>
+  allow_map: Generated<boolean>
 }

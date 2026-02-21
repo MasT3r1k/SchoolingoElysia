@@ -1,9 +1,9 @@
 import { Generated } from "kysely";
 
 export interface gradesTable {
-  gradeId: Generated<number>;
-  columnId: number;
+  grade_id: Generated<number>;
+  column_id: number;
   mark: number;
-  studentId: number;
-  teacherId: number;
+  student_id: number;
+  teacher_id: number;
 }

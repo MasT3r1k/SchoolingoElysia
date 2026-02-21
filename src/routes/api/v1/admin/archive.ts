@@ -14,8 +14,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .select(['tokens.userId'])
-            .where('tokens.token', '=', token.value)
+            .select(['tokens.user_id'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -26,7 +26,7 @@ const app = new Elysia()
         const years = await db
             .selectFrom('school_years')
             .selectAll()
-            .orderBy('start_date', 'desc')
+            .orderBy('start', 'desc')
             .execute();
 
         return Response.json({ years });
@@ -40,10 +40,10 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .leftJoin('students', 'students.person', 'users.person')
-            .select(['tokens.userId', 'users.person', 'students.student'])
-            .where('tokens.token', '=', token.value)
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .leftJoin('students', 'students.person_id', 'users.person_id')
+            .select(['tokens.user_id', 'users.person_id', 'students.person_id'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -56,18 +56,18 @@ const app = new Elysia()
         // Get semester grades for the year
         const grades = await db
             .selectFrom('semester_grades')
-            .leftJoin('subjects', 'subjects.subject_id', 'semester_grades.subject')
+            .leftJoin('subjects', 'subjects.subject_id', 'semester_grades.subject_id')
             .select([
-                'semester_grades.semester_grade_id',
-                'semester_grades.subject',
-                'subjects.name as subjectName',
+                'semester_grades.s_g_id',
+                'semester_grades.subject_id',
+                'subjects.label as subjectName',
                 'semester_grades.grade',
                 'semester_grades.semester',
                 'semester_grades.year'
             ])
-            .where('semester_grades.student', '=', auth.student || 0)
+            .where('semester_grades.student_id', '=', auth.person_id || 0)
             .where('semester_grades.year', '=', yearId)
-            .orderBy('subjects.name', 'asc')
+            .orderBy('subjects.label', 'asc')
             .execute();
 
         return Response.json({ grades });
@@ -83,9 +83,9 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.manager'])
-            .where('tokens.token', '=', token.value)
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.manager'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -98,18 +98,15 @@ const app = new Elysia()
         // Get classbook entries for the year
         const entries = await db
             .selectFrom('classbook')
-            .leftJoin('classes', 'classes.class', 'classbook.class')
-            .leftJoin('subjects', 'subjects.subject_id', 'classbook.subject')
+            .leftJoin('subjects', 'subjects.subject_id', 'classbook.subject_id')
+            .leftJoin('groups', 'groups.group_id', 'classbook.group_id')
             .select([
                 'classbook.classbook_id',
                 'classbook.date',
-                'classbook.hour',
-                'classes.name as className',
-                'subjects.name as subjectName',
-                'classbook.content',
-                'classbook.note'
+                'classbook.day_hour',
+                'subjects.label as subjectName'
             ])
-            .where('classbook.year', '=', yearId)
+            .where('groups.year_id', '=', yearId)
             .orderBy('classbook.date', 'desc')
             .limit(100)
             .execute();
@@ -127,9 +124,9 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.manager'])
-            .where('tokens.token', '=', token.value)
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.manager'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -143,15 +140,15 @@ const app = new Elysia()
 
         const logs = await db
             .selectFrom('auditlog')
-            .leftJoin('users', 'users.userId', 'auditlog.userId')
-            .leftJoin('persons', 'persons.person', 'users.person')
+            .leftJoin('users', 'users.user_id', 'auditlog.user_id')
+            .leftJoin('persons', 'persons.person_id', 'users.person_id')
             .select([
-                'auditlog.auditId',
+                'auditlog.audit_id',
                 'auditlog.type',
                 'auditlog.data',
                 'auditlog.ip',
                 'auditlog.created',
-                db.fn('concat', ['persons.firstname', db.val(' '), 'persons.lastname']).as('userName')
+                db.fn('concat', ['persons.first_name', db.val(' '), 'persons.last_name']).as('userName')
             ])
             .orderBy('auditlog.created', 'desc')
             .offset(offset)
@@ -160,7 +157,7 @@ const app = new Elysia()
 
         const total = await db
             .selectFrom('auditlog')
-            .select(db.fn.count('auditId').as('count'))
+            .select(db.fn.count('audit_id').as('count'))
             .executeTakeFirst();
 
         return Response.json({

@@ -12,8 +12,8 @@ const app = new Elysia()
 
     const auth = await db
     .selectFrom('tokens')
-    .leftJoin('users', 'tokens.userId', 'users.userId')
-    .select(['tokens.userId', 'users.person'])
+    .leftJoin('users', 'tokens.user_id', 'users.user_id')
+    .select(['tokens.user_id', 'users.person_id'])
     .where('tokens.token', '=', token)
     .where('tokens.expires', '>=', moment().toDate())
     .limit(1)
@@ -26,9 +26,9 @@ const app = new Elysia()
     const scopes = await db
     .selectFrom('scopes')
     .select([
-      'scopes.scopeId',
-      'scopes.name',
-      'scopes.shortcut',
+      'scopes.scope_id',
+      'scopes.name as scope_name',
+      'scopes.shortcut as scope_shortcut',
       'scopes.code'
     ])
     .execute()

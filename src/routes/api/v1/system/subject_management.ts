@@ -10,7 +10,7 @@ const app = new Elysia()
     // POST /system/update_subject - Create or update subject
     .post('/system/update_subject', async ({ user, body }) => {
         if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-        if (user.manager === -1 && !user.isPrincipal && user.role !== 'admin_staff') {
+        if (user.manager === -1 && !user.is_principal && user.role !== 'admin_staff') {
             return Response.json({ error: 'no_permission' }, { status: 403 });
         }
 
@@ -26,7 +26,7 @@ const app = new Elysia()
                     label: subjectName,
                     shortcut: shortcut
                 })
-                .where('subjectId', '=', subjectId)
+                .where('subject_id', '=', subjectId)
                 .executeTakeFirst();
         } else {
             // Create
@@ -34,9 +34,9 @@ const app = new Elysia()
                 .values({
                     label: subjectName,
                     shortcut: shortcut,
-                    school_id: user.school as number,
-                    isMain: 1, // Default value
-                    primaryHours: '' // Default value
+                    school_id: user.school_id as number,
+                    is_main: true, // Default value
+                    primary_hours: '' // Default value
                 })
                 .executeTakeFirst();
             
@@ -58,28 +58,28 @@ const app = new Elysia()
     // GET /system/subject_teachers - Get teachers for a subject
     .get('/system/subject_teachers', async ({ user, query }) => {
         if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-        if (user.manager === -1 && !user.isPrincipal && user.role !== 'admin_staff') {
+        if (user.manager === -1 && !user.is_principal && user.role !== 'admin_staff') {
             return Response.json({ error: 'no_permission' }, { status: 403 });
         }
 
         const teachers = await db.selectFrom('teachers_subject')
-            .innerJoin('persons', 'persons.personId', 'teachers_subject.teacher_id')
-            .innerJoin('users', 'users.person', 'teachers_subject.teacher_id')
+            .innerJoin('persons', 'persons.person_id', 'teachers_subject.teacher_id')
+            .innerJoin('users', 'users.person_id', 'teachers_subject.teacher_id')
             .select([
                 'teachers_subject.teacher_id',
-                'persons.firstName',
-                'persons.lastName'
+                'persons.first_name',
+                'persons.last_name'
             ])
             .where('teachers_subject.subject_id', '=', query.subjectId)
-            .where('users.school', '=', user.school)
+            .where('users.school_id', '=', user.school_id)
             .execute();
 
         // Use helper to format name consistently if needed, or just return first/last
         const formatted = teachers.map(t => ({
             teacherId: t.teacher_id,
-            firstName: t.firstName,
-            lastName: t.lastName,
-            fullName: `${t.firstName} ${t.lastName}` // Basic formatting
+            firstName: t.first_name,
+            lastName: t.last_name,
+            fullName: `${t.first_name} ${t.last_name}` // Basic formatting
         }));
 
         return Response.json(formatted);
@@ -92,15 +92,15 @@ const app = new Elysia()
     // POST /system/subject_teachers/add
     .post('/system/subject_teachers/add', async ({ user, body }) => {
         if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-        if (user.manager === -1 && !user.isPrincipal && user.role !== 'admin_staff') {
+        if (user.manager === -1 && !user.is_principal && user.role !== 'admin_staff') {
             return Response.json({ error: 'no_permission' }, { status: 403 });
         }
 
         // Verify teacher belongs to current school
         const teacherUser = await db.selectFrom('users')
-            .select('userId')
-            .where('person', '=', body.teacherId)
-            .where('school', '=', user.school)
+            .select('user_id')
+            .where('person_id', '=', body.teacherId)
+            .where('school_id', '=', user.school_id)
             .executeTakeFirst();
         
         if (!teacherUser) {
@@ -136,15 +136,15 @@ const app = new Elysia()
     // POST /system/subject_teachers/remove
     .post('/system/subject_teachers/remove', async ({ user, body }) => {
         if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-        if (user.manager === -1 && !user.isPrincipal && user.role !== 'admin_staff') {
+        if (user.manager === -1 && !user.is_principal && user.role !== 'admin_staff') {
             return Response.json({ error: 'no_permission' }, { status: 403 });
         }
 
         // Verify teacher belongs to current school
         const teacherUser = await db.selectFrom('users')
-            .select('userId')
-            .where('person', '=', body.teacherId)
-            .where('school', '=', user.school)
+            .select('user_id')
+            .where('person_id', '=', body.teacherId)
+            .where('school_id', '=', user.school_id)
             .executeTakeFirst();
         
         if (!teacherUser) {

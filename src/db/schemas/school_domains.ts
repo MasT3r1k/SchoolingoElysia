@@ -1,7 +1,7 @@
 import { Generated } from "kysely";
 
 export interface school_domainsTable {
-  domainId: Generated<number>;
-  school: number;
+  domain_id: Generated<number>;
+  school_id: number;
   domain: string;
 }

@@ -10,10 +10,10 @@ const app = new Elysia()
 
     const user = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
     ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
@@ -31,7 +31,7 @@ const app = new Elysia()
     const existing = await db
       .selectFrom('push_subscriptions')
       .selectAll()
-      .where('user_id', '=', user.userId)
+      .where('user_id', '=', user.user_id)
       .where('endpoint', '=', endpoint)
       .executeTakeFirst();
 
@@ -42,7 +42,7 @@ const app = new Elysia()
     const result = await db
       .insertInto('push_subscriptions')
       .values({
-        user_id: user.userId,
+        user_id: user.user_id,
         endpoint,
         p256dh,
         auth,

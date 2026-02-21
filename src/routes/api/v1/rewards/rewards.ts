@@ -17,10 +17,10 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
             .select([
-                'tokens.userId',
-                'users.person',
+                'tokens.user_id',
+                'users.person_id',
                 'users.role',
                 'users.manager'
             ])
@@ -28,7 +28,7 @@ const app = new Elysia()
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) {
+        if (!auth?.person_id) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
 
@@ -37,8 +37,8 @@ const app = new Elysia()
 
         let query = db
             .selectFrom('rewards')
-            .leftJoin('persons', 'persons.personId', 'rewards.student_id')
-            .leftJoin('users as creator', 'creator.userId', 'rewards.created_by')
+            .leftJoin('persons', 'persons.person_id', 'rewards.student_id')
+            .leftJoin('users as creator', 'creator.user_id', 'rewards.created_by')
             .select([
                 'rewards.reward_id as id',
                 'rewards.title',
@@ -49,23 +49,23 @@ const app = new Elysia()
                 'rewards.created_at as createdAt',
                 'rewards.created_by as teacherId',
                 'rewards.collected_at as collectedAt',
-                'rewards.student_id as studentId'
+                'rewards.student_id as student_id'
             ]);
 
         if (!isTeacher) {
             // Student sees only their rewards
-            query = query.where('rewards.student_id', '=', auth.person);
+            query = query.where('rewards.student_id', '=', auth.person_id);
         }
 
         const rewards = await query
         .orderBy('rewards.created_at', 'desc')
         .execute();
 
-        const peopleIds = rewards.map((reward) => (reward.studentId, reward.teacherId));
+        const peopleIds = rewards.map((reward) => (reward.student_id, reward.teacherId));
 
         const peopleNames = await format_person_map_by_ids(peopleIds);
 
-        return Response.json({ rewards: rewards.map((reward) => ({...reward, teacherName: peopleNames.get(reward.teacherId), studentName: peopleNames.get(reward.studentId) })) });
+        return Response.json({ rewards: rewards.map((reward) => ({...reward, teacherName: peopleNames.get(reward.teacherId), studentName: peopleNames.get(reward.student_id) })) });
     })
 
     // Create a new reward (teacher only)
@@ -77,13 +77,13 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.person', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.person_id', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) {
+        if (!auth?.person_id) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
 
@@ -108,7 +108,7 @@ const app = new Elysia()
                 type,
                 student_id: studentId,
                 status: 'pending',
-                created_by: auth.userId,
+                created_by: auth.user_id,
                 created_at: new Date()
             })
             .execute();
@@ -118,13 +118,13 @@ const app = new Elysia()
         // Get student's user ID for notification
         const student = await db
             .selectFrom('users')
-            .select(['userId'])
-            .where('person', '=', studentId)
+            .select(['user_id'])
+            .where('person_id', '=', studentId)
             .executeTakeFirst();
 
         if (student) {
             // Send real-time notification to student
-            await notificationBroadcaster.notifyNewReward(student.userId, {
+            await notificationBroadcaster.notifyNewReward(student.user_id, {
                 title,
                 type,
                 amount
@@ -156,13 +156,13 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.person', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.person_id', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) {
+        if (!auth?.person_id) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
 
@@ -182,7 +182,7 @@ const app = new Elysia()
 
         // Only teachers can mark as collected, or the student themselves
         const isTeacher = auth.role === 'teacher' || auth.role === 'admin_staff';
-        const isOwner = reward.student_id === auth.person;
+        const isOwner = reward.student_id === auth.person_id;
 
         if (!isTeacher && !isOwner) {
             return Response.json({ error: 'forbidden' }, { status: 403 });
@@ -222,13 +222,13 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.person', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.person_id', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) {
+        if (!auth?.person_id) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
 

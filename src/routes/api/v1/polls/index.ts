@@ -12,13 +12,13 @@ const app = new Elysia({ prefix: '/polls' })
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.manager', 'users.principal', 'users.userId', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id', 'users.manager', 'users.principal', 'users.user_id', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
         const canCreate = auth.manager == -1 || auth.role == "teacher" || auth.principal == true;
 
@@ -38,7 +38,7 @@ const app = new Elysia({ prefix: '/polls' })
                 sql<number | null>`null`.as('assignmentId'),
                 sql<Date | null>`null`.as('submitted_at'),
             ])
-            .where('polls.created_by', '=', auth.person);
+            .where('polls.created_by', '=', auth.person_id);
 
         // 2. Definujeme dotaz pro sdílené polly
         // 2. Definujeme dotaz pro přiřazené polly (studenti)
@@ -46,9 +46,9 @@ const app = new Elysia({ prefix: '/polls' })
             .selectFrom('poll_assign_recipients')
             .innerJoin('poll_assigns', 'poll_assigns.poll_assign_id', 'poll_assign_recipients.poll_assign_id')
             .innerJoin('polls', 'poll_assigns.poll_id', 'polls.id')
-            .innerJoin('student_groups', 'student_groups.groupId', 'poll_assign_recipients.group_id')
+            .innerJoin('student_groups', 'student_groups.group_id', 'poll_assign_recipients.group_id')
             .leftJoin('poll_responses', (join) => join
-                .on('poll_responses.student_id', '=', auth.person)
+                .on('poll_responses.student_id', '=', auth.person_id)
                 .onRef('poll_responses.poll_id', '=', 'poll_assigns.poll_id')
             )
             .select([
@@ -65,7 +65,7 @@ const app = new Elysia({ prefix: '/polls' })
                 'poll_responses.submitted_at'
             ])
             .where('poll_assign_recipients.assigned', '=', true)
-            .where('student_groups.student', '=', auth.person);
+            .where('student_groups.student_id', '=', auth.person_id);
 
         // 3. Definujeme dotaz pro sdílené polly (učitelé)
         const sharedPollsQuery = db
@@ -85,7 +85,7 @@ const app = new Elysia({ prefix: '/polls' })
                 sql<Date | null>`null`.as('submitted_at'),
             ])
             .where('poll_shares.is_valid', '=', true)
-            .where('poll_shares.person_id', '=', auth.person);
+            .where('poll_shares.person_id', '=', auth.person_id);
 
         // 4. Spojíme je pomocí unionAll a seřadíme jako celek
         const allPolls = await ownPollsQuery
@@ -109,20 +109,20 @@ const app = new Elysia({ prefix: '/polls' })
         if (!token) return { error: 'no_user', details: 'no_cookie' };
 
         const auth = await db.selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.userId'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id', 'users.user_id'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
         // Check if user has an assignment for this poll
         // Check if user has an assignment for this poll
         const assignment = await db
             .selectFrom('poll_assign_recipients')
             .innerJoin('poll_assigns', 'poll_assigns.poll_assign_id', 'poll_assign_recipients.poll_assign_id')
-            .innerJoin('student_groups', 'student_groups.groupId', 'poll_assign_recipients.group_id')
+            .innerJoin('student_groups', 'student_groups.group_id', 'poll_assign_recipients.group_id')
             .select([
                 'poll_assigns.poll_assign_id',
                 'poll_assigns.start',
@@ -134,7 +134,7 @@ const app = new Elysia({ prefix: '/polls' })
                 'poll_assigns.allow_review',
             ])
             .where('poll_assigns.poll_id', '=', Number(id))
-            .where('student_groups.student', '=', auth.person)
+            .where('student_groups.student_id', '=', auth.person_id)
             .where('poll_assign_recipients.assigned', '=', true)
             .executeTakeFirst();
 
@@ -157,7 +157,7 @@ const app = new Elysia({ prefix: '/polls' })
             .selectFrom('poll_responses')
             .select(['id', 'submitted_at', 'total_score', 'total_max_score', 'percentage'])
             .where('poll_id', '=', Number(id))
-            .where('student_id', '=', auth.person)
+            .where('student_id', '=', auth.person_id)
             .executeTakeFirst();
 
         const questionIds = questions.map(q => q.id);
@@ -237,13 +237,13 @@ const app = new Elysia({ prefix: '/polls' })
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.manager', 'users.principal'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id', 'users.manager', 'users.principal'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
         if (auth.manager === -1 && !auth.principal) return { error: 'no_permission' };
 
         const { title, description, type, questions, time_limit } = body as any;
@@ -252,7 +252,7 @@ const app = new Elysia({ prefix: '/polls' })
             title,
             description,
             type,
-            created_by: auth.person,
+            created_by: auth.person_id,
             time_limit: time_limit ? Number(time_limit) : null
         }).execute();
 
@@ -311,20 +311,20 @@ const app = new Elysia({ prefix: '/polls' })
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.userId', 'users.manager', 'users.principal'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id', 'users.user_id', 'users.manager', 'users.principal'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
         if (auth.manager === -1 && !auth.principal) return { error: 'no_permission' };
 
         const { pollId, targets, settings } = body as any;
 
         const assignResult = await db.insertInto('poll_assigns').values({
             poll_id: Number(pollId),
-            assign_by: auth.userId!,
+            assign_by: auth.user_id!,
             time_limit: settings.timeLimit ? Number(settings.timeLimit) : null,
             start: settings.start ? new Date(settings.start) : new Date(),
             end: settings.end ? new Date(settings.end) : null,
@@ -376,19 +376,19 @@ const app = new Elysia({ prefix: '/polls' })
         if (!token) return { error: 'no_user', details: 'no_cookie' };
 
         const auth = await db.selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
             
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
         // Check if already started
         const existing = await db.selectFrom('poll_responses')
             .selectAll()
             .where('poll_id', '=', Number(id))
-            .where('student_id', '=', auth.person)
+            .where('student_id', '=', auth.person_id)
             .executeTakeFirst();
             
         if (existing) {
@@ -400,13 +400,13 @@ const app = new Elysia({ prefix: '/polls' })
         const assignment = await db
             .selectFrom('poll_assign_recipients')
             .innerJoin('poll_assigns', 'poll_assigns.poll_assign_id', 'poll_assign_recipients.poll_assign_id')
-            .innerJoin('student_groups', 'student_groups.groupId', 'poll_assign_recipients.group_id')
+            .innerJoin('student_groups', 'student_groups.group_id', 'poll_assign_recipients.group_id')
             .select([
                 'poll_assigns.shuffle_questions',
                 'poll_assigns.shuffle_options'
             ])
             .where('poll_assigns.poll_id', '=', Number(id))
-            .where('student_groups.student', '=', auth.person)
+            .where('student_groups.student_id', '=', auth.person_id)
             .where('poll_assign_recipients.assigned', '=', true)
             .executeTakeFirst();
 
@@ -423,7 +423,7 @@ const app = new Elysia({ prefix: '/polls' })
 
         const resResult = await db.insertInto('poll_responses').values({
             poll_id: Number(id),
-            student_id: auth.person,
+            student_id: auth.person_id,
             started_at: new Date(),
             total_score: 0,
             total_max_score: 0,
@@ -465,18 +465,18 @@ const app = new Elysia({ prefix: '/polls' })
         if (!token) return { error: 'no_user', details: 'no_cookie' };
 
         const auth = await db.selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
             
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
         const response = await db.selectFrom('poll_responses')
             .select('id')
             .where('poll_id', '=', Number(id))
-            .where('student_id', '=', auth.person)
+            .where('student_id', '=', auth.person_id)
             .executeTakeFirst();
             
         if (!response) return { error: 'not_started' };
@@ -534,18 +534,18 @@ const app = new Elysia({ prefix: '/polls' })
         if (!token) return { error: 'no_user', details: 'no_cookie' };
 
         const auth = await db.selectFrom('tokens')
-             .leftJoin('users', 'users.userId', 'tokens.userId')
-             .select('users.person')
+             .leftJoin('users', 'users.user_id', 'tokens.user_id')
+             .select('users.person_id')
              .where('tokens.token', '=', token)
              .where('tokens.expires', '>=', new Date())
              .executeTakeFirst();
              
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
         const allResponses = await db.selectFrom('poll_responses')
             .select(['id', 'submitted_at'])
             .where('poll_id', '=', Number(id))
-            .where('student_id', '=', auth.person)
+            .where('student_id', '=', auth.person_id)
             .orderBy('id', 'desc')
             .execute();
 
@@ -665,13 +665,13 @@ const app = new Elysia({ prefix: '/polls' })
         if (!token) return { error: 'no_user', details: 'no_cookie' };
 
         const auth = await db.selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.manager', 'users.principal', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id', 'users.manager', 'users.principal', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
         const isTeacher = auth.manager !== -1 || auth.principal || auth.role === 'teacher';
 
@@ -679,7 +679,7 @@ const app = new Elysia({ prefix: '/polls' })
             const submission = await db.selectFrom('poll_responses')
                 .select('id')
                 .where('poll_id', '=', Number(id))
-                .where('student_id', '=', auth.person)
+                .where('student_id', '=', auth.person_id)
                 .executeTakeFirst();
 
             if (!submission) return { error: 'no_permission', details: 'Submit first' };
@@ -733,10 +733,10 @@ const app = new Elysia({ prefix: '/polls' })
         let studentIds: number[] = [];
         if (uniqueGroupIds.length > 0) {
             const studentsInGroups = await db.selectFrom('student_groups')
-                .select('student')
-                .where('groupId', 'in', uniqueGroupIds)
+                .select('student_id')
+                .where('group_id', 'in', uniqueGroupIds)
                 .execute();
-            studentIds = [...new Set(studentsInGroups.map(s => s.student))];
+            studentIds = [...new Set(studentsInGroups.map(s => s.student_id))];
         }
 
         // 4. Get all questions for this poll
@@ -822,11 +822,11 @@ const app = new Elysia({ prefix: '/polls' })
     })
 
     // GET /:id/student/:studentId
-    .get('/:id/student/:studentId', async ({ params: { id, studentId }, cookie }) => {
+    .get('/:id/student/:student_id', async ({ params: { id, studentId }, cookie }) => {
          const token = cookie.token?.value as string;
          if (!token) return { error: 'no_user', details: 'no_cookie' };
          
-         const auth = await db.selectFrom('tokens').leftJoin('users', 'users.userId', 'tokens.userId')
+         const auth = await db.selectFrom('tokens').leftJoin('users', 'users.user_id', 'tokens.user_id')
              .select(['users.manager', 'users.principal'])
              .where('tokens.token', '=', token)
              .where('tokens.expires', '>=', new Date())
@@ -860,7 +860,7 @@ const app = new Elysia({ prefix: '/polls' })
         const token = cookie.token?.value as string;
         if (!token) return { error: 'no_user', details: 'no_cookie' };
          
-         const auth = await db.selectFrom('tokens').leftJoin('users', 'users.userId', 'tokens.userId')
+         const auth = await db.selectFrom('tokens').leftJoin('users', 'users.user_id', 'tokens.user_id')
              .select(['users.manager', 'users.principal'])
              .where('tokens.token', '=', token)
              .where('tokens.expires', '>=', new Date())
@@ -926,13 +926,13 @@ const app = new Elysia({ prefix: '/polls' })
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.manager', 'users.principal'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id', 'users.manager', 'users.principal'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
         
         const pollId = Number(id);
         const { teacherId } = body as any;
@@ -946,15 +946,15 @@ const app = new Elysia({ prefix: '/polls' })
 
         if (!poll) return { error: 'not_found' };
 
-        if (poll.created_by !== auth.person) {
+        if (poll.created_by !== auth.person_id) {
             return { error: 'no_permission', details: 'not_owner' };
         }
 
         // Get target user ID from person ID
         const targetUser = await db
             .selectFrom('teachers')
-            .select('teachers.personId')
-            .where('teachers.personId', '=', Number(teacherId))
+            .select('teachers.person_id')
+            .where('teachers.person_id', '=', Number(teacherId))
             .executeTakeFirst();
             
         if (!targetUser) return { error: 'target_user_not_found' };
@@ -964,7 +964,7 @@ const app = new Elysia({ prefix: '/polls' })
             .selectFrom('poll_shares')
             .select('poll_share_id')
             .where('poll_id', '=', pollId)
-            .where('person_id', '=', targetUser.personId)
+            .where('person_id', '=', targetUser.person_id)
             .executeTakeFirst();
 
         if (existingShare) {
@@ -977,7 +977,7 @@ const app = new Elysia({ prefix: '/polls' })
 
         await db.insertInto('poll_shares').values({
             poll_id: pollId,
-            person_id: targetUser.personId,
+            person_id: targetUser.person_id,
             is_valid: true,
             added_at: new Date()
         }).execute();
@@ -1000,13 +1000,13 @@ const app = new Elysia({ prefix: '/polls' })
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.manager', 'users.principal'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id', 'users.manager', 'users.principal'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
         const pollId = Number(id);
 
@@ -1018,7 +1018,7 @@ const app = new Elysia({ prefix: '/polls' })
             .executeTakeFirst();
 
         if (!poll) return { error: 'not_found' };
-        if (poll.created_by !== auth.person) return { error: 'no_permission' };
+        if (poll.created_by !== auth.person_id) return { error: 'no_permission' };
 
         const sharesList = await db
             .selectFrom('poll_shares')
@@ -1051,13 +1051,13 @@ const app = new Elysia({ prefix: '/polls' })
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
         // Verify ownership
         const poll = await db
@@ -1067,7 +1067,7 @@ const app = new Elysia({ prefix: '/polls' })
             .executeTakeFirst();
 
         if (!poll) return { error: 'not_found' };
-        if (poll.created_by !== auth.person) return { error: 'no_permission' };
+        if (poll.created_by !== auth.person_id) return { error: 'no_permission' };
 
         await db.updateTable('poll_shares')
             .set({ is_valid: false })

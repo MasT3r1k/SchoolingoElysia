@@ -10,26 +10,26 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     const messageId = parseInt(params.id);
 
     const message = await db
         .selectFrom('messages')
-        .leftJoin('persons', 'messages.author_id', 'persons.personId')
+        .leftJoin('persons', 'messages.author_id', 'persons.person_id')
         .select([
             'messages.message_id',
             'messages.topic',
             'messages.message',
             'messages.author_id',
-            'persons.firstName',
-            'persons.lastName',
+            'persons.first_name',
+            'persons.last_name',
             'messages.sent_at',
             'messages.deleted',
             'messages.require_confirm',
@@ -43,15 +43,15 @@ const app = new Elysia()
     // We only care about students for classes usually.
     const receivers = await db
         .selectFrom('messages_receivers')
-        .innerJoin('persons', 'messages_receivers.receiver_id', 'persons.personId')
-        .leftJoin('students', 'persons.personId', 'students.personId')
-        .leftJoin('classes', 'students.class', 'classes.classId')
-        .leftJoin('student_groups', 'students.personId', 'student_groups.student')
-        .leftJoin('groups', 'student_groups.groupId', 'groups.groupId')
+        .innerJoin('persons', 'messages_receivers.receiver_id', 'persons.person_id')
+        .leftJoin('students', 'persons.person_id', 'students.person_id')
+        .leftJoin('classes', 'students.class_id', 'classes.class_id')
+        .leftJoin('student_groups', 'students.person_id', 'student_groups.student_id')
+        .leftJoin('groups', 'student_groups.group_id', 'groups.group_id')
         .select([
-            'persons.personId',
-            'persons.firstName',
-            'persons.lastName',
+            'persons.person_id',
+            'persons.first_name',
+            'persons.last_name',
             'classes.prefix',
             'classes.suffix',
             'groups.name as groupName',
@@ -84,7 +84,7 @@ const app = new Elysia()
         if (!uniqueReceiversMap.has(r.personId)) {
             uniqueReceiversMap.set(r.personId, {
                 personId: r.personId,
-                firstName: r.firstName,
+                first_name: r.first_name,
                 lastName: r.lastName,
                 groupName: primaryGroup, 
                 read_at: r.read_at,
@@ -107,7 +107,7 @@ const app = new Elysia()
      return {
         ...message,
         author: {
-             first_name: message.firstName,
+             first_name: message.first_name,
              last_name: message.lastName,
              full_name: authorName
         },

@@ -2,12 +2,12 @@ import { Elysia, t } from 'elysia'
 import { generateDocument } from '../pdf'
 import { DocumentType } from '../pdf/types'
 
-export default new Elysia({ prefix: '/documents' })
+export default new Elysia({ prefix: '/api/documents' })
 
   .post(
     '/generate',
     async ({ body, set }) => {
-      const pdf = await generateDocument(body.type)
+      const pdf = await generateDocument(body.type, body)
 
       set.headers['content-type'] = 'application/pdf'
       set.headers['content-disposition'] =
@@ -17,7 +17,8 @@ export default new Elysia({ prefix: '/documents' })
     },
     {
       body: t.Object({
-        type: t.Any()
+        type: t.Any(),
+        timetableData: t.Optional(t.Any())
       })
     }
   )

@@ -72,7 +72,7 @@ const elysiaApp = new Elysia()
 
           const user = await db
             .selectFrom('users')
-            .select(['userId', 'username', 'person', '2fa'])
+            .select(['user_id', 'username', 'person_id', '2fa'])
             .where(sql`LOWER(username)`, '=', username.toLowerCase())
             .executeTakeFirst();
 
@@ -81,7 +81,7 @@ const elysiaApp = new Elysia()
           const emails = await db
             .selectFrom('emails')
             .select(['email'])
-            .where('personId', '=', user.person)
+            .where('person_id', '=', user.person_id)
             .where('is_verified', '=', true)
             .orderBy('email', 'asc')
             .execute();
@@ -98,7 +98,7 @@ const elysiaApp = new Elysia()
           await db
             .insertInto('users_resetpassword')
             .values({
-              user_id: user.userId,
+              user_id: user.user_id,
               email: emails.length === 1 ? emails[0].email : null,
               email_token,
               created_at: moment().toDate(),
@@ -125,7 +125,7 @@ const elysiaApp = new Elysia()
 
           await db.insertInto("auditlog")
           .values({
-              userId: user.userId,
+              user_id: user.user_id,
               type: "reset_password",
               data: JSON.stringify({}),
               ip: store.ip
@@ -179,7 +179,7 @@ const elysiaApp = new Elysia()
           const emails = await db
             .selectFrom('emails')
             .select(['email'])
-            .where('personId', '=', resetRecord.user_id)
+            .where('person_id', '=', resetRecord.user_id)
             .where('is_verified', '=', true)
             .orderBy('email', 'asc')
             .execute();
@@ -227,8 +227,8 @@ const elysiaApp = new Elysia()
         // ------------------------------
         const user = await db
           .selectFrom('users')
-          .select(['userId', '2fa', '2fa_secret', 'username'])
-          .where('userId', '=', resetRecord.user_id)
+          .select(['user_id', '2fa', '2fa_secret', 'username'])
+          .where('user_id', '=', resetRecord.user_id)
           .executeTakeFirstOrThrow();
 
         if (!newPassword) return Response.json({ error: ['Missing password'], stage: 'new_password' });
@@ -237,7 +237,7 @@ const elysiaApp = new Elysia()
         if (user['2fa'] && user['2fa_secret']) {
           if (!TFA) return Response.json({ error: ['TFA code required'], stage: 'tfa_required' });
 
-          const tfaValid = await verifyTFA(TFA, user["userId"]);
+          const tfaValid = await verifyTFA(TFA, user["user_id"]);
           if (!tfaValid) return Response.json({ error: ['Invalid TFA code'] });
         }
 
@@ -252,10 +252,10 @@ const elysiaApp = new Elysia()
         const passwordId = parseInt(passwordQuery.insertId?.toString()!);
 
         db.updateTable('users')
-          .set('users.password', passwordId)
-          .set('users.passwordChanged', sql`NOW()`)
-          .set('users.recommendChangePassword', false)
-          .where('users.userId', '=', user.userId)
+          .set('users.password_id', passwordId)
+          .set('users.password_changed', sql`NOW()`)
+          .set('users.recommend_change_password', false)
+          .where('users.user_id', '=', user.user_id)
           .limit(1)
           .execute();
 
@@ -263,12 +263,12 @@ const elysiaApp = new Elysia()
         await db
           .updateTable('users')
           .set({ password: passwordId })
-          .where('userId', '=', user.userId)
+          .where('user_id', '=', user.user_id)
           .executeTakeFirst();
 
         await db.insertInto("auditlog")
         .values({
-            userId: user.userId,
+            user_id: user.user_id,
             type: "change_password",
             data: JSON.stringify({}),
             ip: store.ip

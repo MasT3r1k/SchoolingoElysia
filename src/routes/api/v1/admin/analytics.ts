@@ -137,17 +137,17 @@ export default new Elysia({ prefix: '/admin/analytics' })
             try {
                 const topUsersRaw = await db
                     .selectFrom('analytics_visits')
-                    .innerJoin('users', (join) => join.on(sql`users.userId`, '=', sql`analytics_visits.user_id`))
-                    .leftJoin('persons', 'persons.personId', 'users.person')
+                    .innerJoin('users', (join) => join.on(sql`users.user_id`, '=', sql`analytics_visits.user_id`))
+                    .leftJoin('persons', 'persons.person_id', 'users.person_id')
                     .select([
-                        sql<number>`users.userId`.as('user_id'),
-                        sql<string>`CONCAT(persons.firstName, ' ', persons.lastName)`.as('username'),
+                        sql<number>`users.user_id`.as('user_id'),
+                        sql<string>`CONCAT(persons.first_name, ' ', persons.last_name)`.as('username'),
                         sql<number>`COUNT(*)`.as('visits'),
                         sql<number>`COUNT(DISTINCT analytics_visits.path)`.as('actions')
                     ])
                     .where(dateCondition)
                     .where('analytics_visits.user_id', 'is not', null)
-                    .groupBy([sql`users.userId`, sql`persons.firstName`, sql`persons.lastName`])
+                    .groupBy([sql`users.user_id`, sql`persons.first_name`, sql`persons.last_name`])
                     .orderBy(sql`COUNT(*)`, 'desc')
                     .limit(10)
                     .execute();

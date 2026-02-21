@@ -148,7 +148,7 @@ export const library = new Elysia({ prefix: '/library' })
             .innerJoin('library_books', 'library_books.bookId', 'library_copies.bookId')
             .select(['library_loans.loanId', 'library_loans.dueDate', 'library_loans.status', 'library_loans.loanDate',
                      'library_books.title', 'library_books.author', 'library_books.coverUrl'])
-            .where('borrowerId', '=', user.userId)
+            .where('borrowerId', '=', user.user_id)
             .where('library_loans.status', '=', 'ongoing')
             .orderBy('dueDate', 'asc')
             .execute();
@@ -222,7 +222,7 @@ export const library = new Elysia({ prefix: '/library' })
         }
     }, {
         body: t.Object({
-            userId: t.Number(),
+            user_id: t.Number(),
             copyId: t.Number()
         })
     })

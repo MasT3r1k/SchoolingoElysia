@@ -3,46 +3,7 @@ import { db } from "../../../../../database"
 import { sql } from 'kysely';
 import moment from 'moment';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
-
-/* ---------------- TITLES ---------------- */
-
-const titlesBefore = db.selectFrom('persons_degree as pd')
-  .innerJoin('degrees as d', 'pd.degree', 'd.degreeID')
-  .select([
-    'pd.person as person',
-    sql`TRIM(GROUP_CONCAT(d.shortcut ORDER BY d.weight SEPARATOR ' '))`.as('titles_before')
-  ])
-  .where('d.isBefore', '=', true)
-  .groupBy('pd.person')
-  .as('tb');
-
-const titlesAfter = db.selectFrom('persons_degree as pd')
-  .innerJoin('degrees as d', 'pd.degree', 'd.degreeID') 
-  .select([
-    'pd.person as person',
-    sql`TRIM(GROUP_CONCAT(d.shortcut ORDER BY d.weight SEPARATOR ' '))`.as('titles_after')
-  ])
-  .where('d.isBefore', '=', false)
-  .groupBy('pd.person')
-  .as('ta');
-
-const fullName = sql`
-  concat(
-    COALESCE(
-      CASE 
-        WHEN tb.titles_before IS NULL OR tb.titles_before = '' THEN ''
-        ELSE CONCAT(tb.titles_before, ' ')
-      END,
-    ''),
-    persons.firstName, ' ', persons.lastName,
-    COALESCE(
-      CASE 
-        WHEN ta.titles_after IS NULL OR ta.titles_after = '' THEN ''
-        ELSE CONCAT(' ', ta.titles_after)
-      END,
-    '')
-  )
-`;
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 /* ---------------- ENDPOINT ---------------- */
 
@@ -51,12 +12,12 @@ const elysiaApp = new Elysia()
     if (!q || q.length < 3) return [];
     
     return await db.selectFrom('persons')
-      .select(['personId', 'firstName', 'lastName', 'birthday'])
+      .select(['person_id', 'first_name', 'last_name', 'birthday'])
       .where(sql<boolean>`(
-        firstName LIKE ${`%${q}%`} 
-        OR lastName LIKE ${`%${q}%`} 
-        OR concat(firstName, ' ', lastName) LIKE ${`%${q}%`}
-        OR concat(lastName, ' ', firstName) LIKE ${`%${q}%`}
+        first_name LIKE ${`%${q}%`} 
+        OR last_name LIKE ${`%${q}%`} 
+        OR concat(first_name, ' ', last_name) LIKE ${`%${q}%`}
+        OR concat(last_name, ' ', first_name) LIKE ${`%${q}%`}
       )`)
       .limit(10)
       .execute();
@@ -70,48 +31,45 @@ const elysiaApp = new Elysia()
       const time = moment(query.time);
       const show = query.type.split(',');
 
-      const [student, groups, parents] = await Promise.all([
+      const [studentResult, groups, parents] = await Promise.all([
         db.selectFrom('students')
-          .leftJoin('persons', 'students.personId', 'persons.personId')
-          .leftJoin('classes', 'students.class', 'classes.classId')
-          .leftJoin('insurance_companies', 'insurance_companies.insuranceId', 'persons.insuranceId')
-          .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
-          .leftJoin('scopes', 'scopes.scopeId', 'classes.scopeId')
-          .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-          .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
-          .leftJoin('addresses', 'persons.address', 'addresses.addressId')
-          .leftJoin('cities', 'addresses.cityId', 'cities.cityId')
+          .leftJoin('persons', 'students.person_id', 'persons.person_id')
+          .leftJoin('classes', 'students.class_id', 'classes.class_id')
+          .leftJoin('insurance_companies', 'insurance_companies.insurance_id', 'persons.insurance_id')
+          .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
+          .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
+          .leftJoin('addresses', 'persons.address_id', 'addresses.address_id')
+          .leftJoin('cities', 'addresses.city_id', 'cities.city_id')
           .select([
-            'persons.personId',
-            'persons.firstName',
-            'persons.lastName',
+            'persons.person_id',
+            'persons.first_name',
+            'persons.last_name',
             'persons.gender',
             'persons.birthday',
-            fullName.as('fullName'),
             'students.status',
-            sql`students.startStudy`.as('startStudy'),
+            sql`students.start_study`.as('start_study'),
             sql`concat(
               classes.prefix,
               TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1,
               classes.suffix
-            )`.as('className'),
-            'insurance_companies.insuranceId',
-            sql`insurance_companies.insurance`.as('insuranceName'),
-            sql`insurance_companies.shortcut`.as('insuranceShort'),
+            )`.as('class_name'),
+            'insurance_companies.insurance_id',
+            sql`insurance_companies.insurance`.as('insurance_name'),
+            sql`insurance_companies.shortcut`.as('insurance_short'),
             sql<number>`TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1`.as('year'),
-            'classes.scopeId',
-            'classes.teacher',
-            sql<string>`scopes.name`.as('fieldOfStudy'),
-            'addresses.addressId',
+            'classes.scope_id',
+            'classes.teacher_id',
+            sql<string>`scopes.name`.as('field_of_study'),
+            'addresses.address_id',
             'addresses.street',
-            'addresses.houseNumber',
-            'cities.cityId',
-            'cities.cityName as city',
+            'addresses.house_number',
+            'cities.city_id',
+            'cities.city_name as city_name',
             'cities.postcode',
             sql<string>`(
               SELECT email 
               FROM emails 
-              WHERE emails.personId = persons.personId 
+              WHERE emails.person_id = persons.person_id 
               AND emails.is_verified = 1 
               LIMIT 1
             )`.as('email'),
@@ -119,7 +77,7 @@ const elysiaApp = new Elysia()
             sql<string>`(
               SELECT number 
               FROM phone_numbers 
-              WHERE phone_numbers.personId = persons.personId 
+              WHERE phone_numbers.person_id = persons.person_id 
               AND phone_numbers.is_verified = 1 
               LIMIT 1
             )`.as('phone'),
@@ -130,110 +88,127 @@ const elysiaApp = new Elysia()
                 2
               )
               FROM grades g
-              LEFT JOIN grades_columns gc ON gc.gcId = g.columnId
-              WHERE g.studentId = students.personId
+              LEFT JOIN grades_columns gc ON gc.column_id = g.column_id
+              WHERE g.student_id = students.person_id
               AND gc.status = 'active'
               AND g.mark IS NOT NULL
-            )`.as('averageGrade'),
+            )`.as('average_grade'),
 
             sql<number>`(
               SELECT ROUND(
                 CASE 
-                  WHEN COUNT(DISTINCT c.cbId) = 0 THEN 0
-                  ELSE (COUNT(a.student) * 100.0) / COUNT(DISTINCT c.cbId)
+                  WHEN COUNT(DISTINCT c.classbook_id) = 0 THEN 0
+                  ELSE (COUNT(a.student_id) * 100.0) / COUNT(DISTINCT c.classbook_id)
                 END,
                 2
               )
               FROM student_groups sg
-              LEFT JOIN classbook c ON c.groupId = sg.groupId
+              LEFT JOIN classbook c ON c.group_id = sg.group_id
               LEFT JOIN absence a 
-                ON a.lesson = c.cbId 
-                AND a.student = students.personId
-              WHERE sg.student = students.personId
-            )`.as('absenceRate')
+                ON a.lesson_id = c.classbook_id 
+                AND a.student_id = students.person_id
+              WHERE sg.student_id = students.person_id
+            )`.as('absence_rate')
           ])
-          .where('persons.personId', '=', id)
+          .where('persons.person_id', '=', id)
           .executeTakeFirstOrThrow(),
 
         db.selectFrom('student_groups')
-          .innerJoin('groups', 'student_groups.groupId', 'groups.groupId')
-          .innerJoin('school_years as sy', 'groups.year', 'sy.syId')
+          .innerJoin('groups', 'student_groups.group_id', 'groups.group_id')
+          .innerJoin('school_years as sy', 'groups.year_id', 'sy.sy_id')
           .select([
-            'groups.groupId',
+            'groups.group_id',
             'groups.name',
             'groups.num',
           ])
-          .where('student_groups.student', '=', id)
+          .where('student_groups.student_id', '=', id)
           .where(sql<boolean>`sy.start <= ${time.format("YYYY-MM-DD")}`)
           .where(sql<boolean>`sy.end >= ${time.format("YYYY-MM-DD")}`)
           .execute(),
         
         db.selectFrom('family_relations')
-          .innerJoin('persons', 'family_relations.target', 'persons.personId')
+          .innerJoin('persons', 'family_relations.target_id', 'persons.person_id')
           .select([
-            'persons.personId as id',
-            'persons.firstName',
-            'persons.lastName',
+            'persons.person_id as id',
+            'persons.first_name',
+            'persons.last_name',
             'family_relations.role as relationship',
             sql<string>`(
               SELECT email 
               FROM emails 
-              WHERE emails.personId = persons.personId 
+              WHERE emails.person_id = persons.person_id 
               LIMIT 1
             )`.as('email'),
             sql<string>`(
               SELECT number 
               FROM phone_numbers 
-              WHERE phone_numbers.personId = persons.personId 
+              WHERE phone_numbers.person_id = persons.person_id 
               LIMIT 1
             )`.as('phone')
           ])
-          .where('family_relations.source', '=', id)
+          .where('family_relations.source_id', '=', id)
           .execute()
       ]);
 
-      const groupIds = groups.length ? groups.map(g => g.groupId) : [-1];
+      const groupIds = groups.length ? groups.map(g => g.group_id) : [-1];
 
-      const [timetable, substitution] = await Promise.all([
+      const [timetableResult, substitutionResult] = await Promise.all([
         db.selectFrom('timetable')
-          .innerJoin('subjects', 'timetable.subject', 'subjects.subjectId')
-          .leftJoin('persons', 'timetable.teacher', 'persons.personId')
-          .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-          .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
+          .innerJoin('subjects', 'timetable.subject_id', 'subjects.subject_id')
+          .leftJoin('persons', 'timetable.teacher_id', 'persons.person_id')
           .select([
             sql`(timetable.day + 1) % 7`.as('day'),
             'timetable.hour',
             'timetable.type',
-            sql`subjects.label`.as('subjectName'),
-            sql`subjects.shortcut`.as('subjectShortcut'),
-            fullName.as('teacher')
+            sql`subjects.label`.as('subject_name'),
+            sql`subjects.shortcut`.as('subject_shortcut'),
+            'persons.person_id as teacher_id'
           ])
-          .where('timetable.groupId', 'in', groupIds)
+          .where('timetable.group_id', 'in', groupIds)
           .execute(),
 
         db.selectFrom('substitution')
-          .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
-          .leftJoin('persons', 'substitution.teacherId', 'persons.personId')
-          .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-          .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
+          .leftJoin('subjects', 'substitution.subject_id', 'subjects.subject_id')
+          .leftJoin('persons', 'substitution.teacher_id', 'persons.person_id')
           .select([
             'substitution.start_date',
             'substitution.start_hour',
             'substitution.end_date',
             'substitution.end_hour',
-            sql`subjects.label`.as('subjectName'),
-            sql`subjects.shortcut`.as('subjectShortcut'),
-            fullName.as('teacher')
+            sql`subjects.label`.as('subject_name'),
+            sql`subjects.shortcut`.as('subject_shortcut'),
+            'persons.person_id as teacher_id'
           ])
-          .where('substitution.groupId', 'in', groupIds)
+          .where('substitution.group_id', 'in', groupIds)
           .where(sql<boolean>`substitution.start_date >= ${time.clone().startOf('isoWeek').format("YYYY-MM-DD")}`)
           .where(sql<boolean>`substitution.end_date <= ${time.clone().endOf('isoWeek').format("YYYY-MM-DD")}`)
           .execute()
       ]);
 
+      const teacherIds = [
+        ...timetableResult.map(t => t.teacher_id).filter((id): id is number => id !== null),
+        ...substitutionResult.map(s => s.teacher_id).filter((id): id is number => id !== null)
+      ];
+      const teacherNameMap = await format_person_map_by_ids(teacherIds);
+
+      const timetable = timetableResult.map(t => ({
+        ...t,
+        teacher: t.teacher_id ? teacherNameMap.get(t.teacher_id) : ''
+      }));
+
+      const substitution = substitutionResult.map(s => ({
+        ...s,
+        teacher: s.teacher_id ? teacherNameMap.get(s.teacher_id) : ''
+      }));
+
       const result: any = {};
 
-      if (show.includes('basic')) Object.assign(result, student);
+      if (show.includes('basic')) {
+        Object.assign(result, studentResult);
+        if (studentResult.person_id) {
+          result.full_name = await format_person_by_id(studentResult.person_id);
+        }
+      }
       if (show.includes('groups')) result.groups = groups;
       if (show.includes('parents')) result.parents = parents;
       if (show.includes('timetable')) {
@@ -241,11 +216,14 @@ const elysiaApp = new Elysia()
         result.substitution = substitution;
       }
 
-      result.teacherName = await format_person_by_id(student.teacher!);
+      if (studentResult.teacher_id) {
+        result.teacher_name = await format_person_by_id(studentResult.teacher_id);
+      }
 
       return Response.json(result);
 
     } catch (e) {
+      console.error(e);
       return new Response(JSON.stringify({ error: 'Student not found' }), { status: 404 });
     }
   }, {
@@ -282,10 +260,9 @@ const elysiaApp = new Elysia()
         const result = await db.transaction().execute(async (trx) => {
           const newPerson = await trx.insertInto('persons')
             .values({
-              firstName,
-              lastName,
-              gender: 1, // Default or need input? Assuming 1 (male) or 2 (female) or 0
-              GDPR: false
+              first_name: firstName,
+              last_name: lastName,
+              gender: 0
             })
             .executeTakeFirstOrThrow();
           
@@ -303,7 +280,7 @@ const elysiaApp = new Elysia()
           if (email) {
             await trx.insertInto('emails')
               .values({
-                personId: newPersonId,
+                person_id: newPersonId,
                 email,
                 type: 'personal',
                 is_verified: false
@@ -314,7 +291,7 @@ const elysiaApp = new Elysia()
           if (phone) {
             await trx.insertInto('phone_numbers')
               .values({
-                personId: newPersonId,
+                person_id: newPersonId,
                 number: phone,
                 is_verified: false,
                 code: 420 // Default czech prefix
@@ -356,19 +333,19 @@ const elysiaApp = new Elysia()
         // 1. Find or create city
         let cityId: number;
         const existingCity = await trx.selectFrom('cities')
-          .select('cityId')
-          .where('cityName', '=', city)
+          .select('city_id')
+          .where('city_name', '=', city)
           .where('postcode', '=', postcode || null)
           .executeTakeFirst();
 
         if (existingCity) {
-          cityId = existingCity.cityId;
+          cityId = existingCity.city_id;
         } else {
           const newCity = await trx.insertInto('cities')
             .values({
-              cityName: city,
+              city_name: city,
               postcode: postcode || null,
-              countryId: 1 // Default to Czech Republic for now, or could be passed
+              country_id: 1 // Default to Czech Republic for now, or could be passed
             })
             .executeTakeFirstOrThrow();
           cityId = Number(newCity.insertId);
@@ -376,35 +353,35 @@ const elysiaApp = new Elysia()
 
         // 2. Get person and their addressId
         const person = await trx.selectFrom('persons')
-          .select('address')
-          .where('personId', '=', id)
+          .select('address_id')
+          .where('person_id', '=', id)
           .executeTakeFirstOrThrow();
 
-        if (person.address) {
+        if (person.address_id) {
           // Update existing address
           await trx.updateTable('addresses')
             .set({
-              cityId,
+              city_id: cityId,
               street,
-              houseNumber
+              house_number: houseNumber
             })
-            .where('addressId', '=', person.address)
+            .where('address_id', '=', person.address_id)
             .execute();
         } else {
           // Create new address
           const newAddress = await trx.insertInto('addresses')
             .values({
-              cityId,
+              city_id: cityId,
               street,
-              houseNumber
+              house_number: houseNumber
             })
             .executeTakeFirstOrThrow();
           const addressId = Number(newAddress.insertId);
 
           // Link to person
           await trx.updateTable('persons')
-            .set({ address: addressId })
-            .where('personId', '=', id)
+            .set({ address_id: addressId })
+            .where('person_id', '=', id)
             .execute();
         }
       });

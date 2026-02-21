@@ -3,13 +3,13 @@ import { Generated } from "kysely"
 export interface Users_credentialsTable {
   id: Generated<number>
   credential_id: string
-  userId: number
+  user_id: number
   public_key: string
   counter: number
   device_name: string
-  device_type: 'singleDevice' | 'multiDevice'
+  device_type: Generated<'singleDevice' | 'multiDevice'>
   transports: string
   registered_at: Generated<Date>
-  last_used: Date | null
-  backed_up: boolean
+  last_used: Generated<Date | null>
+  backed_up: Generated<boolean>
 }

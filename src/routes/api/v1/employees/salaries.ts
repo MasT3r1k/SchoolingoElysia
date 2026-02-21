@@ -1,5 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
+import moment from 'moment';
 
 const salariesRouter = new Elysia()
   // GET /employees/salaries - Get salaries (admin/personnel only)
@@ -9,8 +10,8 @@ const salariesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -25,40 +26,40 @@ const salariesRouter = new Elysia()
     }
 
     let queryBuilder = db.selectFrom('teachers_salary')
-      .leftJoin('teachers', 'teachers_salary.teacherId', 'teachers.personId')
-      .leftJoin('persons', 'teachers.personId', 'persons.personId')
+      .leftJoin('teachers', 'teachers_salary.teacher_id', 'teachers.person_id')
+      .leftJoin('persons', 'teachers.person_id', 'persons.person_id')
       .select([
-        'teachers_salary.salaryId',
-        'teachers_salary.teacherId',
-        'persons.firstName',
-        'persons.lastName',
+        'teachers_salary.salary_id',
+        'teachers_salary.teacher_id',
+        'persons.first_name',
+        'persons.last_name',
         'teachers_salary.role',
         'teachers_salary.salary',
-        'teachers_salary.validFrom',
-        'teachers_salary.validTo',
+        'teachers_salary.valid_from',
+        'teachers_salary.valid_to',
         'teachers_salary.currency',
         'teachers_salary.deductions',
       ])
-      .where('teachers_salary.teacherId', 'is not', null)
+      .where('teachers_salary.teacher_id', 'is not', null)
 
     // Filter by employee
     if (query.employeeId) {
-      queryBuilder = queryBuilder.where('teachers_salary.teacherId', '=', query.employeeId);
+      queryBuilder = queryBuilder.where('teachers_salary.teacher_id', '=', query.employeeId);
     }
 
     // Only active salaries
     if (query.activeOnly) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = moment().format('YYYY-MM-DD');
       queryBuilder = queryBuilder
-        .where('teachers_salary.validFrom', '<=', today)
+        .where('teachers_salary.valid_from', '<=', today)
         .where((eb) => eb.or([
-          eb('teachers_salary.validTo', 'is', null),
-          eb('teachers_salary.validTo', '>=', today)
+          eb('teachers_salary.valid_to', 'is', null),
+          eb('teachers_salary.valid_to', '>=', today)
         ]))
     }
 
     const results = await queryBuilder
-      .orderBy('persons.lastName', 'asc')
+      .orderBy('persons.last_name', 'asc')
       .execute();
 
     return Response.json({ data: results });
@@ -76,8 +77,8 @@ const salariesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -93,19 +94,19 @@ const salariesRouter = new Elysia()
     // End current salary if exists
     const today = new Date().toISOString().split('T')[0];
     await db.updateTable('teachers_salary')
-      .set({ validTo: today })
-      .where('teacherId', '=', body.teacherId)
-      .where('validTo', 'is', null)
+      .set({ valid_to: today })
+      .where('teacher_id', '=', body.teacherId)
+      .where('valid_to', 'is', null)
       .execute();
 
     // Insert new salary
     await db.insertInto('teachers_salary')
       .values({
-        teacherId: body.teacherId,
+        teacher_id: body.teacherId,
         role: body.role || '',
         salary: body.salary,
-        validFrom: body.validFrom,
-        validTo: body.validTo || null,
+        valid_from: body.validFrom,
+        valid_to: body.validTo || null,
         currency: body.currency || 'CZK',
         deductions: body.deductions || 0,
       })
@@ -133,8 +134,8 @@ const salariesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -151,11 +152,11 @@ const salariesRouter = new Elysia()
       .set({
         role: body.role,
         salary: body.salary,
-        validFrom: body.validFrom,
-        validTo: body.validTo,
+        valid_from: body.validFrom,
+        valid_to: body.validTo,
         deductions: body.deductions,
       })
-      .where('salaryId', '=', salaryId)
+      .where('salary_id', '=', salaryId)
       .execute();
 
     return Response.json({ success: true, message: 'Salary updated' });
@@ -178,8 +179,8 @@ const salariesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -194,8 +195,8 @@ const salariesRouter = new Elysia()
 
     const history = await db.selectFrom('teachers_salary')
       .selectAll()
-      .where('teacherId', '=', employeeId)
-      .orderBy('validFrom', 'desc')
+      .where('teacher_id', '=', employeeId)
+      .orderBy('valid_from', 'desc')
       .execute();
 
     return Response.json({ data: history });

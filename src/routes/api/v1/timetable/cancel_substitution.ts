@@ -22,7 +22,7 @@ const app = new Elysia()
 
         try {
             await db.deleteFrom('substitution')
-                .where('groupId', '=', group_id)
+                .where('group_id', '=', group_id)
                 .where('start_date', '=', start_date)
                 .where('start_hour', '=', start_hour)
                 .where('end_date', '=', end_date)

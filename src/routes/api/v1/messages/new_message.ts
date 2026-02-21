@@ -8,13 +8,13 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     const { topic, message } = body;
     if (topic == undefined || message == undefined) return { error: 'invalid_body' };
@@ -25,7 +25,7 @@ const app = new Elysia()
             type: 1,
             topic,
             message,
-            author_id: auth.person,
+            author_id: auth.person_id,
         })
       .executeTakeFirst();
 

@@ -9,9 +9,9 @@ const filterApp = new Elysia()
         const [classes, scopes] = await Promise.all([
             // Get all active classes
             db.selectFrom('classes')
-                .innerJoin('school_years', 'school_years.syId', 'classes.yearId')
+                .innerJoin('school_years', 'school_years.sy_id', 'classes.year_id')
                 .select([
-                    'classes.classId as id',
+                    'classes.class_id as id',
                     sql<string>`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('name')
                 ])
                 .orderBy('name', 'asc')
@@ -20,7 +20,7 @@ const filterApp = new Elysia()
             // Get all scopes
             db.selectFrom('scopes')
                 .select([
-                    'scopes.scopeId as id',
+                    'scopes.scope_id as id',
                     'scopes.name'
                 ])
                 .orderBy('scopes.name', 'asc')

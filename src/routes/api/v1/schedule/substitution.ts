@@ -17,8 +17,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.person', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.person_id', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -32,20 +32,18 @@ const app = new Elysia()
 
         const substitutions = await db
             .selectFrom('substitution')
-            .leftJoin('classes', 'classes.class', 'substitution.class')
-            .leftJoin('subjects', 'subjects.subject_id', 'substitution.subject')
-            .leftJoin('persons as original', 'original.person', 'substitution.original_teacher')
-            .leftJoin('persons as substitute', 'substitute.person', 'substitution.substitute_teacher')
+            .leftJoin('groups', 'groups.group_id', 'substitution.group_id')
+            .leftJoin('subjects', 'subjects.subject_id', 'substitution.subject_id')
+            .leftJoin('persons as original', 'original.person_id', 'substitution.teacher_id')
+            .leftJoin('persons as substitute', 'substitute.person_id', 'substitution.teacher_id')
             .select([
                 'substitution.substitution_id',
                 'substitution.date',
                 'substitution.hour',
                 'substitution.type',
-                'substitution.note',
-                'classes.name as className',
-                'subjects.name as subjectName',
-                db.fn('concat', ['original.firstname', db.val(' '), 'original.lastname']).as('originalTeacher'),
-                db.fn('concat', ['substitute.firstname', db.val(' '), 'substitute.lastname']).as('substituteTeacher'),
+                'subjects.label as subjectName',
+                db.fn('concat', ['original.first_name', db.val(' '), 'original.lastname']).as('originalTeacher'),
+                db.fn('concat', ['substitute.first_name', db.val(' '), 'substitute.lastname']).as('substituteTeacher'),
             ])
             .where('substitution.date', '=', date)
             .orderBy('substitution.hour', 'asc')
@@ -63,13 +61,13 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth || (auth.role !== 'admin' && auth.role !== 'teacher')) {
+        if (!auth || (auth.role !== 'admin_staff' && auth.role !== 'teacher')) {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 
@@ -88,7 +86,7 @@ const app = new Elysia()
                 original_teacher: originalTeacherId,
                 substitute_teacher: substituteTeacherId || null,
                 class: classId,
-                subject: subjectId || null,
+                subject_id: subjectId || null,
                 type,
                 note: note || null
             })
@@ -97,12 +95,12 @@ const app = new Elysia()
         // Notify affected students
         const students = await db
             .selectFrom('students')
-            .leftJoin('users', 'users.person', 'students.person')
-            .select(['users.userId'])
-            .where('students.class', '=', classId)
+            .leftJoin('users', 'users.person_id', 'students.person_id')
+            .select(['users.user_id'])
+            .where('students.class_id', '=', classId)
             .execute();
 
-        const userIds = students.map(s => s.userId).filter(Boolean) as number[];
+        const userIds = students.map(s => s.user_id).filter(Boolean) as number[];
         
         if (userIds.length > 0) {
             await notificationBroadcaster.notifyScheduleChange(userIds, {
@@ -124,13 +122,13 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth || (auth.role !== 'admin' && auth.role !== 'teacher')) {
+        if (!auth || (auth.role !== 'admin_staff' && auth.role !== 'teacher')) {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 

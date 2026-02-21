@@ -7,7 +7,7 @@ export async function get_classbook_lesson_number(classbook_id: number): Promise
     .select([
         'classbook.dayHour',
         'classbook.date',
-        'classbook.subject',
+        'classbook.subject_id',
         'classbook.groupId'
     ])
     .where('classbook.cbId', '=', classbook_id)
@@ -55,8 +55,8 @@ export async function get_classbook_lesson_number(classbook_id: number): Promise
         'timetable.hour',
         'timetable.type'
     ])
-    .where('timetable.groupId', '=', classbook.groupId)
-    .where('timetable.subject', '=', classbook.subject)
+    .where('timetable.group_id', '=', classbook.groupId)
+    .where('timetable.subject_id', '=', classbook.subject)
     .execute();
 
     /// Sčítání čísla hodiny

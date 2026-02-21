@@ -1,11 +1,11 @@
 import { Generated } from "kysely";
 
 export interface ClassesTable {
-  classId: Generated<number>;              // PK
+  class_id: Generated<number>;
   prefix: string;
   suffix: string;
-  yearId?: number | null;
-  teacher: number;
-  room: number;
-  scopeId: number;
+  year_id: Generated<number | null>;
+  teacher_id: number;
+  room_id: number;
+  scope_id: number;
 }

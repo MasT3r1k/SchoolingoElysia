@@ -6,7 +6,7 @@ const elysiaApp = new Elysia()
     const scopes = await 
         db.selectFrom("scopes")
         .select([
-            'scopes.scopeId',
+            'scopes.scope_id',
             'scopes.name as scopeName',
             'scopes.shortcut as scopeShort',
             'scopes.code as scopeCode',

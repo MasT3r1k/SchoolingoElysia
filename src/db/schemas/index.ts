@@ -104,6 +104,9 @@ import { OnlineLessonsTable } from './online_lessons'
 import { OAuthTokensTable } from './oauth_tokens'
 import { SupervisionsTable } from './supervisions'
 import { SupervisionPlacesTable } from './supervision_places'
+import { InventoryTable } from './inventory'
+import { InventoryLogsTable } from './inventory_logs'
+import { SystemHeartbeatsTable } from './system_heartbeats'
 
 export interface Database {
   absence: AbsenceTable
@@ -223,4 +226,7 @@ export interface Database {
   oauth_tokens: OAuthTokensTable
   supervisions: SupervisionsTable
   supervision_places: SupervisionPlacesTable
+  inventory: InventoryTable
+  inventory_logs: InventoryLogsTable
+  system_heartbeats: SystemHeartbeatsTable
 }

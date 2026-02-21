@@ -8,13 +8,13 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     const { message_id, read, confirm } = body;
     if (message_id == undefined) return { error: 'invalid_body' };
@@ -31,21 +31,21 @@ const app = new Elysia()
       const message_receiver = await db.selectFrom('messages_receivers')
       .select(['message_id'])
       .where('messages_receivers.message_id', '=', message_id)
-      .where('messages_receivers.receiver_id', '=', auth.person)
+      .where('messages_receivers.receiver_id', '=', auth.person_id)
       .executeTakeFirst();
 
       if (message_receiver) {
         const messageRead = await db.updateTable('messages_receivers')
         .set(updateMessage)
         .where('message_id', '=', message_id)
-        .where('messages_receivers.receiver_id', '=', auth.person)
+        .where('messages_receivers.receiver_id', '=', auth.person_id)
         .limit(1)
         .executeTakeFirst();
       } else {
         await db.insertInto('messages_receivers')
         .values({
           message_id,
-          receiver_id: auth.person,
+          receiver_id: auth.person_id,
           read_at: updateMessage.read_at
         })
         .execute();

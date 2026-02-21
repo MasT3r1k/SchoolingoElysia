@@ -14,10 +14,10 @@ const app = new Elysia().post(
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'tokens.userId', 'users.userId')
+      .leftJoin('users', 'tokens.user_id', 'users.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
         'users.role'
       ])
       .where('tokens.token', '=', token)
@@ -45,8 +45,8 @@ const app = new Elysia().post(
     // Check subject
     const subject = await db
       .selectFrom('subjects')
-      .select(['subjectId'])
-      .where('subjectId', '=', subject_id)
+      .select(['subject_id'])
+      .where('subject_id', '=', subject_id)
       .limit(1)
       .execute();
 
@@ -58,8 +58,8 @@ const app = new Elysia().post(
     const existingColumn = await db
       .selectFrom('grades_columns')
       .select('gcId')
-      .where('groupId', '=', group_id)
-      .where('subjectId', '=', subject_id)
+      .where('group_id', '=', group_id)
+      .where('subject_id', '=', subject_id)
       .where('columnIndex', '=', columnIndex)
       .limit(1)
       .executeTakeFirst();

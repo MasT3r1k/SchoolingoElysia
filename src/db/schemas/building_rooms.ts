@@ -1,11 +1,13 @@
 import { Generated } from "kysely";
 
 export interface Building_roomsTable {
-  br_id: Generated<number>;
+  room_id: Generated<number>;
   floor_id: number;
   name: string;
-  type: string; // default 'classroom' by DB
-  capacity: number | null;
+  type: Generated<string>; // @default 'classroom'
+  description: Generated<string | null>;
+  manager_id: number;
+  capacity: Generated<number>;
   pos_x: number;
   pos_y: number;
 }

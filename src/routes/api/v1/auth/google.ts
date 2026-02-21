@@ -48,7 +48,7 @@ export const googleAuth = new Elysia()
                 body: params
             });
             
-            const tokens = await response.json();
+            const tokens = await response.json() as any;
              
             if (tokens.error) return { error: tokens.error_description || 'Failed to get tokens' };
             
@@ -62,7 +62,7 @@ export const googleAuth = new Elysia()
             
             await db.insertInto('oauth_tokens')
                 .values({
-                    userId: user.userId,
+                    user_id: user.user_id,
                     provider: 'google',
                     access_token: tokens.access_token,
                     refresh_token: tokens.refresh_token,

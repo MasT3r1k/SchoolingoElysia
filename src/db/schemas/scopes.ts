@@ -1,7 +1,7 @@
 import { Generated } from "kysely";
 
 export interface ScopesTable {
-  scopeId: Generated<number>
+  scope_id: Generated<number>
   name: string;
   shortcut: string;
   code: string;

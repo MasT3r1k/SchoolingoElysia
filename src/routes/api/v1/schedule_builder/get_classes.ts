@@ -1,8 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
-import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../../../index';
 import moment from 'moment';
 
 const elysiaApp = new Elysia()
@@ -14,10 +12,10 @@ const elysiaApp = new Elysia()
     }
 
     const user = await db.selectFrom("tokens")
-        .innerJoin('users', 'users.userId', 'tokens.userId')
-        .innerJoin("passwords", "passwords.passwordId", "users.password")
+        .innerJoin('users', 'users.user_id', 'tokens.user_id')
+        .innerJoin("passwords", "passwords.password_id", 'users.password_id')
         .select([
-            'users.userId',
+            'users.user_id',
             'users.username',
             'users.2fa',
             'users.2fa_secret',
@@ -33,14 +31,14 @@ const elysiaApp = new Elysia()
     }
 
     const classes = await db.selectFrom("classes")
-    .innerJoin('users', 'users.person', 'classes.teacher')
-    .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
-    .leftJoin('scopes', 'scopes.scopeId', 'classes.scopeId')
+    .innerJoin('users', 'users.person_id', 'classes.teacher_id')
+    .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
+    .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
     .select([
-        'classes.classId',
-        sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
+        'classes.class_id',
+        sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('class_name')
     ])
-    .where('users.school', '=', (school as any).schoolId)
+    .where('users.school_id', '=', (school as any).school_id)
     .where(sql`TIMESTAMPDIFF(YEAR, school_years.start, CURDATE())`, '<', sql`scopes.years`)
     .execute()
 

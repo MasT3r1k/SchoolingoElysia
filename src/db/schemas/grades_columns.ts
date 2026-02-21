@@ -1,10 +1,10 @@
 import { Generated } from "kysely";
 
 export interface grades_columnsTable {
-  gcId: Generated<number>;
-  groupId: number;
-  subjectId: number;
-  columnIndex: number;
+  column_id: Generated<number>;
+  group_id: number;
+  subject_id: number;
+  column_index: number;
   weight: number;
   type: number;
   topic: string;

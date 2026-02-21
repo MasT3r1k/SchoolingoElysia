@@ -14,8 +14,8 @@ const app = new Elysia()
 
         const auth = await db
         .selectFrom('tokens')
-        .leftJoin('users', 'tokens.userId', 'users.userId')
-        .select(['tokens.userId', 'users.person'])
+        .leftJoin('users', 'tokens.user_id', 'users.user_id')
+        .select(['tokens.user_id', 'users.person_id'])
         .where('tokens.token', '=', token)
         .where('tokens.expires', '>=', moment().toDate())
         .limit(1)
@@ -33,12 +33,12 @@ const app = new Elysia()
 
         const company = await db
         .selectFrom('traineeship_companies as c')
-        .leftJoin('traineeship_company_rating as r', 'r.companyId', 'c.companyId')
+        .leftJoin('traineeship_company_rating as r', 'r.company_id', 'c.company_id')
         .select((eb) => [
-          'c.companyId',
+          'c.company_id',
           eb.fn.avg('r.rating').as('rating'),
         ])
-        .where('c.companyId', '=', companyId)
+        .where('c.company_id', '=', companyId)
         .limit(1)
         .executeTakeFirst();
 
@@ -49,18 +49,18 @@ const app = new Elysia()
 
         const reviews = await db
         .selectFrom('traineeship_company_rating')
-        .leftJoin('persons', 'persons.personId', 'traineeship_company_rating.studentId')
+        .leftJoin('persons', 'persons.person_id', 'traineeship_company_rating.student_id')
         .select([
-            'traineeship_company_rating.reviewId',
+            'traineeship_company_rating.review_id',
             'traineeship_company_rating.experience',
             'traineeship_company_rating.rating',
             'traineeship_company_rating.is_anon',
             'traineeship_company_rating.would_recommend',
             'traineeship_company_rating.created_at',
-            'persons.firstName',
-            'persons.lastName',
+            'persons.first_name',
+            'persons.last_name',
         ])
-        .where('traineeship_company_rating.companyId', '=', companyId)
+        .where('traineeship_company_rating.company_id', '=', companyId)
         .execute()
 
 
@@ -68,11 +68,11 @@ const app = new Elysia()
       return Response.json({
         ...company,
         reviews: reviews.map((review) => ({
-            reviewId: review.reviewId,
+            reviewId: review.review_id,
             experience: review.experience,
             rating: review.rating,
             recommend: review.would_recommend,
-            student: review.is_anon ? null : review.firstName + ' ' + review.lastName,
+            student: review.is_anon ? null : review.first_name + ' ' + review.last_name,
             created_at: review.created_at
         }))
       });

@@ -13,40 +13,40 @@ const elysiaApp = new Elysia()
 
     const [schoolData, breaks, year] = await Promise.all([
         db.selectFrom("schools")
-        .leftJoin('districts', 'districts.districtId', 'schools.district') // Use leftJoin in case district is 0/null
+        .leftJoin('districts', 'districts.district_id', 'schools.district_id') // Use leftJoin in case district is 0/null
         .select([
             'schools.name',
-            'schools.shortName',
+            'schools.short_name',
             'schools.code',
-            'schools.startHour',
-            'schools.startMinute',
-            'schools.lessonHour',
-            'schools.breakTime',
-            'schools.resetPasswordWithEmail',
+            'schools.start_hour',
+            'schools.start_minute',
+            'schools.lesson_hour',
+            'schools.break_time',
+            'schools.reset_password_with_email',
             'schools.fastlogin',
-            'schools.warningAbsencePercent',
+            'schools.warning_absence_percent',
             'schools.modules',
-            'schools.studentsLimit',
+            'schools.students_limit',
             'districts.district',
             'schools.auth_classic',
             'schools.auth_ldap',
             'schools.auth_passkeys',
-            'schools.gdpr_firstname',
-            'schools.gdpr_lastname',
+            'schools.gdpr_first_name',
+            'schools.gdpr_last_name',
             'schools.gdpr_phone',
             'schools.gdpr_email',
             'schools.gdpr_mobile',
             'schools.gdpr_databox',
             'schools.gdpr_web'
         ])
-        .where('schools.schoolId', '=', school.schoolId)
+        .where('schools.school_id', '=', school.school_id)
         .executeTakeFirst(),
         db.selectFrom("school_breaks")
         .select([
             "school_breaks.hour",
             "school_breaks.minutes"
         ])
-        .where('school_breaks.school', '=', school.schoolId)
+        .where('school_breaks.school_id', '=', school.school_id)
         .execute(),
         db.selectFrom("school_years")
         .select([
@@ -63,7 +63,7 @@ const elysiaApp = new Elysia()
       ...schoolData,
       year,
       breaks,
-      loginExpires: 15000
+      login_expires: 15000
     });
   });
 

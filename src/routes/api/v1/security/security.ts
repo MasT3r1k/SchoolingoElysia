@@ -16,7 +16,7 @@ const app = new Elysia()
 
         const [user, passkeys] = await Promise.all([
             db.selectFrom("tokens")
-            .innerJoin('users', 'users.userId', 'tokens.userId')
+            .innerJoin('users', 'users.user_id', 'tokens.user_id')
             .select([
                 'users.2fa',
                 'users.2fa_activated',
@@ -28,8 +28,8 @@ const app = new Elysia()
             .executeTakeFirst(),
 
             db.selectFrom('tokens')
-                .innerJoin('users', 'users.userId', 'tokens.userId')
-                .innerJoin('users_credentials', 'users_credentials.userId', 'users.userId')
+                .innerJoin('users', 'users.user_id', 'tokens.user_id')
+                .innerJoin('users_credentials', 'users_credentials.user_id', 'users.user_id')
                 .select([
                     'users_credentials.id',
                     'users_credentials.device_name',
@@ -56,9 +56,9 @@ const app = new Elysia()
       }
 
       const user = await db.selectFrom("tokens")
-        .innerJoin('users', 'users.userId', 'tokens.userId')
+        .innerJoin('users', 'users.user_id', 'tokens.user_id')
         .select([
-            'users.userId',
+            'users.user_id',
             'users.username',
             'users.2fa',
             'users.2fa_activated',
@@ -91,7 +91,7 @@ const app = new Elysia()
                 });
                 await db.updateTable("users")
                 .set("2fa_secret", secret)
-                .where("userId", "=", user.userId)
+                .where('user_id', "=", user.user_id)
                 .limit(1)
                 .execute();
 
@@ -101,20 +101,20 @@ const app = new Elysia()
                 if (user['2fa']) return Response.json({ error: ['Already activated 2FA'] });
                 if (!TFA || TFA == "") return Response.json({ error: ['Invalid TFA'] });
 
-                const isTrue2FA = await verifyTFA(TFA, user.userId, false, false);
+                const isTrue2FA = await verifyTFA(TFA, user.user_id, false, false);
                 if (!isTrue2FA) return Response.json({ error: ['Invalid TFA'] });
 
                 await db.updateTable("users")
                 .set("2fa", true)
                 .set("2fa_activated", new Date())
-                .where("userId", "=", user.userId)
+                .where('user_id', "=", user.user_id)
                 .limit(1)
                 .execute();
 
 
                 await db.insertInto("auditlog")
                 .values({
-                    userId: user.userId,
+                    user_id: user.user_id,
                     type: "activated_2FA",
                     data: JSON.stringify({}),
                     ip
@@ -122,7 +122,7 @@ const app = new Elysia()
                 .execute()
 
                 // Generate new backup codes
-                generateNewBackupCodes(user.userId);
+                generateNewBackupCodes(user.user_id);
 
                 return Response.json({ status: true });
 
@@ -130,20 +130,20 @@ const app = new Elysia()
                 if (!user['2fa']) return Response.json({ error: ['Already deactivated 2FA'] });
                 if (!TFA || TFA == "") return Response.json({ error: ['Invalid TFA'] });
 
-                const isValid2FA = await verifyTFA(TFA, user.userId);
+                const isValid2FA = await verifyTFA(TFA, user.user_id);
                 if (!isValid2FA) return Response.json({ error: ['Invalid TFA'] });
 
                 // Update 2FA status
                 await db.updateTable("users")
                 .set("2fa", false)
                 .set("2fa_activated", null)
-                .where("userId", "=", user.userId)
+                .where('user_id', "=", user.user_id)
                 .limit(1)
                 .execute();
 
                 await db.insertInto("auditlog")
                 .values({
-                    userId: user.userId,
+                    user_id: user.user_id,
                     type: "deactivated_2FA",
                     data: JSON.stringify({}),
                     ip
@@ -152,7 +152,7 @@ const app = new Elysia()
 
                 // Remove all backup codes
                 await db.deleteFrom("users_backup_codes")
-                .where("userId", "=", user.userId)
+                .where('user_id', "=", user.user_id)
                 .execute();
 
                 return Response.json({ status: true })
@@ -162,7 +162,7 @@ const app = new Elysia()
                 if (!TFA || TFA == "") return Response.json({ error: ['Invalid TFA'] });
 
                 // Verify TFA
-                const isApproved2FA = await verifyTFA(TFA, user["userId"]);
+                const isApproved2FA = await verifyTFA(TFA, user['user_id']);
 
                 if (!isApproved2FA) {
                     return Response.json({ error: ['Invalid 2FA'] });
@@ -173,8 +173,8 @@ const app = new Elysia()
                     'users_backup_codes.code',
                     'users_backup_codes.used'
                 ])
-                .where('users_backup_codes.userId', '=', user.userId)
-                .orderBy('users_backup_codes.ubcId', 'asc')
+                .where('users_backup_codes.user_id', '=', user.user_id)
+                .orderBy('users_backup_codes.ubc_id', 'asc')
                 .execute()
                 return Response.json({ codes });
             case "GENERATE_BACKUP_CODES":
@@ -182,15 +182,15 @@ const app = new Elysia()
                 if (!TFA || TFA == "") return Response.json({ error: ['Invalid TFA'] });
 
                 // Verify TFA
-                const isRight2FA = await verifyTFA(TFA, user["userId"]);
+                const isRight2FA = await verifyTFA(TFA, user['user_id']);
                 if (!isRight2FA) {
                     return Response.json({ error: ['Invalid 2FA'] });
                 }
 
-                const backupCodes = await generateNewBackupCodes(user.userId);
+                const backupCodes = await generateNewBackupCodes(user.user_id);
                 await db.insertInto("auditlog")
                 .values({
-                    userId: user.userId,
+                    user_id: user.user_id,
                     type: "refresh_backup_codes",
                     data: JSON.stringify({}),
                     ip

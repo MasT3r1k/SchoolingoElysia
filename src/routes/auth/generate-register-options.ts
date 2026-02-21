@@ -12,9 +12,9 @@ const elysiaApp = new Elysia()
     if (!token) return Response.json({ error: 'no_user', details: 'no_cookie' });
 
     const user = await db.selectFrom("tokens")
-      .innerJoin('users', 'users.userId', 'tokens.userId')
-      .innerJoin("passwords", "passwords.passwordId", "users.password")
-      .select(['users.userId', 'users.username'])
+      .innerJoin('users', 'users.user_id', 'tokens.user_id')
+      .innerJoin("passwords", "passwords.password_id", 'users.password_id')
+      .select(['users.user_id', 'users.username'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', moment().toDate())
       .limit(1)
@@ -23,7 +23,7 @@ const elysiaApp = new Elysia()
     if (!user) return Response.json({ error: 'no_user', details: 'no_db' });
 
     const credentials = await db.selectFrom("users_credentials")
-      .where('userId', '=', user.userId)
+      .where('user_id', '=', user.user_id)
       .select(['credential_id', 'transports'])
       .execute();
 
@@ -47,9 +47,9 @@ const elysiaApp = new Elysia()
 
     // uložit challenge do databáze
     await db.insertInto("webauthn_challenges").values({
-      userId: user.userId,
+      user_id: user.user_id,
       challenge: options.challenge,
-      expiresAt: moment().add(5, 'minutes').toDate(),
+      expires_at: moment().add(5, 'minutes').toDate(),
     }).execute();
 
     return Response.json(options);

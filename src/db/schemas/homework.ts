@@ -1,10 +1,10 @@
 import { Generated } from "kysely";
 
 export interface homeworkTable {
-  homeworkId: Generated<number>;
-  subjectId: number;
-  groupId: number;
-  teacherId: number;
+  homework_id: Generated<number>;
+  subject_id: number;
+  group_id: number;
+  teacher_id: number;
   assigned_at: Generated<Date>;
   due_date: Date | null;
   headline: string | null;

@@ -15,10 +15,10 @@ const app = new Elysia().post(
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'tokens.userId', 'users.userId')
+      .leftJoin('users', 'tokens.user_id', 'users.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
         'users.role'
       ])
       .where('tokens.token', '=', token)
@@ -52,7 +52,7 @@ const app = new Elysia().post(
         file_uuid: randomUUID(),
         name: name,
         origin: 'documents',
-        owner_id: auth.userId
+        owner_id: auth.user_id
       })
       .executeTakeFirst()
 
@@ -71,7 +71,7 @@ const app = new Elysia().post(
             file_id: Number(newFile.insertId) ?? null,
             name,
             parent_id,
-            owner_id: auth.userId,
+            owner_id: auth.user_id,
             created_at: new Date()
         };
     } catch(e) {

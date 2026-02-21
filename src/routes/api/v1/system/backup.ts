@@ -11,7 +11,7 @@ const app = new Elysia()
   // POST /system/backup/interval - Update backup interval
   .post('/system/backup/interval', async ({ user, body }) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.isPrincipal) {
+    if (user.manager !== -1 && !user.is_principal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
@@ -27,7 +27,7 @@ const app = new Elysia()
           .set({
             backup_interval: interval
           })
-          .where('schoolId', '=', user.school)
+          .where('school_id', '=', user.school_id)
           .execute(),
         backupService.updateInterval(hours)
     ]);
@@ -42,7 +42,7 @@ const app = new Elysia()
   // POST /system/backup/trigger - Trigger a manual backup
   .post('/system/backup/trigger', async ({ user, body }) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.isPrincipal) {
+    if (user.manager !== -1 && !user.is_principal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
@@ -53,10 +53,9 @@ const app = new Elysia()
         await db.insertInto('backups')
             .values({
                 filename: backup.filename,
-                size: backup.size,
                 type: 'manual',
                 status: 'success',
-                school_id: user.school as number
+                size: backup.size
             })
             .execute();
 
@@ -69,7 +68,6 @@ const app = new Elysia()
              size: 0,
              type: 'manual',
              status: 'failed',
-             school_id: user.school as number
          })
          .execute();
 
@@ -84,13 +82,12 @@ const app = new Elysia()
   // GET /system/backup/list - List all backups
   .get('/system/backup/list', async ({ user }) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.isPrincipal) {
+    if (user.manager !== -1 && !user.is_principal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
     const backups = await db.selectFrom('backups')
       .selectAll()
-      .where('school_id', '=', user.school)
       .orderBy('created', 'desc')
       .execute();
       

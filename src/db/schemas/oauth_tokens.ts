@@ -2,7 +2,7 @@ import { Generated } from "kysely"
 
 export interface OAuthTokensTable {
   id: Generated<number>
-  userId: number
+  user_id: number
   provider: 'google' | 'microsoft'
   access_token: string
   refresh_token: string | null

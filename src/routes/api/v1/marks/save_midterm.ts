@@ -10,17 +10,17 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
         'users.role'
       ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', moment().toDate())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     // Teacher check
     if (auth.role != "teacher") {
@@ -78,7 +78,7 @@ const app = new Elysia()
           semester: quarter,
           grade: grade,
           year: currentYear,
-          teacher_id: auth.person!
+          teacher_id: auth.person_id!
         })
         .execute();
     }
@@ -100,17 +100,17 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
         'users.role'
       ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', moment().toDate())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     if (auth.role != "teacher") {
       return { error: 'no_permission', details: 'not_teacher' };

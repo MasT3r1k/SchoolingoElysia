@@ -9,13 +9,13 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.tokenId', 'tokens.userId', 'users.person', 'users.manager', 'users.principal'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.token_id', 'tokens.user_id', 'users.person_id', 'users.manager', 'users.principal'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     // === Check permissions ===
     if (auth.manager != -1 && auth.principal == false) return { error: 'no_permission' };
@@ -23,7 +23,7 @@ const app = new Elysia()
     // === Check school ===
     const school = await db.selectFrom('schools')
     .select([
-        'schoolId'
+        'school_id'
     ])
     .executeTakeFirst();
     if (!school) return { error: 'invalid_school' };
@@ -33,7 +33,7 @@ const app = new Elysia()
     
     // === Check valid district ===
     const districtDB = await db.selectFrom('districts')
-    .select(['districts.districtId'])
+    .select(['districts.district_id'])
     .where('districts.district', '=', district)
     .limit(1)
     .executeTakeFirst();
@@ -44,15 +44,15 @@ const app = new Elysia()
         const update_school = await db.updateTable('schools')
         .set({
             name,
-            shortName: shortcut,
-            district: districtDB.districtId,
-            startHour: parseInt(lesson_start.split(':')[0]),
-            startMinute: parseInt(lesson_start.split(':')[1]),
-            lessonHour: lesson_length,
-            breakTime: break_time,
-            warningAbsencePercent: warn_absence,
+            short_name: shortcut,
+            district_id: districtDB.district_id,
+            start_hour: parseInt(lesson_start.split(':')[0]),
+            start_minute: parseInt(lesson_start.split(':')[1]),
+            lesson_hour: lesson_length,
+            break_time: break_time,
+            warning_absence_percent: warn_absence,
             fastlogin,
-            resetPasswordWithEmail
+            reset_password_with_email: resetPasswordWithEmail
         })
         .executeTakeFirst();
 

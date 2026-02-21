@@ -1,8 +1,8 @@
 import { Generated } from "kysely";
 
 export interface CitiesTable {
-  cityId: Generated<number>;
-  cityName: string;
-  countryId: number;
+  city_id: Generated<number>;
+  city_name: string;
+  country_id: number;
   postcode: string | null;
 }

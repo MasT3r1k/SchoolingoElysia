@@ -1,21 +1,21 @@
 import { Generated } from "kysely"
 
 export interface UsersTable {
-  userId: Generated<number>
-  person: number
+  user_id: Generated<number>
+  person_id: number
   username: string
-  password: number
+  password_id: number
   login_type: 'local' | 'ldap'
   role: 'student'|'teacher'|'parent'|'admin_staff'|'management'|'personnel'|'maintenance'|'other'
   manager: number
   principal: boolean
   theme: number
   locale: string
-  passwordChanged: string | null // date
-  recommendChangePassword: boolean
+  password_changed: string | null // date
+  recommend_change_password: boolean
   cookies: number
-  school: number
-  autoSelectNextWeek: boolean
+  school_id: number
+  auto_select_next_week: boolean
   fastlogin: boolean
   levels_exp: number
   '2fa': boolean

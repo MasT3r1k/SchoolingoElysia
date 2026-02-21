@@ -1,11 +1,11 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
-import { format_person_by_id } from '../../../../functions/format_person_by_id';
+import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 import { MainConfig } from '../../../../config/main.config';
 import moment from 'moment';
 
 const app = new Elysia()
-  .post('/marks/teacher/group', async ({ cookie, body, query }) => {
+  .post('/marks/teacher/group', async ({ cookie, body }: any) => {
     const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
@@ -18,10 +18,10 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
         'users.role'
       ])
       .where('tokens.token', '=', token)
@@ -32,37 +32,42 @@ const app = new Elysia()
     if (!auth) return { error: 'no_user', details: 'no_db' };
     if (auth.role != "teacher") return { error: 'no_permission' };
 
-    const students = await db
+    const students_ids_rows = await db
       .selectFrom('student_groups')
-      .leftJoin('users', 'users.person', 'student_groups.student')
-      .leftJoin('persons', 'persons.personId', 'users.person')
-      .select(['student_groups.student'])
-      .where('student_groups.groupId', '=', body.group_id)
-      .orderBy('persons.lastName', 'asc')
-      .orderBy('persons.firstName', 'asc')
+      .leftJoin('users', 'users.person_id', 'student_groups.student_id')
+      .leftJoin('persons', 'persons.person_id', 'users.person_id')
+      .select(['student_groups.student_id'])
+      .where('student_groups.group_id', '=', body.group_id)
+      .orderBy('persons.last_name', 'asc')
+      .orderBy('persons.first_name', 'asc')
       .execute();
+
+    const student_ids = students_ids_rows.map(row => row.student).filter((id): id is number => id !== null);
+    const student_names = await format_people_by_ids(student_ids);
+    const student_name_map = new Map<number, string>();
+    student_ids.forEach((id, index) => student_name_map.set(id, student_names[index]));
 
     const gradeColumns = await db
       .selectFrom('grades_columns')
       .select([
-        'columnIndex',
-        'gcId',
+        'column_index',
+        'column_id',
         'topic',
         'type',
         'weight',
         'created'
       ])
-      .where('grades_columns.groupId', '=', body.group_id)
-      .where('grades_columns.subjectId', '=', body.subject_id)
-      .orderBy('columnIndex')
+      .where('grades_columns.group_id', '=', body.group_id)
+      .where('grades_columns.subject_id', '=', body.subject_id)
+      .orderBy('column_index')
       .execute();
 
-    let grades: any;
+    let grades: any[] = [];
     if (gradeColumns.length) {
       grades = await db
         .selectFrom('grades')
-        .select(['mark', 'studentId', 'columnId'])
-        .where('grades.columnId', 'in', gradeColumns.map((c: any) => c.gcId))
+        .select(['mark', 'student_id', 'column_id'])
+        .where('grades.column_id', 'in', gradeColumns.map((c: any) => c.column_id))
         .execute();
     }
 
@@ -75,50 +80,44 @@ const app = new Elysia()
         'semester_grades.verbal_assessment',
         'semester_grades.year'
       ])
-      .where('semester_grades.student_id', 'in', students.map((student) => student.student))
+      .where('semester_grades.student_id', 'in', student_ids)
       .where('semester_grades.subject_id', '=', body.subject_id)
       .where('semester_grades.year', '=', currentYear)
       .execute();
 
     // Připravíme strukturu pro výsledky
     const columns = gradeColumns.map((c: any) => ({
-      columnId: c.gcId,
+      column_id: c.column_id,
       topic: c.topic,
       type: c.type,
       weight: c.weight,
       created: c.created,
     }));
 
-    const studentsWithMarks = await Promise.all(students.map(async (s: any) => {
+    const studentsWithMarks = student_ids.map((student_id: number) => {
       const studentMarks = gradeColumns.map((col: any) => {
-        const grade = grades.find((g: any) => g.studentId === s.student && g.columnId === col.gcId);
+        const grade = grades.find((g: any) => g.student_id === student_id && g.column_id === col.column_id);
         return grade ? grade.mark : null;
       });
 
-      const name = await format_person_by_id(s.student);
-
       return {
-        studentId: s.student,
-        name,
-        quarters: semester_grades.filter((g: any) => g.student_id === s.student).map((g: any) => ({
+        student_id,
+        name: student_name_map.get(student_id) || '',
+        quarters: semester_grades.filter((g: any) => g.student_id === student_id).map((g: any) => ({
           quarter: g.quarter,
           grade: g.grade,
           verbal_assessment: g.verbal_assessment
         })),
         marks: studentMarks,
       };
-    }));
+    });
 
     return { columns, students: studentsWithMarks };
   }, {
     body: t.Object({
       group_id: t.Number(),
       subject_id: t.Number(),
-    }),
-    query: t.Optional(t.Object({
-      limit: t.Number({ default: 0 }),
-      offset: t.Number({ default: 0 }),
-    })),
+    })
   });
 
 export default app;

@@ -1,9 +1,9 @@
 import { Generated } from "kysely";
 
 export interface DegreesTable {
-  degreeID: Generated<number>;
+  degree_id: Generated<number>;
   degree: string;
   shortcut: string;
-  isBefore: boolean;
+  is_before: boolean;
   weight: number;
 }

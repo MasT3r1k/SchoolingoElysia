@@ -6,7 +6,7 @@ export interface TimetableSchemasTable {
   year: number
   day: number
   hour: number
-  type: 'empty' | 'disabled' | 'maybe' | 'lunch' | 'continuous';
+  type: Generated<'empty' | 'disabled' | 'maybe' | 'lunch' | 'continuous'>;
   assign_by: number
   assign_at: Generated<Date>
   updated_at: Generated<Date>

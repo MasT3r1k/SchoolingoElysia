@@ -8,13 +8,13 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     const notifications = await db.selectFrom('notifications')
     .select([
@@ -25,7 +25,7 @@ const app = new Elysia()
         'notifications.read_at',
         'notifications.created_at'
     ])
-    .where('notifications.user_id', '=', auth.userId)
+    .where('notifications.user_id', '=', auth.user_id)
     .orderBy('notifications.created_at', 'desc')
     .execute();
    

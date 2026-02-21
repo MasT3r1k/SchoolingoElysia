@@ -1,10 +1,10 @@
 import { Generated } from "kysely";
 
 export interface fleetvehicles_vignette_cacheTable {
-  vehicleId: number;
-  vignette_year: number;
-  vignette_expiration: Date | null;
-  vignette_type: string | null;
-  vignette_number: string | null;
-  cached_at: Generated<Date>;
+  fv_vc_id: Generated<number>;
+  vehicle_id: number;
+  country_id: number;
+  valid_since: Generated<Date | null>;
+  valid_until: Generated<Date | null>;
+  cache_last_update: Generated<Date>;
 }

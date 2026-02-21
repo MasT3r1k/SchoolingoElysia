@@ -9,8 +9,8 @@ const bonusesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -21,26 +21,26 @@ const bonusesRouter = new Elysia()
     const canViewAll = auth.manager == -1;
     
     let queryBuilder = db.selectFrom('employee_bonuses')
-      .leftJoin('teachers', 'employee_bonuses.teacherId', 'teachers.personId')
-      .leftJoin('persons', 'teachers.personId', 'persons.personId')
+      .leftJoin('teachers', 'employee_bonuses.teacher_id', 'teachers.person_id')
+      .leftJoin('persons', 'teachers.person_id', 'persons.person_id')
       .select([
-        'employee_bonuses.bonusId',
-        'employee_bonuses.teacherId',
-        'persons.firstName',
-        'persons.lastName',
+        'employee_bonuses.bonus_id',
+        'employee_bonuses.teacher_id',
+        'persons.first_name',
+        'persons.last_name',
         'employee_bonuses.date',
         'employee_bonuses.amount',
         'employee_bonuses.type',
         'employee_bonuses.reason',
         'employee_bonuses.paid',
-        'employee_bonuses.paidDate',
+        'employee_bonuses.paid_date',
       ])
 
     // Filter by employee
     if (!canViewAll) {
-      queryBuilder = queryBuilder.where('employee_bonuses.teacherId', '=', auth.person);
+      queryBuilder = queryBuilder.where('employee_bonuses.teacher_id', '=', auth.person_id);
     } else if (query.employeeId) {
-      queryBuilder = queryBuilder.where('employee_bonuses.teacherId', '=', query.employeeId);
+      queryBuilder = queryBuilder.where('employee_bonuses.teacher_id', '=', query.employeeId);
     }
 
     // Filter by type
@@ -72,7 +72,7 @@ const bonusesRouter = new Elysia()
     if (!canViewAll) {
       const unpaid = await db.selectFrom('employee_bonuses')
         .select(db.fn.sum<number>('amount').as('total'))
-        .where('teacherId', '=', auth.person)
+        .where('teacher_id', '=', auth.person_id)
         .where('paid', '=', false)
         .executeTakeFirst();
       unpaidTotal = unpaid?.total || 0;
@@ -101,8 +101,8 @@ const bonusesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -117,14 +117,14 @@ const bonusesRouter = new Elysia()
 
     await db.insertInto('employee_bonuses')
       .values({
-        teacherId: body.teacherId,
+        teacher_id: body.teacherId,
         date: body.date || new Date().toISOString().split('T')[0],
         amount: body.amount,
         type: body.type as any,
         reason: body.reason,
-        approvedBy: auth.userId,
+        approved_by: auth.user_id,
         paid: false,
-        paidDate: null,
+        paid_date: null,
       })
       .execute();
 
@@ -148,8 +148,8 @@ const bonusesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -168,7 +168,7 @@ const bonusesRouter = new Elysia()
         type: body.type as any,
         reason: body.reason,
       })
-      .where('bonusId', '=', bonusId)
+      .where('bonus_id', '=', bonusId)
       .execute();
 
     return Response.json({ success: true, message: 'Bonus updated' });
@@ -189,8 +189,8 @@ const bonusesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -206,9 +206,9 @@ const bonusesRouter = new Elysia()
     await db.updateTable('employee_bonuses')
       .set({
         paid: true,
-        paidDate: new Date().toISOString().split('T')[0],
+        paid_date: new Date().toISOString().split('T')[0],
       })
-      .where('bonusId', '=', bonusId)
+      .where('bonus_id', '=', bonusId)
       .execute();
 
     return Response.json({ success: true, message: 'Bonus marked as paid' });
@@ -222,8 +222,8 @@ const bonusesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -239,7 +239,7 @@ const bonusesRouter = new Elysia()
     // Check if paid
     const bonus = await db.selectFrom('employee_bonuses')
       .select('paid')
-      .where('bonusId', '=', bonusId)
+      .where('bonus_id', '=', bonusId)
       .executeTakeFirst();
 
     if (bonus?.paid) {
@@ -249,7 +249,7 @@ const bonusesRouter = new Elysia()
     }
 
     await db.deleteFrom('employee_bonuses')
-      .where('bonusId', '=', bonusId)
+      .where('bonus_id', '=', bonusId)
       .execute();
 
     return Response.json({ success: true, message: 'Bonus deleted' });

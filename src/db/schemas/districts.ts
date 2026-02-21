@@ -1,6 +1,6 @@
 import { Generated } from "kysely";
 
 export interface DistrictsTable {
-  districtId: Generated<number>;
+  district_id: Generated<number>;
   district: string;
 }

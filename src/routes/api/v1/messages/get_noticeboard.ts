@@ -10,8 +10,8 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.school'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.school_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -25,22 +25,22 @@ const app = new Elysia()
     .then(r => Number(r?.count ?? 0));
 
     const messagesDB = await db.selectFrom('messages')
-    .leftJoin('persons', 'messages.author_id', 'persons.personId')
+    .leftJoin('persons', 'messages.author_id', 'persons.person_id')
     .leftJoin('messages_receivers', (join) => join
         .onRef('messages.message_id', '=', 'messages_receivers.message_id')
-        .on('messages_receivers.receiver_id', '=', auth.person)
+        .on('messages_receivers.receiver_id', '=', auth.person_id)
   )
     .innerJoin('users as author_user', (join) => 
-        join.onRef('author_user.person', '=', 'messages.author_id')
-            .on('author_user.school', '=', auth.school)
+        join.onRef('author_user.person_id', '=', 'messages.author_id')
+            .on('author_user.school_id', '=', auth.school_id)
     )
     .select([
         'messages.message_id',
         'messages.topic',
         'messages.message',
         'messages.author_id',
-        'persons.firstName',
-        'persons.lastName',
+        'persons.first_name',
+        'persons.last_name',
         'messages.sent_at',
         'messages.deleted',
         'messages.require_confirm',
@@ -62,8 +62,8 @@ const app = new Elysia()
         firstName: undefined,
         lastName: undefined,
         author: {
-            first_name: message.firstName,
-            last_name: message.lastName,
+            first_name: message.first_name,
+            last_name: message.last_name,
             full_name: people[people_ids.findIndex((person) => person == message.author_id)]
         }
     }))

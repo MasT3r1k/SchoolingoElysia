@@ -9,31 +9,31 @@ const app = new Elysia()
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
     if (!school) return Response.json({ error: 'no_school' }, { status: 404 });
     
-    if (user.manager !== -1 && !user.isPrincipal) {
+    if (user.manager !== -1 && !user.is_principal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
-    const schoolId = school.schoolId;
+    const schoolId = school.school_id;
 
     const [school_info, districts, student_count, subjects, scopes, ldap_config, email_config, countries, domains] = await Promise.all([
       // School settings
       db.selectFrom('schools')
-        .leftJoin('districts', 'districts.districtId', 'schools.district')
+        .leftJoin('districts', 'districts.district_id', 'schools.district_id')
         .select([
           'schools.name',
-          'schools.shortName',
+          'schools.short_name',
           'schools.code',
           'districts.district',
-          'schools.startHour',
-          'schools.startMinute',
-          'schools.lessonHour',
-          'schools.breakTime',
-          'schools.warningAbsencePercent',
-          'schools.resetPasswordWithEmail',
+          'schools.start_hour',
+          'schools.start_minute',
+          'schools.lesson_hour',
+          'schools.break_time',
+          'schools.warning_absence_percent',
+          'schools.reset_password_with_email',
           'schools.fastlogin',
           'schools.license_type',
           'schools.license_until',
-          'schools.studentsLimit',
+          'schools.students_limit',
           'schools.modules',
           // Auth Settings
           'schools.auth_classic',
@@ -44,34 +44,34 @@ const app = new Elysia()
           'schools.backup_interval',
           'schools.auto_update',
           'schools.auto_update_interval',
-          'schools.country',
+          'schools.country_id',
           'schools.red_izo',
           'schools.ico',
           'schools.school_type',
           'schools.izo',
-          'schools.gdpr_firstname',
-          'schools.gdpr_lastname',
+          'schools.gdpr_first_name',
+          'schools.gdpr_last_name',
           'schools.gdpr_phone',
           'schools.gdpr_email',
           'schools.gdpr_mobile',
           'schools.gdpr_databox',
           'schools.gdpr_web',
         ])
-        .where('schools.schoolId', '=', schoolId)
+        .where('schools.school_id', '=', schoolId)
         .limit(1)
         .executeTakeFirst(),
 
       // Districts
       db.selectFrom('districts')
-        .select(['districts.districtId', 'districts.district'])
+        .select(['districts.district_id', 'districts.district'])
         .orderBy('district', 'asc')
         .execute(),
 
       // Student count
       db.selectFrom('students')
-        .leftJoin('users', 'users.person', 'students.personId')
-        .leftJoin('classes', 'classes.classId', 'students.class')
-        .leftJoin('scopes', 'scopes.scopeId', 'classes.scopeId')
+        .leftJoin('users', 'users.person_id', 'students.person_id')
+        .leftJoin('classes', 'classes.class_id', 'students.class_id')
+        .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
         .select(sql`COUNT(*)`.as('count'))
         .where('students.status', '=', 'active')
         .where('scopes.school_id', '=', schoolId)
@@ -81,18 +81,18 @@ const app = new Elysia()
       // Subjects
       db.selectFrom('subjects')
         .select([
-          'subjects.subjectId',
-          'subjects.label as subjectName',
+          'subjects.subject_id',
+          'subjects.label as subject_name',
           'subjects.shortcut'
         ])
-        .orderBy('subjectName', 'asc')
+        .orderBy('subject_name', 'asc')
         .where('subjects.school_id', '=', schoolId)
         .execute(),
 
       // Scopes
       db.selectFrom('scopes')
         .select([
-          'scopes.scopeId',
+          'scopes.scope_id',
           'scopes.name',
           'scopes.code',
           'scopes.shortcut',
@@ -120,13 +120,13 @@ const app = new Elysia()
       
       // Countries
       db.selectFrom('countries')
-        .select(['countryId', 'nationality', 'code2'])
+        .select(['country_id', 'nationality', 'code2'])
         .orderBy('nationality', 'asc')
         .execute(),
       // School Domains
       db.selectFrom('school_domains')
-        .select(['domainId', 'domain'])
-        .where('school', '=', schoolId)
+        .select(['domain_id', 'domain'])
+        .where('school_id', '=', schoolId)
         .execute()
     ]);
 
@@ -150,7 +150,7 @@ const app = new Elysia()
   // GET /system/scope - Načtení předmětů pro konkrétní obor
   .get('/system/scope', async ({ user, query }: any) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.isPrincipal) {
+    if (user.manager !== -1 && !user.is_principal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 

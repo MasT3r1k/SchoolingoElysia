@@ -1,4 +1,4 @@
 export interface Student_groupsTable {
-  student: number
-  groupId: number
+  student_id: number
+  group_id: number
 }

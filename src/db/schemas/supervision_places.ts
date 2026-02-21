@@ -1,7 +1,7 @@
 import { Generated } from "kysely";
 
 export interface SupervisionPlacesTable {
-  placeId: Generated<number>;
+  place_id: Generated<number>;
   school_id: number;
   name: string;
   description: string | null;

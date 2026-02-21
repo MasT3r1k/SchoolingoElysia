@@ -15,18 +15,18 @@ const app = new Elysia()
     // validace tokenu → získání teacher.personId
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     const teacher = await db
       .selectFrom('teachers')
-      .select(['teachers.personId'])
-      .where('teachers.personId', '=', auth.person)
+      .select(['teachers.person_id'])
+      .where('teachers.person_id', '=', auth.person_id)
       .executeTakeFirst();
 
     if (!teacher) return { error: 'no_permission' };
@@ -40,7 +40,7 @@ const app = new Elysia()
           phone,
           role,
           status: 'active',
-          addedBy: auth.person,
+          addedBy: auth.person_id,
           created: new Date(),
           last_updated: new Date()
         }

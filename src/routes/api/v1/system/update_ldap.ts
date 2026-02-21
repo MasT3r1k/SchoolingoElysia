@@ -4,12 +4,12 @@ import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia()
   .derive(async ({ cookie }) => ({
-      user: await getAuthUser(cookie?.token?.value)
+      user: await getAuthUser(cookie?.token?.value as string)
   }))
   // POST /system/update_ldap - Update LDAP Configuration
   .post('/system/update_ldap', async ({ user, body }) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.isPrincipal) {
+    if (user.manager !== -1 && !user.is_principal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
@@ -58,11 +58,11 @@ const app = new Elysia()
             .execute();
     } else {
          // Get school ID (assuming 1 for single tenant)
-         const school = await db.selectFrom('schools').select('schoolId').limit(1).executeTakeFirst();
+         const school = await db.selectFrom('schools').select('school_id').limit(1).executeTakeFirst();
          if (school) {
              await db.insertInto('ldap_config')
                  .values({
-                     school_id: school.schoolId,
+                     school_id: school.school_id,
                      server_url,
                      bind_dn,
                      bind_password,

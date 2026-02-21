@@ -11,13 +11,13 @@ const app = new Elysia()
 
       const auth = await db
         .selectFrom('tokens')
-        .leftJoin('users', 'users.userId', 'tokens.userId')
-        .select(['tokens.tokenId', 'tokens.userId', 'users.person', 'users.manager', 'users.principal', 'users.role'])
+        .leftJoin('users', 'users.user_id', 'tokens.user_id')
+        .select(['tokens.token_id', 'tokens.user_id', 'users.person_id', 'users.manager', 'users.principal', 'users.role'])
         .where('tokens.token', '=', token)
         .where('tokens.expires', '>=', new Date())
         .executeTakeFirst();
 
-      if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+      if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
       const isAdmin = auth.role === 'admin_staff' || auth.role === 'management' || auth.principal === true;
       
@@ -38,51 +38,51 @@ const app = new Elysia()
 
           // 1. Find or create country? Assuming we have countries. Let's use countryCode from body or default.
           const countryCode = addr.countryCode || 'CZ';
-          const country = await db.selectFrom('countries').select('countryId').where('code2', '=', countryCode).executeTakeFirst();
+          const country = await db.selectFrom('countries').select('country_id').where('code2', '=', countryCode).executeTakeFirst();
           if (!country) return null;
 
           // 2. Find or create city
           let city = await db.selectFrom('cities')
-            .select('cityId')
-            .where('cityName', '=', addr.cityName)
+            .select('city_id')
+            .where('city_name', '=', addr.cityName)
             .where('postcode', '=', addr.postcode)
-            .where('countryId', '=', country.countryId)
+            .where('country_id', '=', country.country_id)
             .executeTakeFirst();
           
           let cityId: number;
           if (!city) {
             const newCity = await db.insertInto('cities')
               .values({
-                cityName: addr.cityName,
+                city_name: addr.cityName,
                 postcode: addr.postcode,
-                countryId: country.countryId
+                country_id: country.country_id
               })
               .executeTakeFirst();
             cityId = Number(newCity.insertId);
           } else {
-            cityId = city.cityId;
+            cityId = city.city_id;
           }
 
           // 3. Find or create address
           let address = await db.selectFrom('addresses')
-            .select('addressId')
-            .where('cityId', '=', cityId)
+            .select('address_id')
+            .where('city_id', '=', cityId)
             .where('street', '=', addr.street)
-            .where('houseNumber', '=', addr.houseNumber)
+            .where('house_number', '=', addr.houseNumber)
             .executeTakeFirst();
           
           let addressId: number;
           if (!address) {
             const newAddress = await db.insertInto('addresses')
               .values({
-                cityId,
+                city_id: cityId,
                 street: addr.street,
-                houseNumber: addr.houseNumber
+                house_number: addr.houseNumber
               })
               .executeTakeFirst();
             addressId = Number(newAddress.insertId);
           } else {
-            addressId = address.addressId;
+            addressId = address.address_id;
           }
 
           return addressId;
@@ -100,22 +100,22 @@ const app = new Elysia()
             name,
             ico,
             dic,
-            vatId,
+            vat_id: vatId,
             web,
             email,
             phone,
-            rp_firstName,
-            rp_lastName,
+            rp_first_name: rp_firstName,
+            rp_last_name: rp_lastName,
             contact,
             description,
             activity,
             equipment,
             status: finalStatus as any,
-            addressOffice: officeAddrId,
-            addressTrainee: traineeAddrId || officeAddrId,
-            countryCode: addressOffice.countryCode || 'CZ',
-            created: moment().format('YYYY-MM-DD HH:mm:ss'),
-            requested: finalStatus === 'request' ? moment().format('YYYY-MM-DD HH:mm:ss') : null
+            address_office: officeAddrId,
+            address_trainee: traineeAddrId || officeAddrId,
+            country_code: addressOffice.countryCode || 'CZ',
+            created: moment().toDate(),
+            requested: finalStatus === 'request' ? moment().toDate() : null
           })
           .executeTakeFirst();
 
@@ -124,8 +124,8 @@ const app = new Elysia()
         // Insert scopes if any
         if (body.scopes && body.scopes.length > 0) {
           const scopeValues = body.scopes.map((scopeId: number) => ({
-            companyId,
-            scopeId,
+            company_id: companyId,
+            scope_id: scopeId,
             status: true
           }));
           await db.insertInto('traineeship_company_scopes').values(scopeValues).execute();

@@ -8,17 +8,17 @@ export async function getAuthUser(token: string | undefined, cookie: any = null)
 
     const session = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
       .select([
-        'tokens.userId',
+        'tokens.user_id',
         'tokens.expires',
-        'users.person',
+        'users.person_id',
         'users.username',
         'users.locale',
         'users.principal',
         'users.manager',
         'users.role',
-        'users.school'
+        'users.school_id'
       ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
@@ -53,13 +53,13 @@ export async function getAuthUser(token: string | undefined, cookie: any = null)
     }
 
     return { 
-        userId: session.userId, 
-        person: session.person,
+        user_id: session.user_id, 
+        person_id: session.person_id,
         username: session.username,
         locale: session.locale,
-        isPrincipal: !!session.principal,
+        is_principal: !!session.principal,
         manager: session.manager,
         role: session.role,
-        school: session.school
+        school_id: session.school_id
     };
 }

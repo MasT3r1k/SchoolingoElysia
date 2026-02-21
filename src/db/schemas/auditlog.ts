@@ -1,8 +1,8 @@
 import { ColumnType, Generated } from 'kysely';
 
 export interface AuditlogTable {
-  auditId: Generated<number>;
-  userId: Generated<number | null>;
+  audit_id: Generated<number>;
+  user_id: Generated<number | null>;
   type:
     | 'reset_password'
     | 'change_password'

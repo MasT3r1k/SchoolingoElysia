@@ -1,11 +1,244 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Rozvrh PDF</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            background-color: #fff;
+            color: #000;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .timetable-container {
+            width: 100%;
+            margin: 0 auto;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hours-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .day-label,
+        .corner-cell {
+            width: 80px;
+            min-width: 80px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .corner-cell {
+            visibility: hidden;
+        }
+
+        .day-label {
+            color: #000;
+            border-right: 1px solid #1a1a1a;
+            background: #fff;
+            flex-direction: column;
+            text-transform: capitalize;
+        }
+
+        .day-row:nth-child(even) .day-label {
+            background-color: #fff;
+        }
+
+        .hour-header {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 4px;
+        }
+
+        .hour-id {
+            color: #000;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .hour-time {
+            color: rgba(0, 0, 0, 0.8);
+            font-size: 10px;
+            font-weight: 400;
+        }
+
+        .day-row {
+            display: flex;
+            min-height: 130px;
+            border: 1px solid #1a1a1a;
+            border-bottom: 0;
+        }
+
+        .day-row:last-child {
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .cell-container {
+            flex: 1;
+            border-right: 1px solid #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .cell-container:last-child {
+            border-right: none;
+        }
+
+        .lesson {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-sizing: border-box;
+            border-bottom: 1px solid #1a1a1a;
+            color: #000;
+            min-height: 50px;
+        }
+
+        .lesson:last-child {
+            border-bottom: none;
+        }
+
+        .lesson.empty {
+            color: transparent;
+            background: transparent;
+        }
+
+        .lesson.substitution {
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+
+        .lesson .subject {
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .lesson .teacher {
+            font-size: 11px;
+            color: #111;
+            margin-top: 2px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .lesson .room,
+        .lesson .group {
+            position: absolute;
+            top: 4px;
+            font-size: 9px;
+            color: rgba(0, 0, 0, 0.8);
+            font-weight: 500;
+        }
+
+        .lesson .room {
+            right: 4px;
+        }
+
+        .lesson .group {
+            left: 4px;
+            color: #000;
+            max-width: 50%;
+        }
+
+        /* Split lessons */
+        /* Flex layout automatically halves/thirds/quarters the size */
+    </style>
 </head>
+
 <body>
-    
+
+    <div class="timetable-container">
+        {{#if title}}
+        <h2 style="text-align: left;font-size: 16px; margin-bottom: 10px; font-weight: 600;">{{title}}</h2>
+        {{/if}}
+
+        <div class="hours-row">
+            <div class="corner-cell"></div>
+            {{#each hours}}
+            <div class="hour-header">
+                <div class="hour-id">{{this.id}}</div>
+                <div class="hour-time">{{this.time}}</div>
+            </div>
+            {{/each}}
+        </div>
+
+        {{#each days}}
+        <div class="day-row">
+            <div class="day-label">
+                {{this.name}}
+            </div>
+
+            {{#each this.cells}}
+            <div class="cell-container">
+                {{#if (hasOne this.lessons)}}
+                {{#each this.lessons}}
+                <!-- Lesson block -->
+                <div class="lesson lesson-count-{{../lessons.length}} {{#if this.empty}}empty{{/if}} {{#if this.oldSubject}}substitution{{/if}}"
+                    {{#if this.color}}style="background-color: {{this.color}};" {{/if}}>
+                    {{#if this.empty}}
+                    &nbsp;
+                    {{else}}
+                    <div class="group"
+                        style="position: absolute; top:4px; left:4px; font-size:11px; color:#000; text-align: left; width: 50%;">
+                        {{#if this.group.text}}{{this.group.text}} {{this.group.num}}{{else}}{{#if
+                        this.group_name}}{{this.group_name}}{{else}}{{#if
+                        this.className}}{{this.className}}{{else}}{{this.class_name}}{{/if}}{{/if}}{{#if
+                        this.group_num}} {{this.group_num}}{{/if}}{{/if}}
+                    </div>
+                    <div class="room"
+                        style="position: absolute; top: 4px; right: 4px; font-size: 11px; color: rgba(0, 0, 0, 0.75); text-align: right; width: 50%;">
+                        {{this.room}}</div>
+                    <div class="subject" style="font-size: 16px; font-weight: 600; text-align: center; color: #000;">
+                        {{#if (eq this.type 1)}}L:{{/if}}{{#if (eq this.type 2)}}S:{{/if}}{{#if
+                        this.subject_shortcut}}{{this.subject_shortcut}}{{else}}{{this.subjectShortcut}}{{/if}}
+                    </div>
+                    <div class="teacher"
+                        style="font-size: 12px; color: rgba(0, 0, 0, 0.7); margin-top: 2px; text-align: center; font-weight: 300;">
+                        {{#if this.lastName}}
+                        {{this.lastName}}
+                        {{else}}
+                        {{#if this.last_name}}
+                        {{this.last_name}}
+                        {{else}}
+                        {{this.teacher}}
+                        {{/if}}
+                        {{/if}}
+                    </div>
+                    {{/if}}
+                </div>
+                {{/each}}
+                {{else}}
+                <div class="lesson empty"></div>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+        {{/each}}
+
+    </div>
+
 </body>
+
 </html>

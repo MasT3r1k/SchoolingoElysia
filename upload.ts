@@ -54,7 +54,7 @@ export const uploadAPI = new Elysia()
 
     const user = await db.selectFrom("tokens")
         .select([
-            'tokens.userId'
+            'tokens.user_id'
         ])
         .where('tokens.token', '=', token)
         .where('tokens.expires', '>=', moment().toDate())
@@ -120,7 +120,7 @@ export const uploadAPI = new Elysia()
             storage_path: filename,
             thumbnail_path: null,
             permissions: JSON.stringify({}),
-            owner_id: user.userId,
+            owner_id: user.user_id,
             checksum
           })
           .executeTakeFirst();
@@ -171,9 +171,9 @@ export const uploadAPI = new Elysia()
       // Ověření tokenu
       const user = await db
         .selectFrom('tokens')
-        .innerJoin('users', 'users.userId', 'tokens.userId')
+        .innerJoin('users', 'users.user_id', 'tokens.user_id')
         .select([
-          'tokens.userId',
+          'tokens.user_id',
           'users.manager'
         ])
         .where('tokens.token', '=', token)
@@ -307,9 +307,9 @@ export const uploadAPI = new Elysia()
       // Ověření tokenu
       const user = await db
         .selectFrom('tokens')
-        .innerJoin('users', 'users.userId', 'tokens.userId')
+        .innerJoin('users', 'users.user_id', 'tokens.user_id')
         .select([
-          'tokens.userId',
+          'tokens.user_id',
           'users.manager'
         ])
         .where('tokens.token', '=', token)
@@ -375,7 +375,7 @@ export const uploadAPI = new Elysia()
           file_id: file.file_id,
           access_token,
           expire_at,
-          token_owner: user.userId,
+          token_owner: user.user_id,
         })
         .execute();
 
@@ -401,9 +401,9 @@ export const uploadAPI = new Elysia()
     // Ověření tokenu
     const user = await db
       .selectFrom('tokens')
-      .innerJoin('users', 'users.userId', 'tokens.userId')
+      .innerJoin('users', 'users.user_id', 'tokens.user_id')
       .select([
-        'tokens.userId',
+        'tokens.user_id',
         'users.manager'
       ])
       .where('tokens.token', '=', token)

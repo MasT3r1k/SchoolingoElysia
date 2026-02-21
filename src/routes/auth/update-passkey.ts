@@ -13,10 +13,10 @@ const elysiaApp = new Elysia()
     }
 
     const user = await db.selectFrom("tokens")
-        .innerJoin('users', 'users.userId', 'tokens.userId')
-        .innerJoin("passwords", "passwords.passwordId", "users.password")
+        .innerJoin('users', 'users.user_id', 'tokens.user_id')
+        .innerJoin("passwords", "passwords.password_id", 'users.password_id')
         .select([
-            'users.userId',
+            'users.user_id',
             'users.username',
             'users.2fa',
             'users.2fa_secret',
@@ -35,10 +35,10 @@ const elysiaApp = new Elysia()
         .select([
             "users_credentials.id",
             "users_credentials.device_name",
-            "users_credentials.userId"
+            "users_credentials.user_id"
         ])
         .where("users_credentials.id", "=", body.keyId)
-        .where("users_credentials.userId", "=", user.userId)
+        .where("users_credentials.user_id", "=", user.user_id)
         .limit(1)
         .executeTakeFirst()
 
@@ -48,7 +48,7 @@ const elysiaApp = new Elysia()
         db.updateTable("users_credentials")
         .set("users_credentials.device_name", body.name)
         .where("users_credentials.id", "=", body.keyId)
-        .where("users_credentials.userId", "=", user.userId)
+        .where("users_credentials.user_id", "=", user.user_id)
         .limit(1)
         .execute();
         return Response.json({ updated: true, id: body.keyId, newName: body.name });

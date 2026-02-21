@@ -10,10 +10,10 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
         'users.role'
       ])
       .where('tokens.token', '=', token)
@@ -50,7 +50,7 @@ const app = new Elysia()
     if (allowedTargets.some(r => ['teacher', 'management', 'admin_staff'].includes(r))) {
         const teachers = await db
             .selectFrom('teachers')
-            .select(['teachers.personId'])
+            .select(['teachers.person_id'])
             .where('teachers.status', '=', 'active')
             .execute();
 
@@ -70,8 +70,8 @@ const app = new Elysia()
     if (allowedTargets.includes('student')) {
         const students = await db
             .selectFrom('students')
-            .innerJoin('classes', 'classes.classId', 'students.class')
-            .select(['students.personId', 'classes.classId', 'classes.prefix', 'classes.suffix'])
+            .innerJoin('classes', 'classes.class_id', 'students.class_id')
+            .select(['students.person_id', 'classes.class_id', 'classes.prefix', 'classes.suffix'])
             .where('students.status', '=', 'active')
             .orderBy(['classes.prefix', 'classes.suffix'])
             .execute();

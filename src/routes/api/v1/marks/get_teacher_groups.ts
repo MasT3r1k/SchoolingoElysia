@@ -12,10 +12,10 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
         'users.role'
       ])
       .where('tokens.token', '=', token)
@@ -33,21 +33,21 @@ const app = new Elysia()
 
     const groups = await db
       .selectFrom('timetable')
-      .innerJoin('student_groups', 'student_groups.groupId', 'timetable.groupId')
-      .innerJoin('groups', 'groups.groupId', 'timetable.groupId')
-      .innerJoin('classes', 'classes.classId', 'groups.class')
-      .innerJoin('school_years', 'school_years.syId', 'classes.yearId')
-      .innerJoin('subjects', 'subjects.subjectId', 'timetable.subject')
+      .innerJoin('student_groups', 'student_groups.group_id', 'timetable.group_id')
+      .innerJoin('groups', 'groups.group_id', 'timetable.group_id')
+      .innerJoin('classes', 'classes.class_id', 'groups.class_id')
+      .innerJoin('school_years', 'school_years.sy_id', 'classes.year_id')
+      .innerJoin('subjects', 'subjects.subject_id', 'timetable.subject_id')
       .select([
-        'timetable.groupId',
-        'subjects.subjectId',
+        'timetable.group_id',
+        'subjects.subject_id',
         'subjects.label as subject',
         'subjects.shortcut as shortSubject',
-        db.fn.count('student_groups.student').as('studentCount'),
+        db.fn.count('student_groups.student_id').as('studentCount'),
         sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
       ])
-      .where('timetable.teacher', '=', auth.person)
-      .groupBy(['timetable.groupId', 'timetable.subject', 'classes.prefix', 'classes.suffix', 'school_years.start'])
+      .where('timetable.teacher_id', '=', auth.person_id)
+      .groupBy(['timetable.group_id', 'timetable.subject_id', 'classes.prefix', 'classes.suffix', 'school_years.start'])
       .execute();
 
     return Response.json({ status: true, groups });

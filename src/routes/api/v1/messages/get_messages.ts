@@ -10,25 +10,25 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     let baseQuery = db
       .selectFrom('messages_receivers')
       .leftJoin('messages', 'messages.message_id', 'messages_receivers.message_id')
-      .leftJoin('persons', 'messages.author_id', 'persons.personId')
+      .leftJoin('persons', 'messages.author_id', 'persons.person_id')
       .select([
         'messages.message_id',
         'messages.topic',
         'messages.message',
         'messages.author_id',
-        'persons.firstName',
-        'persons.lastName',
+        'persons.first_name',
+        'persons.last_name',
         'messages.sent_at',
         'messages.deleted',
         'messages.require_confirm',
@@ -119,7 +119,7 @@ const app = new Elysia()
       firstName: undefined,
       lastName: undefined,
       author: {
-        first_name: m.firstName,
+        first_name: m.first_name,
         last_name: m.lastName,
         full_name: people[people_ids.indexOf(m.author_id!)]
       }

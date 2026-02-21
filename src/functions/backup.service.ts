@@ -268,7 +268,7 @@ class DatabaseBackupService {
         await db
             .insertInto('auditlog')
             .values({
-                userId: null, // System action
+                user_id: null, // System action
                 type: 'backup_deleted',
                 data: JSON.stringify({ action: 'database_backup', filename }),
                 ip: null
@@ -313,7 +313,7 @@ class DatabaseBackupService {
             await db
                 .insertInto('auditlog')
                 .values({
-                    userId: null, // System action
+                    user_id: null, // System action
                     type: 'backup_restored',
                     data: JSON.stringify({ action: 'database_backup', filename }),
                     ip: null
@@ -375,7 +375,7 @@ class DatabaseBackupService {
             await db
                 .insertInto('auditlog')
                 .values({
-                    userId: null, // System action
+                    user_id: null, // System action
                     type: 'backup_created',
                     data: JSON.stringify({ action: 'database_backup', filename, size, description, commitHash }),
                     ip: null

@@ -1,15 +1,15 @@
 import { Generated } from "kysely"
 
 export interface EmployeeAttendanceTable {
-  attendanceId: Generated<number>
-  teacherId: number
+  attendance_id: Generated<number>
+  teacher_id: number
   date: string
-  checkIn: string | null
-  checkOut: string | null
-  breakMinutes: number
-  workedMinutes: number
+  check_in: string | null
+  check_out: string | null
+  break_minutes: number
+  worked_minutes: number
   type: 'regular' | 'overtime' | 'homeoffice' | 'business_trip'
   notes: string | null
   approved: boolean
-  approvedBy: number | null
+  approved_by: number | null
 }

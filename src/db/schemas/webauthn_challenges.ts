@@ -1,8 +1,8 @@
 import { Generated } from "kysely"
 
 export interface webauthn_challengesTable {
-  userId: number
+  user_id: number
   challenge: string
-  createdAt: Generated<Date>
-  expiresAt: Date
+  created_at: Generated<Date>
+  expires_at: Date
 }

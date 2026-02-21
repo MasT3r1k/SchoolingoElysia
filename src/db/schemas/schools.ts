@@ -1,28 +1,28 @@
 import { Generated } from "kysely";
 
 export interface schoolsTable {
-  schoolId: Generated<number>
+  school_id: Generated<number>
   name: string
-  shortName: string
-  district: number
+  short_name: string
+  district_id: number
   code: string
   owner: number
   total_storage_limit: number;
-  apiToken: string
+  api_token: string
   license_type: 'FREE' | 'BASIC' | 'PRO' | 'DEV';
   license_until: Generated<Date | null>
   created: Generated<Date>
-  startHour: number
-  startMinute: number
-  lessonHour: number
-  breakTime: number
-  resetPasswordWithEmail: boolean
-  warningAbsencePercent: number
+  start_hour: number
+  start_minute: number
+  lesson_hour: number
+  break_time: number
+  reset_password_with_email: boolean
+  warning_absence_percent: number
   fastlogin: boolean
   modules: string
-  studentsLimit: number
-  gdpr_firstname: string
-  gdpr_lastname: string
+  students_limit: number
+  gdpr_first_name: string
+  gdpr_last_name: string
   gdpr_phone: string
   gdpr_email: string
   gdpr_mobile: string
@@ -37,7 +37,7 @@ export interface schoolsTable {
   backup_interval: number | null
   auto_update: number // boolean
   auto_update_interval: number
-  country: number | null
+  country_id: number | null
   red_izo: string
   ico: string
   school_type: string

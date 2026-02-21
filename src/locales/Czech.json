@@ -1351,7 +1351,9 @@
         "end_class": "Konec vyučování",
         "no_class": "Žádná výuka",
         "no_class_desc": "Tento den není důvod chodit do školy.",
-        "timetable_working_mode": "Pracovní režim"
+        "timetable_working_mode": "Pracovní režim",
+        "room_timetable": "Rozvrh místnosti",
+        "no_lessons": "Žádné hodiny k zobrazení"
     },
     "components": {
         "datalist": {
@@ -1440,6 +1442,25 @@
             "inspection": "Technická kontrola (STK)",
             "emission": "Emisní kontrola",
             "other": "Ostatní"
+        },
+        "inventory": "Správa inventáře",
+        "new_item": "Nová položka",
+        "room_manager": "Správce místností",
+        "inventory_fields": {
+            "name": "Název položky",
+            "category": "Kategorie",
+            "serial_number": "Sériové číslo",
+            "status": "Stav",
+            "room": "Místnost",
+            "acquisition_date": "Datum pořízení",
+            "purchase_price": "Pořizovací cena",
+            "description": "Popis/Poznámka"
+        },
+        "inventory_status": {
+            "active": "Aktivní",
+            "broken": "Rozbité",
+            "discarded": "Vyřazené",
+            "maintenance": "V údržbě"
         },
         "brand": "Značka",
         "model": "Model",
@@ -1878,18 +1899,65 @@
         "dashboard": "Přehled architektury",
         "buildings": "Budovy",
         "rooms": "Místnosti",
-        "new_building": "Nová budova",
-        "new_room": "Nová místnost",
-        "building_name": "Název budovy",
-        "building_type": "Typ budovy",
-        "room_name": "Název místnosti",
-        "room_type": "Typ místnosti",
-        "capacity": "Kapacita",
+        "inventory": "Evidence majetku",
+        "inventory_desc": "Kompletní evidence majetku a jeho pohybu po škole.",
+        "rooms_desc": "Správa místností v areálu školy.",
         "total_buildings": "Celkem budov",
         "total_rooms": "Celkem místností",
-        "total_hallways": "Celkem chodeb",
+        "total_hallways": "Kontrolní body",
+        "new_building": "Nová budova",
+        "new_room": "Nová místnost",
+        "new_item": "Nová položka",
+        "edit_room": "Upravit místnost",
+        "edit_item": "Upravit položku",
+        "room_name": "Název místnosti",
+        "room_type": "Typ místnosti",
+        "room_manager": "Správce místnosti",
+        "capacity": "Kapacita",
+        "building_floor": "Budova a patro",
+        "room_description_label": "Popis místnosti",
+        "unassigned_room": "Sklad (Nepřiřazeno)",
+        "no_manager": "Bez správce",
         "active_objects": "Aktivní objekty",
-        "manage": "Spravovat",
+        "manage": "Správa budovy",
+        "building_name": "Název budovy",
+        "building_type": "Druh budovy",
+        "inventory_fields": {
+            "name": "Název položky",
+            "category": "Kategorie",
+            "serial_number": "Sériové číslo",
+            "status": "Stav",
+            "room": "Místnost",
+            "acquisition_date": "Datum pořízení",
+            "purchase_price": "Pořizovací cena",
+            "description": "Popis/Poznámka"
+        },
+        "inventory_status": {
+            "active": "Aktivní",
+            "broken": "Rozbité",
+            "discarded": "Vyřazené",
+            "maintenance": "V údržbě"
+        },
+        "empty": {
+            "inventory": "Žádný majetek nebyl nalezen",
+            "inventory_desc": "Začněte přidáním první položky do evidence.",
+            "rooms": "Žádné místnosti nebyly nalezeny",
+            "rooms_desc": "Začněte přidáním první místnosti."
+        },
+        "placeholders": {
+            "item_name": "Např. Projektor Epson L520, Židle dřevěná...",
+            "category": "Např. Elektronika, Nábytek...",
+            "serial_number": "SN / Výrobní číslo",
+            "room_description": "Nepovinný popis..."
+        },
+        "history": {
+            "title": "Historie položky",
+            "empty": "Žádná historie nebyla nalezena.",
+            "created": "vytvořil položku",
+            "moved": "přesunul položku z %from% do %to%",
+            "status_updated": "změnil stav na %status%",
+            "data_updated": "upravil údaje"
+        },
         "types": {
             "school": "Škola",
             "canteen": "Jídelna",

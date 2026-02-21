@@ -2,52 +2,52 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 
 const app = new Elysia()
-  .get('/marks/midterm', async ({ cookie, query }) => {
+  .get('/marks/midterm', async ({ cookie, query }: any) => {
     const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
-    let student_id = auth.person;
-    if (query.student_id != undefined) {
+    let student_id = auth.person_id;
+    if (query.student_id !== undefined) {
       student_id = query.student_id;
     }
 
     const student = await db
       .selectFrom('students')
-      .leftJoin('classes', 'classes.classId', 'students.class')
+      .leftJoin('classes', 'classes.class_id', 'students.class_id')
       .select([
-        'students.personId',
-        'classes.scopeId'
+        'students.person_id',
+        'classes.scope_id'
       ])
-      .where('students.personId', '=', student_id)
+      .where('students.person_id', '=', student_id)
       .executeTakeFirst();
 
     if (!student) return { error: 'no_permission' };
 
-    const scopesSubjects = await db.selectFrom('scopes_subjects')
-      .leftJoin('subjects', 'subjects.subjectId', 'scopes_subjects.subject_id')
+    const scopes_subjects = await db.selectFrom('scopes_subjects')
+      .leftJoin('subjects', 'subjects.subject_id', 'scopes_subjects.subject_id')
       .select([
         'scopes_subjects.subject_id',
-        'subjects.label as subjectName',
-        'subjects.shortcut as subjectShort',
+        'subjects.label as subject_name',
+        'subjects.shortcut as subject_short',
         'scopes_subjects.is_mandatory'
       ])
       .where('scopes_subjects.hours_per_week', '>', 0)
-      .where('scopes_subjects.scope_id', '=', student.scopeId)
+      .where('scopes_subjects.scope_id', '=', student.scope_id)
       .groupBy('scopes_subjects.subject_id')
       .orderBy('subjects.label', 'asc')
       .execute();
 
-    const semesterGrades = await db.selectFrom('semester_grades')
+    const semester_grades = await db.selectFrom('semester_grades')
       .select([
         'semester_grades.semester',
         'semester_grades.grade',
@@ -57,7 +57,7 @@ const app = new Elysia()
       .where('semester_grades.student_id', '=', student_id)
       .execute();
 
-    return { subjects: scopesSubjects, marks: semesterGrades }
+    return { subjects: scopes_subjects, marks: semester_grades }
 
   }, {
     query: t.Object({

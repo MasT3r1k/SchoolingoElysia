@@ -15,8 +15,8 @@ const app = new Elysia()
 
         const auth = await db
         .selectFrom('tokens')
-        .leftJoin('users', 'tokens.userId', 'users.userId')
-        .select(['tokens.userId', 'users.person'])
+        .leftJoin('users', 'tokens.user_id', 'users.user_id')
+        .select(['tokens.user_id', 'users.person_id'])
         .where('tokens.token', '=', token)
         .where('tokens.expires', '>=', moment().toDate())
         .limit(1)
@@ -38,8 +38,8 @@ const app = new Elysia()
 
         const teacher = await db
         .selectFrom('teachers')
-        .select(['personId'])
-        .where('personId', '=', auth.person)
+        .select(['person_id'])
+        .where('person_id', '=', auth.person_id)
         .limit(1)
         .execute();
 
@@ -50,8 +50,8 @@ const app = new Elysia()
         // 1. Kontrola existence firmy
         const companyExists = await db
             .selectFrom('traineeship_companies')
-            .select(({ fn }) => fn.count<number>('companyId').as('count'))
-            .where('companyId', '=', companyId)
+            .select(({ fn }) => fn.count<number>('company_id').as('count'))
+            .where('company_id', '=', companyId)
             .executeTakeFirst();
 
         if (!companyExists || companyExists.count === 0) {
@@ -61,12 +61,12 @@ const app = new Elysia()
         // 2. Načíst aktivní scopes
         const currentScopes = await db
             .selectFrom('traineeship_company_scopes')
-            .select(['scopeId'])
-            .where('companyId', '=', companyId)
+            .select(['scope_id'])
+            .where('company_id', '=', companyId)
             .where('status', '=', true)
             .execute();
 
-        const currentScopeIds = currentScopes.map(s => s.scopeId);
+        const currentScopeIds = currentScopes.map(s => s.scope_id);
         const newScopeIds: number[] = scopes;
 
         const toDeactivate = currentScopeIds.filter(s => !newScopeIds.includes(s));
@@ -77,8 +77,8 @@ const app = new Elysia()
             await db
             .updateTable('traineeship_company_scopes')
             .set({ status: false })
-            .where('companyId', '=', companyId)
-            .where('scopeId', 'in', toDeactivate)
+            .where('company_id', '=', companyId)
+            .where('scope_id', 'in', toDeactivate)
             .execute();
         }
 
@@ -86,23 +86,23 @@ const app = new Elysia()
         for (const scopeId of toAdd) {
             const existing = await db
             .selectFrom('traineeship_company_scopes')
-            .select(['tscsId'])
-            .where('companyId', '=', companyId)
-            .where('scopeId', '=', scopeId)
+            .select(['tscs_id'])
+            .where('company_id', '=', companyId)
+            .where('scope_id', '=', scopeId)
             .executeTakeFirst();
 
             if (existing) {
             await db
                 .updateTable('traineeship_company_scopes')
                 .set({ status: true })
-                .where('tscsId', '=', existing.tscsId)
+                .where('tscs_id', '=', existing.tscs_id)
                 .execute();
             } else {
             await db
                 .insertInto('traineeship_company_scopes')
                 .values({
-                companyId,
-                scopeId,
+                company_id: companyId,
+                scope_id: scopeId,
                 status: true
                 })
                 .execute();

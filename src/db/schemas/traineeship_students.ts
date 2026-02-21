@@ -1,6 +1,8 @@
+import { Generated } from "kysely"
+
 export interface Traineeship_studentsTable {
-  studentId: number
-  traineeship: number
-  company: number
-  instructor: number | null
+  student_id: number
+  traineeship_id: number
+  company_id: number
+  instructor_id: Generated<number | null>
 }

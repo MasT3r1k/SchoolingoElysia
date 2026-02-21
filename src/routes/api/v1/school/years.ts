@@ -8,13 +8,13 @@ const elysiaApp = new Elysia()
     if (!auth) return new Response('Unauthorized', { status: 401 });
 
     const years = await db.selectFrom('school_years')
-      .select(['syId', 'start', 'end', 'midterm', 'current'])
+      .select(['sy_id', 'start', 'end', 'midterm', 'current'])
       .orderBy('start', 'desc')
       .execute();
 
     return Response.json(years);
   })
-  .post('/school/years', async ({ body, cookie }) => {
+  .post('/school/years', async ({ body, cookie, school }) => {
     const auth = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!auth) return new Response('Unauthorized', { status: 401 });
     // TODO: Add permission check for admin
@@ -23,10 +23,11 @@ const elysiaApp = new Elysia()
 
     const result = await db.insertInto('school_years')
         .values({
-            start: new Date(start),
-            end: new Date(end),
-            midterm: new Date(midterm),
-            current: !!current
+          school_id: school.school_id,
+          start: new Date(start),
+          end: new Date(end),
+          midterm: new Date(midterm),
+          current: !!current
         })
         .execute();
 
@@ -42,7 +43,7 @@ const elysiaApp = new Elysia()
         // Unset other currents if this one is set to current
         await db.updateTable('school_years')
             .set({ current: false })
-            .where('syId', '!=', parseInt(id))
+            .where('sy_id', '!=', parseInt(id))
             .execute();
     }
 
@@ -53,7 +54,7 @@ const elysiaApp = new Elysia()
             midterm: new Date(midterm),
             current: !!current
         })
-        .where('syId', '=', parseInt(id))
+        .where('sy_id', '=', parseInt(id))
         .execute();
 
     return Response.json({ success: true });
@@ -63,7 +64,7 @@ const elysiaApp = new Elysia()
     if (!auth) return new Response('Unauthorized', { status: 401 });
 
     await db.deleteFrom('school_years')
-        .where('syId', '=', parseInt(id))
+        .where('sy_id', '=', parseInt(id))
         .execute();
 
     return Response.json({ success: true });

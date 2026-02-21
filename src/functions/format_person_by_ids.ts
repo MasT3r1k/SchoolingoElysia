@@ -7,37 +7,37 @@ export async function format_people_by_ids(person_ids: number[]): Promise<string
   // NÁHRADOU ZA jednotlivé selecty uděláme GROUPED query
   const persons = await db
     .selectFrom('persons')
-    .select(['personId', 'firstName', 'lastName'])
-    .where('personId', 'in', person_ids)
+    .select(['person_id', 'first_name', 'last_name'])
+    .where('person_id', 'in', person_ids)
     .execute();
 
   // degrees per person
   const degrees_raw = await db
     .selectFrom('persons_degree')
-    .select(['person', 'degree'])
-    .where('person', 'in', person_ids)
+    .select(['person_id', 'degree_id'])
+    .where('person_id', 'in', person_ids)
     .execute();
 
   // všechny degree z tabulky degrees
-  const all_degree_ids = degrees_raw.map((d) => Number(d.degree)).filter((n) => !isNaN(n));
+  const all_degree_ids = degrees_raw.map((d) => Number(d.degree_id)).filter((n) => !isNaN(n));
 
   const degrees = all_degree_ids.length
     ? await db
         .selectFrom('degrees')
-        .select(['degreeID', 'isBefore', 'shortcut', 'weight'])
-        .where('degreeID', 'in', all_degree_ids)
+        .select(['degree_id', 'is_before', 'shortcut', 'weight'])
+        .where('degree_id', 'in', all_degree_ids)
         .execute()
     : [];
 
   // degreeID → objekt degree
   const degreeMap = new Map<number, any>();
-  degrees.forEach((d) => degreeMap.set(d.degreeID, d));
+  degrees.forEach((d) => degreeMap.set(d.degree_id, d));
 
   // personId → array degreeIDs
   const personDegreeMap = new Map<number, number[]>();
   degrees_raw.forEach((row) => {
-    const p = row.person;
-    const degId = Number(row.degree);
+    const p = row.person_id;
+    const degId = Number(row.degree_id);
     if (!personDegreeMap.has(p)) personDegreeMap.set(p, []);
     if (!isNaN(degId)) personDegreeMap.get(p)!.push(degId);
   });
@@ -46,9 +46,9 @@ export async function format_people_by_ids(person_ids: number[]): Promise<string
   const formatted: string[] = [];
 
   for (const person of persons) {
-    const fullName = `${person.firstName} ${person.lastName}`;
+    const fullName = `${person.first_name} ${person.last_name}`;
 
-    const degIds = personDegreeMap.get(person.personId) || [];
+    const degIds = personDegreeMap.get(person.person_id) || [];
     if (degIds.length === 0) {
       formatted.push(fullName);
       continue;
@@ -63,14 +63,14 @@ export async function format_people_by_ids(person_ids: number[]): Promise<string
 
     // tituly před
     for (const d of degrees_for_person) {
-      if (d.isBefore) text += `${d.shortcut} `;
+      if (d.is_before) text += `${d.shortcut} `;
     }
 
     text += fullName;
 
     // tituly za
     for (const d of degrees_for_person) {
-      if (!d.isBefore) text += `, ${d.shortcut}`;
+      if (!d.is_before) text += `, ${d.shortcut}`;
     }
 
     formatted.push(text);
@@ -87,33 +87,33 @@ export async function format_person_map_by_ids(person_ids: number[]): Promise<Ma
 
   const persons = await db
     .selectFrom('persons')
-    .select(['personId', 'firstName', 'lastName'])
-    .where('personId', 'in', unique_ids)
+    .select(['person_id', 'first_name', 'last_name'])
+    .where('person_id', 'in', unique_ids)
     .execute();
 
   const degrees_raw = await db
     .selectFrom('persons_degree')
-    .select(['person', 'degree'])
-    .where('person', 'in', unique_ids)
+    .select(['person_id', 'degree_id'])
+    .where('person_id', 'in', unique_ids)
     .execute();
 
-  const all_degree_ids = degrees_raw.map((d) => Number(d.degree)).filter((n) => !isNaN(n));
+  const all_degree_ids = degrees_raw.map((d) => Number(d.degree_id)).filter((n) => !isNaN(n));
 
   const degrees = all_degree_ids.length
     ? await db
         .selectFrom('degrees')
-        .select(['degreeID', 'isBefore', 'shortcut', 'weight'])
-        .where('degreeID', 'in', all_degree_ids)
+        .select(['degree_id', 'is_before', 'shortcut', 'weight'])
+        .where('degree_id', 'in', all_degree_ids)
         .execute()
     : [];
 
   const degreeMap = new Map<number, any>();
-  degrees.forEach((d) => degreeMap.set(d.degreeID, d));
+  degrees.forEach((d) => degreeMap.set(d.degree_id, d));
 
   const personDegreeMap = new Map<number, number[]>();
   degrees_raw.forEach((row) => {
-    const p = row.person;
-    const degId = Number(row.degree);
+    const p = row.person_id;
+    const degId = Number(row.degree_id);
     if (!personDegreeMap.has(p)) personDegreeMap.set(p, []);
     if (!isNaN(degId)) personDegreeMap.get(p)!.push(degId);
   });
@@ -121,11 +121,11 @@ export async function format_person_map_by_ids(person_ids: number[]): Promise<Ma
   const resultMap = new Map<number, string>();
 
   for (const person of persons) {
-    const fullName = `${person.firstName} ${person.lastName}`;
-    const degIds = personDegreeMap.get(person.personId) || [];
+    const fullName = `${person.first_name} ${person.last_name}`;
+    const degIds = personDegreeMap.get(person.person_id) || [];
     
     if (degIds.length === 0) {
-      resultMap.set(person.personId, fullName);
+      resultMap.set(person.person_id, fullName);
       continue;
     }
 
@@ -137,15 +137,15 @@ export async function format_person_map_by_ids(person_ids: number[]): Promise<Ma
     let text = '';
     // tituly před
     for (const d of degrees_for_person) {
-      if (d.isBefore) text += `${d.shortcut} `;
+      if (d.is_before) text += `${d.shortcut} `;
     }
     text += fullName;
     // tituly za
     for (const d of degrees_for_person) {
-      if (!d.isBefore) text += `, ${d.shortcut}`;
+      if (!d.is_before) text += `, ${d.shortcut}`;
     }
 
-    resultMap.set(person.personId, text);
+    resultMap.set(person.person_id, text);
   }
 
   return resultMap;

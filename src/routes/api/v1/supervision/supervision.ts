@@ -24,27 +24,27 @@ const app = new Elysia()
         if (!placeId) return { error: 'missing_place_id' };
 
         const supervisions = await db.selectFrom('supervisions')
-            .innerJoin('persons', 'persons.personId', 'supervisions.teacherId')
-            .leftJoin('persons_degree as pd_before', 'pd_before.person', 'persons.personId')
+            .innerJoin('persons', 'persons.person_id', 'supervisions.teacher_id')
+            .leftJoin('persons_degree as pd_before', 'pd_before.person_id', 'persons.person_id')
             // This join for titles is simplified, mimicking timetable.ts but might need full logic if strict
             // reusing the logic from timetable.ts for full name is better if possible, but for now simple concatenation or just lastName
             .select([
-                'supervisions.supervisionId',
+                'supervisions.supervision_id',
                 'supervisions.day',
                 'supervisions.hour',
-                'supervisions.teacherId',
-                'persons.firstName',
-                'persons.lastName',
+                'supervisions.teacher_id',
+                'persons.first_name',
+                'persons.last_name',
                 'supervisions.description'
             ])
-            .where('supervisions.placeId', '=', Number(placeId))
+            .where('supervisions.place_id', '=', Number(placeId))
             .execute();
 
         return { supervisions };
     })
     .post('/supervision/manage', async ({ body, user }) => {
         // Auth Check: Only Admins or Scheduler
-        if (!user || (!user.isPrincipal && user.manager != -1)) { 
+        if (!user || (!user.is_principal && user.manager != -1)) { 
             if (!user) return { error: 'unauthorized', status: 401 };
         }
 
@@ -55,7 +55,7 @@ const app = new Elysia()
                 if (!supervisionId) return { error: 'missing_id' };
                 
                 await db.deleteFrom('supervisions')
-                    .where('supervisionId', '=', supervisionId)
+                    .where('supervision_id', '=', supervisionId)
                     .execute();
                 
                 return { success: true, action: 'deleted' };

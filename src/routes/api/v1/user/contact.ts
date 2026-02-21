@@ -17,14 +17,14 @@ const app = new Elysia()
         if (!token) return createErrorResponse('no_user', 'no_cookie');
 
         const user = await db.selectFrom("tokens")
-            .innerJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person'])
+            .innerJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', moment().toDate())
             .limit(1)
             .executeTakeFirst();
 
-        if (!user || !user.person) return createErrorResponse('no_user', 'no_db');
+        if (!user || !user.person_id) return createErrorResponse('no_user', 'no_db');
 
         const { email, type, description } = body;
 
@@ -32,14 +32,14 @@ const app = new Elysia()
         const exists = await db.selectFrom('emails')
             .select('email')
             .where('email', '=', email)
-            .where('personId', '=', user.person)
+            .where('person_id', '=', user.person_id)
             .executeTakeFirst();
             
         if (exists) return createErrorResponse('email_exists');
 
         await db.insertInto('emails')
             .values({
-                personId: user.person,
+                person_id: user.person_id,
                 email: email,
                 type: type || 'other',
                 description: description || null,
@@ -61,21 +61,21 @@ const app = new Elysia()
         if (!token) return createErrorResponse('no_user', 'no_cookie');
 
         const user = await db.selectFrom("tokens")
-            .innerJoin('users', 'users.userId', 'tokens.userId')
-            .leftJoin('persons', 'persons.personId', 'users.person')
+            .innerJoin('users', 'users.user_id', 'tokens.user_id')
+            .leftJoin('persons', 'persons.person_id', 'users.person_id')
             .select([
-                'users.userId',
-                'users.person',
+                'users.user_id',
+                'users.person_id',
                 'users.2fa',
                 'users.2fa_secret',
-                'persons.firstName'
+                'persons.first_name'
             ])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', moment().toDate())
             .limit(1)
             .executeTakeFirst();
 
-        if (!user || !user.person) return createErrorResponse('no_user', 'no_db');
+        if (!user || !user.person_id) return createErrorResponse('no_user', 'no_db');
 
         const { originalEmail, email, type, description } = body as any;
 
@@ -83,7 +83,7 @@ const app = new Elysia()
         const ownership = await db.selectFrom('emails')
             .select('email')
             .where('email', '=', originalEmail)
-            .where('personId', '=', user.person)
+            .where('person_id', '=', user.person_id)
             .executeTakeFirst();
 
         if (!ownership) return createErrorResponse('permission_denied', 'email_not_owned');
@@ -91,7 +91,7 @@ const app = new Elysia()
         // Check if already has email
         const hasEmail = await db.selectFrom('emails')
         .select(['email'])
-        .where('emails.personId', '=', user.person)
+        .where('emails.person_id', '=', user.person_id)
         .where('emails.email', '=', email)
         .executeTakeFirst();
         if (hasEmail) {
@@ -104,7 +104,7 @@ const app = new Elysia()
                 return createErrorResponse('required_2fa');
             }
     
-            const isApproved2FA = await verifyTFA(body.token, user['userId']);
+            const isApproved2FA = await verifyTFA(body.token, user['user_id']);
             if (!isApproved2FA) {
                 return Response.json({ error: ['Invalid 2FA'] });
             }
@@ -123,7 +123,7 @@ const app = new Elysia()
                 code_until: codeExpiration.toDate()
             })
             .where('email', '=', originalEmail)
-            .where('personId', '=', user.person)
+            .where('person_id', '=', user.person_id)
             .execute();
 
         await Mailer.sendFromTemplate(
@@ -132,7 +132,7 @@ const app = new Elysia()
                 to: email.email,
                 subject: "Přidání emailu k účtu",
                 data: {
-                    firstName: user.firstName || '',
+                    firstName: user.first_name || '',
                     email,
                     code: emailCode,
                     validUntil: Utils.formatDate(codeExpiration)
@@ -156,10 +156,10 @@ const app = new Elysia()
         if (!token) return createErrorResponse('no_user', 'no_cookie');
 
         const user = await db.selectFrom("tokens")
-            .innerJoin('users', 'users.userId', 'tokens.userId')
+            .innerJoin('users', 'users.user_id', 'tokens.user_id')
             .select([
-                'users.userId',
-                'users.person',
+                'users.user_id',
+                'users.person_id',
                 'users.2fa',
                 'users.2fa_secret'
             ])
@@ -168,7 +168,7 @@ const app = new Elysia()
             .limit(1)
             .executeTakeFirst();
 
-        if (!user || !user.person) return createErrorResponse('no_user', 'no_db');
+        if (!user || !user.person_id) return createErrorResponse('no_user', 'no_db');
 
         // Check 2FA
         if (user['2fa'] && user['2fa_secret']) {
@@ -176,7 +176,7 @@ const app = new Elysia()
                 return createErrorResponse('required_2fa');
             }
     
-            const isApproved2FA = await verifyTFA(body.token, user['userId']);
+            const isApproved2FA = await verifyTFA(body.token, user['user_id']);
             if (!isApproved2FA) {
                 return Response.json({ error: ['Invalid 2FA'] });
             }
@@ -186,7 +186,7 @@ const app = new Elysia()
 
         await db.deleteFrom('emails')
             .where('email', '=', email)
-            .where('personId', '=', user.person)
+            .where('person_id', '=', user.person_id)
             .execute();
 
         return createResponse({ success: true }, cookie);
@@ -203,14 +203,14 @@ const app = new Elysia()
         if (!token) return createErrorResponse('no_user', 'no_cookie');
 
         const user = await db.selectFrom("tokens")
-            .innerJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person'])
+            .innerJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', moment().toDate())
             .limit(1)
             .executeTakeFirst();
 
-        if (!user || !user.person) return createErrorResponse('no_user', 'no_db');
+        if (!user || !user.person_id) return createErrorResponse('no_user', 'no_db');
 
         const { number, description } = body;
         // Basic phone validation/formatting could happen here, or frontend sends cleaner data
@@ -224,7 +224,7 @@ const app = new Elysia()
         
         await db.insertInto('phone_numbers')
             .values({
-                personId: user.person,
+                person_id: user.person_id,
                 code: code,
                 number: number,
                 description: description || null,
@@ -247,14 +247,14 @@ const app = new Elysia()
         if (!token) return createErrorResponse('no_user', 'no_cookie');
 
         const user = await db.selectFrom("tokens")
-            .innerJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person'])
+            .innerJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', moment().toDate())
             .limit(1)
             .executeTakeFirst();
 
-        if (!user || !user.person) return createErrorResponse('no_user', 'no_db');
+        if (!user || !user.person_id) return createErrorResponse('no_user', 'no_db');
 
         const { originalNumber, code, number, description } = body;
         // originalNumber should probably identify the phone uniquely with code.
@@ -267,7 +267,7 @@ const app = new Elysia()
                 description: description
             })
             .where('number', '=', originalNumber)
-            .where('personId', '=', user.person)
+            .where('person_id', '=', user.person_id)
             .execute();
 
         return createResponse({ success: true }, cookie);
@@ -285,20 +285,20 @@ const app = new Elysia()
         if (!token) return createErrorResponse('no_user', 'no_cookie');
 
         const user = await db.selectFrom("tokens")
-            .innerJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person'])
+            .innerJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', moment().toDate())
             .limit(1)
             .executeTakeFirst();
 
-        if (!user || !user.person) return createErrorResponse('no_user', 'no_db');
+        if (!user || !user.person_id) return createErrorResponse('no_user', 'no_db');
 
         const { number } = body;
 
         await db.deleteFrom('phone_numbers')
             .where('number', '=', number)
-            .where('personId', '=', user.person)
+            .where('person_id', '=', user.person_id)
             .execute();
 
         return createResponse({ success: true }, cookie);

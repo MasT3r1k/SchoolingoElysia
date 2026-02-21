@@ -19,13 +19,13 @@ const app = new Elysia({ prefix: '/files' })
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.manager', 'users.principal', 'users.school'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id', 'users.manager', 'users.principal', 'users.school_id'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
         const hasAccess = auth.manager === -1 || auth.principal;
         if (!hasAccess) {
@@ -33,8 +33,8 @@ const app = new Elysia({ prefix: '/files' })
         }
 
         let filesQuery = db.selectFrom('files')
-        .leftJoin('users', 'users.person', 'files.owner_id')
-        .where('users.school', '=', auth.school)
+        .leftJoin('users', 'users.person_id', 'files.owner_id')
+        .where('users.school_id', '=', auth.school_id)
         .select([
             'files.file_id',
             'files.file_uuid',
@@ -99,13 +99,13 @@ const app = new Elysia({ prefix: '/files' })
         if (!token) return { error: 'no_user', details: 'no_cookie' };
 
         const auth = await db.selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['users.person', 'users.manager', 'users.principal', 'users.school'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id', 'users.manager', 'users.principal', 'users.school_id'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
         const hasAccess = auth.manager === -1 || auth.principal;
         if (!hasAccess) {
@@ -119,13 +119,13 @@ const app = new Elysia({ prefix: '/files' })
         .executeTakeFirst();
 
         const stats = await db.selectFrom('files')
-        .innerJoin('users', 'users.person', 'files.owner_id')
+        .innerJoin('users', 'users.person_id', 'files.owner_id')
         .select((eb) => [
             eb.fn.countAll<number>().as('files_count'),
             sql<number>`COALESCE(SUM(${eb.ref('files.file_size')}), 0)`.as('total_file_size'),
             sql<number>`COUNT(DISTINCT ${eb.ref('files.owner_id')})`.as('unique_owners')
         ])
-        .where('users.school', '=', auth.school)
+        .where('users.school_id', '=', auth.school_id)
         .executeTakeFirst();
 
         return {

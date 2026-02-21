@@ -1,9 +1,9 @@
 import { Generated } from "kysely";
 
 export interface fleetvehicles_tripsTable {
-  tripId: Generated<number>;
-  vehicleId: number;
-  driverId: number;
+  trip_id: Generated<number>;
+  vehicle_id: number;
+  driver_id: number;
   start_date: Generated<Date>;
   end_date: Date | null;
   purpose: string;

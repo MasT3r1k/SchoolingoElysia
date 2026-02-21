@@ -9,13 +9,13 @@ const app = new Elysia()
   // POST /system/update_school - Aktualizace nastavení školy
   .post('/system/update_school', async ({ user, body }) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.isPrincipal) {
+    if (user.manager !== -1 && !user.is_principal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
     const { 
       name, shortcut, district, lesson_start, lesson_length, break_time, warn_absence, fastlogin, resetPasswordWithEmail, country, red_izo, ico, school_type, izo, 
-      online_enabled, online_default_platform, modules,
+      modules,
       gdpr_firstname, gdpr_lastname, gdpr_phone, gdpr_email, gdpr_mobile, gdpr_databox, gdpr_web
     } = body;
 
@@ -26,33 +26,33 @@ const app = new Elysia()
     let districtId: number | null = null;
     if (district) {
       const districtRow = await db.selectFrom('districts')
-        .select('districtId')
+        .select('district_id')
         .where('district', '=', district)
         .executeTakeFirst();
-      districtId = districtRow?.districtId ?? null;
+      districtId = districtRow?.district_id ?? null;
     }
 
     // Update school
     await db.updateTable('schools')
       .set({
         name,
-        shortName: shortcut,
-        district: districtId ?? undefined,
-        country: country,
+        short_name: shortcut,
+        district_id: districtId ?? undefined,
+        country_id: country,
         red_izo,
         ico,
         school_type,
         izo,
         modules,
-        startHour,
-        startMinute: startMinute || 0,
-        lessonHour: lesson_length,
-        breakTime: break_time,
-        warningAbsencePercent: warn_absence,
+        start_hour: startHour || 8,
+        start_minute: startMinute || 0,
+        lesson_hour: lesson_length,
+        break_time: break_time,
+        warning_absence_percent: warn_absence,
         fastlogin: fastlogin,
-        resetPasswordWithEmail: resetPasswordWithEmail,
-        gdpr_firstname: gdpr_firstname || '',
-        gdpr_lastname: gdpr_lastname || '',
+        reset_password_with_email: resetPasswordWithEmail,
+        gdpr_first_name: gdpr_firstname || '',
+        gdpr_last_name: gdpr_lastname || '',
         gdpr_phone: gdpr_phone || '',
         gdpr_email: gdpr_email || '',
         gdpr_mobile: gdpr_mobile || '',
@@ -78,8 +78,6 @@ const app = new Elysia()
       warn_absence: t.Number(),
       fastlogin: t.Boolean(),
       resetPasswordWithEmail: t.Boolean(),
-      online_enabled: t.Boolean(),
-      online_default_platform: t.String(),
       modules: t.String(),
       gdpr_firstname: t.Optional(t.Nullable(t.String())),
       gdpr_lastname: t.Optional(t.Nullable(t.String())),

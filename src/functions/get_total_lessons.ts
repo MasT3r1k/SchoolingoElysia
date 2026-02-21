@@ -27,8 +27,8 @@ export async function get_total_lessons(start: moment.Moment, end: moment.Moment
         'timetable.hour',
         'timetable.type'
     ])
-    .where('timetable.groupId', '=', group_id)
-    .where('timetable.subject', '=', subject_id)
+    .where('timetable.group_id', '=', group_id)
+    .where('timetable.subject_id', '=', subject_id)
     .execute();
 
     /// Sčítání čísla hodiny

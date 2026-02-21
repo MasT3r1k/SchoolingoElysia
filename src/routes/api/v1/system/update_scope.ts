@@ -9,7 +9,7 @@ const app = new Elysia()
   // POST /system/update_scope - Vytvoření/Aktualizace oboru
   .post('/system/update_scope', async ({ user, body }) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.isPrincipal) {
+    if (user.manager !== -1 && !user.is_principal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
@@ -27,7 +27,7 @@ const app = new Elysia()
           years,
           students_per_class,
           number_of_classes,
-          school_id: user.school as number
+          school_id: user.school_id as number
         })
         .executeTakeFirst();
       
@@ -43,7 +43,7 @@ const app = new Elysia()
           students_per_class,
           number_of_classes
         })
-        .where('scopeId', '=', scopeId)
+        .where('scope_id', '=', scopeId)
         .execute();
     }
 

@@ -28,11 +28,11 @@ const setupRoutes = new Elysia({ prefix: '/setup' })
     .get('/data', async () => {
         const [countries, districts] = await Promise.all([
             db.selectFrom('countries')
-                .select(['countryId', 'nationality', 'code2'])
+                .select(['country_id', 'nationality', 'code2'])
                 .orderBy('nationality', 'asc')
                 .execute(),
             db.selectFrom('districts')
-                .select(['districtId', 'district'])
+                .select(['district_id', 'district'])
                 .orderBy('district', 'asc')
                 .execute()
         ]);
@@ -48,7 +48,7 @@ const setupRoutes = new Elysia({ prefix: '/setup' })
         return {
             installed: !!school,
             schoolName: school?.name,
-            schoolId: school?.schoolId
+            schoolId: school?.school_id
         };
     })
     .post('/install', async ({ body, set }) => {

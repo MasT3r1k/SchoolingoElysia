@@ -1,9 +1,11 @@
+import { Generated } from "kysely"
+
 export interface Traineeship_diaryTable {
-  diaryId: number
-  trWeekId: number
-  studentId: number
-  status: 'unlisted' | 'filed'
-  date: string // date
+  diary_id: Generated<number>
+  tr_week_id: number
+  student_id: number
+  status: Generated<'unlisted' | 'filed'>
+  date: Date
   title: string
   hours: number
   gained: string

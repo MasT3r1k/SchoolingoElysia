@@ -1,8 +1,8 @@
 import { Generated } from "kysely";
 
 export interface Class_serviceTable {
-  csId: Generated<number>;
-  student: number;
+  cs_id: Generated<number>;
+  student_id: number;
   start: Date;
   end: Date;
 }

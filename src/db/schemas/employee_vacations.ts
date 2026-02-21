@@ -1,8 +1,8 @@
 import { Generated } from "kysely"
 
 export interface EmployeeVacationBalanceTable {
-  balanceId: Generated<number>
-  teacherId: number
+  balance_id: Generated<number>
+  teacher_id: number
   year: number
   entitlement: number
   used: number
@@ -10,15 +10,15 @@ export interface EmployeeVacationBalanceTable {
 }
 
 export interface EmployeeVacationRequestsTable {
-  requestId: Generated<number>
-  teacherId: number
-  startDate: string
-  endDate: string
+  request_id: Generated<number>
+  teacher_id: number
+  start_date: string
+  end_date: string
   days: number
   type: 'vacation' | 'sick' | 'personal' | 'unpaid' | 'study' | 'parental'
   status: 'pending' | 'approved' | 'rejected'
   reason: string | null
-  approvedBy: number | null
-  approvedAt: string | null
-  createdAt: string
+  approved_by: number | null
+  approved_at: string | null
+  created_at: string
 }

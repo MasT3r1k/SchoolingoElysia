@@ -20,13 +20,13 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.person', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.person_id', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) {
+        if (!auth?.person_id) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
 
@@ -40,8 +40,8 @@ const app = new Elysia()
             'school_years.start',
             'school_years.end'
         ])
-        .where('school_years.start', '<=', moment().format('YYYY-MM-DD'))
-        .where('school_years.end', '>=', moment().format('YYYY-MM-DD'))
+        .where('school_years.start', '<=', moment().toDate())
+        .where('school_years.end', '>=', moment().toDate())
         .executeTakeFirst();
 
         console.log(school_year)
@@ -79,13 +79,13 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.person', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.person_id', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) {
+        if (!auth?.person_id) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
 
@@ -110,7 +110,7 @@ const app = new Elysia()
 
         // Students only see their own measures
         if (!isTeacher) {
-            q = q.where('education_measures.student_id', '=', auth.person);
+            q = q.where('education_measures.student_id', '=', auth.person_id);
         }
 
         // Filter by student if specified
@@ -146,8 +146,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -170,7 +170,7 @@ const app = new Elysia()
                 type: type as any,
                 reason,
                 description: note || null,
-                issued_by: auth.userId
+                issued_by: auth.user_id
             })
             .execute();
 
@@ -186,8 +186,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -228,8 +228,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.role'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.role'])
             .where('tokens.token', '=', token)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();

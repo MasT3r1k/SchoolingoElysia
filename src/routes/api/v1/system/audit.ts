@@ -2,18 +2,19 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
 import { getAuthUser } from '../../../../utils/auth';
+import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
   .derive(async ({ cookie }) => ({
       user: await getAuthUser(cookie?.token?.value as string)
   }))
-  .get('/system/audit', async ({ user, query }) => {
+  .get('/system/audit', async ({ user, query }: any) => {
     // Check permissions
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
     
     // Allow admins, principals, and potentially others based on role logic
     const allowedRoles = ['admin_staff', 'management'];
-    if (user.manager !== -1 && !user.isPrincipal && !allowedRoles.includes(user.role)) {
+    if (user.manager !== -1 && !user.is_principal && !allowedRoles.includes(user.role)) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
@@ -24,85 +25,87 @@ const app = new Elysia()
     if (limit > 100) limit = 100;
 
     const search = query.search?.toLowerCase();
-    const actionFilter = query.action;
-    const roleFilter = query.userRole;
-    const timeRange = query.timeRange;
-    const dateFrom = query.dateFrom ? new Date(query.dateFrom) : null;
-    const dateTo = query.dateTo ? new Date(query.dateTo) : null;
+    const action_filter = query.action;
+    const role_filter = query.user_role;
+    const time_range = query.time_range;
+    const date_from = query.date_from ? new Date(query.date_from) : null;
+    const date_to = query.date_to ? new Date(query.date_to) : null;
 
     // Build Login History Query
     let loginQuery = db.selectFrom('login_history')
-      .leftJoin('users', 'users.userId', 'login_history.userId')
-      .leftJoin('persons', 'persons.personId', 'users.person')
+      .leftJoin('users', 'users.user_id', 'login_history.user_id')
+      .leftJoin('persons', 'persons.person_id', 'users.person_id')
       .select([
-        'login_history.loginId as logId',
+        'login_history.login_id as log_id',
         sql<string>`CASE WHEN success = 1 THEN 'login' ELSE 'failed_login' END`.as('action'),
-        'login_history.userId',
+        'login_history.user_id',
         'users.username',
-        sql<string>`CONCAT(persons.firstName, ' ', persons.lastName)`.as('userFullName'),
-        'users.role as userRole',
-        sql<string>`NULL`.as('targetType'),
-        sql<number>`NULL`.as('targetId'),
-        sql<string>`NULL`.as('targetName'),
-        'login_history.ip as ipAddress',
-        'login_history.userAgent',
+        'users.person_id as person_id',
+        'persons.first_name',
+        'persons.last_name',
+        'users.role as user_role',
+        sql<string>`NULL`.as('target_type'),
+        sql<number>`NULL`.as('target_id'),
+        sql<string>`NULL`.as('target_name'),
+        'login_history.ip as ip_address',
+        'login_history.user_agent',
         sql<string>`NULL`.as('metadata'),
         'login_history.created as timestamp'
       ]);
 
     // Build Audit Log Query
     let auditQuery = db.selectFrom('auditlog')
-      .leftJoin('users', 'users.userId', 'auditlog.userId')
-      .leftJoin('persons', 'persons.personId', 'users.person')
+      .leftJoin('users', 'users.user_id', 'auditlog.user_id')
+      .leftJoin('persons', 'persons.person_id', 'users.person_id')
       .select([
-        'auditlog.auditId as logId',
+        'auditlog.audit_id as log_id',
         'auditlog.type as action',
-        'auditlog.userId',
+        'auditlog.user_id',
         'users.username',
-        sql<string>`CONCAT(persons.firstName, ' ', persons.lastName)`.as('userFullName'),
-        'users.role as userRole',
-        sql<string>`NULL`.as('targetType'),
-        sql<number>`NULL`.as('targetId'),
-        sql<string>`NULL`.as('targetName'),
-        'auditlog.ip as ipAddress',
-        sql<string>`NULL`.as('userAgent'),
+        'users.person_id as person_id',
+        'persons.first_name',
+        'persons.last_name',
+        'users.role as user_role',
+        sql<string>`NULL`.as('target_type'),
+        sql<number>`NULL`.as('target_id'),
+        sql<string>`NULL`.as('target_name'),
+        'auditlog.ip as ip_address',
+        sql<string>`NULL`.as('user_agent'),
         'auditlog.data as metadata',
         'auditlog.created as timestamp'
       ]);
 
     // Apply Time Range Filters
-    if (timeRange === 'today') {
+    if (time_range === 'today') {
       const today = new Date();
       today.setHours(0,0,0,0);
       loginQuery = loginQuery.where('login_history.created', '>=', today);
       auditQuery = auditQuery.where('auditlog.created', '>=', today);
-    } else if (timeRange === 'week') {
+    } else if (time_range === 'week') {
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
       loginQuery = loginQuery.where('login_history.created', '>=', weekAgo);
       auditQuery = auditQuery.where('auditlog.created', '>=', weekAgo);
-    } else if (timeRange === 'month') {
+    } else if (time_range === 'month') {
       const monthAgo = new Date();
       monthAgo.setMonth(monthAgo.getMonth() - 1);
       loginQuery = loginQuery.where('login_history.created', '>=', monthAgo);
       auditQuery = auditQuery.where('auditlog.created', '>=', monthAgo);
-    } else if (timeRange === 'custom') {
-      if (dateFrom) {
-        loginQuery = loginQuery.where('login_history.created', '>=', dateFrom);
-        auditQuery = auditQuery.where('auditlog.created', '>=', dateFrom);
+    } else if (time_range === 'custom') {
+      if (date_from) {
+        loginQuery = loginQuery.where('login_history.created', '>=', date_from);
+        auditQuery = auditQuery.where('auditlog.created', '>=', date_from);
       }
-      if (dateTo) {
-        loginQuery = loginQuery.where('login_history.created', '<=', dateTo);
-        auditQuery = auditQuery.where('auditlog.created', '<=', dateTo);
+      if (date_to) {
+        loginQuery = loginQuery.where('login_history.created', '<=', date_to);
+        auditQuery = auditQuery.where('auditlog.created', '<=', date_to);
       }
     }
 
     // Apply Role Filter
-    if (roleFilter && roleFilter !== 'all') {
-      // @ts-ignore
-      loginQuery = loginQuery.where('users.role', '=', roleFilter);
-      // @ts-ignore
-      auditQuery = auditQuery.where('users.role', '=', roleFilter);
+    if (role_filter && role_filter !== 'all') {
+      loginQuery = loginQuery.where('users.role', '=', role_filter as any);
+      auditQuery = auditQuery.where('users.role', '=', role_filter as any);
     }
 
     // Apply Search Filter
@@ -110,60 +113,57 @@ const app = new Elysia()
       const searchPattern = `%${search}%`;
       loginQuery = loginQuery.where((eb) => eb.or([
         eb('users.username', 'like', searchPattern),
-        eb(sql`CONCAT(persons.firstName, ' ', persons.lastName)`, 'like', searchPattern),
+        eb('persons.first_name', 'like', searchPattern),
+        eb('persons.last_name', 'like', searchPattern),
         eb('login_history.ip', 'like', searchPattern)
       ]));
       auditQuery = auditQuery.where((eb) => eb.or([
         eb('users.username', 'like', searchPattern),
-        eb(sql`CONCAT(persons.firstName, ' ', persons.lastName)`, 'like', searchPattern),
+        eb('persons.first_name', 'like', searchPattern),
+        eb('persons.last_name', 'like', searchPattern),
         eb('auditlog.ip', 'like', searchPattern)
       ]));
     }
 
-    // Combine Queries based on Action Filter
-    let finalQuery;
+    // Filter by School
+    if (user.school_id) {
+        loginQuery = loginQuery.where('users.school_id', '=', user.school_id);
+        auditQuery = auditQuery.where('users.school_id', '=', user.school_id);
+    } 
+
     let includeLogin = true;
     let includeAudit = true;
 
-
-    // Filter by School
-    if (user.school) {
-        // @ts-ignore
-        loginQuery = loginQuery.where('users.school', '=', user.school);
-        // @ts-ignore
-        auditQuery = auditQuery.where('users.school', '=', user.school);
-    } 
-
-    if (actionFilter) {
-      if (['login', 'failed_login'].includes(actionFilter)) {
+    if (action_filter) {
+      if (['login', 'failed_login'].includes(action_filter)) {
         includeAudit = false;
-        if (actionFilter === 'login') loginQuery = loginQuery.where('success', '=', true);
-        if (actionFilter === 'failed_login') loginQuery = loginQuery.where('success', '=', false);
-      } else if (['create', 'update', 'delete', 'reset_password'].includes(actionFilter)) {
+        if (action_filter === 'login') loginQuery = loginQuery.where('success', '=', true);
+        if (action_filter === 'failed_login') loginQuery = loginQuery.where('success', '=', false);
+      } else if (['create', 'update', 'delete', 'reset_password'].includes(action_filter)) {
          includeLogin = false;
          const types: string[] = [];
-         if (actionFilter === 'reset_password') types.push('reset_password', 'change_password');
-         if (actionFilter === 'create') types.push('created_group', 'added_passkey');
-         if (actionFilter === 'update') types.push('edited_group', 'refresh_backup_codes', 'activated_2FA');
-         if (actionFilter === 'delete') types.push('removed_group', 'removed_passkey', 'deactivated_2FA');
+         if (action_filter === 'reset_password') types.push('reset_password', 'change_password');
+         if (action_filter === 'create') types.push('created_group', 'added_passkey');
+         if (action_filter === 'update') types.push('edited_group', 'refresh_backup_codes', 'activated_2FA');
+         if (action_filter === 'delete') types.push('removed_group', 'removed_passkey', 'deactivated_2FA');
          
          if (types.length > 0) {
-            // @ts-ignore
-            auditQuery = auditQuery.where('auditlog.type', 'in', types);
+            auditQuery = auditQuery.where('auditlog.type', 'in', types as any);
          }
       }
     }
 
+    let combinedSource: any;
     if (includeLogin && includeAudit) {
-      finalQuery = loginQuery.unionAll(auditQuery);
+      combinedSource = loginQuery.unionAll(auditQuery as any);
     } else if (includeLogin) {
-      finalQuery = loginQuery;
+      combinedSource = loginQuery;
     } else {
-      finalQuery = auditQuery;
+      combinedSource = auditQuery;
     }
 
     // Execute Data Query
-    const results = await db.selectFrom(finalQuery.as('combined_logs'))
+    const results = await db.selectFrom(combinedSource.as('combined_logs'))
        .selectAll()
        .orderBy('timestamp', 'desc')
        .limit(limit)
@@ -171,14 +171,21 @@ const app = new Elysia()
        .execute();
 
     // Execute Count Query
-    const countResult = await db.selectFrom(finalQuery.as('combined_logs'))
+    const countResult: any = await db.selectFrom(combinedSource.as('combined_logs'))
        .select(sql<number>`count(*)`.as('total'))
        .executeTakeFirst();
        
     const total = Number(countResult?.total || 0);
 
+    const personIds = Array.from(new Set(results.map((r: any) => r.person_id).filter((id): id is number => id !== null)));
+    const personNameMap = new Map<number, string>();
+    if (personIds.length > 0) {
+      const formattedNames = await format_people_by_ids(personIds as number[]);
+      personIds.forEach((id, index) => personNameMap.set(id as number, formattedNames[index]));
+    }
+
     return Response.json({
-      data: results.map(r => {
+      data: results.map((r: any) => {
         let metadata = {};
         try {
            if (typeof r.metadata === 'string') {
@@ -189,20 +196,20 @@ const app = new Elysia()
         } catch (e) {}
         
         return {
-          logId: r.logId,
+          log_id: r.log_id,
           action: r.action,
-          userId: r.userId,
+          user_id: r.user_id,
           username: r.username,
-          userFullName: r.userFullName,
-          userRole: r.userRole,
-          targetType: r.targetType,
-          targetId: r.targetId,
-          targetName: r.targetName,
-          ipAddress: r.ipAddress,
-          userAgent: r.userAgent,
+          user_full_name: r.person_id ? personNameMap.get(r.person_id) : `${r.first_name} ${r.last_name}`,
+          user_role: r.user_role,
+          target_type: r.target_type,
+          target_id: r.target_id,
+          target_name: r.target_name,
+          ip_address: r.ip_address,
+          user_agent: r.user_agent,
           metadata: metadata,
           timestamp: r.timestamp,
-          createdAt: r.timestamp
+          created_at: r.timestamp
         };
       }),
       meta: {
@@ -219,10 +226,10 @@ const app = new Elysia()
        page: t.Optional(t.String()),
        search: t.Optional(t.String()),
        action: t.Optional(t.String()),
-       userRole: t.Optional(t.String()),
-       timeRange: t.Optional(t.String()),
-       dateFrom: t.Optional(t.String()),
-       dateTo: t.Optional(t.String())
+       user_role: t.Optional(t.String()),
+       time_range: t.Optional(t.String()),
+       date_from: t.Optional(t.String()),
+       date_to: t.Optional(t.String())
     })
   });
 

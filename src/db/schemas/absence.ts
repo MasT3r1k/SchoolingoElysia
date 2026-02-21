@@ -1,8 +1,8 @@
 import { AbsenceType } from "../../types/absence"
 
 export interface AbsenceTable {
-  student: number
-  lesson: number
+  student_id: number
+  lesson_id: number
   type: AbsenceType
   minutes: number | null
   reason: string | null

@@ -11,13 +11,13 @@ const elysiaApp = new Elysia()
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const user = await db.selectFrom("tokens")
-      .innerJoin('users', 'users.userId', 'tokens.userId')
-      .innerJoin("passwords", "passwords.passwordId", "users.password")
+      .innerJoin('users', 'users.user_id', 'tokens.user_id')
+      .innerJoin("passwords", "passwords.password_id", 'users.password_id')
       .select([
-        'users.userId',
+        'users.user_id',
         'users.username',
         'users.role',
-        'users.person',
+        'users.person_id',
         'users.2fa',
         'users.2fa_secret',
         'passwords.password'
@@ -36,14 +36,14 @@ const elysiaApp = new Elysia()
     // === NAČTENÍ DOMÁCÍCH ÚKOL ===
     const homework = await db.selectFrom('homework')
     .select([
-        'homework.homeworkId',
+        'homework.homework_id',
         'homework.homework',
         'homework.assigned_at',
         'homework.due_date',
         'homework.type'
     ])
-    .where('homework.groupId', '=', groupId)
-    .where('homework.subjectId', '=', subjectId)
+    .where('homework.group_id', '=', groupId)
+    .where('homework.subject_id', '=', subjectId)
     .orderBy('homework.due_date', 'desc')
     .execute();
 

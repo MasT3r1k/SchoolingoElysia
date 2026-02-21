@@ -1,12 +1,12 @@
 import { Generated } from "kysely"
 
 export interface Traineeship_company_ratingTable {
-  reviewId: Generated<number>
-  companyId: number
-  studentId: number
+  review_id: Generated<number>
+  company_id: number
+  student_id: number
   rating: number
-  experience: string | null
-  would_recommend: boolean
-  is_anon: boolean
-  created_at: Date
+  experience: Generated<string | null>
+  would_recommend: Generated<boolean>
+  is_anon: Generated<boolean>
+  created_at: Generated<Date>
 }

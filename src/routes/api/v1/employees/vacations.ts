@@ -10,8 +10,8 @@ const vacationsRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager', 'users.principal'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.principal'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -20,12 +20,12 @@ const vacationsRouter = new Elysia()
     
     const canViewAll = auth.manager == -1 || auth.principal == true;
     
-    const employeeId = canViewAll && query.employeeId ? query.employeeId : auth.person;
+    const employeeId = canViewAll && query.employeeId ? query.employeeId : auth.person_id;
     const year = query.year || new Date().getFullYear();
 
     let balance = await db.selectFrom('employee_vacation_balance')
       .selectAll()
-      .where('teacherId', '=', employeeId)
+      .where('teacher_id', '=', employeeId)
       .where('year', '=', year)
       .executeTakeFirst();
 
@@ -36,7 +36,7 @@ const vacationsRouter = new Elysia()
       try {
         await db.insertInto('employee_vacation_balance')
             .values({
-                teacherId: employeeId,
+                teacher_id: employeeId,
                 year: year,
                 entitlement: defaultEntitlement,
                 used: 0,
@@ -47,7 +47,7 @@ const vacationsRouter = new Elysia()
         // Fetch the newly created record
         balance = await db.selectFrom('employee_vacation_balance')
             .selectAll()
-            .where('teacherId', '=', employeeId)
+            .where('teacher_id', '=', employeeId)
             .where('year', '=', year)
             .executeTakeFirst();
       } catch (e) {
@@ -80,8 +80,8 @@ const vacationsRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -93,14 +93,14 @@ const vacationsRouter = new Elysia()
     // Check if balance exists, if not create it
     const balance = await db.selectFrom('employee_vacation_balance')
         .select(['remaining', 'entitlement'])
-        .where('teacherId', '=', body.employeeId)
+        .where('teacher_id', '=', body.employeeId)
         .where('year', '=', currentYear)
         .executeTakeFirst();
 
     if (!balance) {
         await db.insertInto('employee_vacation_balance')
         .values({
-            teacherId: body.employeeId,
+            teacher_id: body.employeeId,
             year: currentYear,
             entitlement: 25 + body.amount, // Default + adjustment
             used: 0,
@@ -113,7 +113,7 @@ const vacationsRouter = new Elysia()
             entitlement: sql`entitlement + ${body.amount}`,
             remaining: sql`remaining + ${body.amount}`
         } as any)
-        .where('teacherId', '=', body.employeeId)
+        .where('teacher_id', '=', body.employeeId)
         .where('year', '=', currentYear)
         .execute();
     }
@@ -134,8 +134,8 @@ const vacationsRouter = new Elysia()
 
     const user = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -147,21 +147,21 @@ const vacationsRouter = new Elysia()
     const canViewAll = user.manager == 1;
     
     let queryBuilder = db.selectFrom('employee_vacation_requests')
-      .leftJoin('teachers', 'employee_vacation_requests.teacherId', 'teachers.personId')
-      .leftJoin('persons', 'teachers.personId', 'persons.personId')
+      .leftJoin('teachers', 'employee_vacation_requests.teacher_id', 'teachers.person_id')
+      .leftJoin('persons', 'teachers.person_id', 'persons.person_id')
       .select([
-        'employee_vacation_requests.requestId',
-        'employee_vacation_requests.teacherId',
-        'persons.firstName',
-        'persons.lastName',
-        'employee_vacation_requests.startDate',
-        'employee_vacation_requests.endDate',
+        'employee_vacation_requests.request_id',
+        'employee_vacation_requests.teacher_id',
+        'persons.first_name',
+        'persons.last_name',
+        'employee_vacation_requests.start_date',
+        'employee_vacation_requests.end_date',
         'employee_vacation_requests.days',
         'employee_vacation_requests.type',
         'employee_vacation_requests.status',
         'employee_vacation_requests.reason',
-        'employee_vacation_requests.createdAt',
-        'employee_vacation_requests.approvedAt',
+        'employee_vacation_requests.created_at',
+        'employee_vacation_requests.approved_at',
       ])
 
     // Filter by status
@@ -176,13 +176,13 @@ const vacationsRouter = new Elysia()
 
     // If not admin, only show own requests
     if (!canViewAll) {
-      queryBuilder = queryBuilder.where('employee_vacation_requests.teacherId', '=', user.person);
+      queryBuilder = queryBuilder.where('employee_vacation_requests.teacher_id', '=', user.person_id);
     } else if (query.employeeId) {
-      queryBuilder = queryBuilder.where('employee_vacation_requests.teacherId', '=', query.employeeId);
+      queryBuilder = queryBuilder.where('employee_vacation_requests.teacher_id', '=', query.employeeId);
     }
 
     const results = await queryBuilder
-      .orderBy('employee_vacation_requests.createdAt', 'desc')
+      .orderBy('employee_vacation_requests.created_at', 'desc')
       .limit(query.limit!)
       .offset(query.offset!)
       .execute();
@@ -205,8 +205,8 @@ const vacationsRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -230,7 +230,7 @@ const vacationsRouter = new Elysia()
       const year = new Date(body.startDate).getFullYear();
       const balance = await db.selectFrom('employee_vacation_balance')
         .select('remaining')
-        .where('teacherId', '=', auth.person)
+        .where('teacher_id', '=', auth.person_id)
         .where('year', '=', year)
         .executeTakeFirst();
 
@@ -245,16 +245,16 @@ const vacationsRouter = new Elysia()
 
     await db.insertInto('employee_vacation_requests')
       .values({
-        teacherId: auth.person!,
-        startDate: body.startDate,
-        endDate: body.endDate,
+        teacher_id: auth.person_id!,
+        start_date: body.startDate,
+        end_date: body.endDate,
         days: diffDays,
         type: body.type as any,
         status: 'pending',
         reason: body.reason || null,
-        approvedBy: null,
-        approvedAt: null,
-        createdAt: new Date().toISOString(),
+        approved_by: null,
+        approved_at: null,
+        created_at: new Date().toISOString(),
       })
       .execute();
 
@@ -282,8 +282,8 @@ const vacationsRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -299,8 +299,8 @@ const vacationsRouter = new Elysia()
 
     // Get request details
     const request = await db.selectFrom('employee_vacation_requests')
-      .select(['teacherId', 'days', 'type', 'startDate', 'endDate'])
-      .where('requestId', '=', requestId)
+      .select(['teacher_id', 'days', 'type', 'start_date', 'end_date'])
+      .where('request_id', '=', requestId)
       .executeTakeFirst();
 
     if (!request) {
@@ -311,23 +311,23 @@ const vacationsRouter = new Elysia()
     await db.updateTable('employee_vacation_requests')
       .set({
         status: 'approved',
-        approvedBy: auth.userId,
-        approvedAt: new Date().toISOString(),
+        approved_by: auth.user_id,
+        approved_at: new Date().toISOString(),
       })
-      .where('requestId', '=', requestId)
+      .where('request_id', '=', requestId)
       .execute();
       
     // Create attendance records logic here if needed (omitted for brevity, handled by user request scope)
     // Update vacation balance for vacation type
     if (request.type === 'vacation') {
-      const year = new Date(request.startDate).getFullYear();
+      const year = new Date(request.start_date).getFullYear();
       
       await db.updateTable('employee_vacation_balance')
         .set({
           used: sql`used + ${request.days}`,
           remaining: sql`remaining - ${request.days}`,
         } as any)
-        .where('teacherId', '=', request.teacherId)
+        .where('teacher_id', '=', request.teacher_id)
         .where('year', '=', year)
         .execute();
     }
@@ -343,8 +343,8 @@ const vacationsRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -361,10 +361,10 @@ const vacationsRouter = new Elysia()
       .set({
         status: 'rejected',
         reason: body.reason || null,
-        approvedBy: auth.userId,
-        approvedAt: new Date().toISOString(),
+        approved_by: auth.user_id,
+        approved_at: new Date().toISOString(),
       })
-      .where('requestId', '=', requestId)
+      .where('request_id', '=', requestId)
       .execute();
 
     return Response.json({ success: true, message: 'Request rejected' });

@@ -16,10 +16,10 @@ const app = new Elysia().post(
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'tokens.userId', 'users.userId')
+      .leftJoin('users', 'tokens.user_id', 'users.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
         'users.role'
       ])
       .where('tokens.token', '=', token)

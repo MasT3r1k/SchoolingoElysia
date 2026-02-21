@@ -14,8 +14,8 @@ const app = new Elysia()
 
         const auth = await db
         .selectFrom('tokens')
-        .leftJoin('users', 'tokens.userId', 'users.userId')
-        .select(['tokens.userId', 'users.person'])
+        .leftJoin('users', 'tokens.user_id', 'users.user_id')
+        .select(['tokens.user_id', 'users.person_id'])
         .where('tokens.token', '=', token)
         .where('tokens.expires', '>=', moment().toDate())
         .limit(1)
@@ -27,8 +27,8 @@ const app = new Elysia()
 
         const teacher = await db
         .selectFrom('teachers')
-        .select(['personId'])
-        .where('personId', '=', auth.person)
+        .select(['person_id'])
+        .where('person_id', '=', auth.person_id)
         .limit(1)
         .execute();
 
@@ -45,8 +45,8 @@ const app = new Elysia()
         // Načti firmu
         const company = await db
         .selectFrom('traineeship_companies')
-        .select(['companyId'])
-        .where('companyId', '=', companyId)
+        .select(['company_id'])
+        .where('company_id', '=', companyId)
         .limit(1)
         .executeTakeFirst();
 
@@ -90,7 +90,7 @@ const app = new Elysia()
             const update_company = await db
             .updateTable("traineeship_companies")
             .set(update_data)
-            .where('companyId', '=', companyId)
+            .where('company_id', '=', companyId)
             .limit(1)
             .execute()
 

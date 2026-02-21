@@ -1,6 +1,8 @@
+import { Generated } from "kysely"
+
 export interface Student_homeworkTable {
-  student: number
-  homework: number
-  submitted: boolean
-  finished: boolean
+  student_id: number
+  homework_id: number
+  submitted: Generated<boolean>
+  finished: Generated<boolean>
 }

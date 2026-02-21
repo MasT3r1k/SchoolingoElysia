@@ -1,7 +1,8 @@
 import { Generated } from "kysely";
 
 export interface school_yearsTable {
-  syId: Generated<number>;
+  sy_id: Generated<number>;
+  school_id: number;
   start: Date;
   end: Date;
   midterm: Date;

@@ -14,7 +14,7 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .select(['tokens.userId'])
+            .select(['tokens.user_id'])
             .where('tokens.token', '=', token.value)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -39,8 +39,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.manager'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.manager'])
             .where('tokens.token', '=', token.value)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -79,7 +79,7 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .select(['tokens.userId'])
+            .select(['tokens.user_id'])
             .where('tokens.token', '=', token.value)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -105,7 +105,7 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .select(['tokens.userId'])
+            .select(['tokens.user_id'])
             .where('tokens.token', '=', token.value)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -163,8 +163,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.manager'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.manager'])
             .where('tokens.token', '=', token.value)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -212,8 +212,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.manager'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.manager'])
             .where('tokens.token', '=', token.value)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
@@ -254,8 +254,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.manager'])
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.manager'])
             .where('tokens.token', '=', token.value)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();

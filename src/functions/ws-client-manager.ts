@@ -5,7 +5,7 @@
 
 type WsClient = {
     ws: any;
-    userId: number;
+    user_id: number;
     personId: number | null;
     connectedAt: Date;
 };
@@ -17,21 +17,21 @@ class WebSocketClientManager {
     /**
      * Register a new WebSocket connection
      */
-    register(wsId: string, ws: any, userId: number, personId: number | null): void {
+    register(wsId: string, ws: any, user_id: number, personId: number | null): void {
         this.clients.set(wsId, {
             ws,
-            userId,
+            user_id,
             personId,
             connectedAt: new Date()
         });
 
         // Track user connections
-        if (!this.userConnections.has(userId)) {
-            this.userConnections.set(userId, new Set());
+        if (!this.userConnections.has(user_id)) {
+            this.userConnections.set(user_id, new Set());
         }
-        this.userConnections.get(userId)!.add(wsId);
+        this.userConnections.get(user_id)!.add(wsId);
 
-        console.log(`[WS Manager] User ${userId} connected (${this.userConnections.get(userId)!.size} connections)`);
+        console.log(`[WS Manager] User ${user_id} connected (${this.userConnections.get(user_id)!.size} connections)`);
     }
 
     /**
@@ -40,23 +40,23 @@ class WebSocketClientManager {
     unregister(wsId: string): void {
         const client = this.clients.get(wsId);
         if (client) {
-            const userConns = this.userConnections.get(client.userId);
+            const userConns = this.userConnections.get(client.user_id);
             if (userConns) {
                 userConns.delete(wsId);
                 if (userConns.size === 0) {
-                    this.userConnections.delete(client.userId);
+                    this.userConnections.delete(client.user_id);
                 }
             }
             this.clients.delete(wsId);
-            console.log(`[WS Manager] User ${client.userId} disconnected`);
+            console.log(`[WS Manager] User ${client.user_id} disconnected`);
         }
     }
 
     /**
      * Send message to a specific user (all their connections)
      */
-    sendToUser(userId: number, message: object): void {
-        const connections = this.userConnections.get(userId);
+    sendToUser(user_id: number, message: object): void {
+        const connections = this.userConnections.get(user_id);
         if (!connections) return;
 
         const msgStr = JSON.stringify(message);
@@ -66,7 +66,7 @@ class WebSocketClientManager {
                 try {
                     client.ws.send(msgStr);
                 } catch (err) {
-                    console.error(`[WS Manager] Failed to send to user ${userId}:`, err);
+                    console.error(`[WS Manager] Failed to send to user ${user_id}:`, err);
                 }
             }
         }
@@ -105,8 +105,8 @@ class WebSocketClientManager {
     /**
      * Check if user is online
      */
-    isUserOnline(userId: number): boolean {
-        return this.userConnections.has(userId);
+    isUserOnline(user_id: number): boolean {
+        return this.userConnections.has(user_id);
     }
 
     /**
@@ -119,8 +119,8 @@ class WebSocketClientManager {
     /**
      * Get user connection count
      */
-    getUserConnectionCount(userId: number): number {
-        return this.userConnections.get(userId)?.size || 0;
+    getUserConnectionCount(user_id: number): number {
+        return this.userConnections.get(user_id)?.size || 0;
     }
 }
 

@@ -1,9 +1,10 @@
 import { Elysia, t } from 'elysia';
 import moment from 'moment';
 import { db } from '../../../../../database';
+import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
-  .post('/marks/student', async ({ cookie, body, query }) => {
+  .post('/marks/student', async ({ cookie, body, query }: any) => {
     const token = cookie.token?.value as string;
     if (!token) {
       return Response.json({ error: 'no_user', details: 'no_cookie' });
@@ -11,7 +12,7 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .select(['tokens.userId'])
+      .select(['tokens.user_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', moment().toDate())
       .limit(1)
@@ -28,7 +29,7 @@ const app = new Elysia()
 
     const student = await db.selectFrom('students')
       .select(['students.status'])
-      .where('students.personId', '=', student_id)
+      .where('students.person_id', '=', student_id)
       .limit(1)
       .execute();
 
@@ -37,25 +38,25 @@ const app = new Elysia()
     }
 
     let queryBuilder = db.selectFrom('grades')
-      .leftJoin('grades_columns', 'grades_columns.gcId', 'grades.columnId')
-      .leftJoin('subjects', 'subjects.subjectId', 'grades_columns.subjectId')
-      .leftJoin('persons as teacher', 'teacher.personId', 'grades.teacherId')
+      .leftJoin('grades_columns', 'grades_columns.column_id', 'grades.column_id')
+      .leftJoin('subjects', 'subjects.subject_id', 'grades_columns.subject_id')
+      .leftJoin('persons as teacher', 'teacher.person_id', 'grades.teacher_id')
       .select([
         'grades.mark',
-        'grades.columnId',
-        'grades.teacherId',
-        'teacher.firstName as teacherFirst',
-        'teacher.lastName as teacherLast',
+        'grades.column_id',
+        'grades.teacher_id',
+        'teacher.first_name as teacher_first_name',
+        'teacher.last_name as teacher_last_name',
         'grades_columns.created',
         'grades_columns.topic',
         'grades_columns.weight',
         'grades_columns.type',
-        'grades_columns.columnIndex',
-        'grades_columns.subjectId',
-        'grades_columns.groupId',
-        'subjects.label as subjectName'
+        'grades_columns.column_index',
+        'grades_columns.subject_id',
+        'grades_columns.group_id',
+        'subjects.label as subject_name'
       ])
-      .where('grades.studentId', '=', student_id)
+      .where('grades.student_id', '=', student_id)
       .where('grades_columns.status', '=', 'active')
       .orderBy('grades_columns.created', 'desc')
 
@@ -69,39 +70,52 @@ const app = new Elysia()
       queryBuilder = queryBuilder.offset(query.offset);
     }
 
-    const marks = await queryBuilder.execute();
+    const marks_result = await queryBuilder.execute();
 
-    const subjectStats: Record<number, { rank: string | null, totalStudents: number, classAvg: string }> = {};
-    const processedSubjects = new Set<number>();
+    // Map teacher names
+    const teacher_ids = Array.from(new Set(marks_result.map(m => m.teacher_id).filter((id): id is number => id !== null)));
+    const teacher_name_map = new Map<number, string>();
+    if (teacher_ids.length > 0) {
+        const teacher_names = await format_people_by_ids(teacher_ids);
+        teacher_ids.forEach((id, index) => teacher_name_map.set(id, teacher_names[index]));
+    }
+
+    const marks = marks_result.map(m => ({
+        ...m,
+        teacher_full_name: m.teacher_id ? teacher_name_map.get(m.teacher_id) : `${m.teacher_first_name} ${m.teacher_last_name}`
+    }));
+
+    const subject_stats: Record<number, { rank: string | null, total_students: number, class_avg: string }> = {};
+    const processed_subjects = new Set<number>();
 
     for (const mark of marks) {
-      if (!mark.subjectId || processedSubjects.has(mark.subjectId) || !mark.groupId) continue;
-      processedSubjects.add(mark.subjectId);
+      if (!mark.subject_id || processed_subjects.has(mark.subject_id) || !mark.group_id) continue;
+      processed_subjects.add(mark.subject_id);
 
-      const groupGrades = await db.selectFrom('grades')
-        .leftJoin('grades_columns', 'grades_columns.gcId', 'grades.columnId')
-        .select(['grades.studentId', 'grades.mark', 'grades_columns.weight'])
-        .where('grades_columns.subjectId', '=', mark.subjectId)
-        .where('grades_columns.groupId', '=', mark.groupId)
-        .where('grades_columns.type', '=', 0) // Only valid marks
+      const group_grades = await db.selectFrom('grades')
+        .leftJoin('grades_columns', 'grades_columns.column_id', 'grades.column_id')
+        .select(['grades.student_id', 'grades.mark', 'grades_columns.weight'])
+        .where('grades_columns.subject_id', '=', mark.subject_id)
+        .where('grades_columns.group_id', '=', mark.group_id)
+        .where('grades_columns.type', '=', 0 as any) // Only valid marks
         .where('grades_columns.status', '=', 'active')
         .execute();
 
-      const studentAverages: Record<number, { sum: number, weight: number }> = {};
+      const student_averages: Record<number, { sum: number, weight: number }> = {};
       
-      for (const g of groupGrades) {
+      for (const g of group_grades) {
         if (!g.mark && g.mark !== 0) continue;
-        const sid = g.studentId;
-        if (!studentAverages[sid]) studentAverages[sid] = { sum: 0, weight: 0 };
+        const sid = g.student_id;
+        if (!student_averages[sid]) student_averages[sid] = { sum: 0, weight: 0 };
         const w = (g.weight || 0) + 1;
-        studentAverages[sid].sum += Number(g.mark) * w;
-        studentAverages[sid].weight += w;
+        student_averages[sid].sum += Number(g.mark) * w;
+        student_averages[sid].weight += w;
       }
 
-      const averages = Object.keys(studentAverages).map(sid => {
-        const data = studentAverages[Number(sid)];
+      const averages = Object.keys(student_averages).map(sid => {
+        const data = student_averages[Number(sid)];
         return {
-          studentId: Number(sid),
+          student_id: Number(sid),
           avg: data.sum / data.weight
         };
       });
@@ -109,13 +123,12 @@ const app = new Elysia()
       // Sort ascending because lower mark is better (1 is best, 5 is worst)
       averages.sort((a, b) => a.avg - b.avg);
 
-      
       // Calculate rank range
-      let rankStr: string | null = null;
-      const myData = averages.find(a => a.studentId === student_id);
+      let rank_str: string | null = null;
+      const my_data = averages.find(a => a.student_id === student_id);
       
-      if (myData) {
-        const val = myData.avg;
+      if (my_data) {
+        const val = my_data.avg;
         // Find matching range
         const first = averages.findIndex(a => Math.abs(a.avg - val) < 0.0001);
         let last = first;
@@ -125,45 +138,44 @@ const app = new Elysia()
         }
         
         if (first === last) {
-            rankStr = `${first + 1}.`;
+            rank_str = `${first + 1}.`;
         } else {
-            rankStr = `${first + 1}. - ${last + 1}.`;
+            rank_str = `${first + 1}. - ${last + 1}.`;
         }
       }
 
-      const totalAvg = averages.reduce((sum, a) => sum + a.avg, 0);
-      const classAvg = averages.length > 0 ? totalAvg / averages.length : 0;
+      const total_avg = averages.reduce((sum, a) => sum + a.avg, 0);
+      const class_avg = averages.length > 0 ? total_avg / averages.length : 0;
 
-      subjectStats[mark.subjectId] = {
-        rank: rankStr,
-        totalStudents: averages.length,
-        classAvg: classAvg.toFixed(2)
+      subject_stats[mark.subject_id] = {
+        rank: rank_str,
+        total_students: averages.length,
+        class_avg: class_avg.toFixed(2)
       };
     }
 
     // --- Per-Mark Statistics ---
-    const markStats: Record<number, { rank: string | null, count: number, avg: string }> = {};
-    const columnIds = [...new Set(marks.map(m => m.columnId).filter(id => id !== null))];
+    const mark_stats: Record<number, { rank: string | null, count: number, avg: string }> = {};
+    const column_ids = [...new Set(marks.map(m => m.column_id).filter((id): id is number => id !== null))];
 
-    if (columnIds.length > 0) {
+    if (column_ids.length > 0) {
       // Fetch all grades for these columns to calculate stats
-      // Note: We need to perform this potentially heavy query. 
-      // Optimization: filter by valid marks only? Assuming all in grades table are valid or check mark value
-      const allColumnGrades = await db.selectFrom('grades')
-        .select(['columnId', 'studentId', 'mark'])
-        .where('columnId', 'in', columnIds)
+      const all_column_grades = await db.selectFrom('grades')
+        .select(['column_id', 'student_id', 'mark'])
+        .where('column_id', 'in', column_ids)
         .execute();
 
       // Group by column
-      const gradesByColumn: Record<number, { studentId: number, mark: number }[]> = {};
-      for (const g of allColumnGrades) {
-        if (!gradesByColumn[g.columnId]) gradesByColumn[g.columnId] = [];
+      const grades_by_column: Record<number, { student_id: number, mark: number }[]> = {};
+      for (const g of all_column_grades) {
+        if (g.column_id === null) continue;
+        if (!grades_by_column[g.column_id!]) grades_by_column[g.column_id!] = [];
         // Ensure mark is treated as number
-        gradesByColumn[g.columnId].push({ studentId: g.studentId, mark: Number(g.mark) });
+        grades_by_column[g.column_id].push({ student_id: g.student_id, mark: Number(g.mark) });
       }
 
-      for (const colId of columnIds) {
-        const grades = gradesByColumn[colId];
+      for (const col_id of column_ids) {
+        const grades = grades_by_column[col_id];
         if (!grades || grades.length === 0) continue;
 
         // Calculate average
@@ -171,25 +183,20 @@ const app = new Elysia()
         const avg = total / grades.length;
 
         // Calculate rank
-        // Sort grades (ascending: 1 is best)
-        // If sorting logic depends on 'type' (points vs marks), we might need extended logic.
-        // Assuming standard marks 1-5 for now or points where Higher is better?
-        // Standard Schoolingo: 1-5 (Lower is better), Points (Higher is better).
-        // Check column type from 'marks' array (we have it in initial query).
-        const colInfo = marks.find(m => m.columnId === colId);
-        const isPoints = colInfo?.type === 1; // Assuming type 1 = points (higher is better)
+        const col_info = marks.find(m => m.column_id === col_id);
+        const is_points = col_info?.type === 1; // Assuming type 1 = points (higher is better)
 
-        if (isPoints) {
+        if (is_points) {
            grades.sort((a, b) => b.mark - a.mark); // Descending for points
         } else {
            grades.sort((a, b) => a.mark - b.mark); // Ascending for grades
         }
 
-        let rankStr: string | null = null;
-        const myGrade = grades.find(g => g.studentId === student_id);
+        let rank_str: string | null = null;
+        const my_grade = grades.find(g => g.student_id === student_id);
         
-        if (myGrade) {
-            const val = myGrade.mark;
+        if (my_grade) {
+            const val = my_grade.mark;
             const first = grades.findIndex(g => g.mark === val);
             let last = first;
             for(let i = first + 1; i < grades.length; i++) {
@@ -198,21 +205,21 @@ const app = new Elysia()
             }
             
             if (first === last) {
-                rankStr = `${first + 1}.`;
+                rank_str = `${first + 1}.`;
             } else {
-                rankStr = `${first + 1}. - ${last + 1}.`;
+                rank_str = `${first + 1}. - ${last + 1}.`;
             }
         }
 
-        markStats[colId] = {
-          rank: rankStr,
+        mark_stats[col_id] = {
+          rank: rank_str,
           count: grades.length,
           avg: avg.toFixed(2)
         };
       }
     }
 
-    return Response.json({ status: true, marks, subjectStats, markStats });
+    return Response.json({ status: true, marks, subject_stats, mark_stats });
   }, {
     body: t.Object({
       student_id: t.Optional(t.Number()),

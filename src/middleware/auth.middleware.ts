@@ -13,9 +13,9 @@ export const auth = new Elysia()
     // Fetch session
     const session = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'tokens.expires', 'users.person', 'users.username', 'users.locale', 'users.principal', 'users.manager'])
-      .where('tokens.token', '=', token)
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'tokens.expires', 'users.person_id', 'users.username', 'users.locale', 'users.principal', 'users.manager'])
+      .where('tokens.token', '=', token as string)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
@@ -33,7 +33,7 @@ export const auth = new Elysia()
        // Update DB
        db.updateTable('tokens')
          .set({ expires: newExpires.toDate() })
-         .where('tokens.token', '=', token)
+         .where('tokens.token', '=', token as string)
          .executeTakeFirst(); // Fire and forget promise
 
        // Update Cookie
@@ -50,8 +50,8 @@ export const auth = new Elysia()
 
     return { 
         user: { 
-            userId: session.userId, 
-            person: session.person,
+            user_id: session.user_id, 
+            person_id: session.person_id,
             username: session.username,
             locale: session.locale,
             isPrincipal: !!session.principal,

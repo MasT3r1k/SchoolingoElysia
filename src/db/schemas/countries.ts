@@ -1,9 +1,9 @@
 import { Generated } from "kysely";
 
 export interface CountriesTable {
-  countryId: Generated<number>;
+  country_id: Generated<number>;
   nationality: string;
   code2: string;
   code3: string;
-  phoneCode: number;
+  phone_code: number;
 }

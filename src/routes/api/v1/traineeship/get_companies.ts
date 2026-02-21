@@ -15,25 +15,25 @@ const app = new Elysia()
 
       let countQuery = db
         .selectFrom('traineeship_companies as c')
-        .select(({ fn }) => [fn.count('c.companyId').as('total')]);
+        .select(({ fn }) => [fn.count('c.company_id').as('total')]);
 
       let companyBuilder = db
         .selectFrom('traineeship_companies as c')
-        .leftJoin('traineeship_company_rating as r', 'r.companyId', 'c.companyId')
-        .leftJoin('addresses as a', 'a.addressId', 'c.addressOffice')
-        .leftJoin('cities as ci', 'ci.cityId', 'a.cityId')
-        .leftJoin('countries as co', 'co.countryId', 'ci.countryId')
-        .leftJoin('traineeship_company_scopes as cs', 'cs.companyId', 'c.companyId')
-        .leftJoin('scopes as s', 's.scopeId', 'cs.scopeId')
+        .leftJoin('traineeship_company_rating as r', 'r.company_id', 'c.company_id')
+        .leftJoin('addresses as a', 'a.address_id', 'c.address_office')
+        .leftJoin('cities as ci', 'ci.city_id', 'a.city_id')
+        .leftJoin('countries as co', 'co.country_id', 'ci.country_id')
+        .leftJoin('traineeship_company_scopes as cs', 'cs.company_id', 'c.company_id')
+        .leftJoin('scopes as s', 's.scope_id', 'cs.scope_id')
         .select((eb) => [
-          'c.companyId',
+          'c.company_id',
           'c.name',
           'c.status',
           'c.web',
           'c.contact',
           'a.street',
-          'a.houseNumber',
-          'ci.cityName',
+          'a.house_number',
+          'ci.city_name',
           'ci.postcode',
           'co.code2',
           eb.fn.avg('r.rating').as('rating'),
@@ -41,15 +41,15 @@ const app = new Elysia()
           sql<string>`
             JSON_ARRAYAGG(
               DISTINCT JSON_OBJECT(
-                'scopeId', s.scopeId,
-                'scopeName', s.name,
-                'scopeShortcut', s.shortcut,
+                'scope_id', s.scope_id,
+                'scope_name', s.name,
+                'scope_shortcut', s.shortcut,
                 'status', IFNULL(cs.status, 0)
               )
             )
           `.as('scopes'),
         ])
-        .groupBy('c.companyId')
+        .groupBy('c.company_id')
         .orderBy('c.name');
 
       if (name) {

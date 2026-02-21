@@ -1,5 +1,5 @@
 export interface school_breaksTable {
-  school: number
+  school_id: number
   hour: number
   minutes: number
 }

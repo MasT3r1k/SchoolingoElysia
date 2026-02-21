@@ -23,7 +23,7 @@ export async function generateNewBackupCodes(user_id: number): Promise<string[]>
     const user = await db
         .selectFrom("users")
         .select(["2fa"])
-        .where("userId", "=", user_id)
+        .where('user_id', "=", user_id)
         .executeTakeFirst();
 
     if (!user || !user["2fa"]) return [];
@@ -31,7 +31,7 @@ export async function generateNewBackupCodes(user_id: number): Promise<string[]>
     // Odstraň staré kódy
     await db
         .deleteFrom("users_backup_codes")
-        .where("userId", "=", user_id)
+        .where('user_id', "=", user_id)
         .execute();
 
     // Vytvoření nových backup kódů
@@ -43,7 +43,7 @@ export async function generateNewBackupCodes(user_id: number): Promise<string[]>
     }
 
     const values = codes.map(code => ({
-        userId: user_id,
+        user_id: user_id,
         code,
         used: false,
         used_at: null,

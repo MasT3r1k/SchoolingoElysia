@@ -2,7 +2,7 @@ import { Generated } from "kysely";
 
 export interface emailsTable {
   email: string
-  personId: number
+  person_id: number
   type: 'personal' | 'school' | 'work' | 'other';
   description: string | null
   is_verified: boolean;

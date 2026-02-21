@@ -19,7 +19,7 @@ const app = new Elysia()
 
         const session = await db
           .selectFrom('tokens')
-          .select(['userId', 'expires'])
+          .select(['user_id', 'expires'])
           .where('token', '=', tokenToVerify)
           .where('expires', '>', new Date())
           .executeTakeFirst();
@@ -31,12 +31,12 @@ const app = new Elysia()
         const { ip } = store;
         const userAgent = request.headers.get("user-agent") || null;
         
-        const res = await authenticateUser(session.userId, cookie, userAgent, ip);
+        const res = await authenticateUser(session.user_id, cookie, userAgent, ip);
         
         if (res.status) {
             const user = await db.selectFrom('users')
                 .select(['username'])
-                .where('userId', '=', session.userId)
+                .where('user_id', '=', session.user_id)
                 .executeTakeFirst();
             
             const newToken = cookie.token.value;

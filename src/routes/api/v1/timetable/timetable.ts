@@ -1,51 +1,12 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
-import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../../../index';
 import moment from 'moment';
-
-const titlesBefore = db.selectFrom('persons_degree as pd')
-  .innerJoin('degrees as d', 'pd.degree', 'd.degreeID')
-  .select([
-    'pd.person as person',
-    sql`TRIM(GROUP_CONCAT(d.shortcut ORDER BY d.weight SEPARATOR ' '))`.as('titles_before')
-  ])
-  .where('d.isBefore', '=', true)
-  .groupBy('pd.person')
-  .as('tb');
-
-const titlesAfter = db.selectFrom('persons_degree as pd')
-  .innerJoin('degrees as d', 'pd.degree', 'd.degreeID') 
-  .select([
-    'pd.person as person',
-    sql`TRIM(GROUP_CONCAT(d.shortcut ORDER BY d.weight SEPARATOR ' '))`.as('titles_after')
-  ])
-  .where('d.isBefore', '=', false)
-  .groupBy('pd.person')
-  .as('ta');
-
-const fullName = sql`
-  concat(
-    COALESCE(
-      CASE WHEN tb.titles_before IS NULL OR tb.titles_before = '' THEN ''
-      ELSE CONCAT(tb.titles_before, ' ')
-      END,
-    ''
-    ),
-    persons.firstName, ' ', persons.lastName,
-    COALESCE(
-      CASE WHEN ta.titles_after IS NULL OR ta.titles_after = '' THEN ''
-      ELSE CONCAT(' ', ta.titles_after)
-      END,
-    ''
-    )
-  )
-`;
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const elysiaApp = new Elysia()
   
-  .post('/timetable', async ({ body, user }) => {
+  .post('/timetable', async ({ body, user }: any) => {
     try {
       if (!user) {
          return Response.json({ error: 'unauthorized' }, { status: 401 });
@@ -54,22 +15,22 @@ const elysiaApp = new Elysia()
       let type = body.type;
       let targetId = body.id;
       let time = moment(body.time)
-
-      if (user.person !== targetId) {
-          const isPrincipal = user.isPrincipal;
+      console.log(user)
+      if (user.person_id !== targetId) {
+          const isPrincipal = user.is_principal;
           if (!isPrincipal) {
               // Check if requester is a teacher
               const isTeacher = await db.selectFrom('teachers')
-                  .select(['personId'])
-                  .where('personId', '=', user.person)
+                  .select(['person_id'])
+                  .where('person_id', '=', user.person_id)
                   .executeTakeFirst();
               
               if (!isTeacher) {
                   // Check if requester is a parent of the target
                   const isParent = await db.selectFrom('family_relations')
-                    .select(['source'])
-                    .where('source', '=', user.person)
-                    .where('target', '=', targetId)
+                    .select(['source_id'])
+                    .where('source_id', '=', user.person_id)
+                    .where('target_id', '=', targetId)
                     .executeTakeFirst();
                   
                   if (!isParent) {
@@ -79,117 +40,184 @@ const elysiaApp = new Elysia()
           }
       }
 
-      const perms = await db.selectFrom("tokens")
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .leftJoin('students', 'students.personId', 'users.person')
-      .leftJoin('teachers', 'teachers.personId', 'users.person')
-      .leftJoin('family_relations', 'family_relations.source', 'users.person')
-      .select([
-          sql`students.personId`.as('student'),
-          sql`teachers.personId`.as('teacher'),
-          sql`family_relations.source`.as('parent')
-      ])
-      .where('users.person', '=', targetId)
-      .limit(1)
-      .executeTakeFirst()
+      if (type === 'room') {
+          // Room schedule is usually only for teachers/admins
+          const isTeacher = await db.selectFrom('teachers')
+              .select(['person_id'])
+              .where('person_id', '=', user.person_id)
+              .where('school_id', '=', user.school_id)
+              .executeTakeFirst();
+          
+          if (!isTeacher && !user.is_principal) {
+              return Response.json({ error: 'forbidden' }, { status: 403 });
+          }
+
+          const [timetableResult, substitutionResult] = await Promise.all([
+              db.selectFrom('timetable')
+                  .innerJoin('subjects', 'timetable.subject_id', 'subjects.subject_id')
+                  .leftJoin('groups', 'groups.group_id', 'timetable.group_id')
+                  .leftJoin('school_years as groupYear', 'groupYear.sy_id', 'groups.year_id')
+                  .leftJoin('classes', 'classes.class_id', 'groups.class_id')
+                  .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
+                  .leftJoin('building_rooms', 'building_rooms.room_id', 'timetable.room_id')
+                  .leftJoin('persons', 'timetable.teacher_id', 'persons.person_id')
+                  .select([
+                      'timetable.lesson_id',
+                      'groups.group_id',
+                      'persons.last_name',
+                      'groups.name as group_name',
+                      'groups.num as group_num',
+                      sql`(timetable.day + 1) % 7`.as('day'),
+                      'timetable.hour',
+                      'timetable.type',
+                      'timetable.teacher_id',
+                      'subjects.subject_id',
+                      sql`subjects.label`.as('subject_name'),
+                      sql`subjects.shortcut`.as('subject_shortcut'),
+                      sql`building_rooms.name`.as('room'),
+                      sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('class_name')
+                  ])
+                  .where('timetable.room_id', '=', targetId)
+                  .where('groupYear.current', '=', true)
+                  .execute(),
+
+              db.selectFrom('substitution')
+                  .leftJoin('subjects', 'substitution.subject_id', 'subjects.subject_id')
+                  .leftJoin('groups', 'groups.group_id', 'substitution.group_id')
+                  .leftJoin('classes', 'classes.class_id', 'groups.class_id')
+                  .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
+                  .leftJoin('building_rooms', 'building_rooms.room_id', 'substitution.room_id')
+                  .select([
+                      'groups.group_id',
+                      'groups.name as group_name',
+                      'groups.num as group_num',
+                      'substitution.start_date',
+                      'substitution.start_hour',
+                      'substitution.end_date',
+                      'substitution.end_hour',
+                      'substitution.type',
+                      'substitution.teacher_id',
+                      sql`building_rooms.name`.as('room'),
+                      sql`subjects.label`.as('subject_name'),
+                      sql`subjects.shortcut`.as('subject_shortcut'),
+                      sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('class_name')
+                  ])
+                  .where('substitution.room_id', '=', targetId)
+                  .where('substitution.start_date', '<=', time.clone().endOf('isoWeek').toDate())
+                  .where('substitution.end_date', '>=', time.clone().startOf('isoWeek').toDate())
+                  .execute()
+          ]);
+
+          const teacherIds = [
+              ...timetableResult.map(t => t.teacher_id).filter((id): id is number => id !== null),
+              ...substitutionResult.map(s => s.teacher_id).filter((id): id is number => id !== null)
+          ];
+          const teacherNameMap = await format_person_map_by_ids(teacherIds);
+
+          const timetable = timetableResult.map(t => ({
+              ...t,
+              teacher: t.teacher_id ? teacherNameMap.get(t.teacher_id) : ''
+          }));
+
+          const substitution = substitutionResult.map(s => ({
+              ...s,
+              teacher: s.teacher_id ? teacherNameMap.get(s.teacher_id) : ''
+          }));
+
+          return Response.json({ timetable, substitution });
+      }
 
       const targetRoles = await db.selectFrom('users')
-         .leftJoin('students', 'students.personId', 'users.person')
-         .leftJoin('teachers', 'teachers.personId', 'users.person')
+         .leftJoin('students', 'students.person_id', 'users.person_id')
+         .leftJoin('teachers', 'teachers.person_id', 'users.person_id')
          .select([
-             'students.personId as student',
-             'teachers.personId as teacher'
+             'students.person_id as student',
+             'teachers.person_id as teacher'
          ])
-         .where('users.person', '=', targetId)
+         .where('users.person_id', '=', targetId)
          .executeTakeFirst();
       
 
       if (targetRoles?.student) {
           const groups = await db.selectFrom('student_groups')
-              .innerJoin('groups', 'student_groups.groupId', 'groups.groupId')
-              .innerJoin('school_years as sy', 'groups.year', 'sy.syId')
+              .innerJoin('groups', 'student_groups.group_id', 'groups.group_id')
+              .innerJoin('school_years as sy', 'groups.year_id', 'sy.sy_id')
               .select([
-                  'groups.groupId',
+                  'groups.group_id',
                   'groups.name',
                   'groups.num',
               ])
-              .where('student_groups.student', '=', targetId)
+              .where('student_groups.student_id', '=', targetId)
               .where('sy.start', '<=', time.toDate())
               .where('sy.end', '>=', time.toDate())
               .execute()
           
           let groupNumbers: number[] = [];
           groups.forEach((group) => {
-              groupNumbers.push(group.groupId)
+              groupNumbers.push(group.group_id)
           });
           if (!groupNumbers.length) {
               groupNumbers = [-1];
           }
 
-          const [timetable, substitution, absences] = await Promise.all([
+          const [timetableResult, substitutionResult, absences] = await Promise.all([
               db.selectFrom('timetable')
-                  .innerJoin('subjects', 'timetable.subject', 'subjects.subjectId')
-                  .leftJoin('persons', 'timetable.teacher', 'persons.personId')
-                  .leftJoin('groups', 'groups.groupId', 'timetable.groupId')
-                  .leftJoin('building_rooms', 'building_rooms.br_id', 'timetable.room')
-                  .leftJoin('classes', 'classes.classId', 'groups.class')
-                  .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
-                  .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-                  .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
+                  .innerJoin('subjects', 'timetable.subject_id', 'subjects.subject_id')
+                  .leftJoin('persons', 'timetable.teacher_id', 'persons.person_id')
+                  .leftJoin('groups', 'groups.group_id', 'timetable.group_id')
+                  .leftJoin('building_rooms', 'building_rooms.room_id', 'timetable.room_id')
+                  .leftJoin('classes', 'classes.class_id', 'groups.class_id')
+                  .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
                   .select([
-                      'timetable.lessonId',
-                      'groups.groupId',
-                      'groups.name as groupName',
-                      'groups.num as groupNum',
+                      'timetable.lesson_id',
+                      'groups.group_id',
+                      'groups.name as group_name',
+                      'groups.num as group_num',
                       sql`(timetable.day + 1) % 7`.as('day'),
                       'timetable.hour',
                       'timetable.type',
+                      'persons.last_name',
                       sql`building_rooms.name`.as('room'),
-                      'subjects.subjectId',
-                      sql`subjects.label`.as('subjectName'),
-                      sql`subjects.shortcut`.as('subjectShortcut'),
-                      sql`persons.lastName`.as('lastName'),
-                      fullName.as('teacher'),
-                      'timetable.teacher as teacherId',
-                      sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
+                      'subjects.subject_id',
+                      sql`subjects.label`.as('subject_name'),
+                      sql`subjects.shortcut`.as('subject_shortcut'),
+                      'timetable.teacher_id as teacher_id',
+                      sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('class_name')
                   ])
-                  .where('timetable.groupId', 'in', groupNumbers)
+                  .where('timetable.group_id', 'in', groupNumbers)
                   .execute(),
 
               db.selectFrom('substitution')
-                .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
-                .leftJoin('persons',  'substitution.teacherId', 'persons.personId')
+                .leftJoin('subjects', 'substitution.subject_id', 'subjects.subject_id')
+                .leftJoin('persons',  'substitution.teacher_id', 'persons.person_id')
                 .leftJoin('events', 'substitution.event_id', 'events.event_id')
-                .leftJoin('groups', 'groups.groupId', 'substitution.groupId')
-                .leftJoin('classes', 'classes.classId', 'groups.class')
-                .leftJoin('building_rooms', 'building_rooms.br_id', 'substitution.roomId')
-                .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
-                .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-                .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
+                .leftJoin('groups', 'groups.group_id', 'substitution.group_id')
+                .leftJoin('classes', 'classes.class_id', 'groups.class_id')
+                .leftJoin('building_rooms', 'building_rooms.room_id', 'substitution.room_id')
+                .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
                 .select([
-                  'groups.groupId',
-                  'groups.name as groupName',
-                  'groups.num as groupNum',
+                  'groups.group_id',
+                  'groups.name as group_name',
+                  'groups.num as group_num',
                   'substitution.start_date',
                   'substitution.start_hour',
                   'substitution.end_date',
                   'substitution.end_hour',
                   'substitution.type',
+                  'persons.last_name',
                   'events.event_name',
                   'events.event_description',
                   'building_rooms.name as room',
-                  sql`subjects.label`.as('subjectName'),
-                  sql`subjects.shortcut`.as('subjectShortcut'),
-                  sql`persons.lastName`.as('lastName'),
-                  fullName.as('teacher'),
-                  'substitution.teacherId',
-                  sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
+                  sql`subjects.label`.as('subject_name'),
+                  sql`subjects.shortcut`.as('subject_shortcut'),
+                  'substitution.teacher_id',
+                  sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('class_name')
                 ])
                 .where((eb) =>
                   eb.and([
                     eb.or([
-                      eb('substitution.groupId', 'in', groupNumbers),
-                      eb('substitution.groupId', 'is', null)
+                      eb('substitution.group_id', 'in', groupNumbers),
+                      eb('substitution.group_id', 'is', null)
                     ]),
                     eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').toDate()),
                     eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').toDate())
@@ -198,50 +226,66 @@ const elysiaApp = new Elysia()
                 .execute(),
 
               db.selectFrom('absence')
-                .innerJoin('classbook', 'classbook.cbId', 'absence.lesson')
+                .innerJoin('classbook', 'classbook.classbook_id', 'absence.lesson_id')
                 .select([
                   'classbook.date',
-                  'classbook.dayHour as hour',
+                  'classbook.day_hour as hour',
                   'absence.type'
                 ])
-                .where('absence.student', '=', targetId)
+                .where('absence.student_id', '=', targetId)
                 // Use the same date logic as substitutions
                 .where('classbook.date', '>=', time.clone().startOf('isoWeek').format('YYYY-MM-DD')) 
                 .where('classbook.date', '<=', time.clone().endOf('isoWeek').format('YYYY-MM-DD'))
                 .execute()
           ])
 
+          const teacherIds = [
+            ...timetableResult.map(t => t.teacher_id).filter((id): id is number => id !== null),
+            ...substitutionResult.map(s => s.teacher_id).filter((id): id is number => id !== null)
+          ];
+          const teacherNameMap = await format_person_map_by_ids(teacherIds);
+
+          const timetable = timetableResult.map(t => ({
+            ...t,
+            teacher: t.teacher_id ? teacherNameMap.get(t.teacher_id) : ''
+          }));
+
+          const substitution = substitutionResult.map(s => ({
+            ...s,
+            teacher: s.teacher_id ? teacherNameMap.get(s.teacher_id) : ''
+          }));
+
           return Response.json({timetable, substitution, absences});
       } else if (targetRoles?.teacher) {
         if (type == "person") {
-          const [timetable, substitution] = await Promise.all([
+          const [timetableResult, substitutionResult] = await Promise.all([
               db.selectFrom('timetable')
-                  .innerJoin('subjects', 'timetable.subject', 'subjects.subjectId')
-                  .leftJoin('groups', 'groups.groupId', 'timetable.groupId')
-                  .leftJoin('persons', 'persons.personId', 'timetable.teacher')
-                  .leftJoin('classes', 'groups.class', 'classes.classId')
-                  .leftJoin('building_rooms', 'building_rooms.br_id', 'timetable.room')
-                  .leftJoin('school_years as syClass', 'syClass.syId', 'classes.yearId')
-                  .leftJoin('school_years as syGroup', 'syGroup.syId', 'groups.year')
+                  .innerJoin('subjects', 'timetable.subject_id', 'subjects.subject_id')
+                  .leftJoin('groups', 'groups.group_id', 'timetable.group_id')
+                  .leftJoin('persons', 'persons.person_id', 'timetable.teacher_id')
+                  .leftJoin('classes', 'groups.class_id', 'classes.class_id')
+                  .leftJoin('building_rooms', 'building_rooms.room_id', 'timetable.room_id')
+                  .leftJoin('school_years as syClass', 'syClass.sy_id', 'classes.year_id')
+                  .leftJoin('school_years as syGroup', 'syGroup.sy_id', 'groups.year_id')
                   .select([
-                    'timetable.lessonId',
-                    'groups.groupId',
-                    'groups.name as groupName',
-                    'groups.num as groupNum',
+                    'timetable.lesson_id',
+                    'groups.group_id',
+                    'groups.name as group_name',
+                    'groups.num as group_num',
                     sql`(timetable.day + 1) % 7`.as('day'),
                     'timetable.hour',
                     'timetable.type',
-                    'timetable.groupId',
+                    'timetable.group_id',
                     sql`building_rooms.name`.as('room'),
-                    'subjects.subjectId',
-                    'timetable.teacher as teacherId',
-                    sql`subjects.label`.as('subjectName'),
-                    sql`subjects.shortcut`.as('subjectShortcut'),
-                    sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, syClass.start, CURDATE()) + 1, classes.suffix)`.as('className')
+                    'subjects.subject_id',
+                    'timetable.teacher_id as teacher_id',
+                    sql`subjects.label`.as('subject_name'),
+                    sql`subjects.shortcut`.as('subject_shortcut'),
+                    sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, syClass.start, CURDATE()) + 1, classes.suffix)`.as('class_name')
                   ])
                   .where((eb) =>
                     eb.and([
-                      eb('timetable.teacher', '=', targetId),
+                      eb('timetable.teacher_id', '=', targetId),
                       eb('syGroup.start', '<=',  time.clone().toDate()),
                       eb('syGroup.end', '>=',    time.clone().toDate())
                     ])
@@ -249,34 +293,32 @@ const elysiaApp = new Elysia()
                   .execute(),
 
               db.selectFrom('substitution')
-                .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
-                .leftJoin('groups', 'groups.groupId', 'substitution.groupId')
-                .leftJoin('classes', 'groups.class', 'classes.classId')
-                .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
-                .leftJoin('persons',  'substitution.teacherId', 'persons.personId')
-                .leftJoin('building_rooms', 'building_rooms.br_id', 'substitution.roomId')
-                .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-                .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
+                .leftJoin('subjects', 'substitution.subject_id', 'subjects.subject_id')
+                .leftJoin('groups', 'groups.group_id', 'substitution.group_id')
+                .leftJoin('classes', 'groups.class_id', 'classes.class_id')
+                .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
+                .leftJoin('persons',  'substitution.teacher_id', 'persons.person_id')
+                .leftJoin('building_rooms', 'building_rooms.room_id', 'substitution.room_id')
                 .select([
-                  'groups.groupId',
-                  'groups.name as groupName',
-                  'groups.num as groupNum',
+                  'groups.group_id',
+                  'groups.name as group_name',
+                  'groups.num as group_num',
                   'substitution.start_date',
                   'substitution.start_hour',
                   'substitution.end_date',
                   'substitution.end_hour',
-                  'subjects.subjectId',
-                  'substitution.teacherId',
+                  'subjects.subject_id',
+                  'substitution.teacher_id',
                   'building_rooms.name as room',
-                  sql`subjects.label`.as('subjectName'),
-                  sql`subjects.shortcut`.as('subjectShortcut'),
-                  sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
+                  sql`subjects.label`.as('subject_name'),
+                  sql`subjects.shortcut`.as('subject_shortcut'),
+                  sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('class_name')
                 ])
                 .where((eb) =>
                   eb.and([
                     eb.or([
-                      eb('substitution.teacherId', '=', targetId),
-                      eb('substitution.groupId', 'is', null)
+                      eb('substitution.teacher_id', '=', targetId),
+                      eb('substitution.group_id', 'is', null)
                     ]),
                     eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').toDate()),
                     eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').toDate())
@@ -285,75 +327,86 @@ const elysiaApp = new Elysia()
                 .execute()
           ])
 
+          const teacherIds = [
+            ...timetableResult.map(t => t.teacher_id).filter((id): id is number => id !== null),
+            ...substitutionResult.map(s => s.teacher_id).filter((id): id is number => id !== null)
+          ];
+          const teacherNameMap = await format_person_map_by_ids(teacherIds);
+
+          const timetable = timetableResult.map(t => ({
+            ...t,
+            teacher: t.teacher_id ? teacherNameMap.get(t.teacher_id) : ''
+          }));
+
+          const substitution = substitutionResult.map(s => ({
+            ...s,
+            teacher: s.teacher_id ? teacherNameMap.get(s.teacher_id) : ''
+          }));
+
           return Response.json({timetable, substitution});
         }
         else if (type == "class") {
-          const [timetable, substitution] = await Promise.all([
+          const [timetableResult, substitutionResult] = await Promise.all([
               db.selectFrom('timetable')
-                  .innerJoin('subjects', 'timetable.subject', 'subjects.subjectId')
-                  .leftJoin('groups', 'groups.groupId', 'timetable.groupId')
-                  .leftJoin('classes', 'classes.classId', 'groups.class')
-                  .leftJoin('building_rooms', 'building_rooms.br_id', 'timetable.room')
-                  .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
-                  .leftJoin('persons', 'timetable.teacher', 'persons.personId')
-                  .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-                  .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
+                  .innerJoin('subjects', 'timetable.subject_id', 'subjects.subject_id')
+                  .leftJoin('groups', 'groups.group_id', 'timetable.group_id')
+                  .leftJoin('classes', 'classes.class_id', 'groups.class_id')
+                  .leftJoin('building_rooms', 'building_rooms.room_id', 'timetable.room_id')
+                  .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
+                  .leftJoin('persons', 'timetable.teacher_id', 'persons.person_id')
                   .select([
-                    'timetable.lessonId',
-                    'groups.groupId',
-                    'groups.name as groupName',
-                    'groups.num as groupNum',
+                    'timetable.lesson_id',
+                    'groups.group_id',
+                    'groups.name as group_name',
+                    'groups.num as group_num',
                     sql`(timetable.day + 1) % 7`.as('day'),
                     'timetable.hour',
                     'timetable.type',
+                    'persons.last_name',
                     sql`building_rooms.name`.as('room'),
-                    'subjects.subjectId',
-                    sql`subjects.label`.as('subjectName'),
-                    sql`subjects.shortcut`.as('subjectShortcut'),
-                    sql`persons.lastName`.as('lastName'),
-                    'timetable.teacher as teacherId',
-                    sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className'),
-                    fullName.as('teacher')
+                    'subjects.subject_id',
+                    sql`subjects.label`.as('subject_name'),
+                    sql`subjects.shortcut`.as('subject_shortcut'),
+                    'timetable.teacher_id as teacher_id',
+                    sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('class_name'),
                   ])
-                  .where('groups.class', '=', targetId)
+                  .where('groups.class_id', '=', targetId)
                   .where((eb) => eb.exists(
                       db.selectFrom('school_years as syGroup').select('syGroup.start')
-                      .whereRef('syGroup.syId', '=', 'groups.year')
+                      .whereRef('syGroup.sy_id', '=', sql`groups.year_id`)
                       .where('syGroup.start', '<=', time.clone().toDate())
                       .where('syGroup.end', '>=', time.clone().toDate())
                    ))
                   .execute(),
 
               db.selectFrom('substitution')
-                .leftJoin('subjects', 'substitution.subjectId', 'subjects.subjectId')
-                .leftJoin('groups', 'groups.groupId', 'substitution.groupId')
-                .leftJoin('classes', 'classes.classId', 'groups.class')
-                .leftJoin('persons', 'substitution.teacherId', 'persons.personId')
-                .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
-                .leftJoin('building_rooms', 'building_rooms.br_id', 'substitution.roomId')
-                .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-                .leftJoin(titlesAfter,  'ta.person', 'persons.personId')
+                .leftJoin('subjects', 'substitution.subject_id', 'subjects.subject_id')
+                .leftJoin('groups', 'groups.group_id', 'substitution.group_id')
+                .leftJoin('classes', 'classes.class_id', 'groups.class_id')
+                .leftJoin('persons', 'substitution.teacher_id', 'persons.person_id')
+                .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
+                .leftJoin('building_rooms', 'building_rooms.room_id', 'substitution.room_id')
                 .select([
-                  'groups.groupId',
-                  'groups.name as groupName',
-                  'groups.num as groupNum',
+                  'groups.group_id',
+                  'groups.name as group_name',
+                  'groups.num as group_num',
                   'substitution.start_date',
                   'substitution.start_hour',
                   'substitution.end_date',
                   'substitution.end_hour',
-                  'subjects.subjectId',
-                  'substitution.teacherId',
+                  'subjects.subject_id',
+                  'persons.last_name',
+                  'substitution.teacher_id',
                   'building_rooms.name as room',
-                  sql`subjects.label`.as('subjectName'),
-                  sql`subjects.shortcut`.as('subjectShortcut'),
-                  fullName.as('teacher'),
-                  sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className')
+                  sql`subjects.label`.as('subject_name'),
+                  sql`subjects.shortcut`.as('subject_shortcut'),
+                  sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('class_name')
                 ])
                 .where((eb) =>
                   eb.and([
                     eb.or([
-                      eb('groups.class', '=', targetId),
-                      eb('substitution.groupId', '=', null)
+                      eb('groups.class_id', '=', targetId),
+                      eb('substitution.group_id', '=', null)
                     ]),
                     eb('substitution.start_date', '<=', time.clone().endOf('isoWeek').toDate()),
                     eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').toDate())
@@ -362,27 +415,48 @@ const elysiaApp = new Elysia()
                 .execute()
           ])
 
+          const teacherIds = [
+            ...timetableResult.map(t => t.teacher_id).filter((id): id is number => id !== null),
+            ...substitutionResult.map(s => s.teacher_id).filter((id): id is number => id !== null)
+          ];
+          const teacherNameMap = await format_person_map_by_ids(teacherIds);
+
+          const timetable = timetableResult.map(t => ({
+            ...t,
+            teacher: t.teacher_id ? teacherNameMap.get(t.teacher_id) : ''
+          }));
+
+          const substitution = substitutionResult.map(s => ({
+            ...s,
+            teacher: s.teacher_id ? teacherNameMap.get(s.teacher_id) : ''
+          }));
+
           return Response.json({timetable, substitution});
         } else if (type == "supervision") {
-          const timetable = await db.selectFrom('supervisions')
-            .innerJoin('persons', 'persons.personId', 'supervisions.teacherId')
-            .innerJoin('supervision_places', 'supervision_places.placeId', 'supervisions.placeId')
-            .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-            .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
+          const supervisionResult = await db.selectFrom('supervisions')
+            .innerJoin('persons', 'persons.person_id', 'supervisions.teacher_id')
+            .innerJoin('supervision_places', 'supervision_places.place_id', 'supervisions.place_id')
             .select([
-              'supervisions.supervisionId',
-              'supervisions.teacherId',
+              'supervisions.supervision_id',
+              'supervisions.teacher_id',
               'supervision_places.name as room',
               sql`(supervisions.day + 1) % 7`.as('day'),
               'supervisions.hour',
-              'supervisions.description as className',
+              'supervisions.description as class_name',
               sql`'supervision'`.as('type'),
-              sql`'Dozor'`.as('subjectName'),
-              sql`'Dozor'`.as('subjectShortcut'),
-              fullName.as('teacher')
+              sql`'Dozor'`.as('subject_name'),
+              sql`'Dozor'`.as('subject_shortcut'),
             ])
-            .where('supervisions.teacherId', '=', targetId)
+            .where('supervisions.teacher_id', '=', targetId)
             .execute();
+
+          const teacherIds = supervisionResult.map(s => s.teacher_id).filter((id): id is number => id !== null);
+          const teacherNameMap = await format_person_map_by_ids(teacherIds);
+
+          const timetable = supervisionResult.map(s => ({
+            ...s,
+            teacher: s.teacher_id ? teacherNameMap.get(s.teacher_id) : ''
+          }));
 
           return Response.json({ timetable, substitution: [] });
         }
@@ -392,6 +466,7 @@ const elysiaApp = new Elysia()
       return Response.json({ timetable: [], substitution: [] });
 
     } catch (e) {
+      console.error(e);
       return new Response(JSON.stringify({ error: "Student not found or internal error", e }), {
         status: 404,
         headers: {
@@ -402,7 +477,7 @@ const elysiaApp = new Elysia()
   }, {
     body: t.Object({
       type: t.String({
-        default: 'person'
+        default: 'person_id'
       }),
       id: t.Number({
         minimum: 1

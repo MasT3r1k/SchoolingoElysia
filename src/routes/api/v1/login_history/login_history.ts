@@ -14,10 +14,10 @@ const elysiaApp = new Elysia()
     }
 
     const user = await db.selectFrom("tokens")
-        .innerJoin('users', 'users.userId', 'tokens.userId')
-        .innerJoin("passwords", "passwords.passwordId", "users.password")
+        .innerJoin('users', 'users.user_id', 'tokens.user_id')
+        .innerJoin("passwords", 'passwords.password_id', 'users.password_id')
         .select([
-            'users.userId',
+            'users.user_id',
             'users.username',
             'users.2fa',
             'users.2fa_secret',
@@ -37,7 +37,7 @@ const elysiaApp = new Elysia()
           .select([
               sql`COUNT(*)`.as('count')
           ])
-          .where('login_history.userId', '=', user.userId)
+          .where('login_history.user_id', '=', user.user_id)
           .executeTakeFirst()
           .then(r => Number(r?.count ?? 0));
 
@@ -48,7 +48,7 @@ const elysiaApp = new Elysia()
                 // Sečteme 1 tam, kde je success false
                 sql<number>`SUM(IF(success = false, 1, 0))`.as('failureCount')
             ])
-            .where('userId', '=', user.userId)
+            .where('user_id', '=', user.user_id)
             // Správná syntaxe pro MariaDB interval
             .where('created', '>', sql`NOW() - INTERVAL 30 DAY` as any) 
             .executeTakeFirst();
@@ -58,11 +58,11 @@ const elysiaApp = new Elysia()
 
         const login_history = await db.selectFrom("login_history")
             .select([
-              'login_history.loginId',
+              'login_history.login_id',
               'login_history.type',
               'login_history.success',
               'login_history.ip',
-              'login_history.userAgent',
+              'login_history.user_agent',
               'login_history.error',
               'login_history.created',
               'login_history.city',
@@ -75,7 +75,7 @@ const elysiaApp = new Elysia()
             .limit(query.limit)
             .offset(query.offset)
             .orderBy('login_history.created', 'desc')
-            .where('login_history.userId', '=', user.userId)
+            .where('login_history.user_id', '=', user.user_id)
             .execute();
 
         return Response.json({ count, data: login_history, validLogins, failedLogins });

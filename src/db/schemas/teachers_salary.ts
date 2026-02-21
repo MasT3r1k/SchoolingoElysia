@@ -1,12 +1,12 @@
 import { Generated } from "kysely"
 
 export interface Teachers_salaryTable {
-  salaryId: Generated<number>
-  teacherId: number | null
+  salary_id: Generated<number>
+  teacher_id: number | null
   role: string
   salary: number
-  validFrom: string
-  validTo: string | null
+  valid_from: string
+  valid_to: string | null
   currency: string
   deductions: number
 }

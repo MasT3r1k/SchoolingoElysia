@@ -9,7 +9,7 @@ const app = new Elysia()
     }))
 
     .post('/timetable/manage', async ({ body, user }) => {
-        if (!user || (!user.isPrincipal && user.manager != -1)) { 
+        if (!user || (!user.is_principal && user.manager != -1)) { 
             if (!user) return { error: 'unauthorized', status: 401 };
         }
 
@@ -20,7 +20,7 @@ const app = new Elysia()
                 if (!lessonId) return { error: 'missing_id' };
                 
                 await db.deleteFrom('timetable')
-                    .where('lessonId', '=', lessonId)
+                    .where('lesson_id', '=', lessonId)
                     .execute();
                 
                 return { success: true, action: 'deleted' };
@@ -46,32 +46,32 @@ const app = new Elysia()
 
                 // Check if lesson in this slot already exists
                 const existing = await db.selectFrom('timetable')
-                    .select('lessonId')
+                    .select('lesson_id')
                     .where('day', '=', day)
                     .where('hour', '=', hour)
-                    .where('groupId', '=', groupId)
+                    .where('group_id', '=', groupId)
                     .where('type', '=', type)
                     .executeTakeFirst();
 
                 if (existing) {
                     await db.updateTable('timetable')
                         .set(lessonData)
-                        .where('lessonId', '=', existing.lessonId)
+                        .where('lesson_id', '=', existing.lesson_id)
                         .execute();
                     
-                    if (lessonId && lessonId != existing.lessonId) {
+                    if (lessonId && lessonId != existing.lesson_id) {
                          await db.deleteFrom('timetable')
-                             .where('lessonId', '=', lessonId)
+                             .where('lesson_id', '=', lessonId)
                              .execute();
                     }
 
-                    return { success: true, action: 'updated', lessonId: existing.lessonId };
+                    return { success: true, action: 'updated', lessonId: existing.lesson_id };
                 } else {
                     if (lessonId) {
                         // Move existing lesson to empty slot
                         await db.updateTable('timetable')
                             .set(lessonData)
-                            .where('lessonId', '=', lessonId)
+                            .where('lesson_id', '=', lessonId)
                             .execute();
                         return { success: true, action: 'updated' };
                     } else {

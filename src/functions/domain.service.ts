@@ -42,14 +42,14 @@ export class DomainService {
     async getSchoolByDomain(domain: string) {
         const mapping = await db.selectFrom('school_domains')
             .where('domain', '=', domain)
-            .select('school')
+            .select('school_id')
             .executeTakeFirst();
         
         if (!mapping) return null;
         
         return await db.selectFrom('schools')
             .selectAll()
-            .where('schoolId', '=', mapping.school)
+            .where('school_id', '=', mapping.school_id)
             .executeTakeFirst();
     }
 
@@ -87,15 +87,14 @@ export class DomainService {
             // 2. Create Person
             const personRecord = await trx.insertInto('persons')
                 .values({
-                    firstName: data.adminFirstName,
-                    lastName: data.adminLastName,
+                    first_name: data.adminFirstName,
+                    last_name: data.adminLastName,
                     birthday: null, 
-                    birthplace: null,
+                    birthplace_id: null,
                     gender: 0, // 0 = unknown/other
                     birthnum: null,
-                    address: null,
-                    GDPR: true,
-                    insuranceId: null
+                    address_id: null,
+                    insurance_id: null
                 })
                 .executeTakeFirstOrThrow();
             const personId = Number(personRecord.insertId);
@@ -104,7 +103,7 @@ export class DomainService {
             if (data.adminEmail) {
                 await trx.insertInto('emails')
                     .values({
-                        personId: personId,
+                        person_id: personId,
                         email: data.adminEmail,
                         type: 'personal',
                         is_verified: true, // Auto-verify for admin setup
@@ -117,19 +116,19 @@ export class DomainService {
             const schoolRecord = await trx.insertInto('schools')
                 .values({
                     name: data.schoolName,
-                    shortName: data.schoolShortName || data.schoolName.substring(0, 10),
-                    district: data.districtId || 0,
-                    country: data.country || null,
+                    short_name: data.schoolShortName || data.schoolName.substring(0, 10),
+                    district_id: data.districtId || 0,
+                    country_id: data.country || null,
                     code: 'SETUP-' + Date.now(), 
-                    owner: personId, // Link to admin person
+                    owner_id: personId, // Link to admin person
                     total_storage_limit: 10737418240, 
                     apiToken: Bun.randomUUIDv7(),
                     license_type: 'FREE',
-                    startHour: 8,
-                    startMinute: 0,
-                    lessonHour: 45,
-                    breakTime: 10,
-                    resetPasswordWithEmail: data.adminEmail ? true : false,
+                    start_hour: 8,
+                    start_minute: 0,
+                    lesson_hour: 45,
+                    break_time: 10,
+                    reset_password_with_email: data.adminEmail ? true : false,
                     warningAbsencePercent: 20,
                     fastlogin: data.auth_qr ? true : false,
                     modules: 0,
@@ -142,8 +141,8 @@ export class DomainService {
                     backup_interval: 24,
                     auto_update: 1, 
                     auto_update_interval: 24,
-                    gdpr_firstname: data.adminFirstName,
-                    gdpr_lastname: data.adminLastName,
+                    gdpr_first_name: data.adminFirstName,
+                    gdpr_last_name: data.adminLastName,
                     gdpr_phone: data.schoolPhone || '',
                     gdpr_email: data.schoolEmail || data.adminEmail || '',
                     gdpr_mobile: '',
@@ -161,20 +160,20 @@ export class DomainService {
             // 5. Create Admin User
             const userRecord = await trx.insertInto('users')
                 .values({
-                    person: personId,
+                    person_id: personId,
                     username: data.adminUsername,
-                    password: passwordId,
+                    password_id: passwordId,
                     login_type: 'local',
                     role: 'teacher',
                     manager: -1,
                     principal: true,
                     theme: 0,
                     locale: 'en',
-                    passwordChanged: null,
-                    recommendChangePassword: false,
+                    password_changed: null,
+                    recommend_change_password: false,
                     cookies: 0,
-                    school: schoolId,
-                    autoSelectNextWeek: true,
+                    school_id: schoolId,
+                    auto_select_next_week: true,
                     fastlogin: false,
                     levels_exp: 0,
                     '2fa': false,
@@ -189,7 +188,7 @@ export class DomainService {
             // 6. Link Domain
             await trx.insertInto('school_domains')
                 .values({
-                    school: schoolId,
+                    school_id: schoolId,
                     domain: data.domain
                 })
                 .execute();

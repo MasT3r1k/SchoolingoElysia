@@ -9,33 +9,33 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.tokenId', 'tokens.userId', 'users.person'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.token_id', 'tokens.user_id', 'users.person_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     const devices = await db.selectFrom('tokens')
-    .leftJoin('login_history', 'login_history.token_id', 'tokens.tokenId')
+    .leftJoin('login_history', 'login_history.token_id', 'tokens.token_id')
     .select([
-        'tokens.tokenId as device_id',
-        'tokens.userAgent',
+        'tokens.token_id as device_id',
+        'tokens.user_agent',
         'tokens.expires',
         'login_history.ip',
         'login_history.city',
         'login_history.country',
         'login_history.country_code',
     ])
-    .where('tokens.userId', '=', auth.userId)
+    .where('tokens.user_id', '=', auth.user_id)
     .where('tokens.expires', '>=', new Date())
     .orderBy('tokens.expires', 'desc')
     .execute();
 
     return devices.map((device) => ({
         ...device,
-        current: device.device_id == auth.tokenId
+        current: device.device_id == auth.token_id
     }));
   });
 

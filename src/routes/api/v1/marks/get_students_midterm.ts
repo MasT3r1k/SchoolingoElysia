@@ -9,14 +9,14 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .leftJoin('teachers', 'teachers.personId', 'users.person')
-      .select(['tokens.userId', 'users.person', 'teachers.personId'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .leftJoin('teachers', 'teachers.person_id', 'users.person_id')
+      .select(['tokens.user_id', 'users.person_id', 'teachers.person_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', moment().toDate())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     // Teacher check
     if (!auth.personId) {
@@ -33,10 +33,10 @@ const app = new Elysia()
     const students = await db
       .selectFrom('students')
       .select([
-        'students.personId',
+        'students.person_id',
         'students.status'
       ])
-      .where('students.personId', 'in', students_id)
+      .where('students.person_id', 'in', students_id)
       .execute();
 
     if (!students.length) {

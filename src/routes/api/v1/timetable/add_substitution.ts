@@ -15,8 +15,8 @@ const elysiaAp = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'tokens.userId', 'users.userId')
-      .select(['tokens.userId', 'users.person'])
+      .leftJoin('users', 'tokens.user_id', 'users.user_id')
+      .select(['tokens.user_id', 'users.person_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', moment().toDate())
       .limit(1)
@@ -42,8 +42,8 @@ const elysiaAp = new Elysia()
     // === Check if substitution already exist ===
     const substitution = await db.selectFrom('substitution')
     .select([
-        'substitution.subjectId',
-        'substitution.teacherId',
+        'substitution.subject_id',
+        'substitution.teacher_id',
         'substitution.start_date',
         'substitution.start_hour',
         'substitution.end_date',
@@ -53,29 +53,29 @@ const elysiaAp = new Elysia()
     .where('substitution.start_hour', '=', start_hour)
     .where('substitution.end_date', '=', end_date)
     .where('substitution.end_hour', '=', end_hour)
-    .where('substitution.groupId', '=', group_id)
+    .where('substitution.group_id', '=', group_id)
     .executeTakeFirst()
 
     try {
         if (substitution) {
             await db.updateTable('substitution')
             .set({
-                subjectId: subject_id,
-                teacherId: teacher_id
+                subject_id: subject_id,
+                teacher_id: teacher_id
             })
             .where('substitution.start_date', '=', start_date)
             .where('substitution.start_hour', '=', start_hour)
             .where('substitution.end_date', '=', end_date)
             .where('substitution.end_hour', '=', end_hour)
-            .where('substitution.groupId', '=', group_id)
+            .where('substitution.group_id', '=', group_id)
             .executeTakeFirst();
         } else {
             await db.insertInto('substitution')
             .values({
-                groupId: group_id,
-                subjectId: subject_id,
-                teacherId: teacher_id,
-                roomId: room_id,
+                group_id,
+                subject_id,
+                teacher_id,
+                room_id,
                 start_date,
                 start_hour,
                 end_date,

@@ -5,7 +5,7 @@ import { SecurityConfig } from "../config/security.config";
 export async function verifyTFA(code: string, user_id: number, allow_backup_codes: boolean = true, check_if_enabled_2FA: boolean = true): Promise<boolean> {
     const user = await db.selectFrom("users")
     .select(["2fa_secret", "2fa"])
-    .where("userId", "=", user_id)
+    .where('user_id', "=", user_id)
     .executeTakeFirst()
 
     if (!user) return false;
@@ -16,7 +16,7 @@ export async function verifyTFA(code: string, user_id: number, allow_backup_code
 
     const backupCodes = await db.selectFrom("users_backup_codes")
     .select(["code"])
-    .where("userId", "=", user_id)
+    .where('user_id', "=", user_id)
     .where("used", "=", false)
     .where("code", "=", code)
     .limit(1)
@@ -39,7 +39,7 @@ export async function verifyTFA(code: string, user_id: number, allow_backup_code
         await db.updateTable("users_backup_codes")
         .set("used", true)
         .set("used_at", new Date())
-        .where("userId", "=", user_id)
+        .where('user_id', "=", user_id)
         .where("code", "=", code)
         .limit(1)
         .execute();

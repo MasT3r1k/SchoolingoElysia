@@ -1,23 +1,21 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
-import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../../../index';
 import moment from 'moment';
 
 const elysiaApp = new Elysia()
   
-  .get('/schedule/subjects', async ({ cookie, query }) => {
+  .get('/schedule/subjects', async ({ cookie, query }: any) => {
     const token = cookie.token?.value as string;
     if (!token) {
         return Response.json({ error: 'no_user', details: 'no_cookie' });
     }
 
     const user = await db.selectFrom("tokens")
-        .innerJoin('users', 'users.userId', 'tokens.userId')
-        .innerJoin("passwords", "passwords.passwordId", "users.password")
+        .innerJoin('users', 'users.user_id', 'tokens.user_id')
+        .innerJoin("passwords", "passwords.password_id", 'users.password_id')
         .select([
-            'users.userId',
+            'users.user_id',
             'users.username',
             'users.2fa',
             'users.2fa_secret',
@@ -34,48 +32,48 @@ const elysiaApp = new Elysia()
 
     const { classId } = query;
 
-    if (classId == undefined) return { error: 'invalid_class_id' };
+    if (classId === undefined) return { error: 'invalid_class_id' };
 
     const classData = await db.selectFrom("classes")
-    .leftJoin('school_years', 'school_years.syId', 'classes.yearId')
+    .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
     .select([
-        'classes.scopeId',
-        sql`TIMESTAMPDIFF(YEAR, school_years.start, CURDATE())`.as('classIndex')
+        'classes.scope_id',
+        sql<number>`TIMESTAMPDIFF(YEAR, school_years.start, CURDATE())`.as('class_index')
 
     ])
-    .where('classes.classId', '=', classId)
+    .where('classes.class_id', '=', classId)
     .executeTakeFirst();
     if (!classData) return { error: 'invalid_class' }
 
     const time = moment();
 
     const groups = await db.selectFrom("groups")
-    .leftJoin('school_years', 'school_years.syId', 'groups.year')
+    .leftJoin('school_years', 'school_years.sy_id', 'groups.year_id')
     .select([
-        'groups.groupId',
+        'groups.group_id',
         'groups.name',
         'groups.num',
-        'groups.year',
+        'groups.year_id',
     ])
-    .where('school_years.start', '<=', time.format("YYYY-MM-DD"))
-    .where('school_years.end', '>=', time.format("YYYY-MM-DD"))
-    .where('groups.class', '=', classId)
+    .where('school_years.start', '<=', time.format("YYYY-MM-DD") as any)
+    .where('school_years.end', '>=', time.format("YYYY-MM-DD") as any)
+    .where('groups.class_id', '=', classId)
     .execute()
 
     const subjects = await db.selectFrom("scopes_subjects")
-    .leftJoin('subjects', 'subjects.subjectId', 'scopes_subjects.subject_id')
+    .leftJoin('subjects', 'subjects.subject_id', 'scopes_subjects.subject_id')
     .select([
-      'subjects.subjectId',
-      'subjects.label as subjectName',
-      'subjects.shortcut as subjectShort',
+      'subjects.subject_id',
+      'subjects.label as subject_name',
+      'subjects.shortcut as subject_short',
       'scopes_subjects.hours_per_week',
       'scopes_subjects.is_mandatory',
       'scopes_subjects.color'
     ])
-    .where('scopes_subjects.scope_id', '=', classData.scopeId)
-    .where('scopes_subjects.year', '=', classData.classIndex as number)
+    .where('scopes_subjects.scope_id', '=', classData.scope_id)
+    .where('scopes_subjects.year', '=', classData.class_index as number)
     .where('scopes_subjects.hours_per_week', '>=', 1)
-    .orderBy('subjectName', 'asc')
+    .orderBy('subject_name', 'asc')
     .execute();
 
     return { classData, groups, subjects };

@@ -1,11 +1,10 @@
 export interface TimetableTable {
-  lessonId: number
+  lesson_id: number
   day: number
   hour: number
   type: number
-  subject: number
-  teacher: number
-  room: number
-  groupId: number
-  syId: number
+  subject_id: number
+  teacher_id: number
+  room_id: number
+  group_id: number
 }

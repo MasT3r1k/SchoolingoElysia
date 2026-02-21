@@ -12,50 +12,50 @@ const app = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     const student = await db
       .selectFrom('students')
       .select([
-        'students.personId',
+        'students.person_id',
         ])
-      .where('students.personId', '=', auth.person)
+      .where('students.person_id', '=', auth.person_id)
       .executeTakeFirst();
 
     const parent = await db
     .selectFrom('family_relations')
     .select([
-      'family_relations.frId'
+      'family_relations.family_relation_id'
     ])
-    .where('family_relations.source', '=', auth.person)
-    .where('family_relations.target', '=', query.student_id)
+    .where('family_relations.source_id', '=', auth.person_id)
+    .where('family_relations.target_id', '=', query.student_id)
     .executeTakeFirst();
 
     if (!student && !parent) return { error: 'no_permission' };
 
     const homework = await db.selectFrom('student_homework')
-    .leftJoin('homework', 'homework.homeworkId', 'student_homework.homework')
-    .leftJoin('subjects', 'subjects.subjectId', 'homework.subjectId')
+    .leftJoin('homework', 'homework.homework_id', 'student_homework.homework_id')
+    .leftJoin('subjects', 'subjects.subject_id', 'homework.subject_id')
     .select([
-        'homework.homeworkId',
+        'homework.homework_id',
         'homework.assigned_at',
         'homework.due_date',
         'homework.headline',
         'homework.homework',
         'homework.type',
-        'subjects.subjectId',
+        'subjects.subject_id',
         'subjects.label as subjectName',
         'subjects.shortcut as subjectShort',
         'student_homework.submitted',
         'student_homework.finished',
     ])
-    .where('student_homework.student', '=', query.student_id)
+    .where('student_homework.student_id', '=', query.student_id)
     .execute();
 
     return homework;

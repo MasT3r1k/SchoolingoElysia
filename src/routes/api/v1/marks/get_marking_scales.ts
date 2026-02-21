@@ -2,38 +2,39 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 
 const app = new Elysia()
-  .get('/marks/teacher/marking_scales', async ({ cookie, query }) => {
+  .get('/marks/teacher/marking_scales', async ({ cookie, query }: any) => {
     const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
       .select([
-        'tokens.userId',
-        'users.person',
+        'tokens.user_id',
+        'users.person_id',
         'users.role'
       ])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
+      .limit(1)
       .executeTakeFirst();
 
-    if (!auth?.person) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
     if (auth.role != "teacher") return { error: 'no_permission' };
 
     // --- 1️⃣ Celkový počet škál učitele ---
-    const totalRowsResult = await db
+    const total_rows_result = await db
       .selectFrom('marking_scales')
-      .where('teacher_id', '=', auth.person)
+      .where('teacher_id', '=', auth.person_id)
       .select(db.fn.count('ms_id').as('total'))
       .executeTakeFirst();
 
-    const totalRows = totalRowsResult ? Number(totalRowsResult.total) : 0;
+    const total_rows = total_rows_result ? Number(total_rows_result.total) : 0;
 
     // --- 2️⃣ Výchozí škála učitele (pokud existuje) ---
-    const defaultScale = await db
+    const default_scale = await db
       .selectFrom('marking_scales')
-      .where('teacher_id', '=', auth.person)
+      .where('teacher_id', '=', auth.person_id)
       .where('is_default', '=', true)
       .select([
         'ms_id',
@@ -62,7 +63,7 @@ const app = new Elysia()
         'marking_scales.updated_at',
         eb.fn.count('marking_scales_groups.msg_id').as('count_usage'),
       ])
-      .where('marking_scales.teacher_id', '=', auth.person)
+      .where('marking_scales.teacher_id', '=', auth.person_id)
       .groupBy('marking_scales.ms_id')
       .orderBy('marking_scales.updated_at', 'desc')
       .limit(query.limit ?? 10)
@@ -73,9 +74,9 @@ const app = new Elysia()
 
     // pomocná funkce: vytažení nejpoužívanějšího předmětu pro ms_id
     const getMostUsedSubject = async (ms_id: number) => {
-      const mostUsed = await db
+      const most_used = await db
         .selectFrom('marking_scales_groups')
-        .leftJoin('subjects', 'subjects.subjectId', 'marking_scales_groups.subject_id')
+        .leftJoin('subjects', 'subjects.subject_id', 'marking_scales_groups.subject_id')
         .select((eb) => [
           'marking_scales_groups.subject_id',
           'subjects.label as subject_name',
@@ -87,56 +88,56 @@ const app = new Elysia()
         .limit(1)
         .executeTakeFirst();
 
-      if (!mostUsed) return null;
+      if (!most_used) return null;
       return {
-        subject_id: mostUsed.subject_id,
-        subject_name: mostUsed.subject_name,
-        count: Number(mostUsed.count),
+        subject_id: most_used.subject_id,
+        subject_name: most_used.subject_name,
+        count: Number(most_used.count),
       };
     };
 
     // --- 4️⃣ Přidání výchozí škály jako první (pokud existuje) ---
-    if (defaultScale) {
+    if (default_scale) {
       // spočítat skutečné usage_count pro defaultScale
-      const usageRow = await db
+      const usage_row = await db
         .selectFrom('marking_scales_groups')
-        .where('ms_id', '=', defaultScale.ms_id)
+        .where('ms_id', '=', default_scale.ms_id)
         .select(db.fn.count('msg_id').as('total'))
         .executeTakeFirst();
 
-      const usageCount = usageRow ? Number(usageRow.total) : 0;
+      const usage_count = usage_row ? Number(usage_row.total) : 0;
 
-      const mostUsedSubject = await getMostUsedSubject(defaultScale.ms_id);
+      const most_used_subject = await getMostUsedSubject(default_scale.ms_id);
 
       result.push({
-        ms_id: defaultScale.ms_id,
-        name: defaultScale.name ?? null,
-        is_default: Boolean(defaultScale.is_default),
-        usage_count: usageCount,
-        most_used_subject: mostUsedSubject,
+        ms_id: default_scale.ms_id,
+        name: default_scale.name ?? null,
+        is_default: Boolean(default_scale.is_default),
+        usage_count,
+        most_used_subject,
         grades: [
-          Number(defaultScale.grade_1_min ?? 0),
-          Number(defaultScale.grade_2_min ?? 0),
-          Number(defaultScale.grade_3_min ?? 0),
-          Number(defaultScale.grade_4_min ?? 0),
+          Number(default_scale.grade_1_min ?? 0),
+          Number(default_scale.grade_2_min ?? 0),
+          Number(default_scale.grade_3_min ?? 0),
+          Number(default_scale.grade_4_min ?? 0),
           0,
         ],
-        last_updated: defaultScale.updated_at,
+        last_updated: default_scale.updated_at,
       });
     }
 
     // --- 5️⃣ Přidání ostatních škál (bez duplikátu výchozí) ---
     for (const scale of scales) {
-      if (defaultScale && scale.ms_id === defaultScale.ms_id) continue; // přeskočit duplikát, pokud byl vložen výchozí
+      if (default_scale && scale.ms_id === default_scale.ms_id) continue; // přeskočit duplikát, pokud byl vložen výchozí
 
-      const mostUsedSubject = await getMostUsedSubject(scale.ms_id);
+      const most_used_subject = await getMostUsedSubject(scale.ms_id);
 
       result.push({
         ms_id: scale.ms_id,
         name: scale.name ?? null,
         is_default: Boolean(scale.is_default),
         usage_count: Number(scale.count_usage ?? 0),
-        most_used_subject: mostUsedSubject,
+        most_used_subject,
         grades: [
           Number(scale.grade_1_min ?? 0),
           Number(scale.grade_2_min ?? 0),
@@ -148,7 +149,7 @@ const app = new Elysia()
       });
     }
 
-    return { total: totalRows, marking_scales: result };
+    return { total: total_rows, marking_scales: result };
   }, {
     query: t.Object({
       limit: t.Optional(t.Number()),

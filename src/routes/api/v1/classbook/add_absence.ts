@@ -11,13 +11,13 @@ const elysiaApp = new Elysia()
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const user = await db.selectFrom("tokens")
-      .innerJoin('users', 'users.userId', 'tokens.userId')
-      .innerJoin("passwords", "passwords.passwordId", "users.password")
+      .innerJoin('users', 'users.user_id', 'tokens.user_id')
+      .innerJoin("passwords", "passwords.password_id", 'users.password_id')
       .select([
-        'users.userId',
+        'users.user_id',
         'users.username',
         'users.role',
-        'users.person',
+        'users.person_id',
         'users.2fa',
         'users.2fa_secret',
         'passwords.password'
@@ -41,18 +41,18 @@ const elysiaApp = new Elysia()
 
     const isExistAbsence = await db.selectFrom('absence')
     .select([
-        'absence.lesson',
-        'absence.student',
+        'absence.lesson_id',
+        'absence.student_id',
     ])
-    .where('absence.lesson', '=', classbook_id)
-    .where('absence.student', '=', student_id)
+    .where('absence.lesson_id', '=', classbook_id)
+    .where('absence.student_id', '=', student_id)
     .executeTakeFirst()
 
     if (!isExistAbsence && type >= 0) {
         await db.insertInto('absence')
         .values({
-            lesson: classbook_id,
-            student: student_id,
+            lesson_id: classbook_id,
+            student_id: student_id,
             type,
             reason,
             minutes,
@@ -66,13 +66,13 @@ const elysiaApp = new Elysia()
             .set('absence.minutes', minutes)
             .set('absence.note', note)
             .set('absence.reason', reason)
-            .where('absence.lesson', '=', classbook_id)
-            .where('absence.student', '=', student_id)
+            .where('absence.lesson_id', '=', classbook_id)
+            .where('absence.student_id', '=', student_id)
             .execute()
         } else {
             await db.deleteFrom('absence')
-            .where('absence.lesson', '=', classbook_id)
-            .where('absence.student', '=', student_id)
+            .where('absence.lesson_id', '=', classbook_id)
+            .where('absence.student_id', '=', student_id)
             .limit(1)
             .execute();
         }

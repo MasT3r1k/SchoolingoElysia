@@ -20,7 +20,7 @@ const WS_PING_TIMEOUT_MS = 60_000;
 interface WsState {
     role: "user" | "guest";
     user: {
-        userId: number;
+        user_id: number;
         person: number | null;
     } | null;
 
@@ -165,12 +165,12 @@ async function revalidateWsState(ws: any): Promise<WsState> {
     // -------- DB VALIDATION --------
     const auth = await db
         .selectFrom("tokens")
-        .leftJoin("users", "users.userId", "tokens.userId")
+        .leftJoin("users", "users.user_id", "tokens.user_id")
         .select([
-            "tokens.tokenId",
+            "tokens.token_id",
             "tokens.expires",
-            "tokens.userId",
-            "users.person"
+            "tokens.user_id",
+            "users.person_id"
         ])
         .where("tokens.token", "=", tokenCookie.value)
         .where("tokens.expires", ">=", new Date())
@@ -192,12 +192,12 @@ async function revalidateWsState(ws: any): Promise<WsState> {
     const state: WsState = {
         role: "user",
         user: {
-            userId: auth.userId,
-            person: auth.person
+            user_id: auth.user_id,
+            person: auth.person_id
         },
         auth: {
             token: tokenCookie.value,
-            tokenId: auth.tokenId,
+            tokenId: auth.token_id,
             expires: +new Date(auth.expires),
             lastValidated: now
         }
@@ -205,19 +205,19 @@ async function revalidateWsState(ws: any): Promise<WsState> {
 
     if (
         prev.role !== "user" ||
-        prev.user?.userId !== auth.userId
+        prev.user?.user_id !== auth.user_id
     ) {
         wsClientManager.register(
             wsId,
             ws,
-            auth.userId,
-            auth.person
+            auth.user_id,
+            auth.person_id
         );
 
         ws.send(
             JSON.stringify({
                 type: "authenticated",
-                userId: auth.userId
+                user_id: auth.user_id
             })
         );
     }
@@ -259,7 +259,7 @@ export const ws = new Elysia().ws("/ws", {
                 await db.insertInto("login_qrcodes").values({
                     qrcode,
                     socket: ws.id,
-                    userAgent:
+                    user_agent:
                         ws.data.headers?.["user-agent"]?.toString() ??
                         "unknown",
                     ip: ws.remoteAddress
@@ -288,7 +288,7 @@ export const ws = new Elysia().ws("/ws", {
             ws.send({
                 type: "echo",
                 msg: msg.data,
-                userId: state.user!.userId
+                user_id: state.user!.user_id
             });
             return;
         }
@@ -305,7 +305,7 @@ export const ws = new Elysia().ws("/ws", {
                 .where(
                     "user_id",
                     "=",
-                    state.user!.userId
+                    state.user!.user_id
                 )
                 .execute();
 
@@ -320,7 +320,7 @@ export const ws = new Elysia().ws("/ws", {
             const r = await db
                 .selectFrom("notifications")
                 .select(db.fn.count("notification_id").as("count"))
-                .where("user_id", "=", state.user!.userId)
+                .where("user_id", "=", state.user!.user_id)
                 .where("read_at", "is", null)
                 .executeTakeFirst();
 

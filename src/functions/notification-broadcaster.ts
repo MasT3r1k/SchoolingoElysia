@@ -41,10 +41,10 @@ class NotificationBroadcaster {
     /**
      * Send notification to a specific user
      */
-    async sendToUser(userId: number, notification: NotificationPayload): Promise<void> {
+    async sendToUser(user_id: number, notification: NotificationPayload): Promise<void> {
         // 1. Send via WebSocket if user is online
-        if (wsClientManager.isUserOnline(userId)) {
-            wsClientManager.sendToUser(userId, {
+        if (wsClientManager.isUserOnline(user_id)) {
+            wsClientManager.sendToUser(user_id, {
                 type: 'notification',
                 payload: notification
             });
@@ -54,7 +54,7 @@ class NotificationBroadcaster {
         const rule = await db
             .selectFrom('notification_rules')
             .select(['enabled'])
-            .where('user_id', '=', userId)
+            .where('user_id', '=', user_id)
             .where('type', '=', notification.type)
             .executeTakeFirst();
 
@@ -63,12 +63,12 @@ class NotificationBroadcaster {
         }
 
         // 3. Send push notification if user has subscriptions and is offline
-        if (!wsClientManager.isUserOnline(userId) && VAPID_PUBLIC_KEY) {
-            await this.sendPushNotification(userId, notification);
+        if (!wsClientManager.isUserOnline(user_id) && VAPID_PUBLIC_KEY) {
+            await this.sendPushNotification(user_id, notification);
         }
 
         // 4. Store notification in database for notification center
-        await this.storeNotification(userId, notification);
+        await this.storeNotification(user_id, notification);
     }
 
     /**
@@ -91,14 +91,14 @@ class NotificationBroadcaster {
     /**
      * Send notification when a new grade is added
      */
-    async notifyNewGrade(studentUserId: number, data: {
+    async notifyNewGrade(studentuser_id: number, data: {
         subject: string;
         grade: string;
         weight: number;
         topic?: string;
         teacherName: string;
     }): Promise<void> {
-        await this.sendToUser(studentUserId, {
+        await this.sendToUser(studentuser_id, {
             type: 'grade_new',
             title: 'Nová známka',
             body: `${data.subject}: ${data.grade} (váha ${data.weight})${data.topic ? ` - ${data.topic}` : ''}`,
@@ -131,13 +131,13 @@ class NotificationBroadcaster {
     /**
      * Send notification for new message
      */
-    async notifyNewMessage(recipientUserId: number, data: {
+    async notifyNewMessage(recipientuser_id: number, data: {
         senderName: string;
         subject: string;
         preview?: string;
         messageId: number;
     }): Promise<void> {
-        await this.sendToUser(recipientUserId, {
+        await this.sendToUser(recipientuser_id, {
             type: 'message_new',
             title: `Zpráva od ${data.senderName}`,
             body: data.subject,
@@ -150,7 +150,7 @@ class NotificationBroadcaster {
     /**
      * Send notification for absence
      */
-    async notifyAbsence(studentUserId: number, parentUserIds: number[], data: {
+    async notifyAbsence(studentuser_id: number, parentUserIds: number[], data: {
         date: Date;
         hours: number;
         type: 'unexcused' | 'excused' | 'late';
@@ -164,7 +164,7 @@ class NotificationBroadcaster {
             icon: 'calendar-x'
         };
         
-        await this.sendToUser(studentUserId, notification);
+        await this.sendToUser(studentuser_id, notification);
         await this.sendToUsers(parentUserIds, notification);
     }
 
@@ -204,12 +204,12 @@ class NotificationBroadcaster {
     /**
      * Send notification for new reward
      */
-    async notifyNewReward(studentUserId: number, data: {
+    async notifyNewReward(studentuser_id: number, data: {
         title: string;
         type: 'financial' | 'certificate' | 'prize' | 'other';
         amount?: number;
     }): Promise<void> {
-        await this.sendToUser(studentUserId, {
+        await this.sendToUser(studentuser_id, {
             type: 'reward_new',
             title: 'Nová odměna',
             body: data.amount ? `${data.title} - ${data.amount} Kč` : data.title,
@@ -222,7 +222,7 @@ class NotificationBroadcaster {
     /**
      * Send push notification via Web Push API
      */
-    private async sendPushNotification(userId: number, notification: NotificationPayload): Promise<void> {
+    private async sendPushNotification(user_id: number, notification: NotificationPayload): Promise<void> {
         if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
             return; // Push notifications not configured
         }
@@ -231,7 +231,7 @@ class NotificationBroadcaster {
             const subscriptions = await db
                 .selectFrom('push_subscriptions')
                 .selectAll()
-                .where('user_id', '=', userId)
+                .where('user_id', '=', user_id)
                 .execute();
 
             const pushPayload = JSON.stringify({
@@ -271,20 +271,17 @@ class NotificationBroadcaster {
     /**
      * Store notification in database
      */
-    private async storeNotification(userId: number, notification: NotificationPayload): Promise<void> {
+    private async storeNotification(user_id: number, notification: NotificationPayload): Promise<void> {
         try {
             await db
                 .insertInto('notifications')
                 .values({
-                    user_id: userId,
+                    user_id,
                     type: notification.type,
                     data: JSON.stringify({
                         title: notification.title,
                         body: notification.body,
                         ...notification.data
-                    }),
-                    action: JSON.stringify({
-                        url: notification.url
                     })
                     // read_at and created_at are auto-generated
                 })

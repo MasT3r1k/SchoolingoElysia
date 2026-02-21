@@ -27,7 +27,7 @@ const elysiaApp = new Elysia()
         return timetableScheme;
     })
 
-.post('/timetable_scheme', async ({ body }) => {
+.post('/timetable_scheme', async ({ body, user }) => {
     const { scopeId, year, scheme } = body;
 
     /** DELETE old scheme */
@@ -52,7 +52,7 @@ const elysiaApp = new Elysia()
           day: dayIndex,
           hour: hourIndex,
           type,
-          assign_by: 0
+          assign_by: user.userId
         }))
       )
     );
@@ -63,7 +63,7 @@ const elysiaApp = new Elysia()
 
     await db
       .insertInto('timetable_schemas')
-      .values(data)
+      .values(data as any)
       .execute();
 
     return {

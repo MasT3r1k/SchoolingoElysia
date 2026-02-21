@@ -4,6 +4,8 @@
  */
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
+import { Database } from '../../../../db/schemas';
+import { ValueExpression } from 'kysely';
 
 const app = new Elysia()
     // ==================== VEHICLES ====================
@@ -16,8 +18,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .select(['tokens.userId'])
-            .where('tokens.token', '=', token.value)
+            .select(['tokens.user_id'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -42,8 +44,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .select(['tokens.userId'])
-            .where('tokens.token', '=', token.value)
+            .select(['tokens.user_id'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -59,7 +61,7 @@ const app = new Elysia()
         const vehicle = await db
             .selectFrom('fleetvehicles_vehicles')
             .selectAll()
-            .where('vehicleId', '=', vehicleId)
+            .where('vehicle_id', '=', vehicleId)
             .executeTakeFirst();
 
         if (!vehicle) {
@@ -70,7 +72,7 @@ const app = new Elysia()
         const trips = await db
             .selectFrom('fleetvehicles_trips')
             .selectAll()
-            .where('vehicleId', '=', vehicleId)
+            .where('vehicle_id', '=', vehicleId)
             .orderBy('start_date', 'desc')
             .limit(10)
             .execute();
@@ -79,7 +81,7 @@ const app = new Elysia()
         const expenses = await db
             .selectFrom('fleetvehicles_expenses')
             .selectAll()
-            .where('vehicleId', '=', vehicleId)
+            .where('vehicle_id', '=', vehicleId)
             .orderBy('expense_date', 'desc')
             .limit(10)
             .execute();
@@ -88,7 +90,7 @@ const app = new Elysia()
         const maintenance = await db
             .selectFrom('fleetvehicles_maintenance')
             .selectAll()
-            .where('vehicleId', '=', vehicleId)
+            .where('vehicle_id', '=', vehicleId)
             .orderBy('maintenance_date', 'desc')
             .limit(5)
             .execute();
@@ -106,9 +108,9 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.manager'])
-            .where('tokens.token', '=', token.value)
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.manager'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -125,11 +127,11 @@ const app = new Elysia()
                 manufacture,
                 model,
                 year_manufacture: year_manufacture || new Date().getFullYear(),
-                fuel: fuel || 'petrol',
+                fuel: fuel as ValueExpression<Database, "fleetvehicles_vehicles", "petrol" | "diesel" | "hybrid(petrol)" | "hybrid(diesel)" | "electro" | "CNG" | "LNG" | "LPG" | "H2"> || 'petrol',
                 vin: vin || null,
                 mileage: mileage || 0,
-                countryId_manufacture: countryId || 1,
-                registration_countryId: countryId || 1,
+                manufacture_country_id: countryId || 1,
+                registration_country_id: countryId || 1,
                 periodic_maintenance_mileage: 15000,
                 location: null,
                 notes: null
@@ -158,8 +160,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .select(['tokens.userId'])
-            .where('tokens.token', '=', token.value)
+            .select(['tokens.user_id'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -172,7 +174,7 @@ const app = new Elysia()
         await db
             .updateTable('fleetvehicles_vehicles')
             .set(body as any)
-            .where('vehicleId', '=', vehicleId)
+            .where('vehicle_id', '=', vehicleId)
             .execute();
 
         return Response.json({ success: true });
@@ -196,9 +198,9 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.manager'])
-            .where('tokens.token', '=', token.value)
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.manager'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -208,7 +210,7 @@ const app = new Elysia()
 
         await db
             .deleteFrom('fleetvehicles_vehicles')
-            .where('vehicleId', '=', parseInt(params.id))
+            .where('vehicle_id', '=', parseInt(params.id))
             .execute();
 
         return Response.json({ success: true });
@@ -225,8 +227,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .select(['tokens.userId'])
-            .where('tokens.token', '=', token.value)
+            .select(['tokens.user_id'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -236,22 +238,22 @@ const app = new Elysia()
 
         let q = db
             .selectFrom('fleetvehicles_trips')
-            .leftJoin('fleetvehicles_vehicles', 'fleetvehicles_vehicles.vehicleId', 'fleetvehicles_trips.vehicleId')
+            .leftJoin('fleetvehicles_vehicles', 'fleetvehicles_vehicles.vehicle_id', 'fleetvehicles_trips.vehicle_id')
             .select([
-                'fleetvehicles_trips.tripId',
-                'fleetvehicles_trips.vehicleId',
+                'fleetvehicles_trips.trip_id',
+                'fleetvehicles_trips.vehicle_id',
                 'fleetvehicles_vehicles.plate',
                 'fleetvehicles_trips.start_date',
                 'fleetvehicles_trips.end_date',
                 'fleetvehicles_trips.purpose',
-                'fleetvehicles_trips.driverId',
+                'fleetvehicles_trips.driver_id',
                 'fleetvehicles_trips.start_location',
                 'fleetvehicles_trips.end_location',
                 'fleetvehicles_trips.distance'
             ]);
 
         if (query.vehicleId) {
-            q = q.where('fleetvehicles_trips.vehicleId', '=', parseInt(query.vehicleId));
+            q = q.where('fleetvehicles_trips.vehicle_id', '=', parseInt(query.vehicleId));
         }
 
         const trips = await q.orderBy('fleetvehicles_trips.start_date', 'desc').limit(50).execute();
@@ -267,13 +269,13 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .leftJoin('users', 'users.userId', 'tokens.userId')
-            .select(['tokens.userId', 'users.person'])
-            .where('tokens.token', '=', token.value)
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.person_id'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
-        if (!auth?.person) {
+        if (!auth?.person_id) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
 
@@ -282,8 +284,8 @@ const app = new Elysia()
         const result = await db
             .insertInto('fleetvehicles_trips')
             .values({
-                vehicleId,
-                driverId: auth.person,
+                vehicle_id: vehicleId,
+                driver_id: auth.person_id,
                 purpose,
                 start_location,
                 end_location,
@@ -312,8 +314,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .select(['tokens.userId'])
-            .where('tokens.token', '=', token.value)
+            .select(['tokens.user_id'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -323,10 +325,10 @@ const app = new Elysia()
 
         let q = db
             .selectFrom('fleetvehicles_expenses')
-            .leftJoin('fleetvehicles_vehicles', 'fleetvehicles_vehicles.vehicleId', 'fleetvehicles_expenses.vehicleId')
+            .leftJoin('fleetvehicles_vehicles', 'fleetvehicles_vehicles.vehicle_id', 'fleetvehicles_expenses.vehicle_id')
             .select([
-                'fleetvehicles_expenses.fvexId',
-                'fleetvehicles_expenses.vehicleId',
+                'fleetvehicles_expenses.fv_ex_id',
+                'fleetvehicles_expenses.vehicle_id',
                 'fleetvehicles_vehicles.plate',
                 'fleetvehicles_expenses.expense_date',
                 'fleetvehicles_expenses.amount',
@@ -335,7 +337,7 @@ const app = new Elysia()
             ]);
 
         if (query.vehicleId) {
-            q = q.where('fleetvehicles_expenses.vehicleId', '=', parseInt(query.vehicleId));
+            q = q.where('fleetvehicles_expenses.vehicle_id', '=', parseInt(query.vehicleId));
         }
 
         const expenses = await q.orderBy('fleetvehicles_expenses.expense_date', 'desc').limit(50).execute();
@@ -351,8 +353,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .select(['tokens.userId'])
-            .where('tokens.token', '=', token.value)
+            .select(['tokens.user_id'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -365,11 +367,11 @@ const app = new Elysia()
         const result = await db
             .insertInto('fleetvehicles_expenses')
             .values({
-                vehicleId,
+                vehicle_id: vehicleId,
                 amount: amount.toString(),
                 description,
                 category: category as any,
-                createdBy: auth.userId
+                created_by: auth.user_id
             })
             .execute();
 
@@ -392,8 +394,8 @@ const app = new Elysia()
 
         const auth = await db
             .selectFrom('tokens')
-            .select(['tokens.userId'])
-            .where('tokens.token', '=', token.value)
+            .select(['tokens.user_id'])
+            .where('tokens.token', '=', token.value as string)
             .where('tokens.expires', '>=', new Date())
             .executeTakeFirst();
 
@@ -404,7 +406,7 @@ const app = new Elysia()
         // Total vehicles
         const totalVehicles = await db
             .selectFrom('fleetvehicles_vehicles')
-            .select(db.fn.count('vehicleId').as('count'))
+            .select(db.fn.count('vehicle_id').as('count'))
             .executeTakeFirst();
 
         // Total trips this month
@@ -414,7 +416,7 @@ const app = new Elysia()
 
         const monthlyTrips = await db
             .selectFrom('fleetvehicles_trips')
-            .select(db.fn.count('tripId').as('count'))
+            .select(db.fn.count('trip_id').as('count'))
             .where('start_date', '>=', startOfMonth)
             .executeTakeFirst();
 

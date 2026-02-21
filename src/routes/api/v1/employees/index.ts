@@ -1,50 +1,13 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
+import { format_people_by_ids, format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_by_id } from '../../../../functions/format_person_by_id';
 
 import attendanceRouter from './attendance';
 import vacationsRouter from './vacations';
 import salariesRouter from './salaries';
 import bonusesRouter from './bonuses';
-
-// Build fullname with degrees
-const titlesBefore = db.selectFrom('persons_degree as pd')
-  .innerJoin('degrees as d', 'pd.degree', 'd.degreeID')
-  .select([
-      'pd.person as person',
-      sql`TRIM(GROUP_CONCAT(d.shortcut ORDER BY d.weight SEPARATOR ' '))`.as('titles_before')
-  ])
-  .where('d.isBefore', '=', true)
-  .groupBy('pd.person')
-  .as('tb')
-
-const titlesAfter = db.selectFrom('persons_degree as pd')
-  .innerJoin('degrees as d', 'pd.degree', 'd.degreeID')
-  .select([
-      'pd.person as person',
-      sql`TRIM(GROUP_CONCAT(d.shortcut ORDER BY d.weight SEPARATOR ' '))`.as('titles_after')
-  ])
-  .where('d.isBefore', '=', false)
-  .groupBy('pd.person')
-  .as('ta');
-
-const fullName = sql`
-  concat(
-      COALESCE(
-      CASE WHEN tb.titles_before IS NULL OR tb.titles_before = '' THEN ''
-      ELSE CONCAT(tb.titles_before, ' ')
-      END,
-      ''
-      ),
-      persons.firstName, ' ', persons.lastName,
-      COALESCE(
-      CASE WHEN ta.titles_after IS NULL OR ta.titles_after = '' THEN ''
-      ELSE CONCAT(' ', ta.titles_after)
-      END,
-      ''
-      )
-  )
-  `.as('fullName')
 
 const employeesRouter = new Elysia()
     .use(attendanceRouter)
@@ -68,8 +31,8 @@ const employeesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -84,7 +47,7 @@ const employeesRouter = new Elysia()
       .values({
         degree: body.degree,
         shortcut: body.shortcut,
-        isBefore: body.isBefore,
+        is_before: body.isBefore,
         weight: body.weight || 10,
       })
       .executeTakeFirstOrThrow();
@@ -93,7 +56,7 @@ const employeesRouter = new Elysia()
 
     const newDegree = await db.selectFrom('degrees')
       .selectAll()
-      .where('degreeID', '=', degreeId)
+      .where('degree_id', '=', degreeId)
       .executeTakeFirst();
 
     return Response.json({ 
@@ -116,8 +79,8 @@ const employeesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager', 'users.school', 'users.principal'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.school_id', 'users.principal'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -128,45 +91,42 @@ const employeesRouter = new Elysia()
     const canViewAll = auth.manager == -1 || auth.principal;
     
     let queryBuilder = db.selectFrom('teachers')
-      .leftJoin('persons', 'teachers.personId', 'persons.personId')
-      .leftJoin('users', 'users.person', 'persons.personId')
-      .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-      .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
+      .leftJoin('persons', 'teachers.person_id', 'persons.person_id')
+      .leftJoin('users', 'users.person_id', 'persons.person_id')
       .select([
-        'teachers.personId',
-        'persons.firstName',
-        'persons.lastName',
-        fullName,
+        'teachers.person_id',
+        'persons.first_name',
+        'persons.last_name',
         'teachers.role',
-        'teachers.cabinet',
-        sql<string>`(SELECT email FROM emails WHERE emails.personId = persons.personId LIMIT 1)`.as('email'),
-        sql<string>`(SELECT number FROM phone_numbers WHERE phone_numbers.personId = persons.personId LIMIT 1)`.as('phone'),
+        'teachers.cabinet_id',
+        sql<string>`(SELECT email FROM emails WHERE emails.person_id = persons.person_id LIMIT 1)`.as('email'),
+        sql<string>`(SELECT number FROM phone_numbers WHERE phone_numbers.person_id = persons.person_id LIMIT 1)`.as('phone'),
         'teachers.department',
-        'teachers.contractType',
+        'teachers.contract_type',
       ])
       .where((eb) => eb.or([
-        eb('users.school', '=', auth.school),
-        eb('teachers.school_id', '=', auth.school)
+        eb('users.school_id', '=', auth.school_id),
+        eb('teachers.school_id', '=', auth.school_id)
       ]))
 
     // Search by name
     if (query.search) {
       const search = `%${query.search}%`;
       queryBuilder = queryBuilder.where((eb) => eb.or([
-        eb('persons.firstName', 'like', search),
-        eb('persons.lastName', 'like', search),
+        eb('persons.first_name', 'like', search),
+        eb('persons.last_name', 'like', search),
       ]))
     }
 
     // If not admin, only show self
     if (!canViewAll) {
-      queryBuilder = queryBuilder.where('teachers.personId', '=', auth.person);
+      queryBuilder = queryBuilder.where('teachers.person_id', '=', auth.person_id);
     }
 
     // Sort
     queryBuilder = queryBuilder
-      .orderBy('persons.lastName', 'asc')
-      .orderBy('persons.firstName', 'asc')
+      .orderBy('persons.last_name', 'asc')
+      .orderBy('persons.first_name', 'asc')
 
     // Count total
     const countResult = await db.selectFrom(queryBuilder.as('filtered'))
@@ -181,8 +141,16 @@ const employeesRouter = new Elysia()
       .offset(query.offset!)
       .execute();
 
+    const personIds = results.map(r => r.person_id).filter((id): id is number => id !== null);
+    const formattedNames = await format_person_map_by_ids(personIds);
+
+    const data = results.map(r => ({
+      ...r,
+      full_name: r.person_id ? formattedNames.get(r.person_id) : `${r.first_name} ${r.last_name}`
+    }));
+
     return Response.json({
-      data: results,
+      data,
       meta: {
         total,
         page: Math.floor(query.offset! / query.limit!) + 1,
@@ -206,8 +174,8 @@ const employeesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager', 'users.school'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.school_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -217,33 +185,33 @@ const employeesRouter = new Elysia()
     // Check permissions - only admins can view all
     const canViewAll = auth.manager == -1;
     
-    if (!canViewAll && auth.person !== employeeId) {
+    if (!canViewAll && auth.person_id !== employeeId) {
       return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
     }
 
-    const employee = await db.selectFrom('teachers')
-      .leftJoin('persons', 'teachers.personId', 'persons.personId')
-      .innerJoin('users', 'users.person', 'persons.personId')
-      .leftJoin(titlesBefore, 'tb.person', 'persons.personId')
-      .leftJoin(titlesAfter, 'ta.person', 'persons.personId')
+    const employeeResult = await db.selectFrom('teachers')
+      .leftJoin('persons', 'teachers.person_id', 'persons.person_id')
+      .leftJoin('users', 'users.person_id', 'persons.person_id')
       .select([
-        'teachers.personId',
-        'persons.firstName',
-        'persons.lastName',
-        fullName,
+        'teachers.person_id',
+        'persons.first_name',
+        'persons.last_name',
         'teachers.role',
-        'teachers.cabinet',
+        'teachers.cabinet_id',
         'teachers.department',
-        'teachers.contractType',
-        sql<string>`DATE_FORMAT(persons.birthday, '%Y-%m-%d')`.as('dateOfBirth'),
+        'teachers.contract_type',
+        sql<string>`DATE_FORMAT(persons.birthday, '%Y-%m-%d')`.as('date_of_birth'),
       ])
-      .where('teachers.personId', '=', employeeId)
-      .where('users.school', '=', auth.school)
+      .where('teachers.person_id', '=', employeeId)
+      .where('teachers.school_id', '=', auth.school_id)
       .executeTakeFirst();
 
-    if (!employee) {
+    if (!employeeResult) {
       return new Response(JSON.stringify({ error: 'no_employee' }), { status: 404 });
     }
+
+    const employee: any = employeeResult;
+    employee.full_name = await format_person_by_id(employee.person_id);
 
     // Get emails
     const emails = await db.selectFrom('emails')
@@ -251,7 +219,7 @@ const employeesRouter = new Elysia()
         'email',
         'is_verified'
       ])
-      .where('personId', '=', employeeId)
+      .where('person_id', '=', employeeId)
       .execute();
 
     // Get phones
@@ -261,7 +229,7 @@ const employeesRouter = new Elysia()
         'number',
         'is_verified'
       ])
-      .where('personId', '=', employeeId)
+      .where('person_id', '=', employeeId)
       .execute();
 
     return Response.json({
@@ -277,8 +245,8 @@ const employeesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager', 'users.school'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.school_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -293,15 +261,14 @@ const employeesRouter = new Elysia()
     // Create person first
     const personResult = await db.insertInto('persons')
       .values({
-        firstName: body.firstName,
-        lastName: body.lastName,
+        first_name: body.firstName,
+        last_name: body.lastName,
         gender: body.gender || 0,
         birthday: body.birthday || null,
         birthnum: body.birthnum || null,
-        birthplace: body.birthplace || null,
-        address: body.address || null,
-        GDPR: body.GDPR !== undefined ? body.GDPR : true,
-        insuranceId: body.insuranceId || null,
+        birthplace_id: body.birthplace || null,
+        address_id: body.address || null,
+        insurance_id: body.insuranceId || null,
       })
       .executeTakeFirstOrThrow();
 
@@ -311,7 +278,7 @@ const employeesRouter = new Elysia()
     if (body.email) {
       await db.insertInto('emails')
         .values({
-          personId: personId,
+          person_id: personId,
           email: body.email,
           type: 'personal',
           description: null,
@@ -324,7 +291,7 @@ const employeesRouter = new Elysia()
     if (body.phone) {
       await db.insertInto('phone_numbers')
         .values({
-          personId: personId,
+          person_id: personId,
           code: body.phoneCode || 420,
           number: body.phone,
           description: null,
@@ -338,8 +305,8 @@ const employeesRouter = new Elysia()
       for (const degreeId of body.degrees) {
         await db.insertInto('persons_degree')
           .values({
-            person: personId,
-            degree: degreeId,
+            person_id: personId,
+            degree_id: degreeId,
           })
           .execute();
       }
@@ -348,12 +315,12 @@ const employeesRouter = new Elysia()
     // Create teacher record
     await db.insertInto('teachers')
       .values({
-        personId: personId,
+        person_id: personId,
         role: body.role!,
-        cabinet: body.cabinet || null,
+        cabinet_id: body.cabinet || null,
         department: body.department || null,
-        contractType: body.contractType || null,
-        school_id: auth.school!
+        contract_type: body.contractType || null,
+        school_id: auth.school_id!
       })
       .execute();
 
@@ -393,8 +360,8 @@ const employeesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager', 'users.school'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.school_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -408,9 +375,9 @@ const employeesRouter = new Elysia()
 
     // Check if employee exists
     const employee = await db.selectFrom('teachers')
-      .select('personId')
-      .where('personId', '=', employeeId)
-      .where('teachers.school_id', '=', auth.school!)
+      .select('person_id')
+      .where('person_id', '=', employeeId)
+      .where('teachers.school_id', '=', auth.school_id!)
       .executeTakeFirst();
 
     if (!employee) {
@@ -421,12 +388,12 @@ const employeesRouter = new Elysia()
     await db.updateTable('teachers')
       .set({
         role: body.role,
-        cabinet: body.cabinet,
+        cabinet_id: body.cabinet,
         department: body.department,
-        contractType: body.contractType,
+        contract_type: body.contractType,
       })
-      .where('personId', '=', employeeId)
-      .where('school_id', '=', auth.school!)
+      .where('person_id', '=', employeeId)
+      .where('school_id', '=', auth.school_id!)
       .execute();
 
     return Response.json({ success: true, message: 'Employee updated' });
@@ -448,8 +415,8 @@ const employeesRouter = new Elysia()
 
     const auth = await db
       .selectFrom('tokens')
-      .leftJoin('users', 'users.userId', 'tokens.userId')
-      .select(['tokens.userId', 'users.person', 'users.manager', 'users.school'])
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.school_id'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -463,9 +430,9 @@ const employeesRouter = new Elysia()
 
     // Check if employee exists
     const employee = await db.selectFrom('teachers')
-      .select('personId')
-      .where('personId', '=', employeeId)
-      .where('teachers.school_id', '=', auth.school!)
+      .select('person_id')
+      .where('person_id', '=', employeeId)
+      .where('teachers.school_id', '=', auth.school_id!)
       .executeTakeFirst();
 
     if (!employee) {
@@ -474,8 +441,8 @@ const employeesRouter = new Elysia()
 
     // Delete from teachers table
     await db.deleteFrom('teachers')
-      .where('personId', '=', employeeId)
-      .where('school_id', '=', auth.school!)
+      .where('person_id', '=', employeeId)
+      .where('school_id', '=', auth.school_id!)
       .execute();
 
     return Response.json({ success: true, message: 'Employee removed' });

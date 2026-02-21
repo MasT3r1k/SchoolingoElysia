@@ -1,13 +1,13 @@
 import { Generated } from "kysely"
 
 export interface TokensTable {
-  tokenId: Generated<number>
+  token_id: Generated<number>
   token: string
-  password: number
-  userAgent: string | null
+  password_id: number
+  user_agent: string | null
   expires: Date // datetime
   created: Generated<Date> // datetime
-  userId: number
-  socket: string | null
-  ip: string | null
+  user_id: number
+  socket: Generated<string | null>
+  ip: Generated<string | null>
 }

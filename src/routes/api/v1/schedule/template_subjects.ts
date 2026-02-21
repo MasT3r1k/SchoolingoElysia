@@ -13,7 +13,7 @@ const elysiaApp = new Elysia({ prefix: '/schedule' })
     // In real implementation, check role
 
     const subjects = await db.selectFrom('subjects')
-      .select(['subjectId', 'label', 'shortcut', 'isMain', 'primaryHours'])
+      .select(['subject_id', 'label', 'shortcut', 'is_main', 'primary_hours'])
       .orderBy('label', 'asc')
       .execute();
       
@@ -21,7 +21,7 @@ const elysiaApp = new Elysia({ prefix: '/schedule' })
     // primaryHours stored as string "1,2,3" -> array [1,2,3]
     return subjects.map(s => ({
       ...s,
-      primaryHours: s.primaryHours ? s.primaryHours.split(',').map(Number) : []
+      primaryHours: s.primary_hours ? s.primary_hours.split(',').map(Number) : []
     }));
   })
 
@@ -35,10 +35,10 @@ const elysiaApp = new Elysia({ prefix: '/schedule' })
 
     await db.updateTable('subjects')
       .set({
-        isMain: isMain ? 1 : 0,
-        primaryHours: primaryHours.join(',')
+        is_main: isMain,
+        primary_hours: primaryHours.join(',')
       })
-      .where('subjectId', '=', Number(id))
+      .where('subject_id', '=', Number(id))
       .execute();
 
     return { success: true };

@@ -11,5 +11,4 @@ export interface Student_rewardsTable {
   created_by: number
   created_at: Generated<Date>
   collected_at: Date | null
-
 }

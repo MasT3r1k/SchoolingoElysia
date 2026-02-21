@@ -9,22 +9,22 @@ import { SecurityConfig } from '../../config/security.config';
 import { Mailer } from '../../../mailer.module';
 import { Utils } from '../../utils/utils';
 
-export async function authenticateUser(userId: number, cookie: any, userAgent: string | null, ip: string) {
+export async function authenticateUser(user_id: number, cookie: any, userAgent: string | null, ip: string) {
   try {
     const user = await db.selectFrom("users")
-      .leftJoin("persons", "persons.personId", "users.person")
-      .innerJoin("passwords", "passwords.passwordId", "users.password")
+      .leftJoin("persons", "persons.person_id", "users.person_id")
+      .innerJoin("passwords", "passwords.password_id", 'users.password_id')
       .select([
-        "users.userId",
+        "users.user_id",
         "users.username",
         "users.2fa",
         "users.2fa_secret",
-        "persons.firstName",
-        "persons.lastName",
+        "persons.first_name",
+        "persons.last_name",
         "passwords.password",
-        'passwords.passwordId'
+        'passwords.password_id'
       ])
-      .where('users.userId', '=', userId)
+      .where('users.user_id', '=', user_id)
       .limit(1)
       .executeTakeFirstOrThrow()
 
@@ -59,10 +59,10 @@ export async function authenticateUser(userId: number, cookie: any, userAgent: s
       const expire = moment().add(SecurityConfig.TOKEN_SHORT_EXPIRE_MNUTES, 'minutes');
       const tokenDB = await db.insertInto("tokens")
       .values({
-        userId: user.userId,
+        user_id: user.user_id,
         token: dbToken,
-        password: user.passwordId,
-        userAgent: userAgent,
+        password_id: user.password_id,
+        user_agent: userAgent,
         created: moment().toDate(),
         expires: expire.toDate(),
         ip
@@ -112,22 +112,22 @@ const elysiaApp = new Elysia()
 
     try {
       const user = await db.selectFrom("users")
-        .leftJoin("persons", "persons.personId", "users.person")
-        .innerJoin("passwords", "passwords.passwordId", "users.password")
+        .leftJoin("persons", "persons.person_id", "users.person_id")
+        .innerJoin("passwords", "passwords.password_id", 'users.password_id')
         .select([
-          "users.userId",
+          "users.user_id",
           "users.username",
           "users.login_type",
           "users.2fa",
           "users.2fa_secret",
-          "persons.personId",
-          "persons.firstName",
-          "persons.lastName",
+          "persons.person_id",
+          "persons.first_name",
+          "persons.last_name",
           "passwords.password",
-          'passwords.passwordId'
+          'passwords.password_id'
         ])
         .where(sql`LOWER(users.username)`, '=', username.toLowerCase())
-        .where('users.school', '=', school.schoolId)
+        .where('users.school_id', '=', school.school_id)
         .limit(1)
         .executeTakeFirst()
 
@@ -148,11 +148,11 @@ const elysiaApp = new Elysia()
       if (!isPasswordValid) {
         await db.insertInto("login_history")
           .values({
-            userId: user.userId,
+            user_id: user.user_id,
             success: false,
             type: 'password',
             ip: ipData?.ip ?? ip,
-            userAgent,
+            user_agent: userAgent,
             error: 'invalid_password',
             city: ipData?.city ?? null,
             zip_code: ipData?.zip_code ?? null,
@@ -171,16 +171,16 @@ const elysiaApp = new Elysia()
       if (user['2fa'] && user['2fa_secret']) {
         if (!TFA) return Response.json({ error: ["Missing 2FA"] });
 
-        const isApproved2FA = await verifyTFA(TFA, user["userId"]);
+        const isApproved2FA = await verifyTFA(TFA, user["user_id"]);
 
         if (!isApproved2FA) {
           await db.insertInto("login_history")
             .values({
-              userId: user.userId,
+              user_id: user.user_id,
               success: false,
               type: 'password',
               ip: ipData?.ip ?? ip,
-              userAgent,
+              user_agent: userAgent,
               error: 'invalid_2fa',
               city: ipData?.city ?? null,
               zip_code: ipData?.zip_code ?? null,
@@ -197,26 +197,26 @@ const elysiaApp = new Elysia()
       }
 
       // Authenticate user (existing logic)
-      const res = await authenticateUser(user.userId, cookie, userAgent, ipData?.ip ?? ip);
+      const res = await authenticateUser(user.user_id, cookie, userAgent, ipData?.ip ?? ip);
       if (res?.status === true) {
         // Check if ip has been ever logged in
         const checkIP = await db.selectFrom('login_history')
         .select([
-          'loginId'
+          'login_id'
         ])
         .where('ip', '=', ipData?.ip ?? ip)
-        .where('userId', '=', user.userId)
+        .where('user_id', '=', user.user_id)
         .where('success', '=', true)
         .executeTakeFirst();
 
         const loginHistory = await db.insertInto("login_history")
           .values({
-            userId: user.userId,
+            user_id: user.user_id,
             success: true,
             type: 'password',
             ip: ipData?.ip ?? ip,
             token_id: res.token_id ?? null,
-            userAgent,
+            user_agent: userAgent,
             error: null,
             city: ipData?.city ?? null,
             zip_code: ipData?.zip_code ?? null,
@@ -231,7 +231,7 @@ const elysiaApp = new Elysia()
         if (!checkIP) {
           await db.insertInto("notifications")
           .values({
-            user_id: user.userId,
+            user_id: user.user_id,
             type: 'new_login',
             data: JSON.stringify({
               id: Number(loginHistory.insertId),
@@ -247,7 +247,7 @@ const elysiaApp = new Elysia()
           .select([
             'emails.email'
           ])
-          .where('emails.personId', '=', user.personId)
+          .where('emails.person_id', '=', user.person_id)
           .where('emails.is_verified', '=', true)
           .execute();
 

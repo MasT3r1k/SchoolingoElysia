@@ -29,7 +29,7 @@ const app = new Elysia()
                 'messages.sent_at as created_at', 
                 'messages.author_id' 
             ])
-            .where('messages.author_id', '=', user.person)
+            .where('messages.author_id', '=', user.person_id)
             .orderBy('messages.sent_at', 'desc')
             .offset(offset)
             .limit(limit)
@@ -42,11 +42,11 @@ const app = new Elysia()
         if (messageIds.length > 0) {
             allRecipients = await db
                 .selectFrom('messages_receivers')
-                .leftJoin('persons', 'persons.personId', 'messages_receivers.receiver_id')
+                .leftJoin('persons', 'persons.person_id', 'messages_receivers.receiver_id')
                 .select([
                     'messages_receivers.message_id', 
                     'persons.personId as person',
-                    sql<string>`concat(persons.firstName, ' ', persons.lastName)`.as('name'),
+                    sql<string>`concat(persons.first_name, ' ', persons.lastName)`.as('name'),
                     'messages_receivers.read_at' 
                 ])
                 .where('messages_receivers.message_id', 'in', messageIds)
@@ -62,7 +62,7 @@ const app = new Elysia()
         const total = await db
             .selectFrom('messages')
             .select(sql<number>`count(message_id)`.as('count'))
-            .where('messages.author_id', '=', user.person)
+            .where('messages.author_id', '=', user.person_id)
             .executeTakeFirst();
 
         // Map recipients to messages in memory
@@ -102,7 +102,7 @@ const app = new Elysia()
             .selectFrom('messages')
             .selectAll()
             .where('message_id', '=', messageId)
-            .where('author_id', '=', user.person)
+            .where('author_id', '=', user.person_id)
             .executeTakeFirst();
 
         if (!message) {
@@ -112,10 +112,10 @@ const app = new Elysia()
         // Get recipients with read status
         const recipients = await db
             .selectFrom('messages_receivers')
-            .leftJoin('persons', 'persons.personId', 'messages_receivers.receiver_id')
+            .leftJoin('persons', 'persons.person_id', 'messages_receivers.receiver_id')
             .select([
                 'persons.personId as person',
-                sql<string>`concat(persons.firstName, ' ', persons.lastName)`.as('name'),
+                sql<string>`concat(persons.first_name, ' ', persons.lastName)`.as('name'),
                 'messages_receivers.read_at'
             ])
             .where('messages_receivers.message_id', '=', messageId)
@@ -144,7 +144,7 @@ const app = new Elysia()
             .selectFrom('messages')
             .select(['message_id'])
             .where('message_id', '=', messageId)
-            .where('author_id', '=', user.person)
+            .where('author_id', '=', user.person_id)
             .executeTakeFirst();
 
         if (!message) {

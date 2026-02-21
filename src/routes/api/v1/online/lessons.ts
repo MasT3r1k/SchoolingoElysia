@@ -9,36 +9,36 @@ const app = new Elysia()
             if (!user) return { error: 'Unauthorized' };
 
             let query = db.selectFrom('online_lessons as ol')
-                .leftJoin('users as u', 'u.userId', 'ol.teacher')
-                .leftJoin('persons as p', 'p.personId', 'u.person')
-                .leftJoin('subjects as s', 's.subjectId', 'ol.subject_id')
+                .leftJoin('users as u', 'u.user_id', 'ol.teacher')
+                .leftJoin('persons as p', 'p.person_id', 'u.person_id')
+                .leftJoin('subjects as s', 's.subject_id', 'ol.subject_id')
                 .select((eb) => [
-                    'ol.lessonId', 'ol.title', 'ol.description', 'ol.start', 'ol.end', 
+                    'ol.lesson_id', 'ol.title', 'ol.description', 'ol.start', 'ol.end', 
                     'ol.platform', 'ol.link', 'ol.teacher', 'ol.target_type', 
                     'ol.target_id', 'ol.subject_id', 'ol.created_at',
-                    'p.firstName', 'p.lastName',
+                    'p.first_name', 'p.last_name',
                     sql<string>`JSON_OBJECT('name', s.name, 'shortcut', s.shortcut)`.as('subject')
                 ])
                 .where('ol.end', '>', new Date())
                 .orderBy('ol.start', 'asc');
 
             if (user.role === 'student' || user.role === 'parent') {
-                const studentId = user.person;
+                const studentId = user.person_id;
                 const student = await db.selectFrom('students')
-                    .where('personId', '=', studentId)
-                    .select('class')
+                    .where('person_id', '=', studentId)
+                    .select('class_id')
                     .executeTakeFirst();
                 
                 if (student) {
                     const groups = await db.selectFrom('student_groups')
-                        .where('student', '=', studentId) // Assuming student column refers to personId
-                        .select('groupId')
+                        .where('student_id', '=', studentId) // Assuming student column refers to personId
+                        .select('group_id')
                         .execute();
                     
-                    const groupIds = groups.map(g => g.groupId);
+                    const groupIds = groups.map(g => g.group_id);
 
                     query = query.where((eb) => eb.or([
-                        eb('ol.target_type', '=', 'class').and('ol.target_id', '=', student.class),
+                        eb('ol.target_type', '=', 'class').and('ol.target_id', '=', student.class_id),
                         ...(groupIds.length > 0 ? [eb('ol.target_type', '=', 'group').and('ol.target_id', 'in', groupIds)] : []),
                         eb('ol.target_type', '=', 'student').and('ol.target_id', '=', studentId)
                     ]));
@@ -46,7 +46,7 @@ const app = new Elysia()
                     return [];
                 }
             } else if (user.role === 'teacher') {
-                query = query.where('ol.teacher', '=', user.userId);
+                query = query.where('ol.teacher', '=', user.user_id);
             }
 
             return await query.execute();
@@ -67,7 +67,7 @@ const app = new Elysia()
                     end: new Date(end),
                     platform,
                     link,
-                    teacher: user.userId,
+                    teacher: user.user_id,
                     target_type,
                     target_id,
                     subject_id: subject_id || null,
@@ -87,7 +87,7 @@ const app = new Elysia()
             if (!provider) return { error: 'Unsupported platform for generation' };
 
             const token = await db.selectFrom('oauth_tokens')
-                .where('userId', '=', user.userId)
+                .where('user_id', '=', user.user_id)
                 .where('provider', '=', provider)
                 .select(['access_token', 'refresh_token', 'expires_at'])
                 .executeTakeFirst();
@@ -150,8 +150,8 @@ const app = new Elysia()
             if (!user || user.role !== 'teacher') return { error: 'Unauthorized' };
             
             await db.deleteFrom('online_lessons')
-                .where('lessonId', '=', Number(params.id))
-                .where('teacher', '=', user.userId)
+                .where('lesson_id', '=', Number(params.id))
+                .where('teacher', '=', user.user_id)
                 .execute();
             
             return { success: true };

@@ -1,8 +1,7 @@
 import { Generated } from "kysely";
 
 export interface payments_classesTable {
-  paymentClassId: Generated<number>;
-  name: string;
-  description: string | null;
-  created_at: Generated<Date>;
+  payment_class_id: Generated<number>;
+  class_id: number;
+  balance: number;
 }

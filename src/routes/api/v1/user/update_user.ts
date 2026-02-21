@@ -11,9 +11,9 @@ const app = new Elysia()
       }
 
       const user = await db.selectFrom("tokens")
-        .innerJoin('users', 'users.userId', 'tokens.userId')
+        .innerJoin('users', 'users.user_id', 'tokens.user_id')
         .select([
-            'users.userId',
+            'users.user_id',
             'users.username',
             'users.2fa',
             'users.2fa_activated',
@@ -43,7 +43,7 @@ const app = new Elysia()
                 try {
                     await db.updateTable("users")
                     .set({ theme })
-                    .where('userId', '=', user.userId)
+                    .where('user_id', '=', user.user_id)
                     .execute();
     
                     return Response.json({ status: true });
@@ -60,7 +60,7 @@ const app = new Elysia()
 
                 await db.updateTable("users")
                 .set({ locale: language })
-                .where('userId', '=', user.userId)
+                .where('user_id', '=', user.user_id)
                 .execute();
 
                 return Response.json({ status: true });

@@ -1,6 +1,6 @@
 import { Generated } from "kysely";
 
 export interface passwordsTable {
-  passwordId: Generated<number>
+  password_id: Generated<number>
   password: string
 }

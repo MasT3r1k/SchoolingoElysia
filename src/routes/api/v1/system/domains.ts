@@ -8,17 +8,17 @@ const app = new Elysia()
   }))
   .post('/system/domain', async ({ user, body }) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.isPrincipal) {
+    if (user.manager !== -1 && !user.is_principal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
     const { domain } = body;
-    const schoolId = user.school || 1;
+    const schoolId = user.school_id || 1;
 
     const existing = await db.selectFrom('school_domains')
       .selectAll()
       .where('domain', '=', domain)
-      .where('school', '=', schoolId)
+      .where('school_id', '=', schoolId)
       .executeTakeFirst();
     
     if (existing) {
@@ -27,7 +27,7 @@ const app = new Elysia()
 
     await db.insertInto('school_domains')
       .values({
-        school: schoolId,
+        school_id: schoolId,
         domain
       })
       .execute();
@@ -40,15 +40,15 @@ const app = new Elysia()
   })
   .delete('/system/domain', async ({ user, body }) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-      if (user.manager !== -1 && !user.isPrincipal) {
+      if (user.manager !== -1 && !user.is_principal) {
         return Response.json({ error: 'no_permission' }, { status: 403 });
       }
 
     const { domainId } = body;
     
     await db.deleteFrom('school_domains')
-        .where('domainId', '=', domainId)
-        .where('school', '=', user.school)
+        .where('domain_id', '=', domainId)
+        .where('school_id', '=', user.school_id)
         .execute();
 
     return Response.json({ success: true });

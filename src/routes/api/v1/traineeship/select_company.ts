@@ -15,8 +15,8 @@ const app = new Elysia()
 
         const auth = await db
         .selectFrom('tokens')
-        .leftJoin('users', 'tokens.userId', 'users.userId')
-        .select(['tokens.userId', 'users.person'])
+        .leftJoin('users', 'tokens.user_id', 'users.user_id')
+        .select(['tokens.user_id', 'users.person_id'])
         .where('tokens.token', '=', token)
         .where('tokens.expires', '>=', moment().toDate())
         .limit(1)
@@ -42,8 +42,8 @@ const app = new Elysia()
 
         const student = await db
         .selectFrom('students')
-        .select(['personId'])
-        .where('personId', '=', auth.person)
+        .select(['person_id'])
+        .where('person_id', '=', auth.person_id)
         .limit(1)
         .execute();
 
@@ -53,8 +53,8 @@ const app = new Elysia()
 
         const companyExists = await db
             .selectFrom('traineeship_companies')
-            .select(({ fn }) => fn.count<number>('companyId').as('count'))
-            .where('companyId', '=', companyId)
+            .select(({ fn }) => fn.count<number>('company_id').as('count'))
+            .where('company_id', '=', companyId)
             .executeTakeFirst();
 
         if (!companyExists || companyExists.count === 0) {
@@ -78,14 +78,14 @@ const app = new Elysia()
             instructorExists = await db
                 .selectFrom('traineeship_instructors')
                 .select(
-                    ({ fn }) => fn.count<number>('traineeship_instructors.instructorId').as('count')
+                    ({ fn }) => fn.count<number>('traineeship_instructors.instructor_id').as('count')
                 )
                 .select([
                     'traineeship_instructors.firstname',
                     'traineeship_instructors.lastname'
                 ])
-                .where('traineeship_instructors.companyId', '=', companyId)
-                .where('traineeship_instructors.instructorId', '=', instructorId)
+                .where('traineeship_instructors.company_id', '=', companyId)
+                .where('traineeship_instructors.instructor_id', '=', instructorId)
                 .executeTakeFirst();
 
             if (!instructorExists || instructorExists.count === 0) {
@@ -97,10 +97,10 @@ const app = new Elysia()
         .select([
             'company',
             'instructor',
-            'studentId',
+            'student_id',
             'traineeship',
         ])
-        .where('studentId', '=', auth.person)
+        .where('student_id', '=', auth.person_id)
         .where('traineeship', '=', traineeship)
         .executeTakeFirst();
 
@@ -109,7 +109,7 @@ const app = new Elysia()
                 await db.insertInto('traineeship_students')
                 .values({
                     traineeship,
-                    studentId: auth.person!,
+                    studentId: auth.person_id!,
                     company: companyId,
                     instructor: instructorId
                 })
@@ -118,7 +118,7 @@ const app = new Elysia()
                 .set('company', companyId)
                 .set('instructor', instructorId)
                 .where('traineeship', '=', traineeship)
-                .where('studentId', '=', auth.person!)
+                .where('student_id', '=', auth.person_id!)
                 .limit(1)
                 .execute();
             }

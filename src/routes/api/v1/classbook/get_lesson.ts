@@ -15,13 +15,13 @@ const elysiaApp = new Elysia()
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
     const user = await db.selectFrom("tokens")
-      .innerJoin('users', 'users.userId', 'tokens.userId')
-      .innerJoin("passwords", "passwords.passwordId", "users.password")
+      .innerJoin('users', 'users.user_id', 'tokens.user_id')
+      .innerJoin("passwords", "passwords.password_id", 'users.password_id')
       .select([
-        'users.userId',
+        'users.user_id',
         'users.username',
         'users.role',
-        'users.person',
+        'users.person_id',
         'users.2fa',
         'users.2fa_secret',
         'passwords.password'
@@ -40,124 +40,124 @@ const elysiaApp = new Elysia()
     // === NAČÍST PŘEDMĚT ===
     const subject = await db.selectFrom('timetable')
     .select([
-      'timetable.subject'
+      'timetable.subject_id'
     ])
     .where('timetable.day', '=', moment(date).isoWeekday() - 1)
     .where('timetable.hour', '=', hour + 1)
-    .where('timetable.groupId', '=', groupId)
+    .where('timetable.group_id', '=', groupId)
     .executeTakeFirst();
 
     if (!subject) {
       return { error: 'invalid_subject' };
     }
 
-    const subjectId = subject.subject;
+    const subjectId = subject.subject_id;
 
     // === NAČTENÍ NEBO VYTVOŘENÍ ZÁPISU ===
     const isExistClassbook = await db.selectFrom('classbook')
-      .leftJoin('subjects', 'subjects.subjectId', 'classbook.subject')
+      .leftJoin('subjects', 'subjects.subject_id', 'classbook.subject_id')
       .select([
-        'classbook.cbId as classbookId'
+        'classbook.classbook_id as classbook_id'
       ])
       .where('classbook.date', '=', moment(date).format('YYYY-MM-DD'))
-      .where('classbook.dayHour', '=', hour)
-      .where('classbook.groupId', '=', groupId)
+      .where('classbook.day_hour', '=', hour)
+      .where('classbook.group_id', '=', groupId)
       .executeTakeFirst();
 
     if (!isExistClassbook) {
       await db.insertInto('classbook')
       .values({
         date: moment(date).format('YYYY-MM-DD'),
-        dayHour: hour,
-        groupId,
-        subject: subjectId
+        day_hour: hour,
+        group_id: groupId,
+        subject_id: subjectId
       })
       .execute();
     }
 
     const classbook = await db.selectFrom('classbook')
-      .leftJoin('subjects', 'subjects.subjectId', 'classbook.subject')
-      .leftJoin('groups', 'groups.groupId', 'classbook.groupId')
-      .leftJoin('classes', 'groups.class', 'classes.classId')
-      .leftJoin('school_years as syClass', 'syClass.syId', 'classes.yearId')
+      .leftJoin('subjects', 'subjects.subject_id', 'classbook.subject_id')
+      .leftJoin('groups', 'groups.group_id', 'classbook.group_id')
+      .leftJoin('classes', 'groups.class_id', 'classes.class_id')
+      .leftJoin('school_years as syClass', 'syClass.sy_id', 'classes.year_id')
 
       .select([
-        'classbook.cbId as classbookId',
+        'classbook.classbook_id',
         'classbook.date',
-        'classbook.dayHour',
-        'classbook.groupId',
-        'classbook.internalNote',
+        'classbook.day_hour',
+        'classbook.group_id',
+        'classbook.internal_note',
         'classbook.note',
         'classbook.topic',
-        'subjects.subjectId',
-        'subjects.label as subjectName',
-        'classbook.room',
-        sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, syClass.start, CURDATE()) + 1, classes.suffix)`.as('className')
+        'subjects.subject_id',
+        'subjects.label as subject_name',
+        'classbook.room_id',
+        sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, syClass.start, CURDATE()) + 1, classes.suffix)`.as('class_name')
       ])
       .where('classbook.date', '=', moment(date).format('YYYY-MM-DD'))
-      .where('classbook.dayHour', '=', hour)
-      .where('classbook.groupId', '=', groupId)
+      .where('classbook.day_hour', '=', hour)
+      .where('classbook.group_id', '=', groupId)
       .executeTakeFirst();
 
     if (!classbook) return { error: 'invalid_classbook' };
 
     // === Získání seznamu studentů ===
     const studentsDB = await db.selectFrom('student_groups')
-      .leftJoin('persons', 'persons.personId', 'student_groups.student')
+      .leftJoin('persons', 'persons.person_id', 'student_groups.student_id')
       .select([
-        'student_groups.student',
-        'persons.firstName',
-        'persons.lastName'
+        'student_groups.student_id',
+        'persons.first_name',
+        'persons.last_name'
       ])
-      .where('student_groups.groupId', '=', groupId)
+      .where('student_groups.group_id', '=', groupId)
       .execute();
 
     const studentAbsence = await db.selectFrom('absence')
-    .leftJoin('classbook', 'classbook.cbId', 'absence.lesson')
+    .leftJoin('classbook', 'classbook.classbook_id', 'absence.lesson_id')
     .select([
-      'absence.student',
-      'classbook.dayHour',
+      'absence.student_id',
+      'classbook.day_hour',
       'absence.type',
       'absence.minutes',
       'absence.reason',
       'absence.note'
     ])
     .where('classbook.date', '=', classbook.date)
-    .where('absence.student', 'in', studentsDB.map((student) => student.student))
+    .where('absence.student_id', 'in', studentsDB.map((student) => student.student_id))
     .execute();
 
     const studentTotalAbsence = await db
       .selectFrom('absence')
-      .leftJoin('classbook', 'classbook.cbId', 'absence.lesson')
+      .leftJoin('classbook', 'classbook.classbook_id', 'absence.lesson_id')
       .select([
-        'absence.student',
-        db.fn.count('classbook.dayHour').as('total_hours')
+        'absence.student_id',
+        db.fn.count('classbook.day_hour').as('total_hours')
       ])
-      .where('classbook.groupId', '=', classbook.groupId)
-      .where('classbook.subject', '=', classbook.subjectId)
-      .where('absence.student', 'in', studentsDB.map((student) => student.student))
-      .groupBy('absence.student')
+      .where('classbook.group_id', '=', classbook.group_id)
+      .where('classbook.subject_id', '=', classbook.subject_id)
+      .where('absence.student_id', 'in', studentsDB.map((student) => student.student_id))
+      .groupBy('absence.student_id')
       .execute();
 
-    const studentFullNames = await format_people_by_ids(studentsDB.map((s) => s.student));
+    const studentFullNames = await format_people_by_ids(studentsDB.map((s) => s.student_id));
 
     const students = studentsDB
     .map((student, index) => {
-      const absForStudent = studentAbsence.filter(a => a.student === student.student);
+      const absForStudent = studentAbsence.filter(a => a.student_id === student.student_id);
 
       // Převést na array s indexem dle dayHour
       const absenceIndexed: any[] = [];
 
       absForStudent.forEach((abs: any) => {
-        absenceIndexed[abs.dayHour] = abs;  // index = denní hodina
+        absenceIndexed[abs.day_hour] = abs;  // index = denní hodina
       });
 
       return {
-        student_id: student.student,
-        first_name: student.firstName || '',
-        last_name: student.lastName || '',
+        student_id: student.student_id,
+        first_name: student.first_name || '',
+        last_name: student.last_name || '',
         full_name: studentFullNames[index] || '',
-        total_absence: studentTotalAbsence.find(s => s.student == student.student)?.total_hours || 0,
+        total_absence: studentTotalAbsence.find(s => s.student_id == student.student_id)?.total_hours || 0,
         absence: absenceIndexed
       };
     })
@@ -181,26 +181,26 @@ const elysiaApp = new Elysia()
     if (!school_year) return { error: 'invalid_year' };
 
     // === Automatický výpočet čísla hodiny ===
-    const lessonNumber = await get_classbook_lesson_number(classbook.classbookId);
+    const lessonNumber = await get_classbook_lesson_number((classbook as any).classbook_id);
     let lessonTotal = 0;
     if (moment(classbook.date).isSameOrBefore(school_year.midterm)) {
-      lessonTotal = await get_total_lessons(moment(school_year.start), moment(school_year.midterm), classbook.groupId, classbook.subjectId!);
+      lessonTotal = await get_total_lessons(moment(school_year.start), moment(school_year.midterm), classbook.group_id, classbook.subject_id!);
     } else {
-      lessonTotal = await get_total_lessons(moment(school_year.midterm), moment(school_year.end), classbook.groupId, classbook.subjectId!);
+      lessonTotal = await get_total_lessons(moment(school_year.midterm), moment(school_year.end), classbook.group_id, classbook.subject_id!);
     }
 
     // === Služba třídy ===
     const class_serviceDB = await db.selectFrom('class_service')
-    .leftJoin('student_groups', 'student_groups.student', 'class_service.student')
+    .leftJoin('student_groups', 'student_groups.student_id', 'class_service.student_id')
     .select([
-      'class_service.student'
+      'class_service.student_id'
     ])
     .where('class_service.start', '<=', date)
     .where('class_service.end', '>=', date)
-    .where('student_groups.groupId', '=', groupId)
+    .where('student_groups.group_id', '=', groupId)
     .execute();
 
-    const classService = await format_people_by_ids(class_serviceDB.map((student) => (student.student)));
+    const classService = await format_people_by_ids(class_serviceDB.map((student) => (student.student_id)));
 
     return { classbook, students, lessonNumber, lessonTotal, classService }
   }, {

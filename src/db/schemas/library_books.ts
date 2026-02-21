@@ -1,16 +1,21 @@
 import { Generated } from "kysely";
 
 export interface library_booksTable {
-  bookId: Generated<number>;
+  book_id: Generated<number>;
   title: string;
-  author: string;
-  isbn: string | null;
-  publisher: string | null;
-  published_year: number | null;
-  description: string | null;
-  coverUrl: string | null;
-  genreId: number | null;
-  language: string | null;
-  pages: number | null;
-  createdAt: Generated<Date>;
+  year_publication: number;
+  genre_id: number;
+  isbn: Generated<string | null>;
+  publisher: Generated<string | null>;
+  published_year: Generated<number | null>;
+  edition_number: number;
+  pages: Generated<number>;
+  annotation: Generated<string | null>;
+  tags: Generated<string | null>;
+  keywords: Generated<string | null>;
+  signature: Generated<string | null>;
+  language: Generated<string | null>;
+  description: Generated<string | null>;
+  cover_url: Generated<string | null>;
+  created_at: Generated<Date>;
 }
