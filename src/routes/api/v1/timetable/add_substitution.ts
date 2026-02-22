@@ -1,7 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../../../index';
 import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 import moment from 'moment';
 
@@ -31,13 +30,17 @@ const elysiaAp = new Elysia()
         subject_id,
         teacher_id,
         room_id,
-        start_date, start_hour,
-        end_date, end_hour
+        start_date: start_date_str, start_hour,
+        end_date: end_date_str, end_hour,
+        type
     } = body;
 
-    if (group_id == undefined || subject_id == undefined || teacher_id == undefined || start_date == undefined || start_hour == undefined || end_date == undefined || end_hour == undefined) {
-        return;
+    if (group_id === undefined || subject_id === undefined || teacher_id === undefined || start_date_str === undefined || start_hour === undefined || end_date_str === undefined || end_hour === undefined) {
+        return Response.json({ error: 'missing_fields' }, { status: 400 });
     }
+
+    const start_date = moment(start_date_str, 'YYYY-MM-DD').toDate();
+    const end_date = moment(end_date_str, 'YYYY-MM-DD').toDate();
 
     // === Check if substitution already exist ===
     const substitution = await db.selectFrom('substitution')
@@ -56,12 +59,16 @@ const elysiaAp = new Elysia()
     .where('substitution.group_id', '=', group_id)
     .executeTakeFirst()
 
+    const typeValue = type || 'substitution';
+
     try {
         if (substitution) {
             await db.updateTable('substitution')
             .set({
                 subject_id: subject_id,
-                teacher_id: teacher_id
+                teacher_id: teacher_id,
+                room_id: room_id,
+                type: typeValue
             })
             .where('substitution.start_date', '=', start_date)
             .where('substitution.start_hour', '=', start_hour)
@@ -79,7 +86,8 @@ const elysiaAp = new Elysia()
                 start_date,
                 start_hour,
                 end_date,
-                end_hour
+                end_hour,
+                type: typeValue
             })
             .executeTakeFirst();
         }
@@ -89,14 +97,15 @@ const elysiaAp = new Elysia()
     }
 }, {
     body: t.Object({
-        group_id: t.Optional(t.Number()),
+        group_id: t.Optional(t.Nullable(t.Number())),
         subject_id: t.Optional(t.Nullable(t.Number())),
         teacher_id: t.Optional(t.Nullable(t.Number())),
         room_id: t.Optional(t.Nullable(t.Number())),
-        start_date: t.Optional(t.Date()),
+        start_date: t.Optional(t.String()),
         start_hour: t.Optional(t.Number()),
-        end_date: t.Optional(t.Date()),
+        end_date: t.Optional(t.String()),
         end_hour: t.Optional(t.Number()),
+        type: t.Optional(t.String())
     })
 });
 

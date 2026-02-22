@@ -25,16 +25,6 @@ const app = new Elysia()
         enabled
     } = body;
 
-    // Check if config exists for this school (assuming single school deployment or schoolId from context/db)
-    // For now, we update the existing config or create one.
-    // Ideally we should know WHICH school. Assuming single school in 'schools' table limit 1 or linked to user.
-    // User context doesn't have schoolId explicitly, but system typically fetches "the school".
-    // We will assume schoolId = 1 or fetch it from user's relation if multi-tenant.
-    // Given the previous code updates 'schools' directly without WHERE (updateTable('schools').set...), 
-    // it implies a single-tenant or implicit context. We will stick to that pattern but correct it if possible.
-    // Wait, 'schools' usually has 1 row in this system context?
-    // Let's check 'schools' table ID. Usually 1.
-    
     // We will try to find existing config
     const existing = await db.selectFrom('ldap_config')
         .select('config_id')

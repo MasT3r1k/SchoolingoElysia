@@ -317,6 +317,17 @@
         "unknown": "Neznámé",
         "undefined": "Neznámé"
     },
+    "family": {
+        "father": "Otec",
+        "mother": "Matka",
+        "guardian": "Zákonný zástupce",
+        "stepfather": "Nevlastní otec",
+        "stepmother": "Nevlastní matka",
+        "grandfather": "Dědeček",
+        "grandmother": "Babička",
+        "uncle": "Strýc",
+        "aunt": "Teta"
+    },
     "person": {
         "first_name": "Křestní jméno",
         "last_name": "Přijmení",
@@ -1006,17 +1017,21 @@
         "title": "Titulek",
         "title_placeholder": "Vyplňte titulek známky",
         "mark": "Známka",
+        "points": "Získané body",
         "class_average": "Průměr třídy",
         "class_rank": "Pořadí ve třídě",
         "marking_scale": "Tabulka hodnocení",
         "percentage": "Procenta %",
         "mark_placeholder": "Známka, např.: 1, 1.5=1-, 2, 2-, 4, .., 5",
+        "points_placeholder": "Zadejte získaný počet bodů, např.: 5.5",
         "quarter": "Čtvrtletí",
         "midterm_grade": "Čtvrtletní známka",
         "edit_column": "Upravit sloupec",
         "create_column": "Vytvořit sloupec",
         "edit_mark": "Upravit známku",
         "create_mark": "Vytvořit známku",
+        "edit_points": "Upravit body",
+        "create_points": "Přidat body",
         "topic": "Titulek",
         "type": "Druh známkování",
         "types": {
@@ -1127,7 +1142,8 @@
             "edit": "Upravit",
             "remove": "Smazat",
             "no_subjects": "Nemáte žádnou známku z jakýhokoliv předmětu. Nelze použít předvídač!",
-            "already_editing_mark": "Nemůžete odebrat známku, kterou aktuálně upravujete."
+            "already_editing_mark": "Nemůžete odebrat známku, kterou aktuálně upravujete.",
+            "predicted": "Simulovaná"
         },
         "alerts": {
             "empty_topic": "Prázdné",
@@ -1346,6 +1362,8 @@
     "timetable": {
         "this_week": "Tento týden",
         "next_week": "Příští týden",
+        "actual": "Aktuální rozvrh",
+        "weekly": "Týdenní rozvrh",
         "permanent": "Stálý rozvrh",
         "free_time": "Volná hodina",
         "end_class": "Konec vyučování",
@@ -1573,6 +1591,7 @@
         "today": "Dnes",
         "tomorrow": "Zítra",
         "yesterday": "Včera",
+        "week_view": "Týdenní přehled",
         "total": "Celkem",
         "loading": "Načítání suplování...",
         "create": "Vytvořit suplování",
@@ -1585,7 +1604,8 @@
         "room": "Místnost",
         "search": "Vyhledat suplování...",
         "no_substitutions": "Žádná suplování",
-        "no_substitutions_desc": "Pro vybraný den nejsou evidována žádná suplování.",
+        "no_substitutions_desc": "Pro vybraný týden nejsou evidována žádná suplování.",
+        "date": "Datum",
         "filters": {
             "all": "Všechna suplování",
             "by_type": "Podle typu"
@@ -1695,7 +1715,13 @@
                 "sick_leave": "Nemocenská",
                 "personal_leave": "Osobní volno",
                 "unpaid_leave": "Neplacené volno",
-                "study_leave": "Studijní volno"
+                "study_leave": "Studijní volno",
+                "inability_to_work": "Pracovní neschopnost",
+                "personal_obstacle": "Osobní překážka",
+                "education": "Vzdělávání",
+                "school_event": "Školní akce",
+                "business_trip": "Pracovní cesta",
+                "other": "Jiné"
             },
             "reason": "Důvod (nepovinné)"
         },
@@ -1749,7 +1775,8 @@
             "period": {
                 "today": "Dnes",
                 "week": "Týden",
-                "month": "Měsíc"
+                "month": "Měsíc",
+                "custom": "Vlastní"
             },
             "loading": "Načítání analytiky...",
             "error": "Nepodařilo se načíst statistiky.",
@@ -1772,7 +1799,17 @@
                 "unique": "Unikátní",
                 "avg_time": "Prům. čas"
             },
-            "no_data": "Žádné stránky zatím nebyly zaznamenány."
+            "no_data": "Žádné stránky zatím nebyly zaznamenány.",
+            "uptime": {
+                "status": "Stav",
+                "start": "Začátek",
+                "end": "Konec",
+                "duration": "Trvání",
+                "version": "Verze",
+                "note": "Poznámka",
+                "no_data": "Žádné záznamy o provozu",
+                "no_beats": "Systém zatím nezaznamenal heartbeat"
+            }
         },
         "schoolYears": {
             "title": "Školní roky",
@@ -1893,6 +1930,10 @@
             "continue": "Pokračovat",
             "finish": "Dokončit instalaci"
         }
+    },
+    "error": {
+        "no_permission_title": "Nemáte oprávnění",
+        "no_permission_desc": "K zobrazení této stránky nemáte dostatečná oprávnění. Pokud se domníváte, že jde o chybu, kontaktujte správce školního systému."
     },
     "architecture": {
         "title": "Správa budov",

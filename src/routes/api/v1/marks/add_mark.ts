@@ -45,31 +45,44 @@ const app = new Elysia().post(
       return Response.json({ error: 'invalid_mark' });
     }
 
-    let mark_number = parseInt(mark);
-
-    if (MainConfig.MARK_DISPLAY.includes(mark)) {
-      mark_number = MainConfig.ALLOWED_MARKS[MainConfig.MARK_DISPLAY.indexOf(mark)];
-    }
-
-    if (
-      mark_number === undefined ||
-      mark_number < MainConfig.MIN_MARK ||
-      mark_number > MainConfig.MAX_MARK ||
-      !MainConfig.ALLOWED_MARKS.includes(mark_number)
-    ) {
-      return Response.json({ error: 'invalid_mark' });
-    }
-
-    // Check column
     const column = await db
       .selectFrom('grades_columns')
-      .select('column_id')
+      .select(['column_id', 'type', 'weight'])
       .where('column_id', '=', column_id)
       .executeTakeFirst();
 
     if (!column) {
       return Response.json({ error: 'invalid_column_id' });
     }
+
+    let mark_number: number;
+
+    if (column.type === 1) {
+      // Body (Points)
+      mark_number = parseFloat(mark.replace(',', '.'));
+      if (isNaN(mark_number) || mark_number < 0) {
+        return Response.json({ error: 'invalid_mark' });
+      }
+      // Volitelně můžeme zkontrolovat max body: if (mark_number > column.weight) ... ale učitel může chtít dát bonusové body. Takže aspoň základní kontrola >= 0.
+    } else {
+      // Známky (Marks)
+      mark_number = parseInt(mark);
+
+      if (MainConfig.MARK_DISPLAY.includes(mark)) {
+        mark_number = MainConfig.ALLOWED_MARKS[MainConfig.MARK_DISPLAY.indexOf(mark)];
+      }
+
+      if (
+        mark_number === undefined ||
+        mark_number < MainConfig.MIN_MARK ||
+        mark_number > MainConfig.MAX_MARK ||
+        !MainConfig.ALLOWED_MARKS.includes(mark_number)
+      ) {
+        return Response.json({ error: 'invalid_mark' });
+      }
+    }
+
+    // Check grade existence
 
     const checkGrade = await db.selectFrom('grades')
     .select(['grades.grade_id'])

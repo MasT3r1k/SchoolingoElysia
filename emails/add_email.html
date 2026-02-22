@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 40px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4f46e5;
+            text-decoration: none;
+        }
+
+        .content {
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #111827;
+            margin-bottom: 16px;
+        }
+
+        .code-container {
+            background: #f3f4f6;
+            padding: 24px;
+            text-align: center;
+            border-radius: 12px;
+            margin: 24px 0;
+        }
+
+        .code {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            color: #4f46e5;
+        }
+
+        .footer {
+            font-size: 13px;
+            color: #6b7280;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 20px;
+        }
+
+        .validity {
+            font-size: 14px;
+            color: #ef4444;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">Schoolingo</div>
+        </div>
+        <div class="content">
+            <h1>Ověření e-mailu</h1>
+            <p>Ahoj {{firstName}},</p>
+            <p>obdrželi jsme požadavek na přidání nebo změnu e-mailu <strong>{{email}}</strong> k vašemu účtu. Pro
+                dokončení procesu prosím použijte následující ověřovací kód:</p>
+
+            <div class="code-container">
+                <div class="code">{{code}}</div>
+                <p class="validity">Kód je platný do {{validUntil}}</p>
+            </div>
+
+            <p>Pokud jste tento požadavek neodeslali, můžete tento e-mail bezpečně ignorovat.</p>
+        </div>
+        <div class="footer">
+            <p>Tento e-mail byl automaticky vygenerován systémem Schoolingo.</p>
+        </div>
+    </div>
+</body>
+
+</html>

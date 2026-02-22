@@ -65,6 +65,21 @@ const elysiaApp = new Elysia()
       breaks,
       login_expires: 15000
     });
+  })
+  .get('/school/degrees', async () => {
+    return await db.selectFrom('degrees')
+      .selectAll()
+      .orderBy('weight', 'desc')
+      .execute();
+  })
+  .get('/school/insurance', async () => {
+    return await db.selectFrom('insurance_companies')
+      .selectAll()
+      .orderBy('insurance', 'asc')
+      .execute();
   });
+
+
+
 
 export default elysiaApp;

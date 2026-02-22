@@ -5,12 +5,12 @@ export async function get_classbook_lesson_number(classbook_id: number): Promise
     // === Získání informací o třídní knize ===
     const classbook = await db.selectFrom('classbook')
     .select([
-        'classbook.dayHour',
+        'classbook.day_hour',
         'classbook.date',
         'classbook.subject_id',
-        'classbook.groupId'
+        'classbook.group_id'
     ])
-    .where('classbook.cbId', '=', classbook_id)
+    .where('classbook.classbook_id', '=', classbook_id)
     .executeTakeFirst();
     if (!classbook) return -1;
 
@@ -55,8 +55,8 @@ export async function get_classbook_lesson_number(classbook_id: number): Promise
         'timetable.hour',
         'timetable.type'
     ])
-    .where('timetable.group_id', '=', classbook.groupId)
-    .where('timetable.subject_id', '=', classbook.subject)
+    .where('timetable.group_id', '=', classbook.group_id)
+    .where('timetable.subject_id', '=', classbook.subject_id)
     .execute();
 
     /// Sčítání čísla hodiny
@@ -76,7 +76,7 @@ export async function get_classbook_lesson_number(classbook_id: number): Promise
 
     for(let item of timetableCurrentWeek) {
         const isoWeekday = end.isoWeekday() - 1; // To equal as database
-        if (isoWeekday > item.day || isoWeekday == item.day && classbook.dayHour >= item.hour) {
+        if (isoWeekday > item.day || isoWeekday == item.day && classbook.day_hour >= item.hour) {
             lessonNumber++;
         }
     }

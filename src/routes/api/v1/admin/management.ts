@@ -22,14 +22,20 @@ const app = new Elysia()
     .leftJoin('users', 'users.person_id', 'students.person_id')
     .leftJoin('classes', 'classes.class_id', 'students.class_id')
     .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
-    .select([sql`COUNT(*)`.as('count')])
+    .select([
+        sql`COUNT(*)`.as('count'),
+        sql`COUNT(CASE WHEN students.start_study < ${current_month_start} THEN 1 END)`.as('count_last')
+    ])
     .where('students.status', '=', 'active')
     .where((eb) => eb.or([
       eb('users.school_id', '=', user.school_id),
       eb('scopes.school_id', '=', user.school_id)
     ]))
     .executeTakeFirst()
-    .then(r => Number(r?.count ?? 0));
+    .then(r => ({
+        total_students: Number(r?.count ?? 0),
+        total_students_last: Number(r?.count_last ?? 0)
+    }));
 
     // Limit students
     const limit_students_query = db.selectFrom('schools')
@@ -45,14 +51,20 @@ const app = new Elysia()
         .leftJoin('students', 'students.person_id', 'users.person_id')
         .leftJoin('classes', 'classes.class_id', 'students.class_id')
         .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
-        .select(sql<number>`SUM(grades.mark * grades_columns.weight) / NULLIF(SUM(grades_columns.weight),0)`.as('weighted_average_grade'))
+        .select([
+            sql<number>`SUM(grades.mark * grades_columns.weight) / NULLIF(SUM(grades_columns.weight),0)`.as('weighted_average_grade'),
+            sql<number>`SUM(CASE WHEN grades_columns.created < ${current_month_start} THEN grades.mark * grades_columns.weight ELSE 0 END) / NULLIF(SUM(CASE WHEN grades_columns.created < ${current_month_start} THEN grades_columns.weight ELSE 0 END),0)`.as('weighted_average_grade_last')
+        ])
         .where('grades.mark', 'is not', null)
         .where((eb) => eb.or([
           eb('users.school_id', '=', user.school_id),
           eb('scopes.school_id', '=', user.school_id)
         ]))
         .executeTakeFirst()
-        .then(r => Number(r?.weighted_average_grade ?? 0));
+        .then(r => ({
+            average_grade: Number(r?.weighted_average_grade ?? 0),
+            average_grade_last: Number(r?.weighted_average_grade_last ?? 0)
+        }));
 
     // Absence rate logic helpers
     const stats = db.selectFrom('classbook as c')
@@ -72,15 +84,27 @@ const app = new Elysia()
           eb('users.school_id', '=', user.school_id),
           eb('scopes.school_id', '=', user.school_id)
         ]))
-        .select(['c.classbook_id', sql`COUNT(sg.student_id)`.as('lesson_expected'), sql`COALESCE(a.absent_count, 0)`.as('lesson_absent')])
+        .select([
+            'c.classbook_id', 
+            sql`COUNT(sg.student_id)`.as('lesson_expected'), 
+            sql`COALESCE(a.absent_count, 0)`.as('lesson_absent'),
+            sql`CASE WHEN c.date < ${current_month_start} THEN COUNT(sg.student_id) ELSE 0 END`.as('lesson_expected_last'),
+            sql`CASE WHEN c.date < ${current_month_start} THEN COALESCE(a.absent_count, 0) ELSE 0 END`.as('lesson_absent_last')
+        ])
         .groupBy('c.classbook_id')
         .as('stats');
 
     // Absence rate
     const absence_rate_query = db.selectFrom(stats)
-        .select(sql`SUM(stats.lesson_absent) / SUM(stats.lesson_expected)`.as('school_absence_rate'))
+        .select([
+            sql`SUM(stats.lesson_absent) / NULLIF(SUM(stats.lesson_expected), 0)`.as('school_absence_rate'),
+            sql`SUM(stats.lesson_absent_last) / NULLIF(SUM(stats.lesson_expected_last), 0)`.as('school_absence_rate_last')
+        ])
         .executeTakeFirst()
-        .then(r => Number(r?.school_absence_rate ?? 0));
+        .then(r => ({
+            absence_rate: Number(r?.school_absence_rate ?? 0),
+            absence_rate_last: Number(r?.school_absence_rate_last ?? 0)
+        }));
 
     // At Risk Count
     const at_risk_count_query = db.selectFrom(
@@ -97,13 +121,24 @@ const app = new Elysia()
                     .groupBy('lesson_id').as('a2'),
                     'a2.lesson_id', 'c.classbook_id'
                 )
-                .select(['c.classbook_id', 'c.group_id', sql`1`.as('expected'), sql`COALESCE(a2.missed,0)`.as('absent')])
+                .select([
+                    'c.classbook_id', 
+                    'c.group_id', 
+                    sql`1`.as('expected'), 
+                    sql`COALESCE(a2.missed,0)`.as('absent'),
+                    sql`CASE WHEN c.date < ${current_month_start} THEN 1 ELSE 0 END`.as('expected_last'),
+                    sql`CASE WHEN c.date < ${current_month_start} THEN COALESCE(a2.missed,0) ELSE 0 END`.as('absent_last')
+                ])
                 .as('a'), 'a.group_id', 'sg.group_id'
             )
             .leftJoin(
                 db.selectFrom('grades as g')
                 .leftJoin('grades_columns as gc', 'gc.column_id', 'g.column_id')
-                .select(['g.student_id', sql`SUM(g.mark * gc.weight) / SUM(gc.weight)`.as('weighted_avg')])
+                .select([
+                    'g.student_id', 
+                    sql`SUM(g.mark * gc.weight) / SUM(gc.weight)`.as('weighted_avg'),
+                    sql`SUM(CASE WHEN gc.created < ${current_month_start} THEN g.mark * gc.weight ELSE 0 END) / NULLIF(SUM(CASE WHEN gc.created < ${current_month_start} THEN gc.weight ELSE 0 END),0)`.as('weighted_avg_last')
+                ])
                 .groupBy('g.student_id').as('g'),
                 'g.student_id', 's.person_id'
             )
@@ -112,7 +147,8 @@ const app = new Elysia()
                 's.class_id', // Přidáno, abychom se na to mohli napojit venku
                 sql`CASE WHEN COALESCE(SUM(a.absent),0) = 0 THEN 0 ELSE COALESCE(SUM(a.absent),0) / SUM(a.expected) * 40 END`.as('absence_score'),
                 sql`CASE WHEN COALESCE(g.weighted_avg,0) = 0 THEN 0 ELSE ((COALESCE(g.weighted_avg,0) - 1)/4*100)*0.4 END`.as('grade_score'),
-                sql`(CASE WHEN COALESCE(SUM(a.absent),0) = 0 THEN 0 ELSE COALESCE(SUM(a.absent),0)/SUM(a.expected)*40 END + CASE WHEN COALESCE(g.weighted_avg,0) = 0 THEN 0 ELSE ((COALESCE(g.weighted_avg,0)-1)/4*100)*0.4 END)`.as('risk_score')
+                sql`(CASE WHEN COALESCE(SUM(a.absent),0) = 0 THEN 0 ELSE COALESCE(SUM(a.absent),0)/SUM(a.expected)*40 END + CASE WHEN COALESCE(g.weighted_avg,0) = 0 THEN 0 ELSE ((COALESCE(g.weighted_avg,0)-1)/4*100)*0.4 END)`.as('risk_score'),
+                sql`(CASE WHEN COALESCE(SUM(a.absent_last),0) = 0 THEN 0 ELSE COALESCE(SUM(a.absent_last),0)/NULLIF(SUM(a.expected_last),0)*40 END + CASE WHEN COALESCE(g.weighted_avg_last,0) = 0 THEN 0 ELSE ((COALESCE(g.weighted_avg_last,0)-1)/4*100)*0.4 END)`.as('risk_score_last')
             ])
             .groupBy(['s.person_id', 's.class_id'])
             .as('risk_stats')
@@ -122,15 +158,24 @@ const app = new Elysia()
     .leftJoin('classes', 'classes.class_id', 'risk_stats.class_id')
     .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
     .where((eb) => eb.and([
-        eb('risk_stats.risk_score', '>=', 60),
+        eb.or([
+            eb('risk_stats.risk_score', '>=', 60),
+            eb('risk_stats.risk_score_last', '>=', 60)
+        ]),
         eb.or([
             eb('users.school_id', '=', user.school_id),
             eb('scopes.school_id', '=', user.school_id)
         ])
     ]))
-    .select(sql<number>`COUNT(*)`.as('at_risk_students'))
+    .select([
+        sql<number>`SUM(CASE WHEN risk_stats.risk_score >= 60 THEN 1 ELSE 0 END)`.as('at_risk_students'),
+        sql<number>`SUM(CASE WHEN risk_stats.risk_score_last >= 60 THEN 1 ELSE 0 END)`.as('at_risk_students_last')
+    ])
     .executeTakeFirst()
-    .then(r => Number(r?.at_risk_students ?? 0));
+    .then(r => ({
+        at_risk_students: Number(r?.at_risk_students ?? 0),
+        at_risk_students_last: Number(r?.at_risk_students_last ?? 0)
+    }));
 
     // Class Stats
     const class_stats_query = db.selectFrom('classes')
@@ -369,7 +414,7 @@ const app = new Elysia()
 
     // === EXECUTE ALL IN PARALLEL ===
     const [
-        total_students, limit_students, average_grade, absence_rate, at_risk_students,
+        total_students_data, limit_students, average_grade_data, absence_rate_data, at_risk_data,
         risk_students, class_stats, subject_stats, teacher_stats, absence_heatmap, class_info
     ] = await Promise.all([
         total_students_query, limit_students_query, average_grade_query, absence_rate_query, at_risk_count_query,
@@ -377,7 +422,17 @@ const app = new Elysia()
     ]);
 
     return {
-        school_stats: { total_students, limit_students, average_grade, absence_rate, at_risk_students },
+        school_stats: { 
+            total_students: total_students_data.total_students,
+            total_students_last: total_students_data.total_students_last,
+            limit_students, 
+            average_grade: average_grade_data.average_grade, 
+            average_grade_last: average_grade_data.average_grade_last,
+            absence_rate: absence_rate_data.absence_rate, 
+            absence_rate_last: absence_rate_data.absence_rate_last,
+            at_risk_students: at_risk_data.at_risk_students,
+            at_risk_students_last: at_risk_data.at_risk_students_last
+        },
         risk_students,
         class_stats,
         subject_stats,

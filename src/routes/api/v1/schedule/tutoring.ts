@@ -4,8 +4,9 @@
  */
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
+import { sql } from 'kysely';
 
-const app = new Elysia()
+const app = new Elysia({ prefix: '/schedule' })
     // List available tutoring sessions
     .get('/tutoring', async ({ query, cookie: { token } }) => {
         if (!token?.value) {
@@ -40,7 +41,7 @@ const app = new Elysia()
                 'homework.assigned_at',
                 'homework.homework',
                 'subjects.label as subject',
-                db.fn('concat', ['persons.first_name', db.val(' '), 'persons.last_name']).as('teacher')
+                sql`CONCAT(persons.first_name, ' ', persons.last_name)`.as('teacher')
             ])
             .where('homework.type', '=', 2) // tutoring
             .where('homework.assigned_at', '>=', today)

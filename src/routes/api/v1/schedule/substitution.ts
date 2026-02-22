@@ -4,10 +4,13 @@
  */
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
+import { sql } from 'kysely';
 import { validateBody, createSubstitutionSchema } from '../../../../utils/validation.schemas';
 import { notificationBroadcaster } from '../../../../functions/notification-broadcaster';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
+import moment from 'moment';
 
-const app = new Elysia()
+const app = new Elysia({ prefix: '/schedule' })
     // List substitutions
     .get('/substitution', async ({ query, cookie }) => {
         const token = cookie.token?.value as string;
@@ -28,26 +31,105 @@ const app = new Elysia()
         }
 
         // Default to today's date
-        const date = query.date || new Date().toISOString().split('T')[0];
+        const date = query.date || moment('YYYY-MM-DD');
+        const endDate = query.endDate;
+        const type = query.type;
 
-        const substitutions = await db
+        let queryBuilder = db
             .selectFrom('substitution')
             .leftJoin('groups', 'groups.group_id', 'substitution.group_id')
+            .leftJoin('classes', 'classes.class_id', 'groups.class_id')
+            .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
             .leftJoin('subjects', 'subjects.subject_id', 'substitution.subject_id')
-            .leftJoin('persons as original', 'original.person_id', 'substitution.teacher_id')
-            .leftJoin('persons as substitute', 'substitute.person_id', 'substitution.teacher_id')
+            // New room (from substitution)
+            .leftJoin('building_rooms as new_room', 'new_room.room_id', 'substitution.room_id')
+            // Original lesson from timetable (same group + hour + day)
+            // MySQL: WEEKDAY() returns 0 for Monday, so we add 1 to match 1-7 in timetable.day
+            .leftJoin('timetable', (join) =>
+                join
+                    .onRef('timetable.group_id', '=', 'substitution.group_id')
+                    .onRef('timetable.hour', '=', 'substitution.start_hour')
+                    // .on('timetable.day', '=', sql`WEEKDAY(substitution.start_date)`)
+            )
+            .leftJoin('subjects as old_subject', 'subjects.subject_id', 'timetable.subject_id')
+            // Old room (from timetable)
+            .leftJoin('building_rooms as old_room', 'old_room.room_id', 'timetable.room_id')
+            .where((eb) => {
+                let conditions = [];
+                if (endDate) {
+                    conditions.push(eb.and([
+                        eb('substitution.start_date', '>=', date as any),
+                        eb('substitution.start_date', '<=', endDate as any)
+                    ]));
+                } else {
+                    conditions.push(eb('substitution.start_date', '=', date as any));
+                }
+
+                if (type && type !== 'all') {
+                    if (type === 'cancelled') {
+                        conditions.push(eb.or([
+                            eb('substitution.subject_id', '=', -1),
+                            eb('substitution.teacher_id', '=', -1),
+                        ]));
+                    } else if (type === 'substitution') {
+                        conditions.push(eb.and([
+                            eb('substitution.subject_id', '>', 0),
+                            eb('substitution.teacher_id', '>', 0),
+                        ]));
+                    } else if (type === 'room_change') {
+                        conditions.push(eb.and([
+                            eb('substitution.room_id', 'is not', null),
+                            eb('substitution.room_id', '!=', eb.ref('timetable.room_id')),
+                            eb('substitution.subject_id', '>', 0),
+                            eb('substitution.teacher_id', '>', 0),
+                        ]));
+                    }
+                }
+
+                return eb.and(conditions);
+            });
+
+        const rows = await queryBuilder
             .select([
                 'substitution.substitution_id',
-                'substitution.date',
-                'substitution.hour',
+                'substitution.start_date as date',
+                'substitution.start_hour as hour',
                 'substitution.type',
+                'substitution.room_id as new_room_id',
                 'subjects.label as subjectName',
-                db.fn('concat', ['original.first_name', db.val(' '), 'original.lastname']).as('originalTeacher'),
-                db.fn('concat', ['substitute.first_name', db.val(' '), 'substitute.lastname']).as('substituteTeacher'),
-            ])
-            .where('substitution.date', '=', date)
-            .orderBy('substitution.hour', 'asc')
+                'new_room.name as newRoomName',
+                sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className'),
+                'old_room.name as oldRoomName',
+                'old_subject.label as originalSubjectName',
+                'timetable.teacher_id as originalTeacherId',
+                'substitution.teacher_id as substituteTeacherId',
+            ] as any)
+            .orderBy('substitution.start_date', 'asc')
+            .orderBy('substitution.start_hour', 'asc')
+            .groupBy('substitution.substitution_id')
             .execute();
+
+        // Collect all person IDs that need to be resolved
+        const personIds = [
+            ...rows.map((r: any) => r.originalTeacherId),
+            ...rows.map((r: any) => r.substituteTeacherId),
+        ].filter((id): id is number => id != null && !isNaN(Number(id))).map(Number);
+
+        const personMap = await format_person_map_by_ids([...new Set(personIds)]);
+
+        console.log(rows)
+        const substitutions = rows.map((row: any) => ({
+            substitution_id: row.substitution_id,
+            date: row.date,
+            hour: row.hour,
+            type: row.type,
+            subjectName: row.subjectName,
+            className: row.className,
+            originalTeacher: row.originalTeacherId ? (personMap.get(Number(row.originalTeacherId)) ?? null) : null,
+            substituteTeacher: row.substituteTeacherId ? (personMap.get(Number(row.substituteTeacherId)) ?? null) : null,
+            oldRoomName: row.oldRoomName ?? null,
+            newRoomName: row.newRoomName ?? null,
+        }));
 
         return Response.json({ substitutions, date });
     })
@@ -81,14 +163,14 @@ const app = new Elysia()
         const result = await db
             .insertInto('substitution')
             .values({
-                date: new Date(date),
-                hour: lessonNumber,
-                original_teacher: originalTeacherId,
-                substitute_teacher: substituteTeacherId || null,
-                class: classId,
+                start_date: new Date(date),
+                start_hour: lessonNumber,
+                end_date: new Date(date),
+                end_hour: lessonNumber,
+                teacher_id: substituteTeacherId || null,
+                group_id: classId,
                 subject_id: subjectId || null,
-                type,
-                note: note || null
+                type
             })
             .execute();
 

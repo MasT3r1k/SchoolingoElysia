@@ -253,8 +253,7 @@ const vacationsRouter = new Elysia()
         status: 'pending',
         reason: body.reason || null,
         approved_by: null,
-        approved_at: null,
-        created_at: new Date().toISOString(),
+        approved_at: null
       })
       .execute();
 
@@ -283,7 +282,7 @@ const vacationsRouter = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
+      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.principal'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -291,7 +290,7 @@ const vacationsRouter = new Elysia()
     if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
     
     // Authorization check
-    const canManage = auth.manager == 1;
+    const canManage = auth.manager == -1 || auth.principal;
     
     if (!canManage) {
       return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
@@ -312,7 +311,7 @@ const vacationsRouter = new Elysia()
       .set({
         status: 'approved',
         approved_by: auth.user_id,
-        approved_at: new Date().toISOString(),
+        approved_at: new Date(),
       })
       .where('request_id', '=', requestId)
       .execute();
@@ -344,14 +343,14 @@ const vacationsRouter = new Elysia()
     const auth = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
+      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.principal'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
     if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
     
-    const canManage = auth.manager == 1;
+    const canManage = auth.manager == -1 || auth.principal;
     
     if (!canManage) {
       return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
@@ -362,7 +361,7 @@ const vacationsRouter = new Elysia()
         status: 'rejected',
         reason: body.reason || null,
         approved_by: auth.user_id,
-        approved_at: new Date().toISOString(),
+        approved_at: new Date(),
       })
       .where('request_id', '=', requestId)
       .execute();

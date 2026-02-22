@@ -76,7 +76,7 @@ const app = new Elysia()
           student_id,
           subject_id,
           semester: quarter,
-          grade: grade,
+          grade,
           year: currentYear,
           teacher_id: auth.person_id!
         })
@@ -87,6 +87,7 @@ const app = new Elysia()
 
   }, {
     body: t.Object({
+      group_id: t.Optional(t.Number()),
       student_id: t.Optional(t.Number()),
       subject_id: t.Optional(t.Number()),
       quarter: t.Optional(t.Number()),

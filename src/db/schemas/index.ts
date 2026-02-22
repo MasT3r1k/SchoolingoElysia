@@ -107,6 +107,8 @@ import { SupervisionPlacesTable } from './supervision_places'
 import { InventoryTable } from './inventory'
 import { InventoryLogsTable } from './inventory_logs'
 import { SystemHeartbeatsTable } from './system_heartbeats'
+import { StudentMedicalRecordsTable } from './student_medical_records'
+
 
 export interface Database {
   absence: AbsenceTable
@@ -229,4 +231,6 @@ export interface Database {
   inventory: InventoryTable
   inventory_logs: InventoryLogsTable
   system_heartbeats: SystemHeartbeatsTable
+  student_medical_records: StudentMedicalRecordsTable
 }
+

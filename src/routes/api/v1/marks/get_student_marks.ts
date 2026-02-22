@@ -50,6 +50,7 @@ const app = new Elysia()
         'grades_columns.created',
         'grades_columns.topic',
         'grades_columns.weight',
+        'grades_columns.max_points',
         'grades_columns.type',
         'grades_columns.column_index',
         'grades_columns.subject_id',

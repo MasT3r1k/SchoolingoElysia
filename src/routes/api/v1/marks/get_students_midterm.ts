@@ -19,7 +19,7 @@ const app = new Elysia()
     if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
     // Teacher check
-    if (!auth.personId) {
+    if (!auth.person_id) {
       return { error: 'no_permission', details: 'not_teacher' };
     }
 
@@ -55,7 +55,7 @@ const app = new Elysia()
         'semester_grades.verbal_assessment',
         'semester_grades.year'
       ])
-      .where('semester_grades.student_id', 'in', studentList.map((student) => student.personId))
+      .where('semester_grades.student_id', 'in', studentList.map((student) => student.person_id))
       .where('semester_grades.subject_id', '=', subject_id)
       .where('semester_grades.year', '=', year)
       .execute();

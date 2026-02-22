@@ -36,6 +36,7 @@ const elysiaApp = new Elysia()
     .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
     .select([
         'classes.class_id',
+        'classes.teacher_id',
         sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('class_name')
     ])
     .where('users.school_id', '=', (school as any).school_id)

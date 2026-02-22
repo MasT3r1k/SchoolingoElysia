@@ -159,7 +159,8 @@ const app = new Elysia()
     .select([
       'emails.email',
       'emails.is_verified',
-      'emails.description'
+      'emails.description',
+      'emails.code_until'
     ])
     .where('emails.person_id', '=', tokenDB.person_id)
     .execute();
@@ -169,7 +170,8 @@ const app = new Elysia()
       'phone_numbers.code',
       'phone_numbers.number',
       'phone_numbers.description',
-      'phone_numbers.is_verified'
+      'phone_numbers.is_verified',
+      'phone_numbers.code_until'
     ])
     .where('phone_numbers.person_id', '=', tokenDB.person_id)
     .execute()

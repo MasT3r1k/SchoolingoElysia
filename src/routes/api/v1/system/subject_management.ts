@@ -2,6 +2,7 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { getAuthUser } from '../../../../utils/auth';
 import { format_person_by_id } from '../../../../functions/format_person_by_id'; // Assuming this exists given index.ts used it
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
     .derive(async ({ cookie }) => ({
@@ -63,23 +64,25 @@ const app = new Elysia()
         }
 
         const teachers = await db.selectFrom('teachers_subject')
-            .innerJoin('persons', 'persons.person_id', 'teachers_subject.teacher_id')
-            .innerJoin('users', 'users.person_id', 'teachers_subject.teacher_id')
+            .leftJoin('persons', 'persons.person_id', 'teachers_subject.teacher_id')
+            .leftJoin('teachers', 'teachers.person_id', 'teachers_subject.teacher_id')
             .select([
                 'teachers_subject.teacher_id',
                 'persons.first_name',
                 'persons.last_name'
             ])
             .where('teachers_subject.subject_id', '=', query.subjectId)
-            .where('users.school_id', '=', user.school_id)
+            .where('teachers.school_id', '=', user.school_id)
             .execute();
+
+        const peopleNames = await format_person_map_by_ids(teachers.map((teacher) => (teacher.teacher_id)));
 
         // Use helper to format name consistently if needed, or just return first/last
         const formatted = teachers.map(t => ({
             teacherId: t.teacher_id,
             firstName: t.first_name,
             lastName: t.last_name,
-            fullName: `${t.first_name} ${t.last_name}` // Basic formatting
+            fullName: peopleNames.get(t.teacher_id) // Basic formatting
         }));
 
         return Response.json(formatted);
@@ -97,10 +100,10 @@ const app = new Elysia()
         }
 
         // Verify teacher belongs to current school
-        const teacherUser = await db.selectFrom('users')
-            .select('user_id')
-            .where('person_id', '=', body.teacherId)
-            .where('school_id', '=', user.school_id)
+        const teacherUser = await db.selectFrom('teachers')
+            .select('teachers.person_id')
+            .where('teachers.person_id', '=', body.teacherId)
+            .where('teachers.school_id', '=', user.school_id)
             .executeTakeFirst();
         
         if (!teacherUser) {
@@ -141,10 +144,10 @@ const app = new Elysia()
         }
 
         // Verify teacher belongs to current school
-        const teacherUser = await db.selectFrom('users')
-            .select('user_id')
-            .where('person_id', '=', body.teacherId)
-            .where('school_id', '=', user.school_id)
+        const teacherUser = await db.selectFrom('teachers')
+            .select('teachers.person_id')
+            .where('teachers.person_id', '=', body.teacherId)
+            .where('teachers.school_id', '=', user.school_id)
             .executeTakeFirst();
         
         if (!teacherUser) {

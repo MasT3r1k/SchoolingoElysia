@@ -4,4 +4,6 @@ export interface phone_numbersTable {
   person_id: number;
   description: string | null;
   is_verified: boolean;
+  phone_code: string | null;
+  code_until: Date | null;
 }

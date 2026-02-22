@@ -93,8 +93,16 @@ function buildSegments(beats: any[]): UptimeSegment[] {
 
 export default new Elysia({ prefix: '/admin/analytics' })
     .get('/uptime', async ({ query, set }) => {
-        // Rozsah: posledních N dní (default 7)
-        const days = Math.min(Number(query.days) || 7, 90);
+        // Rozsah: posledních N dní (default 7) nebo custom date range
+        let days = Math.min(Number(query.days) || 7, 90);
+        let dateCondition = sql<boolean>`recorded_at >= NOW() - INTERVAL ${sql.raw(String(days))} DAY`;
+
+        if (query.from && query.to) {
+            dateCondition = sql<boolean>`DATE(recorded_at) >= ${query.from} AND DATE(recorded_at) <= ${query.to}`;
+            const f = new Date(query.from);
+            const tdate = new Date(query.to);
+            days = Math.max(1, Math.ceil((tdate.getTime() - f.getTime()) / (1000 * 3600 * 24)) + 1);
+        }
 
         try {
             const beats = await db
@@ -106,10 +114,7 @@ export default new Elysia({ prefix: '/admin/analytics' })
                     'is_update',
                     'note'
                 ])
-                .where(
-                    'recorded_at', '>=',
-                    sql<Date>`NOW() - INTERVAL ${sql.raw(String(days))} DAY`
-                )
+                .where(dateCondition)
                 .orderBy('recorded_at', 'asc')
                 .execute();
 
@@ -154,6 +159,8 @@ export default new Elysia({ prefix: '/admin/analytics' })
         }
     }, {
         query: t.Object({
-            days: t.Optional(t.String())
+            days: t.Optional(t.String()),
+            from: t.Optional(t.String()),
+            to: t.Optional(t.String())
         })
     });

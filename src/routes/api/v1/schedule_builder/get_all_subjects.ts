@@ -41,6 +41,7 @@ const elysiaApp = new Elysia()
         'subjects.subject_id',
         'subjects.label as subject_name',
         'subjects.shortcut as subject_short',
+        'subjects.is_class_time',
         'teachers.person_id as teacher_id'
       ])
       .execute();
@@ -61,6 +62,7 @@ const elysiaApp = new Elysia()
           subject_id: row.subject_id,
           subject_name: row.subject_name,
           subject_short: row.subject_short,
+          is_class_time: row.is_class_time,
           teachers: []
         };
       }

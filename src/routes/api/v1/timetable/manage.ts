@@ -37,10 +37,10 @@ const app = new Elysia()
                 const lessonData = {
                     day,
                     hour,
-                    subject: subjectId,
-                    teacher: teacherId || undefined, // Optional if not assigned
-                    room: roomId || undefined,
-                    groupId,
+                    subject_id: subjectId,
+                    teacher_id: teacherId || undefined, // Optional if not assigned
+                    room_id: roomId || undefined,
+                    group_id: groupId,
                     type // Default Normal or provided
                 };
 

@@ -307,6 +307,17 @@
         "unknown": "Unknown",
         "undefined": "Unknown"
     },
+    "family": {
+        "father": "Father",
+        "mother": "Mother",
+        "guardian": "Guardian",
+        "stepfather": "Stepfather",
+        "stepmother": "Stepmother",
+        "grandfather": "Grandfather",
+        "grandmother": "Grandmother",
+        "uncle": "Uncle",
+        "aunt": "Aunt"
+    },
     "person": {
         "first_name": "First name",
         "last_name": "Last name",
@@ -964,17 +975,21 @@
         "title": "Title",
         "title_placeholder": "Enter grade title",
         "mark": "Grade",
+        "points": "Gained points",
         "class_average": "Class average",
         "class_rank": "Class rank",
         "marking_scale": "Grading scale",
         "percentage": "Percentage %",
         "mark_placeholder": "Grade, e.g.: 1, 1.5=1-, 2, 2-, 4, .., 5",
+        "points_placeholder": "Enter gained points, e.g.: 5.5",
         "quarter": "Quarter",
         "midterm_grade": "Quarter grade",
         "edit_column": "Edit column",
         "create_column": "Create column",
         "edit_mark": "Edit grade",
         "create_mark": "Create grade",
+        "edit_points": "Edit points",
+        "create_points": "Add points",
         "topic": "Title",
         "type": "Grading type",
         "types": {
@@ -1085,7 +1100,8 @@
             "edit": "Edit",
             "remove": "Delete",
             "no_subjects": "You have no grades in any subject. Predictor cannot be used!",
-            "already_editing_mark": "You cannot remove a grade you are currently editing."
+            "already_editing_mark": "You cannot remove a grade you are currently editing.",
+            "predicted": "Simulated"
         },
         "alerts": {
             "empty_topic": "Empty",
@@ -1304,6 +1320,8 @@
     "timetable": {
         "this_week": "This week",
         "next_week": "Next week",
+        "actual": "Actual timetable",
+        "weekly": "Weekly timetable",
         "permanent": "Permanent timetable",
         "free_time": "Free period",
         "end_class": "End of classes",
@@ -1511,6 +1529,7 @@
         "today": "Today",
         "tomorrow": "Tomorrow",
         "yesterday": "Yesterday",
+        "week_view": "Weekly overview",
         "total": "Total",
         "loading": "Loading substitutions...",
         "create": "Create substitution",
@@ -1523,7 +1542,8 @@
         "room": "Room",
         "search": "Search substitutions...",
         "no_substitutions": "No substitutions",
-        "no_substitutions_desc": "No substitutions recorded for selected day.",
+        "no_substitutions_desc": "No substitutions recorded for selected week.",
+        "date": "Date",
         "filters": {
             "all": "All substitutions",
             "by_type": "By type"
@@ -1633,7 +1653,13 @@
                 "sick_leave": "Sick leave",
                 "personal_leave": "Personal leave",
                 "unpaid_leave": "Unpaid leave",
-                "study_leave": "Study leave"
+                "study_leave": "Study leave",
+                "inability_to_work": "Inability to work",
+                "personal_obstacle": "Personal obstacle",
+                "education": "Education",
+                "school_event": "School event",
+                "business_trip": "Business trip",
+                "other": "Other"
             },
             "reason": "Reason (optional)"
         },
@@ -1687,7 +1713,8 @@
             "period": {
                 "today": "Today",
                 "week": "Week",
-                "month": "Month"
+                "month": "Month",
+                "custom": "Custom"
             },
             "loading": "Loading analytics...",
             "error": "Failed to load statistics.",
@@ -1710,7 +1737,17 @@
                 "unique": "Unique",
                 "avg_time": "Avg. time"
             },
-            "no_data": "No pages recorded yet."
+            "no_data": "No pages recorded yet.",
+            "uptime": {
+                "status": "Status",
+                "start": "Start",
+                "end": "End",
+                "duration": "Duration",
+                "version": "Version",
+                "note": "Note",
+                "no_data": "No uptime records found",
+                "no_beats": "No heartbeats recorded yet"
+            }
         },
         "schoolYears": {
             "title": "School years",
@@ -1810,6 +1847,10 @@
                 "finish": "Finish Installation"
             }
         }
+    },
+    "error": {
+        "no_permission_title": "No Permission",
+        "no_permission_desc": "You do not have sufficient permissions to view this page. If you believe this is an error, please contact the school system administrator."
     },
     "architecture": {
         "title": "Architecture Management",

@@ -258,7 +258,7 @@ const elysiaApp = new Elysia()
           return Response.json({timetable, substitution, absences});
       } else if (targetRoles?.teacher) {
         if (type == "person") {
-          const [timetableResult, substitutionResult] = await Promise.all([
+          const [timetableResult, substitutionResult, workingModesResult] = await Promise.all([
               db.selectFrom('timetable')
                   .innerJoin('subjects', 'timetable.subject_id', 'subjects.subject_id')
                   .leftJoin('groups', 'groups.group_id', 'timetable.group_id')
@@ -324,6 +324,18 @@ const elysiaApp = new Elysia()
                     eb('substitution.end_date', '>=', time.clone().startOf('isoWeek').toDate())
                   ])
                 )
+                .execute(),
+
+              db.selectFrom('employee_vacation_requests')
+                .select([
+                  'start_date',
+                  'end_date',
+                  'type'
+                ])
+                .where('teacher_id', '=', targetId)
+                .where('status', '=', 'approved')
+                .where('start_date', '<=', time.clone().endOf('isoWeek').format('YYYY-MM-DD'))
+                .where('end_date', '>=', time.clone().startOf('isoWeek').format('YYYY-MM-DD'))
                 .execute()
           ])
 
@@ -343,7 +355,7 @@ const elysiaApp = new Elysia()
             teacher: s.teacher_id ? teacherNameMap.get(s.teacher_id) : ''
           }));
 
-          return Response.json({timetable, substitution});
+          return Response.json({timetable, substitution, working_modes: workingModesResult});
         }
         else if (type == "class") {
           const [timetableResult, substitutionResult] = await Promise.all([

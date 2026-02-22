@@ -25,7 +25,17 @@ const app = new Elysia()
       .executeTakeFirst();
 
     if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
-    if (auth.role != "teacher") return { error: 'no_permission' };
+    if (auth.role == 'student') {
+      const studentGroupPerm = await db.selectFrom('student_groups')
+      .select([
+        'student_groups.group_id'
+      ])
+      .where('student_groups.student_id', '=', auth.person_id)
+      .where('student_groups.group_id', '=', group_id)
+      .executeTakeFirst();
+      if (!studentGroupPerm) return { error: 'no_permission' };
+    }
+    else if (auth.role != "teacher") return { error: 'no_permission' };
 
     /** 1️⃣ Najdeme MS pro skupinu + předmět */
     let msg = await db
@@ -101,11 +111,11 @@ const app = new Elysia()
       .select((eb) => [
         'marking_scales_groups.subject_id',
         'subjects.label as subject_name',
-        eb.fn.count('subject_id').as('count')
+        eb.fn.count('marking_scales_groups.subject_id').as('count')
       ])
       .where('ms_id', '=', scale.ms_id)
-      .groupBy('subject_id')
-      .orderBy(({ eb }) => eb.fn.count('subject_id'), 'desc')
+      .groupBy('marking_scales_groups.subject_id')
+      .orderBy(({ eb }) => eb.fn.count('marking_scales_groups.subject_id'), 'desc')
       .limit(1)
       .executeTakeFirst();
 

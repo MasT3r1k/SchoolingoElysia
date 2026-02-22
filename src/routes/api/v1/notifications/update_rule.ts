@@ -19,7 +19,7 @@ const app = new Elysia()
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!user?.person) return { error: 'no_user', details: 'no_db' };
+    if (!user?.person_id) return { error: 'no_user', details: 'no_db' };
 
     const { id } = params;
     const { type, conditions, enabled } = body as {

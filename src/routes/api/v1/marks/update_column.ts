@@ -6,7 +6,7 @@ const app = new Elysia().post(
   '/marks/update_column',
   async ({ cookie, body }) => {
     const token = cookie.token?.value as string;
-    const { group_id, subject_id, columnIndex, weight, type, topic } = body;
+    const { group_id, subject_id, columnIndex, weight, max_points, type, topic } = body;
 
     if (!token) {
       return Response.json({ error: 'no_user', details: 'no_cookie' });
@@ -57,10 +57,10 @@ const app = new Elysia().post(
     // Zkontroluj, zda už existuje sloupec
     const existingColumn = await db
       .selectFrom('grades_columns')
-      .select('gcId')
+      .select('column_id')
       .where('group_id', '=', group_id)
       .where('subject_id', '=', subject_id)
-      .where('columnIndex', '=', columnIndex)
+      .where('column_index', '=', columnIndex)
       .limit(1)
       .executeTakeFirst();
 
@@ -70,11 +70,12 @@ const app = new Elysia().post(
         .updateTable('grades_columns')
         .set({
           weight,
+          max_points: max_points || null,
           type,
           topic,
           status: 'active',
         })
-        .where('gcId', '=', existingColumn.gcId)
+        .where('column_id', '=', existingColumn.column_id)
         .execute();
 
       return Response.json(
@@ -85,6 +86,7 @@ const app = new Elysia().post(
             subject_id,
             columnIndex,
             weight,
+            max_points: max_points || null,
             type,
             topic
           },
@@ -96,10 +98,11 @@ const app = new Elysia().post(
       await db
         .insertInto('grades_columns')
         .values({
-          groupId: group_id,
-          subjectId: subject_id,
-          columnIndex,
+          group_id: group_id,
+          subject_id: subject_id,
+          column_index: columnIndex,
           weight,
+          max_points: max_points || null,
           type,
           topic,
           status: 'active',
@@ -114,6 +117,7 @@ const app = new Elysia().post(
             subject_id,
             columnIndex,
             weight,
+            max_points: max_points || null,
             type,
             topic
           },
@@ -128,6 +132,7 @@ const app = new Elysia().post(
       subject_id: t.Optional(t.Number()),
       columnIndex: t.Optional(t.Number()),
       weight: t.Optional(t.Number()),
+      max_points: t.Optional(t.Union([t.Number(), t.Null()])),
       type: t.Optional(t.Number()),
       topic: t.Optional(t.String()),
     }),

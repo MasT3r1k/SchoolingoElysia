@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_people_by_ids, format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const elysiaApp = new Elysia()
   .get('/students', async({ query, school }: any) => {
@@ -49,7 +49,31 @@ const elysiaApp = new Elysia()
             LEFT JOIN classbook c ON c.group_id = sg.group_id
             LEFT JOIN absence a ON a.lesson_id = c.classbook_id AND a.student_id = students.person_id
             WHERE sg.student_id = students.person_id
-        )`.as('absence_rate')
+        )`.as('absence_rate'),
+        sql<string>`(
+            SELECT ROUND(
+            CASE 
+                WHEN COUNT(DISTINCT c.classbook_id) = 0 THEN 0
+                ELSE (COUNT(CASE WHEN a.type != 2 THEN a.student_id END) * 100.0) / COUNT(DISTINCT c.classbook_id)
+            END, 
+            2)
+            FROM student_groups sg
+            LEFT JOIN classbook c ON c.group_id = sg.group_id
+            LEFT JOIN absence a ON a.lesson_id = c.classbook_id AND a.student_id = students.person_id
+            WHERE sg.student_id = students.person_id
+        )`.as('absence_rate_excused'),
+        sql<string>`(
+            SELECT ROUND(
+            CASE 
+                WHEN COUNT(DISTINCT c.classbook_id) = 0 THEN 0
+                ELSE (COUNT(CASE WHEN a.type = 2 THEN a.student_id END) * 100.0) / COUNT(DISTINCT c.classbook_id)
+            END, 
+            2)
+            FROM student_groups sg
+            LEFT JOIN classbook c ON c.group_id = sg.group_id
+            LEFT JOIN absence a ON a.lesson_id = c.classbook_id AND a.student_id = students.person_id
+            WHERE sg.student_id = students.person_id
+        )`.as('absence_rate_unexcused')
       ])
 
     // Apply Filters
@@ -117,12 +141,11 @@ const elysiaApp = new Elysia()
       .execute();
 
     const personIds = results.map(r => r.person_id).filter((id): id is number => id !== null);
-    const formattedNames = await format_people_by_ids(personIds);
-    const personNameMap = new Map(personIds.map((id, i) => [id, formattedNames[i]]));
+    const formattedNames = await format_person_map_by_ids(personIds);
 
     const data = results.map(r => ({
       ...r,
-      full_name: r.person_id ? personNameMap.get(r.person_id) : `${r.first_name} ${r.last_name}`
+      full_name: r.person_id ? formattedNames.get(r.person_id) : `${r.first_name} ${r.last_name}`
     }));
 
     return Response.json({

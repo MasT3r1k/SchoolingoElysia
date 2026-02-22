@@ -83,7 +83,7 @@ const app = new Elysia()
           eb.fn.count('marking_scales_groups.subject_id').as('count'),
         ])
         .where('ms_id', '=', ms_id)
-        .groupBy('subject_id')
+        .groupBy('marking_scales_groups.subject_id')
         .orderBy(({ eb }) => eb.fn.count('marking_scales_groups.subject_id'), 'desc')
         .limit(1)
         .executeTakeFirst();

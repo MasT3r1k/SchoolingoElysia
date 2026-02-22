@@ -42,7 +42,7 @@ const app = new Elysia()
       .orderBy('persons.first_name', 'asc')
       .execute();
 
-    const student_ids = students_ids_rows.map(row => row.student).filter((id): id is number => id !== null);
+    const student_ids = students_ids_rows.map(row => row.student_id).filter((id): id is number => id !== null);
     const student_names = await format_people_by_ids(student_ids);
     const student_name_map = new Map<number, string>();
     student_ids.forEach((id, index) => student_name_map.set(id, student_names[index]));
@@ -55,6 +55,7 @@ const app = new Elysia()
         'topic',
         'type',
         'weight',
+        'max_points',
         'created'
       ])
       .where('grades_columns.group_id', '=', body.group_id)
@@ -91,6 +92,7 @@ const app = new Elysia()
       topic: c.topic,
       type: c.type,
       weight: c.weight,
+      max_points: c.max_points,
       created: c.created,
     }));
 
@@ -112,7 +114,39 @@ const app = new Elysia()
       };
     });
 
-    return { columns, students: studentsWithMarks };
+    let msg = await db
+      .selectFrom("marking_scales_groups")
+      .select(['ms_id'])
+      .where('group_id', '=', body.group_id)
+      .where('subject_id', '=', body.subject_id)
+      .executeTakeFirst();
+      
+    let marking_scale = [ MainConfig.MARKING_SCALE[0], MainConfig.MARKING_SCALE[1], MainConfig.MARKING_SCALE[2], MainConfig.MARKING_SCALE[3], 0 ];
+    
+    if (msg) {
+        const scale = await db
+          .selectFrom("marking_scales")
+          .select([
+            'grade_1_min',
+            'grade_2_min',
+            'grade_3_min',
+            'grade_4_min'
+          ])
+          .where('ms_id', '=', msg.ms_id)
+          .executeTakeFirst();
+          
+        if (scale) {
+             marking_scale = [
+                Number(scale.grade_1_min ?? MainConfig.MARKING_SCALE[0]),
+                Number(scale.grade_2_min ?? MainConfig.MARKING_SCALE[1]),
+                Number(scale.grade_3_min ?? MainConfig.MARKING_SCALE[2]),
+                Number(scale.grade_4_min ?? MainConfig.MARKING_SCALE[3]),
+                0
+             ];
+        }
+    }
+
+    return { columns, students: studentsWithMarks, marking_scale };
   }, {
     body: t.Object({
       group_id: t.Number(),

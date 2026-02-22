@@ -12,13 +12,16 @@ const app = new Elysia()
 
         const { 
             group_id,
-            start_date, start_hour,
-            end_date, end_hour
+            start_date: start_date_str, start_hour,
+            end_date: end_date_str, end_hour
         } = body;
 
-        if (group_id == undefined || start_date == undefined || start_hour == undefined || end_date == undefined || end_hour == undefined) {
+        if (group_id == undefined || start_date_str == undefined || start_hour == undefined || end_date_str == undefined || end_hour == undefined) {
             return { error: 'missing_fields' };
         }
+
+        const start_date = moment(start_date_str, 'YYYY-MM-DD').toDate();
+        const end_date = moment(end_date_str, 'YYYY-MM-DD').toDate();
 
         try {
             await db.deleteFrom('substitution')
@@ -36,12 +39,12 @@ const app = new Elysia()
         }
     }, {
         body: t.Object({
-            group_id: t.Number(),
+            group_id: t.Optional(t.Nullable(t.Number())),
             subject_id: t.Optional(t.Nullable(t.Number())),
             teacher_id: t.Optional(t.Nullable(t.Number())),
-            start_date: t.Date(),
+            start_date: t.String(),
             start_hour: t.Number(),
-            end_date: t.Date(),
+            end_date: t.String(),
             end_hour: t.Number()
         })
     });

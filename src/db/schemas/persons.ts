@@ -10,4 +10,5 @@ export interface Persons {
   birthplace_id: Generated<number | null>
   address_id: Generated<number | null>
   insurance_id: Generated<number | null>
+  nationality_id: Generated<number | null>
 }

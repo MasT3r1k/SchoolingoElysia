@@ -44,13 +44,15 @@ function parseOS(userAgent: string | null): string {
 
 export default new Elysia({ prefix: '/admin/analytics' })
     .get('/stats', async ({ query, set }) => {
-        const period = query.period || 'day'; // day, week, month
+        const period = query.period || 'day'; // day, week, month, custom
         let dateCondition = sql<boolean>`DATE(timestamp) = CURRENT_DATE`;
 
         if (period === 'week') {
             dateCondition = sql<boolean>`timestamp >= NOW() - INTERVAL 7 DAY`;
         } else if (period === 'month') {
             dateCondition = sql<boolean>`timestamp >= NOW() - INTERVAL 30 DAY`;
+        } else if (period === 'custom' && query.from && query.to) {
+            dateCondition = sql<boolean>`DATE(timestamp) >= ${query.from} AND DATE(timestamp) <= ${query.to}`;
         }
 
         try {
@@ -225,6 +227,8 @@ export default new Elysia({ prefix: '/admin/analytics' })
     }, {
         query: t.Object({
             period: t.Optional(t.String()),
-            date: t.Optional(t.String())
+            date: t.Optional(t.String()),
+            from: t.Optional(t.String()),
+            to: t.Optional(t.String())
         })
     });
