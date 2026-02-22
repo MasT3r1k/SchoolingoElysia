@@ -315,7 +315,10 @@ const elysiaApp = new Elysia()
         result.recent_absences = recentAbsences;
       }
       if (show.includes('groups')) result.groups = groups;
-      if (show.includes('parents')) result.parents = parents;
+      if (show.includes('parents')) {
+        const parentNames = await format_person_map_by_ids(parents.map((parent) => (parent.id)));
+        result.parents = parents.map((parent) => ({...parent, fullName: parentNames.get(parent.id)}));
+      }
       if (show.includes('timetable')) {
         result.timetable = timetable;
         result.substitution = substitution;

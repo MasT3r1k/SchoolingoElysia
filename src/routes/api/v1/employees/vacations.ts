@@ -135,7 +135,7 @@ const vacationsRouter = new Elysia()
     const user = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
+      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.principal'])
       .where('tokens.token', '=', token)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -144,7 +144,7 @@ const vacationsRouter = new Elysia()
       return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
     }
     
-    const canViewAll = user.manager == 1;
+    const canViewAll = user.manager == -1 || user.principal;
     
     let queryBuilder = db.selectFrom('employee_vacation_requests')
       .leftJoin('teachers', 'employee_vacation_requests.teacher_id', 'teachers.person_id')

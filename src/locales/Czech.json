@@ -639,6 +639,11 @@
     "student_summary": {
         "title": "Přehled za školní rok %year%"
     },
+    "students": {
+        "phone": "Telefon",
+        "email": "Emailová adresa",
+        "parent": "Rodič"
+    },
     "documents": {
         "types": {
             "folder": "Složka",
