@@ -1616,7 +1616,20 @@
     "employees": {
         "list": "List",
         "attendance": "Attendance",
-        "vacations": "Vacations",
+        "vacations": {
+            "title": "Vacations",
+            "load_failed": "Failed to load vacations",
+            "load_balance_failed": "Failed to load vacation balance",
+            "balance_adjusted": "Vacation balance adjusted",
+            "adjust_failed": "Failed to adjust balance",
+            "confirm_approve": "Are you sure you want to approve this vacation request?",
+            "approved": "Vacation approved",
+            "approve_failed": "Failed to approve vacation",
+            "approve": "Approve",
+            "reject": "Reject",
+            "rejected": "Vacation rejected",
+            "reject_failed": "Failed to reject vacation"
+        },
         "salaries": "Salaries",
         "bonuses": "Bonuses",
         "overview": "Overview",
@@ -1661,7 +1674,24 @@
                 "business_trip": "Business trip",
                 "other": "Other"
             },
-            "reason": "Reason (optional)"
+            "reason": "Reason (optional)",
+            "total_days": "Number of days",
+            "current_balance": "Current balance",
+            "remaining_after": "Balance after approval",
+            "request_more_days": "Request more days",
+            "errors": {
+                "invalid_date": "The \"to\" date must be after the \"from\" date",
+                "insufficient_balance": "Vacation balance cannot be negative",
+                "insufficient_days": "You do not have enough vacation days remaining",
+                "unknown_error": "An unknown error occurred"
+            }
+        },
+        "reject_vacation": {
+            "title": "Reject Vacation",
+            "reason_label": "Rejection Reason",
+            "reason_placeholder": "Please provide a reason...",
+            "reason_hint": "The employee will see this reason in their overview.",
+            "confirm": "Reject Vacation"
         },
         "edit_attendance": {
             "title": "Edit attendance"

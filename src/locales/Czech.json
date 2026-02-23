@@ -1714,7 +1714,20 @@
     "employees": {
         "list": "Seznam",
         "attendance": "Docházka",
-        "vacations": "Dovolené",
+        "vacations": {
+            "title": "Dovolené",
+            "load_failed": "Nepodařilo se načíst dovolené",
+            "load_balance_failed": "Nepodařilo se načíst zůstatek dovolené",
+            "balance_adjusted": "Zůstatek dovolené byl upraven",
+            "adjust_failed": "Nepodařilo se upravit zůstatek",
+            "confirm_approve": "Opravdu chcete schválit tuto dovolenou?",
+            "approved": "Dovolená byla schválena",
+            "approve_failed": "Nepodařilo se schválit dovolenou",
+            "approve": "Schválit",
+            "reject": "Zamítnout",
+            "rejected": "Dovolená byla zamítnuta",
+            "reject_failed": "Nepodařilo se zamítnout dovolenou"
+        },
         "salaries": "Platy",
         "bonuses": "Prémie",
         "overview": "Přehled",
@@ -1759,7 +1772,24 @@
                 "business_trip": "Pracovní cesta",
                 "other": "Jiné"
             },
-            "reason": "Důvod (nepovinné)"
+            "reason": "Důvod (nepovinné)",
+            "total_days": "Počet dní",
+            "current_balance": "Stávající zůstatek",
+            "remaining_after": "Zůstatek po schválení",
+            "request_more_days": "Požádat o více dovolené",
+            "errors": {
+                "invalid_date": "Datum do musí být po datu od",
+                "insufficient_balance": "Zůstatek dovolené nesmí být záporný",
+                "insufficient_days": "Nemáte dostatek zbývajících dnů dovolené",
+                "unknown_error": "Nastala neznámá chyba"
+            }
+        },
+        "reject_vacation": {
+            "title": "Zamítnout dovolenou",
+            "reason_label": "Důvod zamítnutí",
+            "reason_placeholder": "Uveďte prosím důvod...",
+            "reason_hint": "Tento důvod uvidí zaměstnanec ve svém přehledu.",
+            "confirm": "Zamítnout dovolenou"
         },
         "edit_attendance": {
             "title": "Upravit docházku"

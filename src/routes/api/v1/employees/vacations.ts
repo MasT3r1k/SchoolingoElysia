@@ -86,7 +86,7 @@ const vacationsRouter = new Elysia()
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth || auth.manager != 1) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 403 });
+    if (!auth || auth.manager != -1) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 403 });
 
     const currentYear = new Date().getFullYear();
 
@@ -102,16 +102,16 @@ const vacationsRouter = new Elysia()
         .values({
             teacher_id: body.employeeId,
             year: currentYear,
-            entitlement: 25 + body.amount, // Default + adjustment
+            entitlement: body.amount,
             used: 0,
-            remaining: 25 + body.amount
+            remaining: body.amount
         })
         .execute();
     } else {
         await db.updateTable('employee_vacation_balance')
         .set({
-            entitlement: sql`entitlement + ${body.amount}`,
-            remaining: sql`remaining + ${body.amount}`
+            entitlement: body.amount,
+            remaining: sql`(${body.amount} - used)`
         } as any)
         .where('teacher_id', '=', body.employeeId)
         .where('year', '=', currentYear)

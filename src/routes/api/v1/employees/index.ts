@@ -14,16 +14,6 @@ const employeesRouter = new Elysia()
     .use(vacationsRouter)
     .use(salariesRouter)
     .use(bonusesRouter)
-  // GET /degrees - Get all degrees for selection
-  .get('/degrees', async() => {
-
-    const degrees = await db.selectFrom('degrees')
-      .selectAll()
-      .orderBy('weight', 'asc')
-      .execute();
-
-    return Response.json({ data: degrees });
-  })
   // POST /degrees - Create new degree (admin only)
   .post('/degrees', async({ body, cookie }) => {
     const token = cookie.token?.value as string;

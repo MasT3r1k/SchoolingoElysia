@@ -255,6 +255,54 @@ const attendanceRouter = new Elysia()
       notes: t.Optional(t.String()),
       approved: t.Optional(t.Boolean()),
     })
+  })
+  // POST /employees/attendance - Create attendance record (admin only)
+  .post('/employees/attendance', async({ body, cookie }) => {
+    const token = cookie.token?.value as string;
+    if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+    const auth = await db
+      .selectFrom('tokens')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', new Date())
+      .executeTakeFirst();
+
+    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+    
+    const canManage = auth.manager == -1;
+    if (!canManage) return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
+
+    await db.insertInto('employee_attendance')
+      .values({
+        teacher_id: body.teacher_id,
+        date: body.date,
+        check_in: body.checkIn,
+        check_out: body.checkOut,
+        break_minutes: body.breakMinutes || 0,
+        worked_minutes: body.workedMinutes || 0,
+        type: (body.type || 'regular') as any,
+        notes: body.notes || null,
+        approved: body.approved || false,
+        approved_by: body.approved ? auth.user_id : null,
+      })
+      .execute();
+
+    return Response.json({ success: true, message: 'Record created' });
+
+  }, {
+    body: t.Object({
+      teacher_id: t.Number(),
+      date: t.String(),
+      checkIn: t.String(),
+      checkOut: t.Optional(t.Nullable(t.String())),
+      breakMinutes: t.Optional(t.Number()),
+      workedMinutes: t.Optional(t.Number()),
+      type: t.Optional(t.String()),
+      notes: t.Optional(t.String()),
+      approved: t.Optional(t.Boolean()),
+    })
   });
 
 export default attendanceRouter;
