@@ -2,6 +2,7 @@ import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
+import moment from 'moment';
 
 const attendanceRouter = new Elysia()
   // GET /employees/attendance - Get attendance records
@@ -100,9 +101,9 @@ const attendanceRouter = new Elysia()
 
     if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
     
-    const now = new Date();
-    const today = now.toISOString().split('T')[0];
-    const timeNow = now.toTimeString().split(' ')[0].substring(0, 5); // HH:MM
+    const now = moment()
+    const today = now.format('YYYY-MM-DD');
+    const timeNow = now.format('HH:MM');
 
     // Check if already checked in today
     const existing = await db.selectFrom('employee_attendance')
@@ -156,9 +157,9 @@ const attendanceRouter = new Elysia()
 
     if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
     
-    const now = new Date();
-    const today = now.toISOString().split('T')[0];
-    const timeNow = now.toTimeString().split(' ')[0].substring(0, 5);
+    const now = moment()
+    const today = now.format('YYYY-MM-DD');
+    const timeNow = now.format('HH:MM');
 
     // Find recent record for today
     const existing = await db.selectFrom('employee_attendance')

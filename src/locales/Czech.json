@@ -333,6 +333,7 @@
         "last_name": "Přijmení",
         "full_name": "Jméno",
         "birthday": "Datum narození",
+        "age": "Věk",
         "gender": "Pohlaví"
     },
     "address": {
@@ -642,7 +643,37 @@
     "students": {
         "phone": "Telefon",
         "email": "Emailová adresa",
-        "parent": "Rodič"
+        "parent": "Rodič",
+        "add_student": "Přidat studenta",
+        "search_student": "Hledat studenta",
+        "student_filter": "Filtrování studentů",
+        "filter": "Filtrování",
+        "clear_filter": "Vymazat filtry",
+        "student": "Student",
+        "class": "Třída",
+        "all_classes": "Všechny třídy",
+        "field_of_study": "Obor",
+        "all_fields": "Všechny obory",
+        "average_grade": "Průměr známek",
+        "average": "Průměr",
+        "absence": "Absence (%)",
+        "edit_personal": "Upravit osobní údaje",
+        "add_parent": "Přidat existující zákonné zástupce",
+        "manage_parent": "Správa zákonných zástupců",
+        "tabs": {
+            "overview": "Přehled",
+            "personal": "Osobní údaje",
+            "parents": "Zákonní zástupci",
+            "academic": "Studium",
+            "matrika": "Matrika",
+            "medical": "Zdravotní",
+            "history": "Historie",
+            "marks": "Známky",
+            "notes": "Poznámky",
+            "evaluation": "Hodnocení",
+            "educational_measures": "Výchovná opatření",
+            "timetable": "Rozvrh"
+        }
     },
     "documents": {
         "types": {

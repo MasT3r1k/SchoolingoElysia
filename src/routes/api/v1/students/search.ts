@@ -36,8 +36,8 @@ const elysiaAp = new Elysia()
        queryBuilder = queryBuilder.where('classes.class_id', '=', body.classId);
     }
 
-    if (body.scope_id) {
-      queryBuilder = queryBuilder.where('classes.scope_id', '=', body.scope_id);
+    if (body.scopeId) {
+      queryBuilder = queryBuilder.where('classes.scope_id', '=', body.scopeId);
     }
     
     // Sort

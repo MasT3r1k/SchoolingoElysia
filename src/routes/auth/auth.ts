@@ -44,14 +44,14 @@ export async function authenticateUser(user_id: number, cookie: any, userAgent: 
 
         const checkToken = await db.selectFrom("tokens")
           .select([
-            sql`COUNT(*)`.as('count')
+            'tokens.token_id'
           ])
           .where('tokens.token', '=', tempToken)
           .limit(1)
           .executeTakeFirst()
         
 
-        if (!checkToken?.count) {
+        if (!checkToken) {
           dbToken = tempToken;
         }
       }
