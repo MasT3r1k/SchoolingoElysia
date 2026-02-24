@@ -108,6 +108,12 @@ import { InventoryTable } from './inventory'
 import { InventoryLogsTable } from './inventory_logs'
 import { SystemHeartbeatsTable } from './system_heartbeats'
 import { StudentMedicalRecordsTable } from './student_medical_records'
+import { PermissionsTable } from './permissions'
+import { RolesTable } from './roles'
+import { RolePermissionsTable } from './role_permissions'
+import { UserRolesTable } from './user_roles'
+import { UserPermissionsTable } from './user_permissions'
+
 
 
 export interface Database {
@@ -232,5 +238,11 @@ export interface Database {
   inventory_logs: InventoryLogsTable
   system_heartbeats: SystemHeartbeatsTable
   student_medical_records: StudentMedicalRecordsTable
+  permissions: PermissionsTable
+  roles: RolesTable
+  role_permissions: RolePermissionsTable
+  user_roles: UserRolesTable
+  user_permissions: UserPermissionsTable
 }
+
 

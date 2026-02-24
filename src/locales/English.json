@@ -201,6 +201,13 @@
             "google_smtp_server": "Google SMTP Server - login with OAuth2 authentication"
         },
         "changelog": "System changelog",
+        "employee_vacation_settings": "Vacation settings",
+        "employee_vacation_days_default": "Default vacation days (per year)",
+        "employee_vacation_requests_enabled": "Enable vacation requests",
+        "employee_attendance_enabled": "Enable attendance tracking",
+        "employee_salaries_enabled": "Enable salary display",
+        "module_features": "Module features",
+        "save_employees_settings": "Save employee settings",
         "school_name": "School name",
         "school_short_name": "School abbreviation",
         "school_code": "School code",
@@ -1191,7 +1198,9 @@
         "mark_as_read": "Mark as read",
         "marked_as_read": "Read",
         "details": "Message details",
-        "error_loading": "Failed to load message information"
+        "error_loading": "Failed to load message information",
+        "noticeboard_not_active_title": "Noticeboard is currently inactive",
+        "noticeboard_not_active_desc": "Noticeboard has been disabled by system administrator. Contact your school administrator for more information."
     },
     "settings": {
         "alerts": {

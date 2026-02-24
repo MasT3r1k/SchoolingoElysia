@@ -1,21 +1,18 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
-import { getAuthUser } from '../../../../utils/auth';
 import { format_people_by_ids, format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
 import moment from 'moment';
+import { permissions } from '../../../../middleware/permission.middleware';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+import { UnauthorizedError, ForbiddenError } from '../../../../utils/errors';
+
 
 const app = new Elysia()
-  .derive(async ({ cookie }) => ({
-      user: await getAuthUser(cookie?.token?.value as string)
-  }))
   // GET /system/users - List users with cursor-based pagination
+  .use(permissions(GlobalPermissions.USERS_VIEW))
   .get('/system/users', async ({ user, query }: any) => {
-    if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.is_principal && user.role !== 'admin_staff') {
-      return Response.json({ error: 'no_permission' }, { status: 403 });
-    }
 
     const { limit = 20, offset = 0, search = '', role = 'all', status = 'all' } = query;
 
@@ -111,11 +108,8 @@ const app = new Elysia()
   })
 
   // GET /system/users/:userId - Get a single user detail
+  .use(permissions(GlobalPermissions.USERS_VIEW))
   .get('/system/users/:userId', async ({ user, params }: any) => {
-    if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.is_principal && user.role !== 'admin_staff') {
-      return Response.json({ error: 'no_permission' }, { status: 403 });
-    }
 
     const userId = Number(params.userId);
     if (isNaN(userId)) return Response.json({ error: 'invalid_id' }, { status: 400 });
@@ -216,11 +210,8 @@ const app = new Elysia()
   })
 
   // PATCH /system/users/:userId - Update user details
+  .use(permissions(GlobalPermissions.USERS_EDIT))
   .patch('/system/users/:userId', async ({ user, params, body }: any) => {
-    if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.is_principal && user.role !== 'admin_staff') {
-      return Response.json({ error: 'no_permission' }, { status: 403 });
-    }
 
     const userId = Number(params.userId);
     if (isNaN(userId)) return Response.json({ error: 'invalid_id' }, { status: 400 });
@@ -277,11 +268,8 @@ const app = new Elysia()
   })
 
   // POST /system/users/:userId/reset-password - Reset user password
+  .use(permissions(GlobalPermissions.USERS_EDIT))
   .post('/system/users/:userId/reset-password', async ({ user, params, body }: any) => {
-    if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.is_principal && user.role !== 'admin_staff') {
-      return Response.json({ error: 'no_permission' }, { status: 403 });
-    }
 
     const userId = Number(params.userId);
     if (isNaN(userId)) return Response.json({ error: 'invalid_id' }, { status: 400 });

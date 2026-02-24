@@ -1,22 +1,14 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
-import { getAuthUser } from '../../../../utils/auth';
 import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { permissions } from '../../../../middleware/permission.middleware';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+
 
 const app = new Elysia()
-  .derive(async ({ cookie }) => ({
-      user: await getAuthUser(cookie?.token?.value as string)
-  }))
+  .use(permissions(GlobalPermissions.AUDIT_VIEW))
   .get('/system/audit', async ({ user, query }: any) => {
-    // Check permissions
-    if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    
-    // Allow admins, principals, and potentially others based on role logic
-    const allowedRoles = ['admin_staff', 'management'];
-    if (user.manager !== -1 && !user.is_principal && !allowedRoles.includes(user.role)) {
-      return Response.json({ error: 'no_permission' }, { status: 403 });
-    }
 
     const page = query.page ? parseInt(query.page) : 1;
     let limit = query.limit ? parseInt(query.limit) : 20;

@@ -1,24 +1,16 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
+import { permissions } from '../../../../middleware/permission.middleware';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+
 
 const bonusesRouter = new Elysia()
   // GET /employees/bonuses - Get bonuses
-  .get('/employees/bonuses', async({ query, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+  .use(permissions(GlobalPermissions.BONUSES_VIEW))
+  .get('/employees/bonuses', async({ user, query }: any) => {
 
     // Check permissions - only admins can view all
-    const canViewAll = auth.manager == -1;
+    const canViewAll = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
     
     let queryBuilder = db.selectFrom('employee_bonuses')
       .leftJoin('teachers', 'employee_bonuses.teacher_id', 'teachers.person_id')
@@ -38,7 +30,7 @@ const bonusesRouter = new Elysia()
 
     // Filter by employee
     if (!canViewAll) {
-      queryBuilder = queryBuilder.where('employee_bonuses.teacher_id', '=', auth.person_id);
+      queryBuilder = queryBuilder.where('employee_bonuses.teacher_id', '=', user.person_id);
     } else if (query.employeeId) {
       queryBuilder = queryBuilder.where('employee_bonuses.teacher_id', '=', query.employeeId);
     }
@@ -72,7 +64,7 @@ const bonusesRouter = new Elysia()
     if (!canViewAll) {
       const unpaid = await db.selectFrom('employee_bonuses')
         .select(db.fn.sum<number>('amount').as('total'))
-        .where('teacher_id', '=', auth.person_id)
+        .where('teacher_id', '=', user.person_id)
         .where('paid', '=', false)
         .executeTakeFirst();
       unpaidTotal = unpaid?.total || 0;
@@ -95,25 +87,9 @@ const bonusesRouter = new Elysia()
     })
   })
   // POST /employees/bonuses - Add bonus (admin only)
-  .post('/employees/bonuses', async({ body, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+  .use(permissions(GlobalPermissions.BONUSES_MANAGE))
+  .post('/employees/bonuses', async({ user, body }: any) => {
     
-    const canManage = auth.manager == -1;
-    
-    if (!canManage) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
 
     await db.insertInto('employee_bonuses')
       .values({
@@ -122,7 +98,7 @@ const bonusesRouter = new Elysia()
         amount: body.amount,
         type: body.type as any,
         reason: body.reason,
-        approved_by: auth.user_id,
+        approved_by: user.user_id,
         paid: false,
         paid_date: null,
       })
@@ -140,27 +116,10 @@ const bonusesRouter = new Elysia()
     })
   })
   // PUT /employees/bonuses/:id - Update bonus
-  .put('/employees/bonuses/:id', async({ params, body, cookie }) => {
+  .use(permissions(GlobalPermissions.BONUSES_MANAGE))
+  .put('/employees/bonuses/:id', async({ user, params, body }: any) => {
     const bonusId = parseInt(params.id);
     
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    
-    const canManage = auth.manager == -1;
-    
-    if (!canManage) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
 
     await db.updateTable('employee_bonuses')
       .set({
@@ -181,27 +140,10 @@ const bonusesRouter = new Elysia()
     })
   })
   // PUT /employees/bonuses/:id/paid - Mark as paid
-  .put('/employees/bonuses/:id/paid', async({ params, cookie }) => {
+  .use(permissions(GlobalPermissions.BONUSES_MANAGE))
+  .put('/employees/bonuses/:id/paid', async({ user, params }: any) => {
     const bonusId = parseInt(params.id);
     
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    
-    const canManage = auth.manager == -1;
-    
-    if (!canManage) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
 
     await db.updateTable('employee_bonuses')
       .set({
@@ -214,27 +156,10 @@ const bonusesRouter = new Elysia()
     return Response.json({ success: true, message: 'Bonus marked as paid' });
   })
   // DELETE /employees/bonuses/:id - Delete bonus (only if not paid)
-  .delete('/employees/bonuses/:id', async({ params, cookie }) => {
+  .use(permissions(GlobalPermissions.BONUSES_MANAGE))
+  .delete('/employees/bonuses/:id', async({ user, params }: any) => {
     const bonusId = parseInt(params.id);
     
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    
-    const canManage = auth.manager == -1;
-    
-    if (!canManage) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
 
     // Check if paid
     const bonus = await db.selectFrom('employee_bonuses')

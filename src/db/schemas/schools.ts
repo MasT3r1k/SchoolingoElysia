@@ -42,4 +42,18 @@ export interface schoolsTable {
   ico: string
   school_type: string
   izo: string
+  // Message settings
+  msg_max_length: number;
+  msg_attachments_max_count: number;
+  msg_attachments_max_size: number;
+  msg_type_private_active: number; // boolean
+  msg_type_official_active: number; // boolean
+  msg_type_noticeboard_active: number; // boolean
+  // Noticeboard settings
+  noticeboard_max_length: number;
+  // Employee settings
+  employee_vacation_days_default: number;
+  employee_vacation_requests_enabled: number;
+  employee_attendance_enabled: number;
+  employee_salaries_enabled: number;
 }

@@ -37,7 +37,12 @@ const elysiaApp = new Elysia()
             'schools.gdpr_email',
             'schools.gdpr_mobile',
             'schools.gdpr_databox',
-            'schools.gdpr_web'
+            'schools.gdpr_web',
+            'schools.msg_type_noticeboard_active',
+            'schools.employee_vacation_days_default',
+            'schools.employee_vacation_requests_enabled',
+            'schools.employee_attendance_enabled',
+            'schools.employee_salaries_enabled'
         ])
         .where('schools.school_id', '=', school.school_id)
         .executeTakeFirst(),

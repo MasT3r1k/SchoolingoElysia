@@ -1,11 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../database'
 import { sql } from 'kysely';
-import { rateLimit } from 'elysia-rate-limit'
-import { app } from '../../../index';
 import moment from 'moment';
-import { ip } from 'elysia-ip';
-import * as OTPAuth from "otpauth";
 import bcrypt from 'bcryptjs';
 import { verify_password } from '../../functions/verify_password';
 import { verifyTFA } from '../../functions/verifyTFA';
@@ -91,8 +87,8 @@ const elysiaApp = new Elysia()
 
         db.updateTable("users")
         .set('users.password_id', passwordId)
-        .set("users.passwordChanged", sql`NOW()`)
-        .set('users.recommendChangePassword', false)
+        .set("users.password_changed", sql`NOW()`)
+        .set('users.recommend_change_password', false)
         .where('users.user_id', '=', user.user_id)
         .limit(1)
         .execute();
@@ -101,11 +97,11 @@ const elysiaApp = new Elysia()
         .values({
           user_id: user.user_id,
           type: 'change_password',
-          data: {}
+          data: JSON.stringify({})
         });
 
         db.updateTable("tokens")
-        .set("tokens.password", passwordId)
+        .set("tokens.password_id", passwordId)
         .where('tokens.token', '=', token)
         .limit(1)
         .execute()

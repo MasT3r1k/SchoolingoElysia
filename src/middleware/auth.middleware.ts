@@ -14,7 +14,7 @@ export const auth = new Elysia()
     const session = await db
       .selectFrom('tokens')
       .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'tokens.expires', 'users.person_id', 'users.username', 'users.locale', 'users.principal', 'users.manager'])
+      .select(['tokens.user_id', 'tokens.expires', 'users.person_id', 'users.username', 'users.locale', 'users.principal', 'users.manager', 'users.role', 'users.school_id'])
       .where('tokens.token', '=', token as string)
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
@@ -54,8 +54,10 @@ export const auth = new Elysia()
             person_id: session.person_id,
             username: session.username,
             locale: session.locale,
-            isPrincipal: !!session.principal,
-            manager: session.manager // Passed as raw number/id for logic checks
+            is_principal: !!session.principal,
+            manager: session.manager, // Passed as raw number/id for logic checks
+            role: session.role,
+            school_id: session.school_id
         },
         session: session
     };

@@ -1,25 +1,21 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import moment from 'moment';
+import { permissions } from '../../../../middleware/permission.middleware';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+
 
 const salariesRouter = new Elysia()
   // GET /employees/salaries - Get salaries (admin/personnel only)
-  .get('/employees/salaries', async({ query, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+  .use(permissions(GlobalPermissions.SALARIES_VIEW))
+  .get('/employees/salaries', async({ user, school, query }: any) => {
+    // Check if salaries are enabled
+    if (!school.employee_salaries_enabled) {
+      return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
+    }
 
     // Check permissions - only admins can view all
-    const canView = auth.manager == -1;
+    const canView = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
     
     if (!canView) {
       return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
@@ -71,25 +67,13 @@ const salariesRouter = new Elysia()
     })
   })
   // POST /employees/salaries - Set salary (admin only)
-  .post('/employees/salaries', async({ body, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    
-    const canManage = auth.manager == -1;
-    
-    if (!canManage) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
+  .use(permissions(GlobalPermissions.SALARIES_MANAGE))
+  .post('/employees/salaries', async({ user, school, body }: any) => {
+    // Check if salaries are enabled
+    if (!school.employee_salaries_enabled) {
+      return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
     }
+    
 
     // End current salary if exists
     const today = new Date().toISOString().split('T')[0];
@@ -126,27 +110,14 @@ const salariesRouter = new Elysia()
     })
   })
   // PUT /employees/salaries/:id - Update salary (admin only)
-  .put('/employees/salaries/:id', async({ params, body, cookie }) => {
+  .use(permissions(GlobalPermissions.SALARIES_MANAGE))
+  .put('/employees/salaries/:id', async({ user, school, params, body }: any) => {
+    // Check if salaries are enabled
+    if (!school.employee_salaries_enabled) {
+      return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
+    }
     const salaryId = parseInt(params.id);
     
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    
-    const canManage = auth.manager == -1;
-    
-    if (!canManage) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
 
     await db.updateTable('teachers_salary')
       .set({
@@ -171,27 +142,15 @@ const salariesRouter = new Elysia()
     })
   })
   // GET /employees/salaries/history/:employeeId - Salary history (admin only)
-  .get('/employees/salaries/history/:employeeId', async({ params, cookie }) => {
+  .use(permissions(GlobalPermissions.SALARIES_VIEW))
+  .get('/employees/salaries/history/:employeeId', async({ user, school, params }: any) => {
+    // Check if salaries are enabled
+    if (!school.employee_salaries_enabled) {
+      return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
+    }
     const employeeId = parseInt(params.employeeId);
     
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    
-    const canView = auth.manager == -1;
-    
-    if (!canView) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
+    // Authorization already handled by middleware
 
     const history = await db.selectFrom('teachers_salary')
       .selectAll()

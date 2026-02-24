@@ -3,25 +3,20 @@ import { db } from "../../../../../database"
 import { sql } from 'kysely';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import moment from 'moment';
+import { permissions } from '../../../../middleware/permission.middleware';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+
 
 const attendanceRouter = new Elysia()
   // GET /employees/attendance - Get attendance records
-  .get('/employees/attendance', async({ query, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.principal'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-
+  .use(permissions(GlobalPermissions.ATTENDANCE_VIEW))
+  .get('/employees/attendance', async({ user, school, query }: any) => {
+    // Check if attendance is enabled
+    if (!school.employee_attendance_enabled) {
+      return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
+    }
     // Check permissions - only admins can view all
-    const canViewAll = auth.manager == -1 || auth.principal;
+    const canViewAll = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
     
     let queryBuilder = db.selectFrom('employee_attendance')
       .leftJoin('teachers', 'employee_attendance.teacher_id', 'teachers.person_id')
@@ -51,7 +46,7 @@ const attendanceRouter = new Elysia()
 
     // Filter by employee (if not admin, only show own records)
     if (!canViewAll) {
-      queryBuilder = queryBuilder.where('employee_attendance.teacher_id', '=', auth.person_id);
+      queryBuilder = queryBuilder.where('employee_attendance.teacher_id', '=', user.person_id);
     } else if (query.employeeId) {
       queryBuilder = queryBuilder.where('employee_attendance.teacher_id', '=', query.employeeId);
     }
@@ -87,19 +82,12 @@ const attendanceRouter = new Elysia()
     })
   })
   // POST /employees/attendance/checkin - Record check-in
-  .post('/employees/attendance/checkin', async({ body, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+  .use(permissions(GlobalPermissions.ATTENDANCE_VIEW)) // Basic view includes self checkin
+  .post('/employees/attendance/checkin', async({ user, school, body }: any) => {
+    // Check if attendance is enabled
+    if (!school.employee_attendance_enabled) {
+      return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
+    }
     
     const now = moment()
     const today = now.format('YYYY-MM-DD');
@@ -108,7 +96,7 @@ const attendanceRouter = new Elysia()
     // Check if already checked in today
     const existing = await db.selectFrom('employee_attendance')
       .select('attendance_id')
-      .where('teacher_id', '=', auth.person_id)
+      .where('teacher_id', '=', user.person_id)
       .where('date', '=', today)
       .where('check_out', 'is', null)
       .executeTakeFirst();
@@ -121,7 +109,7 @@ const attendanceRouter = new Elysia()
 
     await db.insertInto('employee_attendance')
       .values({
-        teacher_id: auth.person_id!,
+        teacher_id: user.person_id!,
         date: today,
         check_in: timeNow,
         check_out: null,
@@ -143,19 +131,12 @@ const attendanceRouter = new Elysia()
     })
   })
   // POST /employees/attendance/checkout - Record check-out
-  .post('/employees/attendance/checkout', async({ body, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+  .use(permissions(GlobalPermissions.ATTENDANCE_VIEW))
+  .post('/employees/attendance/checkout', async({ user, school, body }: any) => {
+    // Check if attendance is enabled
+    if (!school.employee_attendance_enabled) {
+      return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
+    }
     
     const now = moment()
     const today = now.format('YYYY-MM-DD');
@@ -164,7 +145,7 @@ const attendanceRouter = new Elysia()
     // Find recent record for today
     const existing = await db.selectFrom('employee_attendance')
       .select(['attendance_id', 'check_in', 'check_out'])
-      .where('teacher_id', '=', auth.person_id)
+      .where('teacher_id', '=', user.person_id)
       .where('date', '=', today)
       .orderBy(sql`check_out IS NULL`, 'desc')
       .orderBy('check_in', 'desc')
@@ -207,27 +188,15 @@ const attendanceRouter = new Elysia()
     })
   })
   // PUT /employees/attendance/:id - Update attendance record (admin only)
-  .put('/employees/attendance/:id', async({ params, body, cookie }) => {
+  .use(permissions(GlobalPermissions.ATTENDANCE_MANAGE))
+  .put('/employees/attendance/:id', async({ user, school, params, body }: any) => {
+    // Check if attendance is enabled
+    if (!school.employee_attendance_enabled) {
+      return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
+    }
     const attendanceId = parseInt(params.id);
     
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    
-    const canManage = auth.manager == -1;
-    
-    if (!canManage) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
+    // Check permissions - manual check removed as middleware handles it
 
     await db.updateTable('employee_attendance')
       .set({
@@ -238,7 +207,7 @@ const attendanceRouter = new Elysia()
         type: body.type as any,
         notes: body.notes,
         approved: body.approved,
-        approved_by: body.approved ? auth.user_id : null,
+        approved_by: body.approved ? user.user_id : null,
       })
       .where('attendance_id', '=', attendanceId)
       .execute();
@@ -257,22 +226,12 @@ const attendanceRouter = new Elysia()
     })
   })
   // POST /employees/attendance - Create attendance record (admin only)
-  .post('/employees/attendance', async({ body, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    
-    const canManage = auth.manager == -1;
-    if (!canManage) return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
+  .use(permissions(GlobalPermissions.ATTENDANCE_MANAGE))
+  .post('/employees/attendance', async({ user, school, body }: any) => {
+    // Check if attendance is enabled
+    if (!school.employee_attendance_enabled) {
+      return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
+    }
 
     await db.insertInto('employee_attendance')
       .values({
@@ -285,7 +244,7 @@ const attendanceRouter = new Elysia()
         type: (body.type || 'regular') as any,
         notes: body.notes || null,
         approved: body.approved || false,
-        approved_by: body.approved ? auth.user_id : null,
+        approved_by: body.approved ? user.user_id : null,
       })
       .execute();
 

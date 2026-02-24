@@ -1,26 +1,18 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
+import { permissions } from '../../../../middleware/permission.middleware';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+
 
 const vacationsRouter = new Elysia()
   // GET /employees/vacations/balance - Get vacation balance
-  .get('/employees/vacations/balance', async({ query, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.principal'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+  .use(permissions(GlobalPermissions.VACATIONS_VIEW))
+  .get('/employees/vacations/balance', async({ user, school, query }: any) => {
     
-    const canViewAll = auth.manager == -1 || auth.principal == true;
+    const canViewAll = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
     
-    const employeeId = canViewAll && query.employeeId ? query.employeeId : auth.person_id;
+    const employeeId = canViewAll && query.employeeId ? query.employeeId : user.person_id;
     const year = query.year || new Date().getFullYear();
 
     let balance = await db.selectFrom('employee_vacation_balance')
@@ -30,8 +22,8 @@ const vacationsRouter = new Elysia()
       .executeTakeFirst();
 
     if (!balance && employeeId) {
-      // Auto-assign default vacation days (25 days)
-      const defaultEntitlement = 25;
+      // Auto-assign default vacation days from school settings
+      const defaultEntitlement = school.employee_vacation_days_default ?? 25;
       
       try {
         await db.insertInto('employee_vacation_balance')
@@ -74,19 +66,8 @@ const vacationsRouter = new Elysia()
     })
   })
   // POST /employees/vacations/balance/adjust - Adjust vacation entitlement (Admin only)
-  .post('/employees/vacations/balance/adjust', async({ body, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth || auth.manager != -1) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 403 });
+  .use(permissions(GlobalPermissions.VACATIONS_MANAGE))
+  .post('/employees/vacations/balance/adjust', async({ user, body }: any) => {
 
     const currentYear = new Date().getFullYear();
 
@@ -128,23 +109,10 @@ const vacationsRouter = new Elysia()
     })
   })
   // GET /employees/vacations/requests - Get vacation requests
-  .get('/employees/vacations/requests', async({ query, store, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const user = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.principal'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
+  .use(permissions(GlobalPermissions.VACATIONS_VIEW))
+  .get('/employees/vacations/requests', async({ user, query }: any) => {
     
-    if (!user) {
-      return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    }
-    
-    const canViewAll = user.manager == -1 || user.principal;
+    const canViewAll = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
     
     let queryBuilder = db.selectFrom('employee_vacation_requests')
       .leftJoin('teachers', 'employee_vacation_requests.teacher_id', 'teachers.person_id')
@@ -199,19 +167,12 @@ const vacationsRouter = new Elysia()
     })
   })
   // POST /employees/vacations/request - Create vacation request
-  .post('/employees/vacations/request', async({ body, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+  .use(permissions(GlobalPermissions.VACATIONS_VIEW))
+  .post('/employees/vacations/request', async({ user, school, body }: any) => {
+    // Check if vacation requests are enabled
+    if (!school.employee_vacation_requests_enabled) {
+      return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
+    }
     
     // Calculate number of days
     let diffDays = 0;
@@ -230,7 +191,7 @@ const vacationsRouter = new Elysia()
       const year = new Date(body.startDate).getFullYear();
       const balance = await db.selectFrom('employee_vacation_balance')
         .select('remaining')
-        .where('teacher_id', '=', auth.person_id)
+        .where('teacher_id', '=', user.person_id)
         .where('year', '=', year)
         .executeTakeFirst();
 
@@ -245,7 +206,7 @@ const vacationsRouter = new Elysia()
 
     await db.insertInto('employee_vacation_requests')
       .values({
-        teacher_id: auth.person_id!,
+        teacher_id: user.person_id!,
         start_date: body.startDate,
         end_date: body.endDate,
         days: diffDays,
@@ -273,28 +234,11 @@ const vacationsRouter = new Elysia()
     })
   })
   // PUT /employees/vacations/request/:id/approve - Approve request
-  .put('/employees/vacations/request/:id/approve', async({ params, cookie }) => {
+  .use(permissions(GlobalPermissions.VACATIONS_MANAGE))
+  .put('/employees/vacations/request/:id/approve', async({ user, params }: any) => {
     const requestId = parseInt(params.id);
     
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.principal'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    
-    // Authorization check
-    const canManage = auth.manager == -1 || auth.principal;
-    
-    if (!canManage) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
+    // Authorization check removed as handled by middleware
 
     // Get request details
     const request = await db.selectFrom('employee_vacation_requests')
@@ -310,7 +254,7 @@ const vacationsRouter = new Elysia()
     await db.updateTable('employee_vacation_requests')
       .set({
         status: 'approved',
-        approved_by: auth.user_id,
+        approved_by: user.user_id,
         approved_at: new Date(),
       })
       .where('request_id', '=', requestId)
@@ -334,33 +278,17 @@ const vacationsRouter = new Elysia()
     return Response.json({ success: true, message: 'Request approved' });
   })
   // PUT /employees/vacations/request/:id/reject - Reject request
-  .put('/employees/vacations/request/:id/reject', async({ params, body, cookie }) => {
+  .use(permissions(GlobalPermissions.VACATIONS_MANAGE))
+  .put('/employees/vacations/request/:id/reject', async({ user, params, body }: any) => {
     const requestId = parseInt(params.id);
     
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.principal'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    
-    const canManage = auth.manager == -1 || auth.principal;
-    
-    if (!canManage) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
+    // Authorization check already handled by middleware
 
     await db.updateTable('employee_vacation_requests')
       .set({
         status: 'rejected',
         reason: body.reason || null,
-        approved_by: auth.user_id,
+        approved_by: user.user_id,
         approved_at: new Date(),
       })
       .where('request_id', '=', requestId)

@@ -1,17 +1,15 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
-import { getAuthUser } from '../../../../utils/auth';
+import { permissions } from '../../../../middleware/permission.middleware';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+
 
 const app = new Elysia()
   // GET /system - Načtení všech systémových nastavení
-  .get('/system', async ({ user, school }: any) => {
-    if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
+  .use(permissions(GlobalPermissions.SYSTEM_STATUS))
+  .get('/system', async ({ school }: any) => {
     if (!school) return Response.json({ error: 'no_school' }, { status: 404 });
-    
-    if (user.manager !== -1 && !user.is_principal) {
-      return Response.json({ error: 'no_permission' }, { status: 403 });
-    }
 
     const schoolId = school.school_id;
 
@@ -54,8 +52,20 @@ const app = new Elysia()
           'schools.gdpr_phone',
           'schools.gdpr_email',
           'schools.gdpr_mobile',
+          'schools.gdpr_mobile',
           'schools.gdpr_databox',
           'schools.gdpr_web',
+          'schools.msg_max_length',
+          'schools.msg_attachments_max_count',
+          'schools.msg_attachments_max_size',
+          'schools.msg_type_private_active',
+          'schools.msg_type_official_active',
+          'schools.msg_type_noticeboard_active',
+          'schools.noticeboard_max_length',
+          'schools.employee_vacation_days_default',
+          'schools.employee_vacation_requests_enabled',
+          'schools.employee_attendance_enabled',
+          'schools.employee_salaries_enabled',
         ])
         .where('schools.school_id', '=', schoolId)
         .limit(1)
@@ -143,16 +153,14 @@ const app = new Elysia()
       student_count,
       subjects,
       scopes,
-      domains: domains || []
+      domains: domains || [],
+      communication_permissions: await db.selectFrom('role_communication_permissions').selectAll().execute()
     });
   })
 
   // GET /system/scope - Načtení předmětů pro konkrétní obor
-  .get('/system/scope', async ({ user, query }: any) => {
-    if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.is_principal) {
-      return Response.json({ error: 'no_permission' }, { status: 403 });
-    }
+  .use(permissions(GlobalPermissions.SYSTEM_STATUS))
+  .get('/system/scope', async ({ query }: any) => {
 
     if (query.scope_id === undefined) {
       return Response.json({ error: 'invalid_query' }, { status: 400 });

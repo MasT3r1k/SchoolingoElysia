@@ -1,12 +1,13 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
+import { permissions } from '../../../../middleware/permission.middleware';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+
 
 const app = new Elysia({ prefix: '/school' })
-    .get('/architecture/overview', async ({ school, user }: any) => {
-        if (!user || (!user.is_principal && user.manager != -1)) {
-            return { error: 'unauthorized', status: 401 };
-        }
+    .use(permissions(GlobalPermissions.ARCHITECTURE_VIEW))
+    .get('/architecture/overview', async ({ school }: any) => {
         if (!school) return { error: 'school_not_found', status: 412 };
 
         const stats = await Promise.all([
@@ -39,8 +40,7 @@ const app = new Elysia({ prefix: '/school' })
     })
 
     // Buildings CRUD
-    .get('/architecture/buildings', async ({ school, user }: any) => {
-        if (!user) return { error: 'unauthorized', status: 401 };
+    .get('/architecture/buildings', async ({ school }: any) => {
         if (!school) return { error: 'school_not_found', status: 412 };
 
         const buildings = await db.selectFrom('buildings')
@@ -50,8 +50,8 @@ const app = new Elysia({ prefix: '/school' })
 
         return { buildings };
     })
-    .post('/architecture/buildings', async ({ body, school, user }: any) => {
-        if (!user || (!user.is_principal && user.manager != -1)) return { error: 'unauthorized', status: 401 };
+    .use(permissions(GlobalPermissions.ARCHITECTURE_EDIT))
+    .post('/architecture/buildings', async ({ body, school }: any) => {
         if (!school) return { error: 'school_not_found', status: 412 };
 
         const { building_id, name, type } = body;
@@ -86,8 +86,7 @@ const app = new Elysia({ prefix: '/school' })
     })
 
     // Floors
-    .get('/architecture/buildings/:id/floors', async ({ params, school, user }: any) => {
-        if (!user) return { error: 'unauthorized', status: 401 };
+    .get('/architecture/buildings/:id/floors', async ({ params, school }: any) => {
         
         const floors = await db.selectFrom('building_floors')
             .innerJoin('buildings', 'buildings.building_id', 'building_floors.building_id')
@@ -99,8 +98,7 @@ const app = new Elysia({ prefix: '/school' })
 
         return { floors };
     })
-    .post('/architecture/floors', async ({ body, school, user }: any) => {
-        if (!user || (!user.is_principal && user.manager != -1)) return { error: 'unauthorized', status: 401 };
+    .post('/architecture/floors', async ({ body, school }: any) => {
 
         const { bf_id, building_id, level, floor_plan } = body;
 
@@ -139,8 +137,7 @@ const app = new Elysia({ prefix: '/school' })
     })
 
     // Rooms
-    .get('/architecture/floors/:id/rooms', async ({ params, school, user }: any) => {
-        if (!user) return { error: 'unauthorized', status: 401 };
+    .get('/architecture/floors/:id/rooms', async ({ params, school }: any) => {
 
         const rooms = await db.selectFrom('building_rooms')
             .innerJoin('building_floors', 'building_floors.bf_id', 'building_rooms.floor_id')
@@ -164,8 +161,7 @@ const app = new Elysia({ prefix: '/school' })
 
         return { rooms };
     })
-    .post('/architecture/rooms', async ({ body, school, user }: any) => {
-        if (!user || (!user.is_principal && user.manager != -1)) return { error: 'unauthorized', status: 401 };
+    .post('/architecture/rooms', async ({ body, school }: any) => {
 
         const { br_id, floor_id, name, type, description, manager, capacity, pos_x, pos_y } = body;
 
@@ -210,8 +206,7 @@ const app = new Elysia({ prefix: '/school' })
     })
 
     // Rooms All
-    .get('/architecture/rooms', async ({ school, user }: any) => {
-        if (!user) return { error: 'unauthorized', status: 401 };
+    .get('/architecture/rooms', async ({ school }: any) => {
 
         const rooms = await db.selectFrom('building_rooms')
             .innerJoin('building_floors', 'building_floors.bf_id', 'building_rooms.floor_id')
@@ -236,8 +231,7 @@ const app = new Elysia({ prefix: '/school' })
 
         return { rooms };
     })
-    .delete('/architecture/rooms/:id', async ({ params, school, user }: any) => {
-        if (!user || (!user.is_principal && user.manager != -1)) return { error: 'unauthorized', status: 401 };
+    .delete('/architecture/rooms/:id', async ({ params }: any) => {
         
         await db.deleteFrom('building_rooms')
             .where('room_id', '=', Number(params.id))
@@ -246,8 +240,7 @@ const app = new Elysia({ prefix: '/school' })
     })
 
     // Floors All
-    .get('/architecture/floors-all', async ({ school, user }: any) => {
-        if (!user) return { error: 'unauthorized', status: 401 };
+    .get('/architecture/floors-all', async ({ school }: any) => {
 
         const floors = await db.selectFrom('building_floors')
             .innerJoin('buildings', 'buildings.building_id', 'building_floors.building_id')
@@ -258,8 +251,7 @@ const app = new Elysia({ prefix: '/school' })
         return { floors };
     })
     
-    .delete('/architecture/buildings/:id', async ({ params, school, user }: any) => {
-        if (!user || (!user.is_principal && user.manager != -1)) return { error: 'unauthorized', status: 401 };
+    .delete('/architecture/buildings/:id', async ({ params, school }: any) => {
         await db.deleteFrom('buildings')
             .where('building_id', '=', Number(params.id))
             .where('school_id', '=', school.school_id)
@@ -268,8 +260,7 @@ const app = new Elysia({ prefix: '/school' })
     })
 
     // Supervision Places (Hallways/etc)
-    .get('/architecture/hallways', async ({ school, user }: any) => {
-        if (!user) return { error: 'unauthorized', status: 401 };
+    .get('/architecture/hallways', async ({ school }: any) => {
         if (!school) return { error: 'school_not_found', status: 412 };
 
         const hallways = await db.selectFrom('supervision_places')
@@ -279,8 +270,7 @@ const app = new Elysia({ prefix: '/school' })
 
         return { hallways };
     })
-    .post('/architecture/hallways', async ({ body, school, user }: any) => {
-        if (!user || (!user.is_principal && user.manager != -1)) return { error: 'unauthorized', status: 401 };
+    .post('/architecture/hallways', async ({ body, school }: any) => {
         if (!school) return { error: 'school_not_found', status: 412 };
 
         const { placeId, name, description } = body;

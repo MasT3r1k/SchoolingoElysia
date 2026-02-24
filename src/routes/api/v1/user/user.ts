@@ -6,6 +6,8 @@ import { calculateLevelFromXP, calculatestartXPFromLevel, calculateXPForNextLeve
 import { createResponse, createErrorResponse } from '../../../../utils/response.helper';
 import { logger } from '../../../../utils/logger';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
+import { PermissionService } from '../../../../functions/permission.service';
+
 
 const app = new Elysia()
   .get('/user', async ({ cookie, headers }) => {
@@ -197,6 +199,11 @@ const app = new Elysia()
     .where(sql`DATE_ADD(sy.start, INTERVAL scopes.years YEAR)`, '>=', sql`CURDATE()`)
     .groupBy('classes.class_id')
     .execute()
+
+    // Add Roles and Permissions
+    user.roles = (await PermissionService.getUserRoles(tokenDB.user_id)).map(r => r.role_key);
+    user.permissions = await PermissionService.getUserPermissions(tokenDB.user_id);
+
 
     delete user.levels_exp;
 

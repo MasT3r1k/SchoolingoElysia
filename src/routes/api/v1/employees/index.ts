@@ -3,6 +3,9 @@ import { db } from "../../../../../database"
 import { sql } from 'kysely';
 import { format_people_by_ids, format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
+import { permissions } from '../../../../middleware/permission.middleware';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+
 
 import attendanceRouter from './attendance';
 import vacationsRouter from './vacations';
@@ -15,23 +18,8 @@ const employeesRouter = new Elysia()
     .use(salariesRouter)
     .use(bonusesRouter)
   // POST /degrees - Create new degree (admin only)
-  .post('/degrees', async({ body, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-
-    if (auth.manager != -1) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
+  .use(permissions(GlobalPermissions.EMPLOYEES_EDIT))
+  .post('/degrees', async({ body }) => {
 
     const result = await db.insertInto('degrees')
       .values({
@@ -63,22 +51,10 @@ const employeesRouter = new Elysia()
     })
   })
   // GET /employees - List all employees (teachers)
-  .get('/employees', async({ query, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.school_id', 'users.principal'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-
+  .use(permissions(GlobalPermissions.EMPLOYEES_VIEW))
+  .get('/employees', async({ user, query }: any) => {
     // Check permissions - only admins can view all
-    const canViewAll = auth.manager == -1 || auth.principal;
+    const canViewAll = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
     
     let queryBuilder = db.selectFrom('teachers')
       .leftJoin('persons', 'teachers.person_id', 'persons.person_id')
@@ -95,8 +71,8 @@ const employeesRouter = new Elysia()
         'teachers.contract_type',
       ])
       .where((eb) => eb.or([
-        eb('users.school_id', '=', auth.school_id),
-        eb('teachers.school_id', '=', auth.school_id)
+        eb('users.school_id', '=', user.school_id),
+        eb('teachers.school_id', '=', user.school_id)
       ]))
 
     // Search by name
@@ -110,7 +86,7 @@ const employeesRouter = new Elysia()
 
     // If not admin, only show self
     if (!canViewAll) {
-      queryBuilder = queryBuilder.where('teachers.person_id', '=', auth.person_id);
+      queryBuilder = queryBuilder.where('teachers.person_id', '=', user.person_id);
     }
 
     // Sort
@@ -143,8 +119,8 @@ const employeesRouter = new Elysia()
       data,
       meta: {
         total,
-        page: Math.floor(query.offset! / query.limit!) + 1,
-        limit: query.limit!
+        limit: query.limit!,
+        offset: query.offset!
       }
     });
 
@@ -156,26 +132,14 @@ const employeesRouter = new Elysia()
     })
   })
   // GET /employees/:id - Employee detail
-  .get('/employees/:id', async({ params, cookie }) => {
+  .use(permissions(GlobalPermissions.EMPLOYEES_VIEW))
+  .get('/employees/:id', async({ user, params }: any) => {
     const employeeId = parseInt(params.id);
     
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.school_id'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-
     // Check permissions - only admins can view all
-    const canViewAll = auth.manager == -1;
+    const canViewAll = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
     
-    if (!canViewAll && auth.person_id !== employeeId) {
+    if (!canViewAll && user.person_id !== employeeId) {
       return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
     }
 
@@ -193,7 +157,7 @@ const employeesRouter = new Elysia()
         sql<string>`DATE_FORMAT(persons.birthday, '%Y-%m-%d')`.as('date_of_birth'),
       ])
       .where('teachers.person_id', '=', employeeId)
-      .where('teachers.school_id', '=', auth.school_id)
+      .where('teachers.school_id', '=', user.school_id)
       .executeTakeFirst();
 
     if (!employeeResult) {
@@ -229,24 +193,8 @@ const employeesRouter = new Elysia()
     });
   })
   // POST /employees - Create new employee (admin only)
-  .post('/employees', async({ body, cookie }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.school_id'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-
-    // Only admins can create employees
-    if (auth.manager != -1) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
+  .use(permissions(GlobalPermissions.EMPLOYEES_EDIT))
+  .post('/employees', async({ user, body }: any) => {
 
     // Create person first
     const personResult = await db.insertInto('persons')
@@ -310,7 +258,7 @@ const employeesRouter = new Elysia()
         cabinet_id: body.cabinet || null,
         department: body.department || null,
         contract_type: body.contractType || null,
-        school_id: auth.school_id!
+        school_id: user.school_id!
       })
       .execute();
 
@@ -342,32 +290,15 @@ const employeesRouter = new Elysia()
     })
   })
   // PUT /employees/:id - Update employee (admin only)
-  .put('/employees/:id', async({ params, body, cookie }) => {
+  .use(permissions(GlobalPermissions.EMPLOYEES_EDIT))
+  .put('/employees/:id', async({ user, params, body }: any) => {
     const employeeId = parseInt(params.id);
-    
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.school_id'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    
-    // Only admins can update employees
-    if (auth.manager != -1) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
 
     // Check if employee exists
     const employee = await db.selectFrom('teachers')
       .select('person_id')
       .where('person_id', '=', employeeId)
-      .where('teachers.school_id', '=', auth.school_id!)
+      .where('teachers.school_id', '=', user.school_id!)
       .executeTakeFirst();
 
     if (!employee) {
@@ -383,7 +314,7 @@ const employeesRouter = new Elysia()
         contract_type: body.contractType,
       })
       .where('person_id', '=', employeeId)
-      .where('school_id', '=', auth.school_id!)
+      .where('school_id', '=', user.school_id!)
       .execute();
 
     return Response.json({ success: true, message: 'Employee updated' });
@@ -397,32 +328,15 @@ const employeesRouter = new Elysia()
     })
   })
   // DELETE /employees/:id - Remove employee (admin only)
-  .delete('/employees/:id', async({ params, cookie }) => {
+  .use(permissions(GlobalPermissions.EMPLOYEES_EDIT))
+  .delete('/employees/:id', async({ user, params }: any) => {
     const employeeId = parseInt(params.id);
-    
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.manager', 'users.school_id'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
-    
-    // Only admins can delete employees
-    if (auth.manager != -1) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
 
     // Check if employee exists
     const employee = await db.selectFrom('teachers')
       .select('person_id')
       .where('person_id', '=', employeeId)
-      .where('teachers.school_id', '=', auth.school_id!)
+      .where('teachers.school_id', '=', user.school_id!)
       .executeTakeFirst();
 
     if (!employee) {
@@ -432,7 +346,7 @@ const employeesRouter = new Elysia()
     // Delete from teachers table
     await db.deleteFrom('teachers')
       .where('person_id', '=', employeeId)
-      .where('school_id', '=', auth.school_id!)
+      .where('school_id', '=', user.school_id!)
       .execute();
 
     return Response.json({ success: true, message: 'Employee removed' });

@@ -40,11 +40,20 @@ const app = new Elysia()
                 .execute()
         ]);
 
+        const config = {
+            min_length: SecurityConfig.PASSWORD_MIN_LENGTH,
+            max_length: SecurityConfig.PASSWORD_MAX_LENGTH,
+            require_capital: SecurityConfig.PASSWORD_REQUIRE_CAPITAL_LETTER,
+            require_lowercase: SecurityConfig.PASSWORD_REQUIRE_LOWERCASE_LETTER,
+            require_number: SecurityConfig.PASSWORD_REQUIRE_NUMBER,
+            require_special: SecurityConfig.PASSWORD_REQUIRE_SPECIAL_CHARACTER
+        }
+
         if (!user) {
             return Response.json({ error: 'no_user', details: 'no_db' });
         }
 
-        return Response.json({...user, passkeys});
+        return Response.json({...user, config, passkeys});
     })
 
     .post('/security', async ({ cookie, body, store }: any) => {

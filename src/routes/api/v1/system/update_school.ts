@@ -3,24 +3,25 @@ import { db } from '../../../../../database';
 import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia()
-  .derive(async ({ cookie }) => ({
-      user: await getAuthUser(cookie?.token?.value as string)
-  }))
   // POST /system/update_school - Aktualizace nastavení školy
-  .post('/system/update_school', async ({ user, body }) => {
+  .post('/system/update_school', async ({ user, school, body }: any) => {
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
+    if (!school) return Response.json({ error: 'no_school' }, { status: 404 });
+    
     if (user.manager !== -1 && !user.is_principal) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
-    const { 
-      name, shortcut, district, lesson_start, lesson_length, break_time, warn_absence, fastlogin, resetPasswordWithEmail, country, red_izo, ico, school_type, izo, 
+    const {
+      name, shortcut, district, lesson_start, lesson_length, break_time, warn_absence, fastlogin, resetPasswordWithEmail, country, red_izo, ico, school_type, izo,
       modules,
-      gdpr_firstname, gdpr_lastname, gdpr_phone, gdpr_email, gdpr_mobile, gdpr_databox, gdpr_web
+      gdpr_firstname, gdpr_lastname, gdpr_phone, gdpr_email, gdpr_mobile, gdpr_databox, gdpr_web,
+      msg_max_length, msg_attachments_max_count, msg_attachments_max_size, msg_type_private_active, msg_type_official_active, msg_type_noticeboard_active, noticeboard_max_length,
+      employee_vacation_days_default, employee_vacation_requests_enabled, employee_attendance_enabled, employee_salaries_enabled
     } = body;
 
     // Parse lesson_start (HH:MM) to hours and minutes
-    const [startHour, startMinute] = lesson_start.split(':').map(Number);
+    const [startHour, startMinute] = (lesson_start || '00:00').split(':').map(Number);
 
     // Find district ID
     let districtId: number | null = null;
@@ -57,8 +58,21 @@ const app = new Elysia()
         gdpr_email: gdpr_email || '',
         gdpr_mobile: gdpr_mobile || '',
         gdpr_databox: gdpr_databox || '',
-        gdpr_web: gdpr_web || ''
+        gdpr_web: gdpr_web || '',
+        // Message settings
+        msg_max_length: msg_max_length ?? 3000,
+        msg_attachments_max_count: msg_attachments_max_count ?? 10,
+        msg_attachments_max_size: msg_attachments_max_size ?? 20,
+        msg_type_private_active: msg_type_private_active ? 1 : 0,
+        msg_type_official_active: msg_type_official_active ? 1 : 0,
+        msg_type_noticeboard_active: msg_type_noticeboard_active ? 1 : 0,
+        noticeboard_max_length: noticeboard_max_length ?? 5000,
+        employee_vacation_days_default: employee_vacation_days_default ?? 25,
+        employee_vacation_requests_enabled: employee_vacation_requests_enabled ? 1 : 0,
+        employee_attendance_enabled: employee_attendance_enabled ? 1 : 0,
+        employee_salaries_enabled: employee_salaries_enabled ? 1 : 0
       })
+      .where('school_id', '=', school.school_id)
       .execute();
 
     return Response.json({ success: true });
@@ -85,7 +99,19 @@ const app = new Elysia()
       gdpr_email: t.Optional(t.Nullable(t.String())),
       gdpr_mobile: t.Optional(t.Nullable(t.String())),
       gdpr_databox: t.Optional(t.Nullable(t.String())),
-      gdpr_web: t.Optional(t.Nullable(t.String()))
+      gdpr_web: t.Optional(t.Nullable(t.String())),
+      // Message settings
+      msg_max_length: t.Optional(t.Number()),
+      msg_attachments_max_count: t.Optional(t.Number()),
+      msg_attachments_max_size: t.Optional(t.Number()),
+      msg_type_private_active: t.Optional(t.Boolean()),
+      msg_type_official_active: t.Optional(t.Boolean()),
+      msg_type_noticeboard_active: t.Optional(t.Boolean()),
+      noticeboard_max_length: t.Optional(t.Number()),
+      employee_vacation_days_default: t.Optional(t.Number()),
+      employee_vacation_requests_enabled: t.Optional(t.Boolean()),
+      employee_attendance_enabled: t.Optional(t.Boolean()),
+      employee_salaries_enabled: t.Optional(t.Boolean())
     })
   });
 
