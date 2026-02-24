@@ -1,9 +1,8 @@
 import { Elysia } from 'elysia';
 import { ip } from 'elysia-ip';
-import { elysiaXSS } from 'elysia-xss';
 import { helmet } from 'elysia-helmet';
 import * as fs from 'fs';
-import path, { join } from 'path';
+import path from 'path';
 import 'dotenv/config';
 import cors from '@elysiajs/cors';
 import { config } from './src/config/app.config';

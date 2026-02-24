@@ -658,7 +658,6 @@
         "average": "Průměr",
         "absence": "Absence (%)",
         "edit_personal": "Upravit osobní údaje",
-        "add_parent": "Přidat existující zákonné zástupce",
         "manage_parent": "Správa zákonných zástupců",
         "tabs": {
             "overview": "Přehled",
@@ -673,6 +672,15 @@
             "evaluation": "Hodnocení",
             "educational_measures": "Výchovná opatření",
             "timetable": "Rozvrh"
+        },
+        "medical": {
+            "title": "Přidat zdravotní záznam"
+        },
+        "add_parent": {
+            "title": "Přidat existující zákonné zástupce",
+            "parent_for": "Zákonný zástupce pro...",
+            "create_new_one": "Vytvořit nového",
+            "add_parent": "Přidat rodiče"
         }
     },
     "documents": {
