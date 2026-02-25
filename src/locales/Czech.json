@@ -552,6 +552,7 @@
         "cancel": "Zrušit",
         "edit": "Upravit",
         "view_all": "Zobrazit vše",
+        "remove": "Odebrat",
         "save": "Uložit",
         "save_changes": "Uložit změny",
         "reset": "Obnovit"
@@ -698,10 +699,20 @@
             "title": "Přidat zdravotní záznam"
         },
         "add_parent": {
+            "search": "Hledat",
             "title": "Přidat existující zákonné zástupce",
             "parent_for": "Zákonný zástupce pro...",
             "create_new_one": "Vytvořit nového",
             "add_parent": "Přidat rodiče"
+        },
+        "remove_parent": {
+            "title": "Odebrat zákonného zástupce",
+            "remove_parent_only_student_title": "Odebrat jako ZZ u tohoto studenta",
+            "remove_parent_only_student_desc": "Odebere zákonného zástupce u tohoto studenta, ale u ostatních zůstane.",
+            "remove_parent_all_students_title": "Odebrat ZZ u všech studentů",
+            "remove_parent_all_students_desc": "Nebude zákonným zástupce žádného žáka, ale jeho údaje zůstanou.",
+            "remove_complete_parent_title": "Smazat nevratně",
+            "remove_complete_parent_desc": "Veškeré údaje zákonného zástupce se smažou, nelze vrátit zpět."
         }
     },
     "documents": {
