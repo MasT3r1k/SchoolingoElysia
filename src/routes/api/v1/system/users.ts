@@ -1,13 +1,11 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
-import { format_people_by_ids, format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
 import moment from 'moment';
 import { permissions } from '../../../../middleware/permission.middleware';
 import { GlobalPermissions } from '../../../../config/permissions.config';
-import { UnauthorizedError, ForbiddenError } from '../../../../utils/errors';
-
 
 const app = new Elysia()
   // GET /system/users - List users with cursor-based pagination

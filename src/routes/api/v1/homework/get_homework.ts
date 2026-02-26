@@ -33,8 +33,8 @@ const app = new Elysia()
     .select([
       'family_relations.family_relation_id'
     ])
-    .where('family_relations.source_id', '=', auth.person_id)
-    .where('family_relations.target_id', '=', query.student_id)
+    .where('family_relations.source_id', '=', query.student_id)
+    .where('family_relations.target_id', '=', auth.person_id)
     .executeTakeFirst();
 
     if (!student && !parent) return { error: 'no_permission' };

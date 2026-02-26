@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import moment from 'moment';
 import { db } from '../../../../../database';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
   .post('/marks/student', async ({ cookie, body, query }: any) => {
@@ -75,15 +75,11 @@ const app = new Elysia()
 
     // Map teacher names
     const teacher_ids = Array.from(new Set(marks_result.map(m => m.teacher_id).filter((id): id is number => id !== null)));
-    const teacher_name_map = new Map<number, string>();
-    if (teacher_ids.length > 0) {
-        const teacher_names = await format_people_by_ids(teacher_ids);
-        teacher_ids.forEach((id, index) => teacher_name_map.set(id, teacher_names[index]));
-    }
+    const teacher_names = await format_person_map_by_ids(teacher_ids);
 
     const marks = marks_result.map(m => ({
         ...m,
-        teacher_full_name: m.teacher_id ? teacher_name_map.get(m.teacher_id) : `${m.teacher_first_name} ${m.teacher_last_name}`
+        teacher_full_name: m.teacher_id ? teacher_names.get(m.teacher_id) : `${m.teacher_first_name} ${m.teacher_last_name}`
     }));
 
     const subject_stats: Record<number, { rank: string | null, total_students: number, class_avg: string }> = {};
@@ -220,7 +216,49 @@ const app = new Elysia()
       }
     }
 
-    return Response.json({ status: true, marks, subject_stats, mark_stats });
+    // --- Marking Scales ---
+    const marking_scales: Record<string, number[]> = {};
+    const unique_subject_group = Array.from(new Set(marks.map(m => `${m.subject_id}_${m.group_id}`)));
+    
+    if (unique_subject_group.length > 0) {
+      const default_scale = await db.selectFrom('marking_scales')
+        .select(['grade_1_min', 'grade_2_min', 'grade_3_min', 'grade_4_min'])
+        .where('is_default', '=', true)
+        .executeTakeFirst();
+      
+      const default_grades = [
+        Number(default_scale?.grade_1_min ?? 85),
+        Number(default_scale?.grade_2_min ?? 70),
+        Number(default_scale?.grade_3_min ?? 50),
+        Number(default_scale?.grade_4_min ?? 30),
+        0
+      ];
+
+      for (const sg of unique_subject_group) {
+        const [sid, gid] = sg.split('_').map(Number);
+        
+        const scale = await db.selectFrom('marking_scales_groups')
+          .leftJoin('marking_scales', 'marking_scales.ms_id', 'marking_scales_groups.ms_id')
+          .select(['grade_1_min', 'grade_2_min', 'grade_3_min', 'grade_4_min'])
+          .where('marking_scales_groups.subject_id', '=', sid)
+          .where('marking_scales_groups.group_id', '=', gid)
+          .executeTakeFirst();
+
+        if (scale) {
+          marking_scales[sg] = [
+            Number(scale.grade_1_min),
+            Number(scale.grade_2_min),
+            Number(scale.grade_3_min),
+            Number(scale.grade_4_min),
+            0
+          ];
+        } else {
+          marking_scales[sg] = default_grades;
+        }
+      }
+    }
+
+    return Response.json({ status: true, marks, subject_stats, mark_stats, marking_scales });
   }, {
     body: t.Object({
       student_id: t.Optional(t.Number()),

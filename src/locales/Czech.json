@@ -707,11 +707,11 @@
         },
         "remove_parent": {
             "title": "Odebrat zákonného zástupce",
-            "remove_parent_only_student_title": "Odebrat jako ZZ u tohoto studenta",
+            "remove_parent_only_student_title": "Odebrat vazbu pouze u tohoto studenta",
             "remove_parent_only_student_desc": "Odebere zákonného zástupce u tohoto studenta, ale u ostatních zůstane.",
-            "remove_parent_all_students_title": "Odebrat ZZ u všech studentů",
-            "remove_parent_all_students_desc": "Nebude zákonným zástupce žádného žáka, ale jeho údaje zůstanou.",
-            "remove_complete_parent_title": "Smazat nevratně",
+            "remove_parent_all_students_title": "Zrušit zastupování u všech studentů",
+            "remove_parent_all_students_desc": "Nebude zákonným zástupcem žádného studenta, ale jeho údaje zůstanou.",
+            "remove_complete_parent_title": "Trvale odstranit osobu ze systému",
             "remove_complete_parent_desc": "Veškeré údaje zákonného zástupce se smažou, nelze vrátit zpět."
         }
     },
@@ -1130,7 +1130,8 @@
         "planned_mark": "Naplánovaná klasifikace",
         "weight": "Váha",
         "description": "Popisek",
-        "no_subjects": "Žádné známky",
+        "no_marks": "Žádné známky",
+        "no_marks_desc": "Nedostal jste ještě žádnou známku",
         "interm": {
             "by_subjects": "Podle předmětů",
             "chronologically": "Chronologicky",

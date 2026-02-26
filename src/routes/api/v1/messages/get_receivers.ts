@@ -1,7 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
-import { sql } from 'kysely';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
   .post('/messages/recipients', async ({ cookie, body }) => {
@@ -20,7 +19,7 @@ const app = new Elysia()
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!auth?.person || !auth.role) return { error: 'no_user', details: 'no_db' };
+    if (!auth?.person_id || !auth.role) return { error: 'no_user', details: 'no_db' };
 
     // Get allowed target roles
     let allowedTargets: string[] = [];
@@ -54,7 +53,7 @@ const app = new Elysia()
             .where('teachers.status', '=', 'active')
             .execute();
 
-        const teacherIds = teachers.map(t => t.personId);
+        const teacherIds = teachers.map(t => t.person_id);
         allPersonIds.push(...teacherIds);
         
         if (teacherIds.length > 0) {
@@ -76,7 +75,7 @@ const app = new Elysia()
             .orderBy(['classes.prefix', 'classes.suffix'])
             .execute();
 
-        const studentIds = students.map(s => s.personId);
+        const studentIds = students.map(s => s.person_id);
         allPersonIds.push(...studentIds);
 
         const classMap = new Map<string, any[]>();
@@ -86,7 +85,7 @@ const app = new Elysia()
             if (!classMap.has(className)) {
                 classMap.set(className, []);
             }
-            classMap.get(className)?.push({ person_id: s.personId, role: 'student', class: className });
+            classMap.get(className)?.push({ person_id: s.person_id, role: 'student', class: className });
         });
 
         for (const [className, users] of classMap.entries()) {
@@ -101,15 +100,11 @@ const app = new Elysia()
     // Formatting names
     const uniqueIds = [...new Set(allPersonIds)];
     if (uniqueIds.length > 0) {
-        const names = await format_people_by_ids(uniqueIds);
-        const nameMap = new Map<number, string>();
-        uniqueIds.forEach((id, index) => {
-            nameMap.set(id, names[index]);
-        });
+        const names = await format_person_map_by_ids(uniqueIds);
         
         result.forEach(group => {
             group.users.forEach(u => {
-                const fullName = nameMap.get(u.person_id) || '';
+                const fullName = names.get(u.person_id) || '';
                 u.full_name = fullName;
                 const parts = fullName.split(' ');
                 u.last_name = parts[parts.length - 1] || '';

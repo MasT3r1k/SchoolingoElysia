@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import { permissions } from '../../../../middleware/permission.middleware';
 import { GlobalPermissions } from '../../../../config/permissions.config';
 
@@ -170,11 +170,7 @@ const app = new Elysia()
     const total = Number(countResult?.total || 0);
 
     const personIds = Array.from(new Set(results.map((r: any) => r.person_id).filter((id): id is number => id !== null)));
-    const personNameMap = new Map<number, string>();
-    if (personIds.length > 0) {
-      const formattedNames = await format_people_by_ids(personIds as number[]);
-      personIds.forEach((id, index) => personNameMap.set(id as number, formattedNames[index]));
-    }
+    const formattedNames = await format_person_map_by_ids(personIds as number[]);
 
     return Response.json({
       data: results.map((r: any) => {
@@ -192,7 +188,7 @@ const app = new Elysia()
           action: r.action,
           user_id: r.user_id,
           username: r.username,
-          user_full_name: r.person_id ? personNameMap.get(r.person_id) : `${r.first_name} ${r.last_name}`,
+          user_full_name: r.person_id ? formattedNames.get(r.person_id) : `${r.first_name} ${r.last_name}`,
           user_role: r.user_role,
           target_type: r.target_type,
           target_id: r.target_id,

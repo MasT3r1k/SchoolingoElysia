@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
-import { format_people_by_ids, format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const elysiaApp = new Elysia()
   .get('/students', async({ query, school }: any) => {

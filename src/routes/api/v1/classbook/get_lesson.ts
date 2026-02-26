@@ -1,10 +1,8 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database";
 import { sql } from 'kysely';
-import { rateLimit } from 'elysia-rate-limit';
-import { app } from '../../../../../index';
 import moment from 'moment';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import { get_classbook_lesson_number } from '../../../../functions/get_classbook_lesson_number';
 import { get_total_lessons } from '../../../../functions/get_total_lessons';
 
@@ -139,7 +137,7 @@ const elysiaApp = new Elysia()
       .groupBy('absence.student_id')
       .execute();
 
-    const studentFullNames = await format_people_by_ids(studentsDB.map((s) => s.student_id));
+    const studentFullNames = await format_person_map_by_ids(studentsDB.map((s) => s.student_id));
 
     const students = studentsDB
     .map((student, index) => {
@@ -156,7 +154,7 @@ const elysiaApp = new Elysia()
         student_id: student.student_id,
         first_name: student.first_name || '',
         last_name: student.last_name || '',
-        full_name: studentFullNames[index] || '',
+        full_name: studentFullNames.get(student.student_id) || '',
         total_absence: studentTotalAbsence.find(s => s.student_id == student.student_id)?.total_hours || 0,
         absence: absenceIndexed
       };
@@ -200,7 +198,7 @@ const elysiaApp = new Elysia()
     .where('student_groups.group_id', '=', groupId)
     .execute();
 
-    const classService = await format_people_by_ids(class_serviceDB.map((student) => (student.student_id)));
+    const classService = await format_person_map_by_ids(class_serviceDB.map((student) => (student.student_id)));
 
     return { classbook, students, lessonNumber, lessonTotal, classService }
   }, {

@@ -1,7 +1,5 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
-import { rateLimit } from 'elysia-rate-limit'
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 import moment from 'moment';
 
 const elysiaAp = new Elysia()

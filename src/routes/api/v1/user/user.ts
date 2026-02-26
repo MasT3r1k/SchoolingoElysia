@@ -77,11 +77,11 @@ const app = new Elysia()
       .leftJoin('users', 'users.user_id', 'tokens.user_id')
       .leftJoin('students', 'students.person_id', 'users.person_id')
       .leftJoin('teachers', 'teachers.person_id', 'users.person_id')
-      .leftJoin('family_relations', 'family_relations.source_id', 'users.person_id')
+      .leftJoin('family_relations', 'family_relations.target_id', 'users.person_id')
       .select([
         sql`students.person_id`.as('student_id'),
         sql`teachers.person_id`.as('teacher_id'),
-        sql`family_relations.source_id`.as('parent_id')
+        sql`family_relations.target_id`.as('parent_id')
       ])
       .where('tokens.token', '=', token)
       .limit(1)
@@ -126,14 +126,14 @@ const app = new Elysia()
   .executeTakeFirst()
   .then(r => Number(r?.count ?? 0));
     user.children = await db.selectFrom("family_relations")
-    .innerJoin("persons", "family_relations.target_id", "persons.person_id")
+    .innerJoin("persons", "family_relations.source_id", "persons.person_id")
     .select([
       sql`persons.person_id`.as('childId'),
       "persons.first_name",
       "persons.last_name",
       "persons.gender"
     ])
-    .where("family_relations.source_id", "=", tokenDB.person_id)
+    .where("family_relations.target_id", "=", tokenDB.person_id)
     .execute();
 
     if (user.children) {

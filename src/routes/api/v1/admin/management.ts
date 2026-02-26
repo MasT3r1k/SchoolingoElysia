@@ -1,7 +1,8 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_by_id } from '../../../../functions/format_person_by_id';
 
 const app = new Elysia()
   .get('/admin/management', async ({ user }: any) => {
@@ -352,7 +353,7 @@ const app = new Elysia()
 
     // Execute Top 5 Students separate promise because formatting depends on it
     const top_5_students_promise = top_5_at_risk_query.execute().then(async (top5StudentsData) => {
-        const student_names = await format_people_by_ids(top5StudentsData.map((student) => (student.student_id)));
+        const student_names = await format_person_map_by_ids(top5StudentsData.map((student) => (student.student_id)));
         return top5StudentsData.map((student, index) => ({
             student_id: student.student_id,
             absence_score: student.absence_score,
@@ -360,7 +361,7 @@ const app = new Elysia()
             grade_score: student.grade_score,
             grade_average: student.avg_grade,
             risk_score: student.risk_score,
-            full_name: student_names[index]
+            full_name: student_names.get(student.student_id)
         }));
     });
 
@@ -464,7 +465,7 @@ const app = new Elysia()
 
     if (!class_details) return { error: 'class_not_found' };
 
-    const teacher_name = (await format_people_by_ids([class_details.teacher_id]))[0];
+    const teacher_name = await format_person_by_id(class_details.teacher_id);
 
     // Group Statistics (active only)
     const groups_stats_result = await db.selectFrom('groups')

@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const elysiaAp = new Elysia()
   .post('/students/search', async({ body }) => {
@@ -59,12 +59,11 @@ const elysiaAp = new Elysia()
       .execute();
 
     const personIds = results.map(r => r.person_id).filter((id): id is number => id !== null);
-    const formattedNames = await format_people_by_ids(personIds);
-    const personNameMap = new Map(personIds.map((id, i) => [id, formattedNames[i]]));
+    const formattedNames = await format_person_map_by_ids(personIds);
 
     const data = results.map(r => ({
       ...r,
-      full_name: r.person_id ? personNameMap.get(r.person_id) : `${r.first_name} ${r.last_name}`
+      full_name: r.person_id ? formattedNames.get(r.person_id) : `${r.first_name} ${r.last_name}`
     }));
 
     return Response.json({

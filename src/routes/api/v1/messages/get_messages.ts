@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
   .get('/messages/list', async ({ cookie, query }) => {
@@ -112,16 +112,14 @@ const app = new Elysia()
 
     /* 🔹 autoři */
     const people_ids = [...new Set(messagesDB.map(m => m.author_id!))];
-    const people = await format_people_by_ids(people_ids);
+    const people = await format_person_map_by_ids(people_ids);
 
     const messages = messagesDB.map(m => ({
       ...m,
-      firstName: undefined,
-      lastName: undefined,
       author: {
         first_name: m.first_name,
-        last_name: m.lastName,
-        full_name: people[people_ids.indexOf(m.author_id!)]
+        last_name: m.last_name,
+        full_name: people.get(m.author_id as number)
       }
     }));
 

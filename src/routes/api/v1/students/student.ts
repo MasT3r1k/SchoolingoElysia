@@ -450,7 +450,8 @@ const elysiaApp = new Elysia()
   })
   .post('/student/:id/parent', async ({ params: { id }, body }) => {
     // @ts-ignore
-    const { mode, role, personId, firstName, lastName, email, phone } = body;
+    const { mode, role, personId, firstName, lastName, gender, prefixTitle, suffixTitle, email, phone, address } = body;
+
 
     try {
       if (mode === 'existing') {
@@ -475,11 +476,70 @@ const elysiaApp = new Elysia()
             .values({
               first_name: firstName,
               last_name: lastName,
-              gender: 0
+              gender: gender ?? 0
             })
             .executeTakeFirstOrThrow();
           
           const newPersonId = Number(newPerson.insertId);
+
+          // Handle titles
+          const allTitles = [
+            ...(prefixTitle || '').split(',').map((s: string) => s.trim()),
+            ...(suffixTitle || '').split(',').map((s: string) => s.trim())
+          ].filter(s => s.length > 0);
+
+          if (allTitles.length > 0) {
+            const degrees = await trx.selectFrom('degrees')
+              .select(['degree_id', 'shortcut'])
+              .where('shortcut', 'in', allTitles)
+              .execute();
+
+            if (degrees.length > 0) {
+              await trx.insertInto('persons_degree')
+                .values(degrees.map(d => ({
+                  person_id: newPersonId,
+                  degree_id: d.degree_id
+                })))
+                .execute();
+            }
+          }
+
+          // Handle address
+          if (address && address.city && address.street) {
+            let cityId: number;
+            const existingCity = await trx.selectFrom('cities')
+              .select('city_id')
+              .where('city_name', '=', address.city)
+              .where('postcode', '=', address.postcode || null)
+              .executeTakeFirst();
+
+            if (existingCity) {
+              cityId = existingCity.city_id;
+            } else {
+              const newCity = await trx.insertInto('cities')
+                .values({
+                  city_name: address.city,
+                  postcode: address.postcode || null,
+                  country_id: 1
+                })
+                .executeTakeFirstOrThrow();
+              cityId = Number(newCity.insertId);
+            }
+
+            const newAddress = await trx.insertInto('addresses')
+              .values({
+                city_id: cityId,
+                street: address.street,
+                house_number: address.houseNumber
+              })
+              .executeTakeFirstOrThrow();
+            const addressId = Number(newAddress.insertId);
+
+            await trx.updateTable('persons')
+              .set({ address_id: addressId })
+              .where('person_id', '=', newPersonId)
+              .execute();
+          }
 
           await trx.insertInto('family_relations')
             .values({
@@ -514,6 +574,7 @@ const elysiaApp = new Elysia()
           }
 
           return { success: true, personId: newPersonId };
+
         });
 
         return result;
@@ -535,9 +596,19 @@ const elysiaApp = new Elysia()
       personId: t.Optional(t.Number()),
       firstName: t.Optional(t.String()),
       lastName: t.Optional(t.String()),
+      gender: t.Optional(t.Number()),
+      prefixTitle: t.Optional(t.String()),
+      suffixTitle: t.Optional(t.String()),
       email: t.Optional(t.String()),
-      phone: t.Optional(t.String())
+      phone: t.Optional(t.String()),
+      address: t.Optional(t.Object({
+        street: t.String(),
+        houseNumber: t.String(),
+        city: t.String(),
+        postcode: t.Optional(t.String())
+      }))
     })
+
   })
   .patch('/student/:id/address', async ({ params: { id }, body }) => {
     const { street, houseNumber, city, postcode } = body;

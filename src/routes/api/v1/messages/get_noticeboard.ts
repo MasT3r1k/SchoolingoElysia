@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
-import { OrWrapper, sql } from 'kysely';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { sql } from 'kysely';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
   .get('/messages/noticeboard', async ({ cookie, query }) => {
@@ -55,16 +55,14 @@ const app = new Elysia()
     if (!messagesDB) return { error: 'failed_load_messages' };
 
     const people_ids = Array.from( new Set(messagesDB.map((m) => m.author_id!)) );
-    const people = await format_people_by_ids(people_ids);
+    const people = await format_person_map_by_ids(people_ids);
 
     const messages = messagesDB.map((message, index) => ({
         ...message,
-        firstName: undefined,
-        lastName: undefined,
         author: {
             first_name: message.first_name,
             last_name: message.last_name,
-            full_name: people[people_ids.findIndex((person) => person == message.author_id)]
+            full_name: people.get(message.author_id)
         }
     }))
 

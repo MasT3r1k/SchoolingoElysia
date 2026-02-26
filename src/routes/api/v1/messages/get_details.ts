@@ -1,7 +1,8 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_by_id } from '../../../../functions/format_person_by_id';
 
 const app = new Elysia()
   .get('/messages/details/:id', async ({ cookie, params }) => {
@@ -47,14 +48,12 @@ const app = new Elysia()
         .leftJoin('students', 'persons.person_id', 'students.person_id')
         .leftJoin('classes', 'students.class_id', 'classes.class_id')
         .leftJoin('student_groups', 'students.person_id', 'student_groups.student_id')
-        .leftJoin('groups', 'student_groups.group_id', 'groups.group_id')
+        .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
         .select([
             'persons.person_id',
             'persons.first_name',
             'persons.last_name',
-            'classes.prefix',
-            'classes.suffix',
-            'groups.name as groupName',
+            sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className'),
             'messages_receivers.read_at',
             'messages_receivers.confirmed_at'
         ])
@@ -62,7 +61,7 @@ const app = new Elysia()
         .execute();
 
     // Format author name
-    const authorName = (await format_people_by_ids([message.author_id]))[0];
+    const authorName = await format_person_by_id(message.author_id);
 
     // Build unique class/group names
     const targetGroups = new Set<string>();
@@ -71,21 +70,16 @@ const app = new Elysia()
     const uniqueReceiversMap = new Map();
     receivers.forEach(r => {
         let primaryGroup = '';
-        if (r.prefix && r.suffix) {
-            primaryGroup = `${r.prefix}.${r.suffix}`;
+        if (r.className) {
+            primaryGroup = `${r.className}`;
             targetGroups.add(primaryGroup);
         }
-        if (r.groupName) {
-            targetGroups.add(r.groupName);
-            // If primaryGroup is empty, use groupName
-            if (!primaryGroup) primaryGroup = r.groupName;
-        }
 
-        if (!uniqueReceiversMap.has(r.personId)) {
-            uniqueReceiversMap.set(r.personId, {
-                personId: r.personId,
+        if (!uniqueReceiversMap.has(r.person_id)) {
+            uniqueReceiversMap.set(r.person_id, {
+                personId: r.person_id,
                 first_name: r.first_name,
-                lastName: r.lastName,
+                lastName: r.last_name,
                 groupName: primaryGroup, 
                 read_at: r.read_at,
                 confirmed_at: r.confirmed_at
@@ -96,20 +90,19 @@ const app = new Elysia()
     const formattedReceivers = Array.from(uniqueReceiversMap.values());
     const uniqueClasses = Array.from(targetGroups).sort();
 
-    // Also get full names for receivers using format_people_by_ids to be consistent
-    const receiverIds = formattedReceivers.map(r => r.personId);
-    const receiverNames = await format_people_by_ids(receiverIds);
+    const receiverIds = formattedReceivers.map(r => r.person_id);
+    const receiverNames = await format_person_map_by_ids(receiverIds);
     
-    formattedReceivers.forEach((r, index) => {
-        r.full_name = receiverNames[index];
+    formattedReceivers.forEach((r) => {
+        r.full_name = receiverNames.get(r.person_id);
     });
 
      return {
         ...message,
         author: {
-             first_name: message.first_name,
-             last_name: message.lastName,
-             full_name: authorName
+            first_name: message.first_name,
+            last_name: message.last_name,
+            full_name: authorName
         },
         receivers: formattedReceivers,
         target_groups: uniqueClasses

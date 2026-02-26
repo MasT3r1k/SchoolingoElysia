@@ -29,8 +29,8 @@ const elysiaApp = new Elysia()
                   // Check if requester is a parent of the target
                   const isParent = await db.selectFrom('family_relations')
                     .select(['source_id'])
-                    .where('source_id', '=', user.person_id)
-                    .where('target_id', '=', targetId)
+                    .where('source_id', '=', targetId)
+                    .where('target_id', '=',  user.person_id)
                     .executeTakeFirst();
                   
                   if (!isParent) {

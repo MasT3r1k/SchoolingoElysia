@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia({ prefix: '/teach/my-class' })
     .get('/', async ({ user, query, set }: any) => {
@@ -80,12 +80,11 @@ const app = new Elysia({ prefix: '/teach/my-class' })
             };
         }
 
-        const studentNames = await format_people_by_ids(studentIds);
-        const studentNameMap = new Map(studentIds.map((id, i) => [id, studentNames[i]]));
+        const studentNames = await format_person_map_by_ids(studentIds);
 
         const students = studentsResult.map(s => ({
             ...s,
-            full_name: studentNameMap.get(s.person_id)
+            full_name: studentNames.get(s.person_id)
         }));
 
         // Fetch unexcused absences
@@ -104,7 +103,7 @@ const app = new Elysia({ prefix: '/teach/my-class' })
         
         const absences = absencesResult.map(a => ({
             ...a,
-            full_name: studentNameMap.get(a.student_id)
+            full_name: studentNames.get(a.student_id)
         }));
 
         // Fetch CURRENT class services (active now)
@@ -119,7 +118,7 @@ const app = new Elysia({ prefix: '/teach/my-class' })
         
         const currentServices = currentServicesResult.map(s => ({
             ...s,
-            full_name: studentNameMap.get(s.student_id)
+            full_name: studentNames.get(s.student_id)
         }));
 
         // Fetch PLANNED class services (future)
@@ -134,7 +133,7 @@ const app = new Elysia({ prefix: '/teach/my-class' })
         
         const plannedServices = plannedServicesResult.map(s => ({
             ...s,
-            full_name: studentNameMap.get(s.student_id)
+            full_name: studentNames.get(s.student_id)
         }));
 
         // Fetch PAST class services (History)
@@ -150,7 +149,7 @@ const app = new Elysia({ prefix: '/teach/my-class' })
         
         const serviceHistory = serviceHistoryResult.map(s => ({
             ...s,
-            full_name: studentNameMap.get(s.student_id)
+            full_name: studentNames.get(s.student_id)
         }));
 
         // --- NEW: Calculate Overview & Stats ---

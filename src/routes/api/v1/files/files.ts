@@ -2,7 +2,6 @@ import { Elysia, t } from 'elysia';
 import { sql } from 'kysely';
 import { db } from '../../../../../database';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
 
 const mimeGroups: any = {
     image: ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp'],

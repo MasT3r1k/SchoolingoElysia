@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import { MainConfig } from '../../../../config/main.config';
 import moment from 'moment';
 
@@ -43,9 +43,7 @@ const app = new Elysia()
       .execute();
 
     const student_ids = students_ids_rows.map(row => row.student_id).filter((id): id is number => id !== null);
-    const student_names = await format_people_by_ids(student_ids);
-    const student_name_map = new Map<number, string>();
-    student_ids.forEach((id, index) => student_name_map.set(id, student_names[index]));
+    const student_names = await format_person_map_by_ids(student_ids);
 
     const gradeColumns = await db
       .selectFrom('grades_columns')
@@ -104,7 +102,7 @@ const app = new Elysia()
 
       return {
         student_id,
-        name: student_name_map.get(student_id) || '',
+        name: student_names.get(student_id) || '',
         quarters: semester_grades.filter((g: any) => g.student_id === student_id).map((g: any) => ({
           quarter: g.quarter,
           grade: g.grade,

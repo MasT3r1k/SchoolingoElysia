@@ -2,7 +2,7 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
 import moment from 'moment';
-import { format_people_by_ids } from '../../../../functions/format_person_by_ids';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
   .get(
@@ -43,11 +43,11 @@ const app = new Elysia()
       let dbQuery = db
         .selectFrom('persons as p')
         .innerJoin('students as s', 's.person_id', 'p.person_id')
-        .innerJoin('classes as cl', 'cl.class_id', 's.class')
+        .innerJoin('classes as cl', 'cl.class_id', 's.class_id')
         .leftJoin('traineeship_students as ts', 'ts.student_id', 's.person_id')
         .leftJoin('traineeship_weeks as tw', 'tw.tr_week_id', 'ts.traineeship_id')
         .leftJoin('traineeship_companies as c', 'c.company_id', 'ts.company_id')
-        .leftJoin('traineeship_instructors as i', 'i.instructor_id', 'ts.instructor')
+        .leftJoin('traineeship_instructors as i', 'i.instructor_id', 'ts.instructor_id')
         .select([
           's.person_id as student_id',
           'p.first_name',
@@ -91,15 +91,11 @@ const app = new Elysia()
       const results = await dbQuery.execute();
 
       const studentIds = results.map(r => r.student_id).filter((id): id is number => id !== null);
-      const studentNameMap = new Map<number, string>();
-      if (studentIds.length > 0) {
-        const formattedNames = await format_people_by_ids(studentIds);
-        studentIds.forEach((id, index) => studentNameMap.set(id, formattedNames[index]));
-      }
+      const formattedNames = await format_person_map_by_ids(studentIds);
 
       const students = results.map(r => ({
         ...r,
-        full_name: r.student_id ? studentNameMap.get(r.student_id) : `${r.first_name} ${r.last_name}`
+        full_name: r.student_id ? formattedNames.get(r.student_id) : `${r.first_name} ${r.last_name}`
       }));
 
       return Response.json(students);
