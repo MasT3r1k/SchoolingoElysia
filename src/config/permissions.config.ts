@@ -43,6 +43,10 @@ export const GlobalPermissions = {
   // Bonuses
   BONUSES_VIEW: 'bonuses.view',
   BONUSES_MANAGE: 'bonuses.manage',
+
+  // Students
+  STUDENT_EDIT: 'students.edit',
+  STUDENT_VIEW: 'students.view'
 } as const;
 
 export type PermissionKey = typeof GlobalPermissions[keyof typeof GlobalPermissions];

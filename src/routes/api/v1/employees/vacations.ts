@@ -3,6 +3,7 @@ import { db } from "../../../../../database"
 import { sql } from 'kysely';
 import { permissions } from '../../../../middleware/permission.middleware';
 import { GlobalPermissions } from '../../../../config/permissions.config';
+import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 
 const vacationsRouter = new Elysia()
@@ -149,13 +150,17 @@ const vacationsRouter = new Elysia()
       queryBuilder = queryBuilder.where('employee_vacation_requests.teacher_id', '=', query.employeeId);
     }
 
+
     const results = await queryBuilder
       .orderBy('employee_vacation_requests.created_at', 'desc')
       .limit(query.limit!)
       .offset(query.offset!)
       .execute();
 
-    return Response.json({ data: results });
+    const personNames = await format_person_map_by_ids(results.map((r) => r.teacher_id));
+    const data = results.map((r) => ({...r, full_name: personNames.get(r.teacher_id)}));
+
+    return Response.json({ data });
 
   }, {
     query: t.Object({

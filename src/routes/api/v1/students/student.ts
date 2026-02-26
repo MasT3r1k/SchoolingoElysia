@@ -4,18 +4,29 @@ import { sql } from 'kysely';
 import moment from 'moment';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
+import { auth } from '../../../../middleware/auth.middleware';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+import { permissions } from '../../../../middleware/permission.middleware';
+import { getAuthUser } from '../../../../utils/auth';
+import { PermissionService } from '../../../../functions/permission.service';
 
 /* ---------------- ENDPOINT ---------------- */
 
 const elysiaApp = new Elysia()
-  .get('/student/parent/search', async ({ query: { q } }) => {
+  .get('/student/parent/search', async ({ cookie, query: { q } }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) {
+      return { error: 'no_permission' };
+    }
     if (!q || q.length < 3) return [];
-    
+
     return await db.selectFrom('persons')
       .select([
-        'person_id as personId', 
-        'first_name as firstName', 
-        'last_name as lastName', 
+        'person_id as personId',
+        'first_name as firstName',
+        'last_name as lastName',
         'birthday'
       ])
       .where(sql<boolean>`(
@@ -32,7 +43,13 @@ const elysiaApp = new Elysia()
       q: t.String()
     })
   })
-  .get('/student/:id', async ({ params: { id }, query }) => {
+  .get('/student/:id', async ({ params: { id }, query, cookie }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW);
+    if (!perm) {
+      return { error: 'no_permission' };
+    }
     try {
       const time = moment(query.time);
       const show = query.type.split(',');
@@ -191,7 +208,7 @@ const elysiaApp = new Elysia()
           .where(sql<boolean>`sy.start <= ${time.format("YYYY-MM-DD")}`)
           .where(sql<boolean>`sy.end >= ${time.format("YYYY-MM-DD")}`)
           .execute(),
-        
+
         db.selectFrom('family_relations')
           .leftJoin('persons', 'family_relations.target_id', 'persons.person_id')
           .select([
@@ -317,7 +334,7 @@ const elysiaApp = new Elysia()
       if (show.includes('groups')) result.groups = groups;
       if (show.includes('parents')) {
         const parentNames = await format_person_map_by_ids(parents.map((parent) => (parent.id)));
-        result.parents = parents.map((parent) => ({...parent, fullName: parentNames.get(parent.id)}));
+        result.parents = parents.map((parent) => ({ ...parent, fullName: parentNames.get(parent.id) }));
       }
       if (show.includes('timetable')) {
         result.timetable = timetable;
@@ -325,6 +342,31 @@ const elysiaApp = new Elysia()
       }
       if (show.includes('medical')) {
         result.medical_records = await db.selectFrom('student_medical_records')
+          .selectAll()
+          .where('student_id', '=', id)
+          .orderBy('created_at', 'desc')
+          .execute();
+      }
+
+      if (show.includes('matrika')) {
+        result.matrika = await db.selectFrom('student_matrika')
+          .selectAll()
+          .where('student_id', '=', id)
+          .executeTakeFirst() || {
+          student_id: id,
+          highest_education_id: null,
+          previous_school_izo: null,
+          study_type_code: null,
+          financing_code: null,
+          start_reason_code: null,
+          end_reason_code: null,
+          individual_plan_code: null,
+          special_needs_code: null,
+          language_code: null,
+          health_status_code: null
+        };
+
+        result.matrika_records = await db.selectFrom('student_matrika_records')
           .selectAll()
           .where('student_id', '=', id)
           .orderBy('created_at', 'desc')
@@ -346,11 +388,142 @@ const elysiaApp = new Elysia()
       id: t.Number()
     }),
     query: t.Object({
-      type: t.String({ default: 'basic,groups,timetable,parents,medical' }),
+      type: t.String({ default: 'basic,groups,timetable,parents,medical,matrika' }),
       time: t.String({ default: moment().format("YYYY-MM-DD") })
     })
   })
-  .get('/student/:id/medical', async ({ params: { id } }) => {
+
+  .patch('/student/:id/matrika', async ({ params: { id }, body, cookie }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) return { error: 'no_permission' };
+
+    try {
+      const exists = await db.selectFrom('student_matrika')
+        .select('student_id')
+        .where('student_id', '=', id)
+        .executeTakeFirst();
+
+      if (exists) {
+        await db.updateTable('student_matrika')
+          .set({
+            highest_education_id: body.highest_education_id,
+            previous_school_izo: body.previous_school_izo,
+            study_type_code: body.study_type_code,
+            financing_code: body.financing_code,
+            start_reason_code: body.start_reason_code,
+            end_reason_code: body.end_reason_code,
+            individual_plan_code: body.individual_plan_code,
+            special_needs_code: body.special_needs_code,
+            language_code: body.language_code,
+            health_status_code: body.health_status_code,
+            updated_at: new Date()
+          })
+          .where('student_id', '=', id)
+          .execute();
+      } else {
+        await db.insertInto('student_matrika')
+          .values({
+            student_id: id,
+            highest_education_id: body.highest_education_id,
+            previous_school_izo: body.previous_school_izo,
+            study_type_code: body.study_type_code,
+            financing_code: body.financing_code,
+            start_reason_code: body.start_reason_code,
+            end_reason_code: body.end_reason_code,
+            individual_plan_code: body.individual_plan_code,
+            special_needs_code: body.special_needs_code,
+            language_code: body.language_code,
+            health_status_code: body.health_status_code
+          })
+          .execute();
+      }
+
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      return new Response(JSON.stringify({ error: 'Failed to update matrika' }), { status: 500 });
+    }
+  }, {
+    params: t.Object({
+      id: t.Number()
+    }),
+    body: t.Object({
+      highest_education_id: t.Optional(t.Nullable(t.Number())),
+      previous_school_izo: t.Optional(t.Nullable(t.String())),
+      study_type_code: t.Optional(t.Nullable(t.String())),
+      financing_code: t.Optional(t.Nullable(t.String())),
+      start_reason_code: t.Optional(t.Nullable(t.String())),
+      end_reason_code: t.Optional(t.Nullable(t.String())),
+      individual_plan_code: t.Optional(t.Nullable(t.String())),
+      special_needs_code: t.Optional(t.Nullable(t.String())),
+      language_code: t.Optional(t.Nullable(t.String())),
+      health_status_code: t.Optional(t.Nullable(t.String()))
+    })
+  })
+
+  .post('/student/:id/matrika/record', async ({ params: { id }, body, cookie }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) return { error: 'no_permission' };
+
+    try {
+      await db.insertInto('student_matrika_records')
+        .values({
+          student_id: id,
+          type: body.type,
+          description: body.description,
+          valid_from: body.valid_from,
+          valid_to: body.valid_to
+        })
+        .execute();
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      return new Response(JSON.stringify({ error: 'Failed' }), { status: 500 });
+    }
+  }, {
+    params: t.Object({ id: t.Number() }),
+    body: t.Object({
+      type: t.String(),
+      description: t.Optional(t.Nullable(t.String())),
+      valid_from: t.Optional(t.Nullable(t.String())),
+      valid_to: t.Optional(t.Nullable(t.String()))
+    })
+  })
+
+  .delete('/student/:id/matrika/record/:record', async ({ params, cookie }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) return { error: 'no_permission' };
+
+    try {
+      await db.deleteFrom('student_matrika_records')
+        .where('student_id', '=', params.id)
+        .where('id', '=', params.record)
+        .execute();
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      return new Response(JSON.stringify({ error: 'Failed' }), { status: 500 });
+    }
+  }, {
+    params: t.Object({
+      id: t.Number(),
+      record: t.Number()
+    })
+  })
+
+  .get('/student/:id/medical', async ({ cookie, params: { id } }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW);
+    if (!perm) {
+      return { error: 'no_permission' };
+    }
     return await db.selectFrom('student_medical_records')
       .selectAll()
       .where('student_id', '=', id)
@@ -361,7 +534,14 @@ const elysiaApp = new Elysia()
       id: t.Number()
     })
   })
-  .post('/student/:id/medical', async ({ params: { id }, body }) => {
+
+  .post('/student/:id/medical', async ({ params: { id }, body, cookie }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) {
+      return { error: 'no_permission' };
+    }
     try {
       const result = await db.insertInto('student_medical_records')
         .values({
@@ -375,7 +555,7 @@ const elysiaApp = new Elysia()
         })
 
         .executeTakeFirstOrThrow();
-      
+
       return { success: true, recordId: Number(result.insertId) };
     } catch (e) {
       console.error(e);
@@ -394,7 +574,14 @@ const elysiaApp = new Elysia()
       allergen_codes: t.Optional(t.String())
     })
   })
-  .patch('/student/:id/medical/:recordId', async ({ params: { id, recordId }, body }) => {
+
+  .patch('/student/:id/medical/:recordId', async ({ cookie, params: { id, recordId }, body }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) {
+      return { error: 'no_permission' };
+    }
     try {
       await db.updateTable('student_medical_records')
         .set({
@@ -409,7 +596,7 @@ const elysiaApp = new Elysia()
         .where('record_id', '=', recordId)
         .where('student_id', '=', id)
         .execute();
-      
+
       return { success: true };
     } catch (e) {
       console.error(e);
@@ -430,13 +617,19 @@ const elysiaApp = new Elysia()
     })
   })
 
-  .delete('/student/:id/medical/:recordId', async ({ params: { id, recordId } }) => {
+  .delete('/student/:id/medical/:recordId', async ({ cookie, params: { id, recordId } }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) {
+      return { error: 'no_permission' };
+    }
     try {
       await db.deleteFrom('student_medical_records')
         .where('record_id', '=', recordId)
         .where('student_id', '=', id)
         .execute();
-      
+
       return { success: true };
     } catch (e) {
       console.error(e);
@@ -448,7 +641,14 @@ const elysiaApp = new Elysia()
       recordId: t.Number()
     })
   })
-  .post('/student/:id/parent', async ({ params: { id }, body }) => {
+
+  .post('/student/:id/parent', async ({ cookie, params: { id }, body }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) {
+      return { error: 'no_permission' };
+    }
     // @ts-ignore
     const { mode, role, personId, firstName, lastName, gender, prefixTitle, suffixTitle, email, phone, address } = body;
 
@@ -456,7 +656,7 @@ const elysiaApp = new Elysia()
     try {
       if (mode === 'existing') {
         if (!personId) throw new Error('Person ID is required for existing mode');
-        
+
         await db.insertInto('family_relations')
           .values({
             source_id: id,
@@ -479,7 +679,7 @@ const elysiaApp = new Elysia()
               gender: gender ?? 0
             })
             .executeTakeFirstOrThrow();
-          
+
           const newPersonId = Number(newPerson.insertId);
 
           // Handle titles
@@ -610,7 +810,15 @@ const elysiaApp = new Elysia()
     })
 
   })
-  .patch('/student/:id/address', async ({ params: { id }, body }) => {
+
+  .patch('/student/:id/address', async ({ cookie, params: { id }, body }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) {
+      return { error: 'no_permission' };
+    }
+
     const { street, houseNumber, city, postcode } = body;
 
     try {
@@ -687,11 +895,79 @@ const elysiaApp = new Elysia()
       postcode: t.Optional(t.String())
     })
   })
-  .patch('/student/:id/personal', async ({ params: { id }, body }) => {
-    const { 
-      firstName, lastName, prefixTitle, suffixTitle, 
-      classId, insuranceId, gender, birthNum, 
-      birthday, birthPlace, nationalityId 
+
+  .get('/student/:id/history', async ({ params: { id }, body, cookie }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW);
+    if (!perm) return { error: 'no_permission' };
+
+    const student_id = parseInt(id);
+
+    const history = await db.selectFrom('student_history')
+      .select([
+        'student_history.teacher_id',
+        'student_history.type',
+        'student_history.data',
+        'student_history.created_at'
+      ])
+      .where('student_history.student_id', '=', student_id)
+      .execute();
+
+    const teacherNames = await format_person_map_by_ids(history.map((h) => h.teacher_id));
+
+    const enrichedHistory = await Promise.all(history.map(async (h) => {
+      const teacher_name = teacherNames.get(h.teacher_id);
+
+      let dataObj: any = {};
+
+      try {
+        // 1. Ošetření divného formátu (znaky jako klíče)
+        if (h.data && typeof h.data === 'object' && h.data['0']) {
+          // Poskládáme string z očíslovaných klíčů
+          const jsonString = Object.values(h.data).join('');
+          dataObj = JSON.parse(jsonString);
+        } else if (typeof h.data === 'string') {
+          dataObj = JSON.parse(h.data);
+        } else {
+          dataObj = h.data;
+        }
+      } catch (e) {
+        console.error("Chyba při parsování data JSONu", e);
+        dataObj = h.data;
+      }
+
+      let parent_full_name = null;
+
+      // 2. Kontrola parent_id (může to být string i number, podle toho JSONu výše je to "33")
+      if (dataObj?.parent_id) {
+        parent_full_name = await format_person_by_id(parseInt(dataObj.parent_id));
+      }
+
+      return {
+        ...h,
+        full_name: teacher_name,
+        data: {
+          ...dataObj,
+          parent_full_name // Teď už tam bude skutečné jméno místo null
+        }
+      };
+    }));
+    return enrichedHistory;
+  })
+
+  .patch('/student/:id/personal', async ({ cookie, params: { id }, body }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) {
+      return { error: 'no_permission' };
+    }
+    const {
+      firstName, lastName, prefixTitle, suffixTitle,
+      classId, insuranceId, gender, birthNum,
+      birthday, birthPlace, nationalityId
     } = body;
 
     try {
@@ -712,7 +988,7 @@ const elysiaApp = new Elysia()
             .select('city_id')
             .where('city_name', '=', birthPlace.trim())
             .executeTakeFirst();
-          
+
           if (existingCity) {
             birthplaceId = existingCity.city_id;
           } else {

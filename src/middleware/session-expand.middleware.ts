@@ -5,7 +5,7 @@ import moment from 'moment';
 
 export const sessionMiddleware = new Elysia()
   .onBeforeHandle(async ({ cookie }) => {
-    const token = cookie?.token?.value;
+    const token = cookie?.token?.value as string;
     if (!token) return;
 
     // 1) Najdi session

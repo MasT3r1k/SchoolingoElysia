@@ -113,6 +113,9 @@ import { RolesTable } from './roles'
 import { RolePermissionsTable } from './role_permissions'
 import { UserRolesTable } from './user_roles'
 import { UserPermissionsTable } from './user_permissions'
+import { student_historyTable } from './student_history'
+import { StudentMatrikaTable } from './student_matrika'
+import { StudentMatrikaRecordsTable } from './student_matrika_records'
 
 
 
@@ -190,6 +193,7 @@ export interface Database {
   scopes_subjects: scopes_subjectsTable
   students: StudentsTable
   student_groups: Student_groupsTable
+  student_history: student_historyTable
   student_homework: Student_homeworkTable
   rewards: Student_rewardsTable
   subjects: SubjectsTable
@@ -243,6 +247,8 @@ export interface Database {
   role_permissions: RolePermissionsTable
   user_roles: UserRolesTable
   user_permissions: UserPermissionsTable
+  student_matrika: StudentMatrikaTable
+  student_matrika_records: StudentMatrikaRecordsTable
 }
 
 

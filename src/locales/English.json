@@ -612,6 +612,75 @@
     "student_summary": {
         "title": "Summary for school year %year%"
     },
+    "students": {
+        "phone": "Phone",
+        "email": "Email address",
+        "parent": "Parent",
+        "add_student": "Add student",
+        "search_student": "Search student",
+        "student_filter": "Student filtering",
+        "filter": "Filtering",
+        "clear_filter": "Clear filters",
+        "student": "Student",
+        "class": "Class",
+        "all_classes": "All classes",
+        "field_of_study": "Field of study",
+        "all_fields": "All fields",
+        "average_grade": "Grade average",
+        "average": "Average",
+        "absence": "Absence (%)",
+        "edit_personal": "Edit personal information",
+        "manage_parent": "Manage legal guardians",
+        "tabs": {
+            "overview": "Overview",
+            "personal": "Personal info",
+            "parents": "Legal guardians",
+            "academic": "Academic",
+            "matrika": "Registry",
+            "medical": "Medical",
+            "history": "History",
+            "marks": "Marks",
+            "notes": "Notes",
+            "evaluation": "Evaluation",
+            "educational_measures": "Educational measures",
+            "timetable": "Timetable"
+        },
+        "matrika_fields": {
+            "title": "School Registry",
+            "highest_education": "Highest Education Code",
+            "previous_school_izo": "Previous School IZO",
+            "study_type": "Study Type Code",
+            "financing": "Financing Code",
+            "start_reason": "Start Reason Code",
+            "end_reason": "End Reason Code",
+            "individual_plan": "Individual Study Plan",
+            "special_needs": "Special Needs Code",
+            "language": "Instruction Language Code",
+            "health_status": "Health Status Code"
+        },
+        "medical": {
+            "title": "Add medical record"
+        },
+        "add_parent": {
+            "search": "Search",
+            "title": "Add existing legal guardians",
+            "parent_for": "Guardian for...",
+            "create_new_one": "Create new one",
+            "add_parent": "Add parent"
+        },
+        "create_parent": {
+            "title": "Create new legal guardian"
+        },
+        "remove_parent": {
+            "title": "Remove legal guardian",
+            "remove_parent_only_student_title": "Remove link only for this student",
+            "remove_parent_only_student_desc": "Removes the legal guardian for this student, but stays for others.",
+            "remove_parent_all_students_title": "Cancel representation for all students",
+            "remove_parent_all_students_desc": "Will not be a legal guardian for any student, but data remains.",
+            "remove_complete_parent_title": "Permanently remove person from system",
+            "remove_complete_parent_desc": "All guardian data will be deleted, cannot be undone."
+        }
+    },
     "documents": {
         "types": {
             "folder": "Folder",

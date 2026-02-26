@@ -341,13 +341,7 @@
     "family": {
         "father": "Otec",
         "mother": "Matka",
-        "guardian": "Zákonný zástupce",
-        "stepfather": "Nevlastní otec",
-        "stepmother": "Nevlastní matka",
-        "grandfather": "Dědeček",
-        "grandmother": "Babička",
-        "uncle": "Strýc",
-        "aunt": "Teta"
+        "other": "Jiné"
     },
     "person": {
         "first_name": "Křestní jméno",
@@ -695,6 +689,19 @@
             "educational_measures": "Výchovná opatření",
             "timetable": "Rozvrh"
         },
+        "matrika_fields": {
+            "title": "Školní matrika",
+            "highest_education": "Kód nejvyššího dosaženého vzdělání",
+            "previous_school_izo": "IZO předchozí školy",
+            "study_type": "Forma vzdělávání (kód)",
+            "financing": "Způsob financování (kód)",
+            "start_reason": "Kód zahájení",
+            "end_reason": "Kód ukončení",
+            "individual_plan": "Individuální vzdělávací plán",
+            "special_needs": "Znevýhodnění (kód)",
+            "language": "Vyučovací jazyk (kód)",
+            "health_status": "Zdravotní stav (kód)"
+        },
         "medical": {
             "title": "Přidat zdravotní záznam"
         },
@@ -704,6 +711,9 @@
             "parent_for": "Zákonný zástupce pro...",
             "create_new_one": "Vytvořit nového",
             "add_parent": "Přidat rodiče"
+        },
+        "create_parent": {
+            "title": "Vytvořit nového zákonného zástupce"
         },
         "remove_parent": {
             "title": "Odebrat zákonného zástupce",
