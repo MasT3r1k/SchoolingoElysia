@@ -236,12 +236,21 @@ const elysiaApp = new Elysia()
         db.selectFrom('grades')
           .innerJoin('grades_columns', 'grades.column_id', 'grades_columns.column_id')
           .innerJoin('subjects', 'grades_columns.subject_id', 'subjects.subject_id')
+          .leftJoin('persons as teacher', 'teacher.person_id', 'grades.teacher_id')
           .select([
             'grades.mark',
+            'grades.column_id',
             'grades_columns.weight',
             'grades_columns.topic',
             'grades_columns.created',
-            'subjects.shortcut as subject_shortcut'
+            'grades_columns.type',
+            'grades_columns.max_points',
+            'grades_columns.subject_id',
+            'grades_columns.group_id',
+            'subjects.shortcut as subject_shortcut',
+            'subjects.label as subject_name',
+            'teacher.last_name as teacher_last_name',
+            'teacher.first_name as teacher_first_name'
           ])
           .where('grades.student_id', '=', id)
           .where('grades_columns.status', '=', 'active')
@@ -377,6 +386,22 @@ const elysiaApp = new Elysia()
         result.teacher_name = await format_person_by_id(studentResult.teacher_id);
       }
 
+      if (show.includes('notes')) {
+        const notes = await db.selectFrom('student_notes')
+          .selectAll()
+          .where('student_id', '=', id)
+          .orderBy('created_at', 'desc')
+          .execute();
+
+        const teacherIds = notes.map(n => n.teacher_id);
+        const teacherMap = await format_person_map_by_ids(teacherIds);
+
+        result.student_notes = notes.map(n => ({
+          ...n,
+          teacher_name: teacherMap.get(n.teacher_id)
+        }));
+      }
+
       return Response.json(result);
 
     } catch (e) {
@@ -388,7 +413,7 @@ const elysiaApp = new Elysia()
       id: t.Number()
     }),
     query: t.Object({
-      type: t.String({ default: 'basic,groups,timetable,parents,medical,matrika' }),
+      type: t.String({ default: 'basic,groups,timetable,parents,medical,matrika,notes' }),
       time: t.String({ default: moment().format("YYYY-MM-DD") })
     })
   })
@@ -1076,6 +1101,118 @@ const elysiaApp = new Elysia()
       birthday: t.Optional(t.String()),
       birthPlace: t.Optional(t.String()),
       nationalityId: t.Optional(t.Number())
+    })
+  })
+
+  // STUDENT NOTES
+  .get('/student/:id/notes', async ({ cookie, params: { id } }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW);
+    if (!perm) return { error: 'no_permission' };
+
+    const notes = await db.selectFrom('student_notes')
+      .selectAll()
+      .where('student_id', '=', id)
+      .orderBy('created_at', 'desc')
+      .execute();
+
+    const teacherIds = notes.map(n => n.teacher_id);
+    const teacherMap = await format_person_map_by_ids(teacherIds);
+
+    return notes.map(n => ({
+      ...n,
+      teacher_name: teacherMap.get(n.teacher_id)
+    }));
+  }, {
+    params: t.Object({ id: t.Number() })
+  })
+
+  .post('/student/:id/notes', async ({ cookie, params: { id }, body }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) return { error: 'no_permission' };
+
+    try {
+      const result = await db.insertInto('student_notes')
+        .values({
+          student_id: id,
+          teacher_id: user.person_id as number,
+          content: body.content,
+          is_public: body.is_public ?? false,
+          created_at: new Date(),
+          updated_at: new Date()
+        })
+        .executeTakeFirstOrThrow();
+
+      return { success: true, noteId: Number(result.insertId) };
+    } catch (e) {
+      console.error(e);
+      return new Response(JSON.stringify({ error: 'Failed' }), { status: 500 });
+    }
+  }, {
+    params: t.Object({ id: t.Number() }),
+    body: t.Object({
+      content: t.String(),
+      is_public: t.Optional(t.Boolean())
+    })
+  })
+
+  .patch('/student/:id/notes/:noteId', async ({ cookie, params: { id, noteId }, body }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) return { error: 'no_permission' };
+
+    try {
+      await db.updateTable('student_notes')
+        .set({
+          content: body.content,
+          is_public: body.is_public ?? false,
+          updated_at: new Date()
+        })
+        .where('note_id', '=', noteId)
+        .where('student_id', '=', id)
+        .execute();
+
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      return new Response(JSON.stringify({ error: 'Failed' }), { status: 500 });
+    }
+  }, {
+    params: t.Object({
+      id: t.Number(),
+      noteId: t.Number()
+    }),
+    body: t.Object({
+      content: t.String(),
+      is_public: t.Optional(t.Boolean())
+    })
+  })
+
+  .delete('/student/:id/notes/:noteId', async ({ cookie, params: { id, noteId } }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) return { error: 'no_permission' };
+
+    try {
+      await db.deleteFrom('student_notes')
+        .where('note_id', '=', noteId)
+        .where('student_id', '=', id)
+        .execute();
+
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      return new Response(JSON.stringify({ error: 'Failed' }), { status: 500 });
+    }
+  }, {
+    params: t.Object({
+      id: t.Number(),
+      noteId: t.Number()
     })
   });
 

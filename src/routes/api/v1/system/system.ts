@@ -13,7 +13,7 @@ const app = new Elysia()
 
     const schoolId = school.school_id;
 
-    const [school_info, districts, student_count, subjects, scopes, ldap_config, email_config, countries, domains] = await Promise.all([
+    const [school_info, districts, student_count, subjects, scopes, ldap_config, email_config, countries, domains, evaluation_templates] = await Promise.all([
       // School settings
       db.selectFrom('schools')
         .leftJoin('districts', 'districts.district_id', 'schools.district_id')
@@ -137,6 +137,11 @@ const app = new Elysia()
       db.selectFrom('school_domains')
         .select(['domain_id', 'domain'])
         .where('school_id', '=', schoolId)
+        .execute(),
+      // Evaluation Templates
+      db.selectFrom('school_evaluation_templates')
+        .selectAll()
+        .where('school_id', '=', schoolId)
         .execute()
     ]);
 
@@ -154,6 +159,7 @@ const app = new Elysia()
       subjects,
       scopes,
       domains: domains || [],
+      evaluation_templates: evaluation_templates || [],
       communication_permissions: await db.selectFrom('role_communication_permissions').selectAll().execute()
     });
   })

@@ -99,6 +99,8 @@ import { filesTable } from './files'
 import { filesTokensTable } from './files_tokens'
 import { messages_filesTable } from './messages_files'
 import { TimetableSchemasTable } from './timetable_schemas'
+import { TutoringSessionsTable } from './tutoring_sessions'
+import { TutoringSignupsTable } from './tutoring_signups'
 import { MigrationsTable } from './migrations'
 import { OnlineLessonsTable } from './online_lessons'
 import { OAuthTokensTable } from './oauth_tokens'
@@ -116,6 +118,8 @@ import { UserPermissionsTable } from './user_permissions'
 import { student_historyTable } from './student_history'
 import { StudentMatrikaTable } from './student_matrika'
 import { StudentMatrikaRecordsTable } from './student_matrika_records'
+import { StudentNotesTable } from './student_notes'
+import { SchoolEvaluationTemplatesTable } from './school_evaluation_templates'
 
 
 
@@ -249,6 +253,10 @@ export interface Database {
   user_permissions: UserPermissionsTable
   student_matrika: StudentMatrikaTable
   student_matrika_records: StudentMatrikaRecordsTable
+  student_notes: StudentNotesTable
+  tutoring_sessions: TutoringSessionsTable
+  tutoring_signups: TutoringSignupsTable
+  school_evaluation_templates: SchoolEvaluationTemplatesTable
 }
 
 
