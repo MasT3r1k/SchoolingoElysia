@@ -465,6 +465,17 @@ const elysiaApp = new Elysia()
           .execute();
       }
 
+      if (body.saveType === 'change') {
+        await db.insertInto('student_history')
+          .values({
+            student_id: id,
+            teacher_id: user.person_id as number,
+            type: 'updated_matrika',
+            data: JSON.stringify(body)
+          })
+          .execute();
+      }
+
       return { success: true };
     } catch (e) {
       console.error(e);
@@ -484,7 +495,8 @@ const elysiaApp = new Elysia()
       individual_plan_code: t.Optional(t.Nullable(t.String())),
       special_needs_code: t.Optional(t.Nullable(t.String())),
       language_code: t.Optional(t.Nullable(t.String())),
-      health_status_code: t.Optional(t.Nullable(t.String()))
+      health_status_code: t.Optional(t.Nullable(t.String())),
+      saveType: t.Optional(t.Union([t.Literal('change'), t.Literal('correction')], { default: 'correction' }))
     })
   })
 
@@ -904,6 +916,17 @@ const elysiaApp = new Elysia()
         }
       });
 
+      if (body.saveType === 'change') {
+        await db.insertInto('student_history')
+          .values({
+            student_id: id,
+            teacher_id: user.person_id as number,
+            type: 'updated_student',
+            data: JSON.stringify(body)
+          })
+          .execute();
+      }
+
       return { success: true };
     } catch (e) {
       console.error(e);
@@ -917,7 +940,8 @@ const elysiaApp = new Elysia()
       street: t.String(),
       houseNumber: t.String(),
       city: t.String(),
-      postcode: t.Optional(t.String())
+      postcode: t.Optional(t.String()),
+      saveType: t.Optional(t.Union([t.Literal('change'), t.Literal('correction')], { default: 'correction' }))
     })
   })
 
@@ -992,7 +1016,7 @@ const elysiaApp = new Elysia()
     const {
       firstName, lastName, prefixTitle, suffixTitle,
       classId, insuranceId, gender, birthNum,
-      birthday, birthPlace, nationalityId
+      birthday, birthPlace, nationalityId, saveType
     } = body;
 
     try {
@@ -1080,6 +1104,19 @@ const elysiaApp = new Elysia()
         }
       });
 
+      if (body.saveType === 'change') {
+        await db.insertInto('student_history')
+          .values({
+            student_id: id,
+            teacher_id: user.person_id as number,
+            type: 'updated_student',
+            data: JSON.stringify({
+              firstName, lastName, classId, gender, birthNum, birthday, birthPlace, nationalityId, insuranceId
+            })
+          })
+          .execute();
+      }
+
       return { success: true };
     } catch (e) {
       console.error(e);
@@ -1100,7 +1137,8 @@ const elysiaApp = new Elysia()
       birthNum: t.Optional(t.String()),
       birthday: t.Optional(t.String()),
       birthPlace: t.Optional(t.String()),
-      nationalityId: t.Optional(t.Number())
+      nationalityId: t.Optional(t.Number()),
+      saveType: t.Optional(t.Union([t.Literal('change'), t.Literal('correction')], { default: 'correction' }))
     })
   })
 

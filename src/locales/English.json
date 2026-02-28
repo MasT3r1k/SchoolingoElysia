@@ -1357,6 +1357,7 @@
         },
         "other": "Other",
         "security": "Security",
+        "notifications": "Notifications",
         "2fa": {
             "already_activated": "You already have two-factor authentication activated!",
             "successful_activated": "Two-factor authentication was successfully activated.",

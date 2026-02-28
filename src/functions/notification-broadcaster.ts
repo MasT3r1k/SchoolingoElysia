@@ -16,7 +16,10 @@ export type NotificationType =
     | 'substitution_new'
     | 'reward_new'
     | 'schedule_change'
-    | 'announcement';
+    | 'announcement'
+    | 'leave_reaction'
+    | 'leave_request'
+    | 'leave_balance_low';
 
 export interface NotificationPayload {
     type: NotificationType;
@@ -216,6 +219,62 @@ class NotificationBroadcaster {
             data: data,
             url: '/teach/rewards',
             icon: 'trophy'
+        });
+    }
+
+    /**
+     * Send notification for leave reaction (approval/rejection)
+     */
+    async notifyLeaveReaction(teacheruser_id: number, data: {
+        status: 'approved' | 'rejected';
+        startDate: Date;
+        endDate: Date;
+        approverName: string;
+        comment?: string;
+    }): Promise<void> {
+        await this.sendToUser(teacheruser_id, {
+            type: 'leave_reaction',
+            title: `Dovolená ${data.status === 'approved' ? 'schválena' : 'zamítnuta'}`,
+            body: `${data.startDate.toLocaleDateString('cs-CZ')} - ${data.endDate.toLocaleDateString('cs-CZ')}${data.comment ? `: ${data.comment}` : ''}`,
+            data: data,
+            url: '/teach/leave',
+            icon: data.status === 'approved' ? 'check' : 'x'
+        });
+    }
+
+    /**
+     * Send notification for new leave request to HR/Managers
+     */
+    async notifyNewLeaveRequest(recipientUserIds: number[], data: {
+        employeeName: string;
+        startDate: Date;
+        endDate: Date;
+        requestId: number;
+    }): Promise<void> {
+        await this.sendToUsers(recipientUserIds, {
+            type: 'leave_request',
+            title: 'Nová žádost o dovolenou',
+            body: `${data.employeeName}: ${data.startDate.toLocaleDateString('cs-CZ')} - ${data.endDate.toLocaleDateString('cs-CZ')}`,
+            data: data,
+            url: `/system/employees/vacations?id=${data.requestId}`,
+            icon: 'file-text'
+        });
+    }
+
+    /**
+     * Send notification for low vacation balance
+     */
+    async notifyLowLeaveBalance(user_id: number, data: {
+        balance: number;
+        threshold: number;
+    }): Promise<void> {
+        await this.sendToUser(user_id, {
+            type: 'leave_balance_low',
+            title: 'Nízký zůstatek dovolené',
+            body: `Váš zůstatek dovolené klesl na ${data.balance} dní. (Limit: ${data.threshold})`,
+            data: data,
+            url: '/teach/leave',
+            icon: 'alert-triangle'
         });
     }
 

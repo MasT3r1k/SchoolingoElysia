@@ -1119,6 +1119,7 @@
         "mark": "Známka",
         "points": "Získané body",
         "subject": "Předmět",
+        "no_subjects": "Žádné předměty",
         "class_average": "Průměr třídy",
         "class_rank": "Pořadí ve třídě",
         "marking_scale": "Tabulka hodnocení",
@@ -1412,6 +1413,7 @@
         },
         "other": "Ostatní",
         "security": "Zabezpečení",
+        "notifications": "Notifikace",
         "2fa": {
             "already_activated": "Dvoufázové ověření máte již aktivované!",
             "successful_activated": "Dvoufázové ověření bylo úspěšně aktivováno.",
