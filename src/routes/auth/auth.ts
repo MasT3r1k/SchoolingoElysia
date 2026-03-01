@@ -9,7 +9,7 @@ import { SecurityConfig } from '../../config/security.config';
 import { Mailer } from '../../../mailer.module';
 import { Utils } from '../../utils/utils';
 
-export async function authenticateUser(user_id: number, cookie: any, userAgent: string | null, ip: string) {
+export async function authenticateUser(user_id: number, cookie: any, userAgent: string | null, ip: string | null) {
   try {
     const user = await db.selectFrom("users")
       .leftJoin("persons", "persons.person_id", "users.person_id")
@@ -111,6 +111,28 @@ const elysiaApp = new Elysia()
     if (err.length) return Response.json({ error: err });
 
     try {
+      const { ip } = store;
+      const ipData = await getIPData(ip);
+
+      const userAgent = request.headers.get("user-agent") || null;
+      console.log(ipData.ip)
+
+      // 1. Check IP rate limit (Total attempts from this IP)
+      const ipAttemptsCount = await db.selectFrom('login_history')
+        .select(({ fn }) => [
+          fn.count<number>('login_id').as('count')
+        ])
+        
+        .where('ip', ipData.ip ? '=' : 'is', ipData.ip)
+        .where('created', '>', moment().subtract(SecurityConfig.IP_RATE_LIMIT_MINUTES, 'minutes').toDate())
+        .executeTakeFirst();
+
+      console.log(ipAttemptsCount)
+
+      if (ipAttemptsCount && Number(ipAttemptsCount.count) >= SecurityConfig.IP_RATE_LIMIT_MAX_ATTEMPTS) {
+        return Response.json({ error: [`Too many attempts from this IP. Please try again in ${SecurityConfig.IP_RATE_LIMIT_MINUTES} minutes.`] }, { status: 429 });
+      }
+
       const user = await db.selectFrom("users")
         .leftJoin("persons", "persons.person_id", "users.person_id")
         .innerJoin("passwords", "passwords.password_id", 'users.password_id')
@@ -131,15 +153,43 @@ const elysiaApp = new Elysia()
         .limit(1)
         .executeTakeFirst()
 
-        if (!user) {
-          return Response.json({ error: ['Invalid username'] })
-        }
+      if (!user) {
+        // Record failed attempt for IP even if user doesn't exist
+        await db.insertInto("login_history")
+          .values({
+            user_id: null, // System/Unknown user
+            success: false,
+            type: 'password',
+            ip: ipData.ip,
+            user_agent: userAgent,
+            error: 'invalid_username',
+            city: ipData?.city ?? null,
+            zip_code: ipData?.zip_code ?? null,
+            region_name: ipData?.region_name ?? null,
+            country: ipData?.country ?? null,
+            country_code: ipData?.country_code ?? null,
+            continent: ipData?.continent ?? null,
+            continent_code: ipData?.continent_code ?? null,
+          })
+          .execute();
+        return Response.json({ error: ['Invalid username'] })
+      }
 
-      const { ip } = store;
-      const userAgent = request.headers.get("user-agent") || null;
+      // 2. Check Account Lockout (Failed attempts for this specific user)
+      const failedAttemptsCount = await db.selectFrom('login_history')
+        .select(({ fn }) => [
+          fn.count<number>('login_id').as('count')
+        ])
+        .where('user_id', '=', user.user_id)
+        .where('success', '=', false)
+        .where('created', '>', moment().subtract(SecurityConfig.LOGIN_LOCKOUT_MINUTES, 'minutes').toDate())
+        .executeTakeFirst();
 
-      // ---- IP Lookup ----
-      const ipData = await getIPData(ip);
+      if (failedAttemptsCount && Number(failedAttemptsCount.count) >= SecurityConfig.LOGIN_MAX_ATTEMPTS) {
+        return Response.json({ 
+          error: [`Account locked due to too many failed attempts. Please try again in ${SecurityConfig.LOGIN_LOCKOUT_MINUTES} minutes.`] 
+        }, { status: 423 });
+      }
 
       // Validate password
       // TODO ldap login
@@ -151,7 +201,7 @@ const elysiaApp = new Elysia()
             user_id: user.user_id,
             success: false,
             type: 'password',
-            ip: ipData?.ip ?? ip,
+            ip: ipData.ip,
             user_agent: userAgent,
             error: 'invalid_password',
             city: ipData?.city ?? null,
@@ -179,7 +229,7 @@ const elysiaApp = new Elysia()
               user_id: user.user_id,
               success: false,
               type: 'password',
-              ip: ipData?.ip ?? ip,
+              ip: ipData.ip,
               user_agent: userAgent,
               error: 'invalid_2fa',
               city: ipData?.city ?? null,
@@ -197,14 +247,14 @@ const elysiaApp = new Elysia()
       }
 
       // Authenticate user (existing logic)
-      const res = await authenticateUser(user.user_id, cookie, userAgent, ipData?.ip ?? ip);
+      const res = await authenticateUser(user.user_id, cookie, userAgent, ipData.ip);
       if (res?.status === true) {
         // Check if ip has been ever logged in
         const checkIP = await db.selectFrom('login_history')
         .select([
           'login_id'
         ])
-        .where('ip', '=', ipData?.ip ?? ip)
+        .where('ip', ipData.ip ? '=' : 'is', ipData.ip)
         .where('user_id', '=', user.user_id)
         .where('success', '=', true)
         .executeTakeFirst();
@@ -214,7 +264,7 @@ const elysiaApp = new Elysia()
             user_id: user.user_id,
             success: true,
             type: 'password',
-            ip: ipData?.ip ?? ip,
+            ip: ipData.ip,
             token_id: res.token_id ?? null,
             user_agent: userAgent,
             error: null,
@@ -236,7 +286,7 @@ const elysiaApp = new Elysia()
             data: JSON.stringify({
               id: Number(loginHistory.insertId),
               city: ipData?.city ?? null,
-              ip: ipData?.ip ?? ip,
+              ip: ipData.ip,
               country: ipData?.country ?? null,
               country_code: ipData?.country_code ?? null,
             })
@@ -263,7 +313,7 @@ const elysiaApp = new Elysia()
                     location: `${ipData?.city}, ${ipData?.country}`,
                     security_url: "https://localhost:4200",
                     device: `${Utils.getBrowser(userAgent)}, ${Utils.getOS(userAgent)}`,
-                    ip: ipData?.ip ?? ip,
+                    ip: ipData.ip ?? ip,
                     time: moment().format('DD. MM. YYYY HH:mm')
                   }
                 }

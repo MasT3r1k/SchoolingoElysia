@@ -2,7 +2,7 @@ import { Generated } from "kysely";
 
 export interface login_historyTable {
   login_id: Generated<number>;
-  user_id: number;
+  user_id: number | null;
   type: 'password' | 'qrcode' | 'passkey';
   success: boolean;
   error: string | null;

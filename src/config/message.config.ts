@@ -41,4 +41,14 @@ export namespace MessagesConfig {
     // === MESSAGE CONFIG ===
     export const MESSAGE_CONTENT_MAX_LENGTH = 3000;
     export const MESSAGE_CONTENT_MIN_LENGTH = 3;
+
+    // === RECIPIENTS CONFIG ===
+    // 0 = MESSAGE, 1 = HOMEWORK, 2 = EXCUSESTUDENT, 3 = RATESTUDENT, 4 = SYSTEM
+    export const MESSAGE_TYPE_TARGETS: Record<number, string[]> = {
+        0: ['teacher', 'student', 'parent', 'management', 'admin_staff', 'personnel'],
+        1: ['student', 'parent'],
+        2: ['teacher', 'management', 'admin_staff'],
+        3: ['student', 'parent'],
+        4: ['teacher', 'student', 'parent', 'management', 'admin_staff', 'personnel'],
+    };
 }

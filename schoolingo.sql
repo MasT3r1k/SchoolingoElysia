@@ -21883,3 +21883,20 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+--
+-- Struktura tabulky `messages_drafts`
+--
+
+CREATE TABLE `messages_drafts` (
+  `draft_id` int(11) NOT NULL AUTO_INCREMENT,
+  `author_id` int(11) NOT NULL,
+  `type` int(11) NOT NULL DEFAULT 0,
+  `topic` varchar(255) DEFAULT NULL,
+  `message` text DEFAULT NULL,
+  `receivers` json DEFAULT NULL,
+  `require_confirm` boolean NOT NULL DEFAULT FALSE,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`draft_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

@@ -1,3 +1,6 @@
+import { db } from '../../database';
+import moment from 'moment';
+
 // TypeScript interface pro různé IP API služby
 interface IpApiResponse {
   status: string;
@@ -51,6 +54,35 @@ export async function getIPData(ip: string) {
     continent_code: null,
   };
 
+  if (!ip || ip === '::1' || ip === '127.0.0.1') {
+    return fallbackData;
+  }
+
+  // 0. Kontrola cache v databázi (platnost 30 dní)
+  try {
+    const cached = await db.selectFrom('ip_cache')
+      .selectAll()
+      .where('ip', '=', ip)
+      .where('created', '>', moment().subtract(30, 'days').toDate())
+      .executeTakeFirst();
+
+    if (cached) {
+      console.log('[IP Lookup] Cache HIT:', ip);
+      return {
+        ip: cached.ip,
+        city: cached.city,
+        zip_code: cached.zip_code,
+        region_name: cached.region_name,
+        country: cached.country,
+        country_code: cached.country_code,
+        continent: cached.continent,
+        continent_code: cached.continent_code,
+      };
+    }
+  } catch (cacheError) {
+    console.warn('[IP Lookup] Cache read failed:', cacheError);
+  }
+
   // Timeout pro každý request (3 sekundy)
   const TIMEOUT_MS = 3000;
 
@@ -69,14 +101,15 @@ export async function getIPData(ip: string) {
     }
   };
 
-  // 1. Primární služba: ip-api.com (bezplatná, bez API klíče)
+  let resultData = null;
+
+  // 1. Primární služba: ip-api.com
   try {
-    const res = await fetchWithTimeout(`http://ip-api.com/json/${ip || ''}`, TIMEOUT_MS);
+    const res = await fetchWithTimeout(`http://ip-api.com/json/${ip}`, TIMEOUT_MS);
     const data = await res.json() as IpApiResponse;
     
     if (data.status === "success") {
-      console.log('[IP Lookup] ip-api.com SUCCESS:', data);
-      return {
+      resultData = {
         ip: data.query || ip,
         city: data.city ?? null,
         zip_code: data.zip ?? null,
@@ -84,64 +117,96 @@ export async function getIPData(ip: string) {
         country: data.country ?? null,
         country_code: data.countryCode ?? null,
         continent: data.continent ?? null,
-        continent_code: data.continentCode ?? null,
+        continent_code: data.continentCode ?? null
       };
     }
   } catch (e) {
-    console.warn('[IP Lookup] ip-api.com failed:', e instanceof Error ? e.message : 'Unknown error');
+    console.warn('[IP Lookup] ip-api.com failed.');
   }
 
-  // 2. Backup služba: ipapi.co (bezplatná, 1000 requestů/den)
-  try {
-    const res = await fetchWithTimeout(`https://ipapi.co/${ip || ''}/json/`, TIMEOUT_MS);
-    const data = await res.json() as IpapiCoResponse;
-    
-    if (data.ip && !data.error) {
-      console.log('[IP Lookup] ipapi.co SUCCESS:', data);
-      return {
-        ip: data.ip || ip,
-        city: data.city ?? null,
-        zip_code: data.postal ?? null,
-        region_name: data.region ?? null,
-        country: data.country_name ?? null,
-        country_code: data.country_code ?? null,
-        continent: data.continent_code === 'EU' ? 'Europe' : 
-                   data.continent_code === 'AS' ? 'Asia' : 
-                   data.continent_code === 'AF' ? 'Africa' : 
-                   data.continent_code === 'NA' ? 'North America' : 
-                   data.continent_code === 'SA' ? 'South America' : 
-                   data.continent_code === 'OC' ? 'Oceania' : 
-                   data.continent_code === 'AN' ? 'Antarctica' : null,
-        continent_code: data.continent_code ?? null,
-      };
+  // 2. Backup služba: ipapi.co
+  if (!resultData) {
+    try {
+      const res = await fetchWithTimeout(`https://ipapi.co/${ip}/json/`, TIMEOUT_MS);
+      const data = await res.json() as IpapiCoResponse;
+      
+      if (data.ip && !data.error) {
+        resultData = {
+          ip: data.ip || ip,
+          city: data.city ?? null,
+          zip_code: data.postal ?? null,
+          region_name: data.region ?? null,
+          country: data.country_name ?? null,
+          country_code: data.country_code ?? null,
+          continent: data.continent_code === 'EU' ? 'Europe' : 
+                     data.continent_code === 'AS' ? 'Asia' : 
+                     data.continent_code === 'AF' ? 'Africa' : 
+                     data.continent_code === 'NA' ? 'North America' : 
+                     data.continent_code === 'SA' ? 'South America' : 
+                     data.continent_code === 'OC' ? 'Oceania' : 
+                     data.continent_code === 'AN' ? 'Antarctica' : null,
+          continent_code: data.continent_code ?? null,
+        };
+      }
+    } catch (e) {
+      console.warn('[IP Lookup] ipapi.co failed.');
     }
-  } catch (e) {
-    console.warn('[IP Lookup] ipapi.co failed:', e instanceof Error ? e.message : 'Unknown error');
   }
 
-  // 3. Třetí backup: ipwhois.app (bezplatná, 10000 requestů/měsíc)
-  try {
-    const res = await fetchWithTimeout(`http://ipwhois.app/json/${ip || ''}`, TIMEOUT_MS);
-    const data = await res.json() as IpWhoisResponse;
-    
-    if (data.success) {
-      console.log('[IP Lookup] ipwhois.app SUCCESS:', data);
-      return {
-        ip: data.ip || ip,
-        city: data.city ?? null,
-        zip_code: null, // ipwhois neposkytuje PSČ
-        region_name: data.region ?? null,
-        country: data.country ?? null,
-        country_code: data.country_code ?? null,
-        continent: data.continent ?? null,
-        continent_code: data.continent_code ?? null,
-      };
+  // 3. Třetí backup: ipwhois.app
+  if (!resultData) {
+    try {
+      const res = await fetchWithTimeout(`http://ipwhois.app/json/${ip}`, TIMEOUT_MS);
+      const data = await res.json() as IpWhoisResponse;
+      
+      if (data.success) {
+        resultData = {
+          ip: data.ip || ip,
+          city: data.city ?? null,
+          zip_code: null,
+          region_name: data.region ?? null,
+          country: data.country ?? null,
+          country_code: data.country_code ?? null,
+          continent: data.continent ?? null,
+          continent_code: data.continent_code ?? null,
+        };
+      }
+    } catch (e) {
+      console.warn('[IP Lookup] ipwhois.app failed.');
     }
-  } catch (e) {
-    console.warn('[IP Lookup] ipwhois.app failed:', e instanceof Error ? e.message : 'Unknown error');
   }
 
-  // Všechny služby selhaly - vrátit fallback data
-  console.error('[IP Lookup] All services failed, using fallback data with IP only');
+  // Pokud jsme získali data, uložíme je do cache
+  if (resultData) {
+    try {
+      await db.insertInto('ip_cache')
+        .values({
+          ip: resultData.ip,
+          city: resultData.city,
+          zip_code: resultData.zip_code,
+          region_name: resultData.region_name,
+          country: resultData.country,
+          country_code: resultData.country_code,
+          continent: resultData.continent,
+          continent_code: resultData.continent_code,
+        })
+        .onDuplicateKeyUpdate({
+          city: resultData.city,
+          zip_code: resultData.zip_code,
+          region_name: resultData.region_name,
+          country: resultData.country,
+          country_code: resultData.country_code,
+          continent: resultData.continent,
+          continent_code: resultData.continent_code,
+          created: moment().toDate()
+        })
+        .execute();
+      console.log('[IP Lookup] Cache updated for:', ip);
+    } catch (saveError) {
+      console.warn('[IP Lookup] Failed to save to cache:', saveError);
+    }
+    return resultData;
+  }
+
   return fallbackData;
 }

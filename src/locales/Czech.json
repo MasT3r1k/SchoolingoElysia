@@ -436,6 +436,7 @@
             "main": "Zprávy",
             "send": "Poslat zprávu",
             "received": "Obdržené zprávy",
+            "drafts": "Koncepty",
             "sent": "Odeslané zprávy",
             "groups": "Diskuze",
             "noticeboard": "Nástěnka"
@@ -534,6 +535,32 @@
             "save_changes": "Uložit změny"
         }
     },
+    "tutoring": {
+        "title": "Doučování",
+        "add_session": "Nová lekce",
+        "modals": {
+            "add": {
+                "title": "Nová lekce doučování",
+                "description": "Vytvořte novou lekci doučování pro studenty.",
+                "form": {
+                    "title": "Název lekce",
+                    "title_placeholder": "např. Příprava na maturitu z matematiky",
+                    "subject": "Předmět",
+                    "all_subjects": "Všechny předměty",
+                    "intended_for_class": "Určeno pro třídu",
+                    "all_classes": "Všechny třídy",
+                    "date_time": "Datum a čas",
+                    "room": "Místnost",
+                    "no_room": "Bez místnosti",
+                    "capacity": "kapacita",
+                    "max_students": "Max. počet studentů",
+                    "description": "Popis",
+                    "description_placeholder": "Detaily o lekci...",
+                    "create_button": "Vytvořit lekci"
+                }
+            }
+        }
+    },
     "notifications": {
         "title": "Notifikace",
         "empty": "Žádné příchozí notifikace",
@@ -558,6 +585,8 @@
         "back": "Zpátky",
         "cancel": "Zrušit",
         "edit": "Upravit",
+        "send": "Odeslat",
+        "send_request": "Odeslat žádost",
         "view_all": "Zobrazit vše",
         "remove": "Odebrat",
         "save": "Uložit",
@@ -1346,7 +1375,19 @@
         "details": "Podrobnosti o zprávě",
         "error_loading": "Nepodařilo se načíst informace o zprávě",
         "noticeboard_not_active_title": "Nástěnka je aktuálně neaktivní",
-        "noticeboard_not_active_desc": "Nástěnka byla deaktivována správcem systému. Pro více informací kontaktujte správce školy."
+        "noticeboard_not_active_desc": "Nástěnka byla deaktivována správcem systému. Pro více informací kontaktujte správce školy.",
+        "draft": "Koncept",
+        "drafts": "Koncepty",
+        "no_drafts": "Nemáte žádné uložené koncepty.",
+        "select_draft": "Žádný koncept není vybrán",
+        "select_draft_desc": "Vyberte koncept vlevo pro zobrazení podrobností nebo pokračování v psaní.",
+        "continue_writing": "Pokračovat v psaní",
+        "draft_hint": "Tato zpráva ještě nebyla odeslána.",
+        "draft_saved": "Koncept byl úspěšně uložen.",
+        "no_subject": "(Bez předmětu)",
+        "drafts_confirm": {
+            "delete_confirm": "Opravdu chcete smazat tento koncept?"
+        }
     },
     "settings": {
         "alerts": {
@@ -1792,6 +1833,12 @@
     "employees": {
         "list": "Seznam",
         "attendance": "Docházka",
+        "attendance_status": {
+            "checkin_success": "Příchod byl úspěšně zaevidován.",
+            "checkin_failed": "Nepodařilo se zaznamenat příchod.",
+            "checkout_success": "Odchod byl úspěšně zaevidován.",
+            "checkout_failed": "Nepodařilo se zaznamenat odchod."
+        },
         "vacations": {
             "title": "Dovolené",
             "load_failed": "Nepodařilo se načíst dovolené",
@@ -1818,6 +1865,7 @@
         },
         "add_employee": {
             "title": "Přidat zaměstnance",
+            "description": "Vyplňte základní informace o novém zaměstnanci",
             "roles": {
                 "teacher_male": "Učitel",
                 "teacher_female": "Učitelka",
@@ -1836,6 +1884,7 @@
         },
         "request_vacation": {
             "title": "Žádost o dovolenou",
+            "description": "Každý učitel potřebuje občas upustit páru.",
             "types": {
                 "title": "Druh dovolené",
                 "vacation": "Dovolená",
@@ -1851,6 +1900,7 @@
                 "other": "Jiné"
             },
             "reason": "Důvod (nepovinné)",
+            "reason_placeholder": "Např. rodinné důvody, prodloužený víkend...",
             "total_days": "Počet dní",
             "current_balance": "Stávající zůstatek",
             "remaining_after": "Zůstatek po schválení",
@@ -1870,7 +1920,8 @@
             "confirm": "Zamítnout dovolenou"
         },
         "edit_attendance": {
-            "title": "Upravit docházku"
+            "title": "Upravit docházku",
+            "description": "Upravte nebo doplňte záznamy docházky zaměstnance."
         }
     },
     "seasonal": {

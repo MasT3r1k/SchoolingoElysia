@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
-
+import { MessagesConfig } from '../../../../config/message.config';
 const app = new Elysia()
   .post('/messages/recipients', async ({ cookie, body }) => {
     const token = cookie.token?.value as string;
@@ -43,8 +43,9 @@ const app = new Elysia()
     }
 
     // --- Message Type Specific Restrictions ---
-    if (body.message_type === 3) { // RATESTUDENT
-        allowedTargets = allowedTargets.filter(t => ['student', 'parent'].includes(t));
+    if (body.message_type !== undefined && MessagesConfig.MESSAGE_TYPE_TARGETS[body.message_type]) {
+        const allowedByType = MessagesConfig.MESSAGE_TYPE_TARGETS[body.message_type];
+        allowedTargets = allowedTargets.filter(t => allowedByType.includes(t));
     }
 
     const result: { group: string, label: string, users: any[] }[] = [];
@@ -82,6 +83,16 @@ const app = new Elysia()
         if (teachers.length > 0) {
             const ids = teachers.map(t => t.person_id);
             allPersonIds.push(...ids);
+            result.push({
+                group: 'teacher',
+                label: 'Učitel',
+                users: teachers.map(t => ({ person_id: t.person_id, role: t.role }))
+            });
+            result.push({
+                group: 'teacher',
+                label: 'Učitelé - volný výběr',
+                users: teachers.map(t => ({ person_id: t.person_id, role: t.role }))
+            });
             result.push({
                 group: 'teachers_all',
                 label: 'Učitelé - všichni',
@@ -123,8 +134,33 @@ const app = new Elysia()
             const ids = students.map(s => s.person_id);
             allPersonIds.push(...ids);
             result.push({
+                group: 'student',
+                label: 'Žák',
+                users: ids.map(id => ({ person_id: id, role: 'student' }))
+            });
+            result.push({
+                group: 'students_class',
+                label: 'Žáci - jedna třída',
+                users: ids.map(id => ({ person_id: id, role: 'student' }))
+            });
+            result.push({
+                group: 'students_group',
+                label: 'Žáci - skupina tříd',
+                users: ids.map(id => ({ person_id: id, role: 'student' }))
+            });
+            result.push({
                 group: 'students_all',
                 label: 'Žáci - všichni',
+                users: ids.map(id => ({ person_id: id, role: 'student' }))
+            });
+            result.push({
+                group: 'students_select',
+                label: 'Žáci - volný výběr',
+                users: ids.map(id => ({ person_id: id, role: 'student' }))
+            });
+            result.push({
+                group: 'students_select_class',
+                label: 'Žáci - volný výběr tříd',
                 users: ids.map(id => ({ person_id: id, role: 'student' }))
             });
         }
@@ -143,14 +179,6 @@ const app = new Elysia()
             if (!classMap.has(className)) classMap.set(className, []);
             classMap.get(className)?.push({ person_id: s.person_id, role: 'student', class: className });
         });
-
-        for (const [className, users] of classMap.entries()) {
-            result.push({
-                group: `class_${className}`,
-                label: `Žáci - třída ${className}`,
-                users: users
-            });
-        }
     }
 
     // F. PARENTS
@@ -166,8 +194,33 @@ const app = new Elysia()
         if (ids.length > 0) {
             allPersonIds.push(...ids);
             result.push({
+                group: 'parents_student',
+                label: 'Rodiče - jeden žák',
+                users: ids.map(id => ({ person_id: id, role: 'parent' }))
+            });
+            result.push({
+                group: 'parents_class',
+                label: 'Rodiče - jedna třída',
+                users: ids.map(id => ({ person_id: id, role: 'parent' }))
+            });
+            result.push({
+                group: 'parents_group',
+                label: 'Rodiče - skupina tříd',
+                users: ids.map(id => ({ person_id: id, role: 'parent' }))
+            });
+            result.push({
                 group: 'parents_all',
                 label: 'Rodiče - všichni',
+                users: ids.map(id => ({ person_id: id, role: 'parent' }))
+            });
+            result.push({
+                group: 'parents_select',
+                label: 'Rodiče - volný výběr',
+                users: ids.map(id => ({ person_id: id, role: 'parent' }))
+            });
+            result.push({
+                group: 'parents_select_class',
+                label: 'Rodiče - volný výběr tříd',
                 users: ids.map(id => ({ person_id: id, role: 'parent' }))
             });
         }

@@ -41,6 +41,7 @@ import { library_reservationsTable } from './library_reservations'
 import { login_historyTable } from './login_history'
 import { messagesTable } from './messages'
 import { messages_receiversTable } from './messages_receivers'
+import { messages_draftsTable } from './messages_drafts'
 import { passwordsTable } from './passwords'
 import { payments_classesTable } from './payments_classes'
 import { payments_columnsTable } from './payments_columns'
@@ -120,6 +121,7 @@ import { StudentMatrikaTable } from './student_matrika'
 import { StudentMatrikaRecordsTable } from './student_matrika_records'
 import { StudentNotesTable } from './student_notes'
 import { SchoolEvaluationTemplatesTable } from './school_evaluation_templates'
+import { ip_cacheTable } from './ip_cache'
 
 
 
@@ -176,6 +178,7 @@ export interface Database {
   messages: messagesTable
   messages_files: messages_filesTable
   messages_receivers: messages_receiversTable
+  messages_drafts: messages_draftsTable
   notifications: notificationsTable
   notification_rules: notificationRulesTable
   push_subscriptions: pushSubscriptionsTable
@@ -257,6 +260,7 @@ export interface Database {
   tutoring_sessions: TutoringSessionsTable
   tutoring_signups: TutoringSignupsTable
   school_evaluation_templates: SchoolEvaluationTemplatesTable
+  ip_cache: ip_cacheTable
 }
 
 

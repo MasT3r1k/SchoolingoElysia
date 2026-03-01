@@ -33,30 +33,22 @@ const elysiaApp = new Elysia()
     }
 
     try {
-        const count = await db.selectFrom("login_history")
+        let countQuery = db.selectFrom("login_history")
           .select([
               sql`COUNT(*)`.as('count')
           ])
-          .where('login_history.user_id', '=', user.user_id)
-          .executeTakeFirst()
-          .then(r => Number(r?.count ?? 0));
+          .where('login_history.user_id', '=', user.user_id);
 
-        const loginStats = await db.selectFrom("login_history")
+        let statsQuery = db.selectFrom("login_history")
             .select([
                 // MariaDB verze: sečteme 1 tam, kde je success true
                 sql<number>`SUM(IF(success = true, 1, 0))`.as('successCount'),
                 // Sečteme 1 tam, kde je success false
                 sql<number>`SUM(IF(success = false, 1, 0))`.as('failureCount')
             ])
-            .where('user_id', '=', user.user_id)
-            // Správná syntaxe pro MariaDB interval
-            .where('created', '>', sql`NOW() - INTERVAL 30 DAY` as any) 
-            .executeTakeFirst();
+            .where('user_id', '=', user.user_id);
 
-        const validLogins = Number(loginStats?.successCount ?? 0);
-        const failedLogins = Number(loginStats?.failureCount ?? 0);
-
-        const login_history = await db.selectFrom("login_history")
+        let listQuery = db.selectFrom("login_history")
             .select([
               'login_history.login_id',
               'login_history.type',
@@ -72,11 +64,35 @@ const elysiaApp = new Elysia()
               'login_history.continent',
               'login_history.token_id'
             ])
+            .where('login_history.user_id', '=', user.user_id);
+
+        if (query.dateFrom) {
+            const dateFrom = moment(query.dateFrom).startOf('day').toDate();
+            countQuery = countQuery.where('created', '>=', dateFrom);
+            statsQuery = statsQuery.where('created', '>=', dateFrom);
+            listQuery = listQuery.where('created', '>=', dateFrom);
+        } else {
+            // Default stats for last 30 days if no date range is provided
+            statsQuery = statsQuery.where('created', '>', sql`NOW() - INTERVAL 30 DAY` as any);
+        }
+
+        if (query.dateTo) {
+            const dateTo = moment(query.dateTo).endOf('day').toDate();
+            countQuery = countQuery.where('created', '<=', dateTo);
+            statsQuery = statsQuery.where('created', '<=', dateTo);
+            listQuery = listQuery.where('created', '<=', dateTo);
+        }
+
+        const count = await countQuery.executeTakeFirst().then(r => Number(r?.count ?? 0));
+        const loginStats = await statsQuery.executeTakeFirst();
+        const login_history = await listQuery
             .limit(query.limit)
             .offset(query.offset)
             .orderBy('login_history.created', 'desc')
-            .where('login_history.user_id', '=', user.user_id)
             .execute();
+
+        const validLogins = Number(loginStats?.successCount ?? 0);
+        const failedLogins = Number(loginStats?.failureCount ?? 0);
 
         return Response.json({ count, data: login_history, validLogins, failedLogins });
     } catch (e) {
@@ -90,7 +106,9 @@ const elysiaApp = new Elysia()
   }, {
     query: t.Object({
         limit: t.Number({ default: 10, maximum: 100, minimum: 1 }),
-        offset: t.Number({ default: 0, minimum: 0 })
+        offset: t.Number({ default: 0, minimum: 0 }),
+        dateFrom: t.Optional(t.String()),
+        dateTo: t.Optional(t.String())
     })
   });
 

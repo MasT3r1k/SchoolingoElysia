@@ -97,11 +97,20 @@ const elysiaApp = new Elysia()
     console.log('[SchoolAPI] Fetching classes for school:', school.school_id);
     const classes = await db.selectFrom("classes")
       .innerJoin('school_years as sy', 'sy.sy_id', 'classes.year_id')
-      .select([
+      .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
+      .leftJoin('teachers', 'teachers.person_id', 'classes.teacher_id')
+      .leftJoin('persons', 'persons.person_id', 'teachers.person_id')
+      .leftJoin('building_rooms', 'building_rooms.room_id', 'classes.room_id')
+      .select(({ fn }) => [
         'classes.class_id',
         'classes.prefix',
         'classes.suffix',
-        'sy.start as sy_start'
+        'sy.start as sy_start',
+        'scopes.name as fieldOfStudy',
+        'persons.first_name as teacher_first_name',
+        'persons.last_name as teacher_last_name',
+        'building_rooms.name as classroom',
+        sql<number>`(SELECT COUNT(person_id) FROM students WHERE students.class_id = classes.class_id)`.as('studentsCount')
       ])
       .where('sy.school_id', '=', school.school_id)
       .execute();
@@ -115,8 +124,13 @@ const elysiaApp = new Elysia()
       if (currentMonth >= 8) yearDiff++; // Školní rok začíná v září
 
       return {
-        class_id: c.class_id,
-        class_name: `${c.prefix}${yearDiff}${c.suffix}`
+        id: c.class_id,
+        name: `${c.prefix}${yearDiff}${c.suffix}`,
+        year: yearDiff,
+        fieldOfStudy: c.fieldOfStudy || null,
+        headTeacher: (c.teacher_first_name && c.teacher_last_name) ? `${c.teacher_first_name} ${c.teacher_last_name}` : null,
+        classroom: c.classroom || null,
+        studentsCount: c.studentsCount || 0
       };
     });
 
@@ -136,9 +150,93 @@ const elysiaApp = new Elysia()
       .where('buildings.school_id', '=', school.school_id)
       .orderBy('building_rooms.name', 'asc')
       .execute();
+  })
+
+  .get('/school/classes/metadata', async ({ school }: any) => {
+    if (!school) return { scopes: [], teachers: [], rooms: [] };
+    const [scopes, teachersRaw, rooms] = await Promise.all([
+      db.selectFrom('scopes').selectAll().where('school_id', '=', school.school_id).execute(),
+      db.selectFrom('teachers')
+        .innerJoin('persons', 'persons.person_id', 'teachers.person_id')
+        .select(['teachers.person_id as id', 'persons.first_name', 'persons.last_name'])
+        .where('teachers.school_id', '=', school.school_id).execute(),
+      db.selectFrom('building_rooms')
+        .innerJoin('building_floors', 'building_floors.bf_id', 'building_rooms.floor_id')
+        .innerJoin('buildings', 'buildings.building_id', 'building_floors.building_id')
+        .select(['building_rooms.room_id as id', 'building_rooms.name'])
+        .where('buildings.school_id', '=', school.school_id).execute()
+    ]);
+    return {
+      scopes: scopes.map(s => ({ id: s.scope_id, name: s.name })),
+      teachers: teachersRaw.map(t => ({ id: t.id, firstName: t.first_name, lastName: t.last_name })),
+      rooms
+    };
+  })
+  .post('/school/classes', async ({ body, school, set }: any) => {
+    if (!school) {
+        set.status = 412;
+        return { error: 'School not configured' };
+    }
+    const { name, year, scopeId, headTeacherId, classroomId } = body;
+    if (!name || !year || !scopeId) {
+        set.status = 400;
+        return { error: 'Missing required fields' };
+    }
+
+    // Parse prefix and suffix from name (e.g., '1.A' or '1.')
+    let prefix = name;
+    let suffix = '';
+    const match = name.match(/^(\d+\.?)(.*)/);
+    if (match) {
+        prefix = match[1];
+        suffix = match[2];
+    } else if (name.length > 2) {
+      // rough fallback if without dots
+      prefix = name.substring(0, 1) + '.';
+      suffix = name.substring(1);
+    }
+
+    const currentYear = await db.selectFrom('school_years')
+        .where('school_id', '=', school.school_id)
+        .where('start', '<=', new Date())
+        .where('end', '>=', new Date())
+        .select('sy_id')
+        .executeTakeFirst();
+    
+    if(!currentYear) {
+      set.status = 400;
+      return { error: 'No active school year found' };
+    }
+
+    try {
+      await db.insertInto('classes').values({
+        prefix,
+        suffix,
+        year_id: currentYear.sy_id,
+        teacher_id: headTeacherId || 0,
+        room_id: classroomId || 0,
+        scope_id: scopeId
+      }).execute();
+
+      return { success: true };
+    } catch (e: any) {
+      set.status = 500;
+      return { error: 'Failed to insert class: ' + e?.message };
+    }
+  })
+  .delete('/school/classes/:id', async ({ params, school, set }: any) => {
+    if (!school) {
+        set.status = 412;
+        return { error: 'School not configured' };
+    }
+    try {
+      await db.deleteFrom('classes').where('class_id', '=', parseInt(params.id)).execute();
+      return { success: true };
+    } catch(e) {
+      set.status = 500;
+      return { error: 'Failed to delete class' };
+    }
   });
-
-
 
 
 export default elysiaApp;
