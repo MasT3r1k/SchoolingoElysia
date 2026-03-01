@@ -2204,5 +2204,151 @@
             "office": "Kancelář",
             "hallway": "Chodba"
         }
+    },
+    "gdpr": {
+        "sidebar": "GDPR",
+        "title": "GDPR - Ochrana osobních údajů",
+        "subtitle": "Spravujte své souhlasy, hlášení a proškolení",
+        "tabs": {
+            "overview": "Přehled",
+            "consents": "Souhlasy",
+            "training": "Školení",
+            "officer": "Pověřenec a žádosti",
+            "admin": "Správa"
+        },
+        "overview": {
+            "notifications": "Oznámení",
+            "new_consents": "Máte %count% nových žádostí o souhlas.",
+            "pending_training": "Máte %count% neukončených školení.",
+            "no_notifications": "Nemáte žádná nová oznámení.",
+            "summary": "Souhrnný stav",
+            "consents_granted": "Udělené souhlasy",
+            "consents_denied": "Odmítnuté souhlasy",
+            "training_completed": "Dokončená školení"
+        },
+        "consents": {
+            "title": "Správa souhlasů",
+            "my_consents": "Moje souhlasy",
+            "child_consents": "Souhlasy dítěte: %name%",
+            "table": {
+                "consent": "Souhlas",
+                "status": "Stav",
+                "granted_at": "Uděleno dne",
+                "expires_at": "Platnost do",
+                "actions": "Akce"
+            },
+            "status": {
+                "new": "Nový",
+                "granted": "Udělen",
+                "denied": "Odmítnut",
+                "revoked": "Odvolán",
+                "revocation_pending": "Žádost o odvolání",
+                "cancelled": "Zrušeno",
+                "expired": "Expirováno"
+            },
+            "actions": {
+                "agree": "Souhlasit",
+                "disagree": "Nesouhlasit",
+                "revoke": "Odvolat",
+                "detail": "Detail",
+                "bulk_agree": "Povolit vše",
+                "bulk_revoke": "Odvolat volitelné"
+            },
+            "detail": {
+                "title": "Detail souhlasu",
+                "description": "Popis",
+                "purpose": "Účel zpracování",
+                "instructions": "Poučení",
+                "reason_label": "Důvod (v případě nesouhlasu/odvolání)",
+                "personal_data": "Dotčené osobní údaje"
+            }
+        },
+        "training": {
+            "title": "Školení a testy",
+            "active_training": "Aktivní školení",
+            "completed_training": "Historie školení",
+            "table": {
+                "name": "Název školení",
+                "valid_to": "Platnost do",
+                "questions": "Otázek",
+                "status": "Stav",
+                "score": "Výsledek"
+            },
+            "status": {
+                "not_started": "Nezahájeno",
+                "in_progress": "Rozpracováno",
+                "completed": "Dokončeno",
+                "failed": "Nesplněno"
+            },
+            "take_test": "Spustit test",
+            "results": "Výsledky"
+        },
+        "officer": {
+            "title": "Pověřenec pro ochranu osobních údajů (DPO)",
+            "contact_info": "Kontaktní údaje pověřence",
+            "actions": {
+                "breach_report": "Hlášení podezření",
+                "objection": "Námitka proti zpracování",
+                "data_request": "Žádost o přístup k údajům (Export)",
+                "forget_me": "Právo na výmaz (Smazat účet)"
+            },
+            "report_form": {
+                "breach_title": "Hlášení podezření na porušení ochrany",
+                "objection_title": "Námitka proti zpracování osobních údajů",
+                "description": "Zde můžete poslat zprávu Pověřenci a vedení školy.",
+                "subject": "Předmět hlášení",
+                "message": "Text zprávy",
+                "submit": "Odeslat hlášení",
+                "success": "Hlášení bylo úspěšně odesláno a zaevidováno."
+            }
+        },
+        "admin": {
+            "title": "Administrace GDPR",
+            "tabs": {
+                "consents": "Správa souhlasů",
+                "training": "Správa školení",
+                "reports": "Evidence hlášení",
+                "templates": "Správa vzorů",
+                "checklist": "Kontrolní seznam"
+            },
+            "consents": {
+                "new": "Nová žádost o souhlas",
+                "from_template": "Ze vzoru",
+                "table": {
+                    "id": "Číslo",
+                    "title": "Titulek",
+                    "target": "Pro koho",
+                    "active": "Aktivní",
+                    "status": "Stav"
+                },
+                "form": {
+                    "title": "Titulek souhlasu",
+                    "target_group": "Cílová skupina",
+                    "validity": "Platnost",
+                    "purpose": "Účel",
+                    "instructions": "Poučení",
+                    "respondents": "Výběr respondentů"
+                }
+            },
+            "training": {
+                "new": "Nové školení",
+                "monitor": "Sledovat průběh",
+                "evaluation": "Vyhodnocení",
+                "form": {
+                    "name": "Název",
+                    "description": "Popis",
+                    "passing_score": "Bodová hranice",
+                    "questions": "Definice otázek"
+                }
+            },
+            "reports": {
+                "title": "Evidence hlášení a námitek",
+                "status": {
+                    "new": "Nové",
+                    "processing": "Rozpracováno",
+                    "closed": "Uzavřeno"
+                }
+            }
+        }
     }
 }
