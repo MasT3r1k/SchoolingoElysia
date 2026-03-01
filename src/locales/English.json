@@ -643,6 +643,11 @@
         "average": "Average",
         "absence": "Absence (%)",
         "edit_personal": "Edit personal information",
+        "edit_personal_description": "Update student's personal information like name, class, gender, or birth date.",
+        "save_history": {
+            "title": "Historical consistency",
+            "description": "Certain sensitive items require historical tracking. Choose whether you want to save changes with history to a specific date, or as a correction to current data."
+        },
         "manage_parent": "Manage legal guardians",
         "tabs": {
             "overview": "Overview",

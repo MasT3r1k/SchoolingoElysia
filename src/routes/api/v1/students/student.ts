@@ -496,7 +496,12 @@ const elysiaApp = new Elysia()
       special_needs_code: t.Optional(t.Nullable(t.String())),
       language_code: t.Optional(t.Nullable(t.String())),
       health_status_code: t.Optional(t.Nullable(t.String())),
-      saveType: t.Optional(t.Union([t.Literal('change'), t.Literal('correction')], { default: 'correction' }))
+      saveType: t.Optional(t.Union([t.Literal('change'), t.Literal('correction')], { default: 'correction' })),
+      changes: t.Optional(t.Array(t.Object({
+        label: t.String(),
+        oldValue: t.Any(),
+        newValue: t.Any()
+      })))
     })
   })
 
@@ -941,7 +946,12 @@ const elysiaApp = new Elysia()
       houseNumber: t.String(),
       city: t.String(),
       postcode: t.Optional(t.String()),
-      saveType: t.Optional(t.Union([t.Literal('change'), t.Literal('correction')], { default: 'correction' }))
+      saveType: t.Optional(t.Union([t.Literal('change'), t.Literal('correction')], { default: 'correction' })),
+      changes: t.Optional(t.Array(t.Object({
+        label: t.String(),
+        oldValue: t.Any(),
+        newValue: t.Any()
+      })))
     })
   })
 
@@ -1111,6 +1121,7 @@ const elysiaApp = new Elysia()
             teacher_id: user.person_id as number,
             type: 'updated_student',
             data: JSON.stringify({
+              ...body,
               firstName, lastName, classId, gender, birthNum, birthday, birthPlace, nationalityId, insuranceId
             })
           })
@@ -1138,7 +1149,12 @@ const elysiaApp = new Elysia()
       birthday: t.Optional(t.String()),
       birthPlace: t.Optional(t.String()),
       nationalityId: t.Optional(t.Number()),
-      saveType: t.Optional(t.Union([t.Literal('change'), t.Literal('correction')], { default: 'correction' }))
+      saveType: t.Optional(t.Union([t.Literal('change'), t.Literal('correction')], { default: 'correction' })),
+      changes: t.Optional(t.Array(t.Object({
+        label: t.String(),
+        oldValue: t.Any(),
+        newValue: t.Any()
+      })))
     })
   })
 

@@ -716,7 +716,22 @@
         "average": "Průměr",
         "absence": "Absence (%)",
         "edit_personal": "Upravit osobní údaje",
-        "manage_parent": "Správa zákonných zástupců",
+        "edit_personal_description": "Upravte osobní údaje studenta, jako je jméno, příjmení, třída, pohlaví nebo datum narození.",
+        "save_history": {
+            "title": "Typ uložení změn",
+            "description": "Chcete změnu uložit k určitému datu v historii, nebo jen opravit aktuální data?",
+            "with_history_title": "Nový záznam do historie",
+            "with_history_desc": "Změna bude platná od zvoleného data. Původní hodnota zůstane v historii zachována.",
+            "without_history_title": "Oprava chyby (bez historie)",
+            "without_history_desc": "Aktualizuje současný záznam bez zápisu nové události do historie. Vhodné pro opravu překlepů.",
+            "item": "Položka",
+            "original_value": "Původní hodnota",
+            "new_value": "Nová hodnota"
+        },
+        "manage_parent": {
+            "title": "Správa zákonných zástupců",
+            "description": "Seznam zákonných zástupců studenta"
+        },
         "tabs": {
             "overview": "Přehled",
             "personal": "Osobní údaje",
@@ -750,6 +765,7 @@
         "add_parent": {
             "search": "Hledat",
             "title": "Přidat existující zákonné zástupce",
+            "description": "Vyberte zástupce ze seznamu níže.",
             "parent_for": "Zákonný zástupce pro...",
             "create_new_one": "Vytvořit nového",
             "add_parent": "Přidat rodiče"
@@ -760,11 +776,14 @@
         "remove_parent": {
             "title": "Odebrat zákonného zástupce",
             "remove_parent_only_student_title": "Odebrat vazbu pouze u tohoto studenta",
-            "remove_parent_only_student_desc": "Odebere zákonného zástupce u tohoto studenta, ale u ostatních zůstane.",
+            "remove_parent_only_student_desc": "Odebere zákonného zástupce u %name%, ale u ostatních zůstane.",
             "remove_parent_all_students_title": "Zrušit zastupování u všech studentů",
             "remove_parent_all_students_desc": "Nebude zákonným zástupcem žádného studenta, ale jeho údaje zůstanou.",
             "remove_complete_parent_title": "Trvale odstranit osobu ze systému",
-            "remove_complete_parent_desc": "Veškeré údaje zákonného zástupce se smažou, nelze vrátit zpět."
+            "remove_complete_parent_desc": "Veškeré údaje zákonného zástupce se smažou, nelze vrátit zpět.",
+            "remove_student": "Odpojit od studenta",
+            "remove_all_students": "Zrušit všechna zastoupení",
+            "delete_person": "Smazat osobu ze systému"
         }
     },
     "documents": {
@@ -1297,6 +1316,7 @@
         "no_messages": "Žádné zprávy nebyly nalezeny.",
         "topic": "Titulek",
         "receiver": "Příjemce zprávy",
+        "target_groups": "Cílové třídy",
         "student": "Žák",
         "search_messages": "Vyhledat podle autora",
         "findreceiver": "Vyhledejte jméno přijemce",
