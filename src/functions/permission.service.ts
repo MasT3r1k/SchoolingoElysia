@@ -36,14 +36,30 @@ export class PermissionService {
     // 2. Check permissions via roles
     const rolePermission = await db
       .selectFrom('user_roles')
-      .innerJoin('role_permissions', 'role_permissions.role_id', 'user_roles.role_id')
-      .innerJoin('permissions', 'permissions.permission_id', 'role_permissions.permission_id')
-      .where('user_roles.user_id', '=', userId)
+      .leftJoin('roles', 'roles.role_id', 'user_roles.role_id')
+      .leftJoin('role_permissions', 'role_permissions.role_id', 'user_roles.role_id')
+      .leftJoin('permissions', 'permissions.permission_id', 'role_permissions.permission_id')
+      .where((eb) => eb.or([
+        eb('user_roles.user_id', '=', userId),
+        eb('roles.role_key', '=', user.role)
+      ]))
       .where('permissions.permission_name', '=', permission)
       .select('permissions.permission_id')
       .executeTakeFirst();
 
-    return !!rolePermission;
+    if (rolePermission) return true;
+
+    const userRolePermission = await db
+      .selectFrom('users')
+      .leftJoin('roles', 'roles.role_key', 'users.role')
+      .leftJoin('role_permissions', 'role_permissions.role_id', 'roles.role_id')
+      .leftJoin('permissions', 'permissions.permission_id', 'role_permissions.permission_id')
+      .where('users.user_id', '=', userId)
+      .where('permissions.permission_name', '=', permission)
+      .select('permissions.permission_id')
+      .executeTakeFirst();
+
+    return !!userRolePermission;
   }
 
   /**

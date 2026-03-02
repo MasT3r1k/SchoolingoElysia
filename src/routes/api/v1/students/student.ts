@@ -972,6 +972,7 @@ const elysiaApp = new Elysia()
         'student_history.created_at'
       ])
       .where('student_history.student_id', '=', student_id)
+      .orderBy('created_at', 'desc')
       .execute();
 
     const teacherNames = await format_person_map_by_ids(history.map((h) => h.teacher_id));

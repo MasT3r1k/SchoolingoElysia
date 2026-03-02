@@ -11,6 +11,7 @@ import attendanceRouter from './attendance';
 import vacationsRouter from './vacations';
 import salariesRouter from './salaries';
 import bonusesRouter from './bonuses';
+import { PermissionService } from '../../../../functions/permission.service';
 
 const employeesRouter = new Elysia()
     .use(attendanceRouter)
@@ -51,10 +52,9 @@ const employeesRouter = new Elysia()
     })
   })
   // GET /employees - List all employees (teachers)
-  .use(permissions(GlobalPermissions.EMPLOYEES_VIEW))
   .get('/employees', async({ user, query }: any) => {
     // Check permissions - only admins can view all
-    const canViewAll = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_VIEW);
     
     let queryBuilder = db.selectFrom('teachers')
       .leftJoin('persons', 'teachers.person_id', 'persons.person_id')
@@ -85,7 +85,7 @@ const employeesRouter = new Elysia()
     }
 
     // If not admin, only show self
-    if (!canViewAll) {
+    if (!perm) {
       queryBuilder = queryBuilder.where('teachers.person_id', '=', user.person_id);
     }
 
@@ -116,6 +116,7 @@ const employeesRouter = new Elysia()
     }));
 
     return Response.json({
+      canViewAll: perm,
       data,
       meta: {
         total,

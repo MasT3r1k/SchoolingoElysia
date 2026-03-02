@@ -3,6 +3,7 @@ import { db } from '../../../../../database';
 import { sql } from 'kysely';
 import { permissions } from '../../../../middleware/permission.middleware';
 import { GlobalPermissions } from '../../../../config/permissions.config';
+import { PermissionService } from '../../../../functions/permission.service';
 
 
 const app = new Elysia()
@@ -10,14 +11,10 @@ const app = new Elysia()
   .use(permissions(GlobalPermissions.ROLES_VIEW))
   .get('/system/roles', async () => {
 
-    const [roles, permissions, rolePermissions] = await Promise.all([
+    const [roles, rolePermissions] = await Promise.all([
       db.selectFrom('roles')
         .selectAll()
         .orderBy('role_name', 'asc')
-        .execute(),
-      db.selectFrom('permissions')
-        .selectAll()
-        .orderBy('permission_name', 'asc')
         .execute(),
       db.selectFrom('role_permissions')
         .selectAll()
@@ -31,6 +28,9 @@ const app = new Elysia()
         .filter(rp => rp.role_id === role.role_id)
         .map(rp => rp.permission_id)
     }));
+
+    const permissions = Object.entries(GlobalPermissions).map((perm, index) => ({ permission_id: index, permission_name: perm[1], description: '' }));
+    console.log(permissions);
 
     return Response.json({
       roles: rolesWithPermissions,

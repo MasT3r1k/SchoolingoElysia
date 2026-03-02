@@ -2,6 +2,12 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+
 CREATE TABLE `absence` (
   `student_id` int(11) NOT NULL,
   `lesson_id` int(11) NOT NULL,
@@ -7228,7 +7234,97 @@ INSERT INTO `analytics_visits` (`id`, `user_id`, `visitor_id`, `url`, `path`, `m
 (7109, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 23:31:21', 0),
 (7110, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/classes', '/classes', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 23:31:21', 0),
 (7111, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 23:31:22', 0),
-(7112, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 23:31:22', NULL);
+(7112, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 23:31:22', NULL),
+(7113, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:21:11', NULL),
+(7114, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:21:11', 1),
+(7115, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:21:12', 0),
+(7116, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:25:46', NULL),
+(7117, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:26:19', 170),
+(7118, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:29:21', 0),
+(7119, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:29:22', 292),
+(7120, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/user/gdpr/overview', '/user/gdpr/overview', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:45:48', NULL),
+(7121, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/online', '/online', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:45:48', 0),
+(7122, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/system/settings', '/system/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:45:57', NULL),
+(7123, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/system/manageusers', '/system/manageusers', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:45:57', 0),
+(7124, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/system/managefiles', '/system/managefiles', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:45:58', 0),
+(7125, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/system/managemessages', '/system/managemessages', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:45:59', 0),
+(7126, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/system/auditlog', '/system/auditlog', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:45:59', 0),
+(7127, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/admin/monitoring', '/admin/monitoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:46:00', 0),
+(7128, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/admin/school-years', '/admin/school-years', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:46:00', 1),
+(7129, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/system/settings', '/system/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:46:02', 215),
+(7130, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/classes', '/classes', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:50:12', NULL),
+(7131, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:50:13', 1),
+(7132, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:50:14', 178),
+(7133, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:35:52', 1),
+(7134, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:35:53', 205),
+(7135, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:40:18', 1),
+(7136, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students/28', '/students/28', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:40:19', 20),
+(7137, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:40:44', 1),
+(7138, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students/40', '/students/40', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:40:46', 14),
+(7139, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:41:05', 1),
+(7140, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students/27', '/students/27', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:41:06', 61),
+(7141, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:42:08', 0),
+(7142, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/messages/drafts', '/messages/drafts', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:42:08', 0),
+(7143, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/messages/received', '/messages/received', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:42:09', NULL),
+(7144, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:42:09', 9),
+(7145, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/classes', '/classes', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:42:19', 0),
+(7146, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:42:19', 0),
+(7147, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:42:20', 0),
+(7148, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:42:20', 1),
+(7149, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/login', '/login', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:42:22', 5),
+(7150, 2, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:42:28', NULL),
+(7151, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/system/settings', '/system/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:01:50', 502),
+(7152, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/login', '/login', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:12:00', 3),
+(7153, 2, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:12:03', 314),
+(7154, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/classes', '/classes', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:17:18', 0),
+(7155, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:17:18', 1),
+(7156, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:17:19', 2),
+(7157, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/system/settings', '/system/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:17:22', 66),
+(7158, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/login', '/login', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:21:06', 4),
+(7159, 2, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:21:11', 570),
+(7160, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/system/settings', '/system/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:30:42', 5),
+(7161, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/login', '/login', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:30:46', 3),
+(7162, 2, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:30:50', 13),
+(7163, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/system/manageusers', '/system/manageusers', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:31:03', 1),
+(7164, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/system/settings', '/system/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:31:05', 5),
+(7165, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/login', '/login', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:31:11', 3),
+(7166, 2, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:31:14', NULL),
+(7167, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/system/settings', '/system/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:49:31', 8),
+(7168, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/login', '/login', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:49:39', 2),
+(7169, 2, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:49:42', NULL),
+(7170, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:29', 7),
+(7171, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/classes', '/classes', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:36', 0),
+(7172, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:36', 1),
+(7173, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:37', 0),
+(7174, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:38', 0),
+(7175, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/admin/architecture/rooms', '/admin/architecture/rooms', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:38', 0),
+(7176, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/admin/architecture/inventory', '/admin/architecture/inventory', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:39', 0),
+(7177, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:39', 0),
+(7178, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:40', 0),
+(7179, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/marks/educationmeasures', '/marks/educationmeasures', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:41', 2),
+(7180, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:43', 1),
+(7181, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:44', 0),
+(7182, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:45', 29),
+(7183, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students/25', '/students/25', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:05:15', 270),
+(7184, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:22:50', 1),
+(7185, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/classes', '/classes', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:22:52', 0),
+(7186, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/employees', '/employees', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:22:52', 23),
+(7187, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/classes', '/classes', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:23:16', 0),
+(7188, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/dashboard', '/dashboard', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:23:16', 0),
+(7189, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:23:17', 1),
+(7190, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/admin/architecture/rooms', '/admin/architecture/rooms', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:23:18', 0),
+(7191, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/admin/architecture/inventory', '/admin/architecture/inventory', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:23:19', 3),
+(7192, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:23:23', 0),
+(7193, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:23:23', 0),
+(7194, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:23:24', 115),
+(7195, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/login?returnUrl=%2Fteach%2Fclassbook', '/login?returnUrl=%2Fteach%2Fclassbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 12:06:54', NULL),
+(7196, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 12:45:25', 1),
+(7197, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 12:45:26', 48),
+(7198, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 12:47:51', 1),
+(7199, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/classes', '/classes', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 12:47:52', 1),
+(7200, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 12:47:53', 0),
+(7201, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 12:47:54', 6),
+(7202, 4, 'fadb877b-3541-4021-9317-c8580b27ca46', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 12:48:00', NULL);
 
 CREATE TABLE `auditlog` (
   `audit_id` int(11) NOT NULL,
@@ -7565,7 +7661,12 @@ INSERT INTO `classbook` (`classbook_id`, `date`, `day_hour`, `subject_id`, `teac
 (156, '2026-02-24', 1, 33, NULL, 9, NULL, NULL, NULL, NULL),
 (157, '2026-02-24', 2, 31, NULL, 9, NULL, NULL, NULL, NULL),
 (158, '2026-02-24', 0, 33, NULL, 9, NULL, NULL, NULL, NULL),
-(159, '2026-02-24', 3, 31, NULL, 9, NULL, NULL, NULL, NULL);
+(159, '2026-02-24', 3, 31, NULL, 9, NULL, NULL, NULL, NULL),
+(160, '2026-03-10', 1, 33, NULL, 9, NULL, NULL, NULL, NULL),
+(161, '2026-03-10', 0, 33, NULL, 9, NULL, NULL, NULL, NULL),
+(162, '2026-03-10', 2, 31, NULL, 9, NULL, NULL, NULL, NULL),
+(163, '2026-03-10', 3, 31, NULL, 9, NULL, NULL, NULL, NULL),
+(164, '2026-03-03', 0, 33, NULL, 9, NULL, NULL, NULL, NULL);
 
 CREATE TABLE `classbook_notes` (
   `classbook_note_id` int(11) NOT NULL,
@@ -8138,7 +8239,8 @@ INSERT INTO `employee_attendance` (`attendance_id`, `teacher_id`, `date`, `check
 (13, 4, '2026-02-19', '11:08', '20:08', 30, 510, 'regular', '', 0, NULL),
 (14, 4, '2026-02-21', '10:51', '18:52', 0, 481, 'regular', '', 0, NULL),
 (15, 4, '2026-02-28', '22:02', '22:02', 30, 0, 'regular', NULL, 0, NULL),
-(16, 4, '2026-03-01', '15:03', '18:03', 30, 150, 'regular', NULL, 0, NULL);
+(16, 4, '2026-03-01', '15:03', '18:03', 30, 150, 'regular', NULL, 0, NULL),
+(17, 2, '2026-03-02', '10:43', NULL, 0, 0, 'regular', '', 0, NULL);
 
 CREATE TABLE `employee_bonuses` (
   `bonus_id` int(11) NOT NULL,
@@ -10843,7 +10945,22 @@ INSERT INTO `login_history` (`login_id`, `user_id`, `type`, `success`, `error`, 
 (2052, 4, 'password', 1, NULL, NULL, 1848, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 18:16:55.269788', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (2053, 4, 'password', 1, NULL, NULL, 1849, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 19:05:39.270787', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (2054, 4, 'password', 1, NULL, NULL, 1850, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 20:57:05.915882', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(2055, 4, 'password', 1, NULL, NULL, 1851, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 22:14:28.119176', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+(2055, 4, 'password', 1, NULL, NULL, 1851, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 22:14:28.119176', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2056, 4, 'password', 1, NULL, NULL, 1852, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 07:20:24.777624', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2057, 4, 'password', 1, NULL, NULL, 1853, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:35:48.091873', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2058, 2, 'password', 1, NULL, NULL, 1854, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:42:27.357066', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2059, 4, 'password', 1, NULL, NULL, 1855, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:01:45.557514', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2060, 2, 'password', 1, NULL, NULL, 1856, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:12:02.789985', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2061, 4, 'password', 1, NULL, NULL, 1857, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:16:52.719997', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2062, 2, 'password', 1, NULL, NULL, 1858, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:21:10.131746', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2063, 4, 'password', 1, NULL, NULL, 1859, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:30:37.287303', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2064, 2, 'password', 1, NULL, NULL, 1860, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:30:49.359812', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2065, 4, 'password', 1, NULL, NULL, 1861, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:30:59.252523', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2066, 2, 'password', 1, NULL, NULL, 1862, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:31:13.627265', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2067, 4, 'password', 1, NULL, NULL, 1863, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:49:27.130928', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2068, 2, 'password', 1, NULL, NULL, 1864, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:49:41.698407', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2069, 4, 'password', 1, NULL, NULL, 1865, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:04:25.414812', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2070, 4, 'password', 1, NULL, NULL, 1866, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 12:45:20.225755', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 CREATE TABLE `login_qrcodes` (
   `qrcode` varchar(255) NOT NULL,
@@ -14698,7 +14815,23 @@ INSERT INTO `permissions` (`permission_id`, `permission_name`, `description`) VA
 (7, 'grades.edit', 'Zapisování známek'),
 (8, 'classbook.view', 'Zobrazení třídnice'),
 (9, 'classbook.edit', 'Zápis do třídnice'),
-(10, 'admin.panel', 'Přístup do administrace');
+(10, 'admin.panel', 'Přístup do administrace'),
+(11, 'system.status', NULL),
+(12, 'audit.view', NULL),
+(13, 'architecture.view', NULL),
+(14, 'architecture.edit', NULL),
+(15, 'employees.view', NULL),
+(16, 'employees.edit', NULL),
+(17, 'attendance.view', NULL),
+(18, 'attendance.manage', NULL),
+(19, 'vacations.view', NULL),
+(20, 'vacations.manage', NULL),
+(21, 'salaries.view', NULL),
+(22, 'salaries.manage', NULL),
+(23, 'bonuses.view', NULL),
+(24, 'bonuses.manage', NULL),
+(25, 'students.edit', NULL),
+(26, 'students.view', NULL);
 
 CREATE TABLE `persons` (
   `person_id` int(11) NOT NULL,
@@ -14960,6 +15093,10 @@ CREATE TABLE `role_permissions` (
   `role_id` int(11) NOT NULL,
   `permission_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `role_permissions` (`role_id`, `permission_id`) VALUES
+(2, 15),
+(2, 26);
 
 CREATE TABLE `schools` (
   `school_id` int(11) NOT NULL,
@@ -15508,7 +15645,7 @@ CREATE TABLE `student_medical_records` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `student_medical_records` (`record_id`, `student_id`, `type`, `title`, `description`, `severity`, `is_food_allergy`, `allergen_codes`, `created_at`) VALUES
-(1, 25, 'Chronické onemocnění', 'Astma', NULL, 'low', 0, NULL, '2026-02-22 17:19:29'),
+(1, 25, 'Chronické onemocnění', 'Astma', NULL, 'high', 0, NULL, '2026-02-22 17:19:29'),
 (2, 25, 'Alergie', 'Alergie na obilniny', NULL, 'low', 1, '1,2', '2026-02-22 17:19:41');
 
 CREATE TABLE `student_notes` (
@@ -21204,7 +21341,175 @@ INSERT INTO `system_heartbeats` (`heartbeat_id`, `recorded_at`, `version`, `comm
 (5570, '2026-03-01 23:30:42', '2.3.9b', '0373b327d24640c1749edae8b76718d600395291', 0, NULL),
 (5571, '2026-03-01 23:31:42', '2.3.9b', '0373b327d24640c1749edae8b76718d600395291', 0, NULL),
 (5572, '2026-03-01 23:32:42', '2.3.9b', '0373b327d24640c1749edae8b76718d600395291', 0, NULL),
-(5573, '2026-03-01 23:33:42', '2.3.9b', '0373b327d24640c1749edae8b76718d600395291', 0, NULL);
+(5573, '2026-03-01 23:33:42', '2.3.9b', '0373b327d24640c1749edae8b76718d600395291', 0, NULL),
+(5574, '2026-03-02 07:19:51', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5575, '2026-03-02 07:20:50', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5576, '2026-03-02 07:21:50', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5577, '2026-03-02 07:22:50', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5578, '2026-03-02 07:23:49', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5579, '2026-03-02 07:24:49', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5580, '2026-03-02 07:25:49', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5581, '2026-03-02 07:26:49', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5582, '2026-03-02 07:27:49', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5583, '2026-03-02 07:28:49', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5584, '2026-03-02 07:29:49', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5585, '2026-03-02 07:30:49', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5586, '2026-03-02 07:31:49', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5587, '2026-03-02 07:32:49', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5588, '2026-03-02 07:33:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5589, '2026-03-02 07:34:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5590, '2026-03-02 07:35:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5591, '2026-03-02 07:36:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5592, '2026-03-02 07:37:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5593, '2026-03-02 07:38:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5594, '2026-03-02 07:39:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5595, '2026-03-02 07:40:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5596, '2026-03-02 07:41:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5597, '2026-03-02 07:42:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5598, '2026-03-02 07:43:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5599, '2026-03-02 07:44:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5600, '2026-03-02 07:45:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5601, '2026-03-02 07:46:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5602, '2026-03-02 07:47:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5603, '2026-03-02 07:48:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5604, '2026-03-02 07:49:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5605, '2026-03-02 07:50:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5606, '2026-03-02 07:51:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5607, '2026-03-02 07:52:45', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5608, '2026-03-02 09:34:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5609, '2026-03-02 09:35:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5610, '2026-03-02 09:36:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5611, '2026-03-02 09:37:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5612, '2026-03-02 09:38:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5613, '2026-03-02 09:39:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5614, '2026-03-02 09:40:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5615, '2026-03-02 09:41:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5616, '2026-03-02 09:42:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5617, '2026-03-02 09:43:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5618, '2026-03-02 09:44:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5619, '2026-03-02 09:45:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5620, '2026-03-02 09:46:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5621, '2026-03-02 09:47:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5622, '2026-03-02 09:48:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5623, '2026-03-02 09:49:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5624, '2026-03-02 09:50:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5625, '2026-03-02 09:51:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5626, '2026-03-02 09:52:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5627, '2026-03-02 09:53:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5628, '2026-03-02 09:54:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5629, '2026-03-02 09:55:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5630, '2026-03-02 09:56:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5631, '2026-03-02 09:57:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5632, '2026-03-02 09:58:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5633, '2026-03-02 09:59:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5634, '2026-03-02 10:00:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5635, '2026-03-02 10:00:53', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5636, '2026-03-02 10:01:21', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5637, '2026-03-02 10:02:21', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5638, '2026-03-02 10:03:21', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5639, '2026-03-02 10:04:21', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5640, '2026-03-02 10:05:21', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5641, '2026-03-02 10:06:21', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5642, '2026-03-02 10:07:21', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5643, '2026-03-02 10:08:21', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5644, '2026-03-02 10:09:21', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5645, '2026-03-02 10:09:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5646, '2026-03-02 10:10:48', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5647, '2026-03-02 10:11:31', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5648, '2026-03-02 10:12:31', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5649, '2026-03-02 10:13:31', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5650, '2026-03-02 10:14:31', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5651, '2026-03-02 10:15:31', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5652, '2026-03-02 10:16:31', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5653, '2026-03-02 10:17:31', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5654, '2026-03-02 10:18:26', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5655, '2026-03-02 10:19:26', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5656, '2026-03-02 10:20:26', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5657, '2026-03-02 10:21:26', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5658, '2026-03-02 10:22:26', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5659, '2026-03-02 10:23:26', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5660, '2026-03-02 10:23:50', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5661, '2026-03-02 10:24:51', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5662, '2026-03-02 10:25:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5663, '2026-03-02 10:26:02', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5664, '2026-03-02 10:27:02', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5665, '2026-03-02 10:28:02', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5666, '2026-03-02 10:29:02', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5667, '2026-03-02 10:29:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5668, '2026-03-02 10:30:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5669, '2026-03-02 10:31:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5670, '2026-03-02 10:32:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5671, '2026-03-02 10:33:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5672, '2026-03-02 10:34:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5673, '2026-03-02 10:35:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5674, '2026-03-02 10:36:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5675, '2026-03-02 10:37:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5676, '2026-03-02 10:38:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5677, '2026-03-02 10:39:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5678, '2026-03-02 10:40:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5679, '2026-03-02 10:41:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5680, '2026-03-02 10:42:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5681, '2026-03-02 10:43:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5682, '2026-03-02 10:44:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5683, '2026-03-02 10:45:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5684, '2026-03-02 10:46:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5685, '2026-03-02 10:47:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5686, '2026-03-02 10:48:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5687, '2026-03-02 10:49:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5688, '2026-03-02 10:50:30', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5689, '2026-03-02 10:51:10', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5690, '2026-03-02 10:51:14', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5691, '2026-03-02 10:51:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, 'startup'),
+(5692, '2026-03-02 10:52:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5693, '2026-03-02 10:53:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5694, '2026-03-02 10:54:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5695, '2026-03-02 10:55:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5696, '2026-03-02 10:56:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5697, '2026-03-02 10:57:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5698, '2026-03-02 10:58:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5699, '2026-03-02 10:59:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5700, '2026-03-02 11:00:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5701, '2026-03-02 11:01:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5702, '2026-03-02 11:02:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5703, '2026-03-02 11:03:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5704, '2026-03-02 11:04:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5705, '2026-03-02 11:05:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5706, '2026-03-02 11:06:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5707, '2026-03-02 11:07:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5708, '2026-03-02 11:08:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5709, '2026-03-02 11:09:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5710, '2026-03-02 11:10:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5711, '2026-03-02 11:11:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5712, '2026-03-02 11:12:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5713, '2026-03-02 11:13:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5714, '2026-03-02 11:14:57', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5715, '2026-03-02 11:15:58', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5716, '2026-03-02 11:16:58', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5717, '2026-03-02 11:17:58', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5718, '2026-03-02 11:18:58', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5719, '2026-03-02 11:19:58', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5720, '2026-03-02 11:20:58', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5721, '2026-03-02 11:21:58', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5722, '2026-03-02 11:22:58', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5723, '2026-03-02 11:23:58', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5724, '2026-03-02 11:24:58', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5725, '2026-03-02 11:25:58', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5726, '2026-03-02 11:26:58', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5727, '2026-03-02 12:06:52', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5728, '2026-03-02 12:41:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5729, '2026-03-02 12:42:07', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5730, '2026-03-02 12:43:07', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5731, '2026-03-02 12:44:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5732, '2026-03-02 12:45:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5733, '2026-03-02 12:46:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5734, '2026-03-02 12:47:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5735, '2026-03-02 12:48:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5736, '2026-03-02 12:49:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5737, '2026-03-02 12:50:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5738, '2026-03-02 12:51:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5739, '2026-03-02 12:52:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5740, '2026-03-02 12:53:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL),
+(5741, '2026-03-02 12:54:08', '2.3.9b', 'c8e4585bdcd866ab902c9d25219d3754b864eae4', 0, NULL);
 
 CREATE TABLE `teachers` (
   `person_id` int(11) NOT NULL,
@@ -22612,7 +22917,22 @@ INSERT INTO `tokens` (`token_id`, `token`, `password_id`, `user_agent`, `expires
 (1848, '$2b$04$rBBSvqbV44.gicX1D8CY2.YH3nQmGLtdt9NucArFpjYUyIiNYddlG', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 20:04:59.545000', '2026-03-01 19:16:55.264000', 4, NULL, NULL),
 (1849, '$2b$04$hAxx685eZQHIDr8PqeddRucdtHe5cKwXeDvTXc/ASUNi/ORSyy8hW', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 21:32:42.190000', '2026-03-01 20:05:39.266000', 4, NULL, NULL),
 (1850, '$2b$04$nHk65Z75lYk4NOuXM/4MEuMdCXBRYfTlqpF7OuhKyEUlTQ1E/QJpa', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-01 23:14:02.172000', '2026-03-01 21:57:05.911000', 4, NULL, NULL),
-(1851, '$2b$04$iq1EiXWZ6a0Pm9J8Lkuv1ORsXawcTnFStUGU3LC12wdawjHqP0xcS', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-02 00:46:23.307000', '2026-03-01 23:14:28.114000', 4, NULL, NULL);
+(1851, '$2b$04$iq1EiXWZ6a0Pm9J8Lkuv1ORsXawcTnFStUGU3LC12wdawjHqP0xcS', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', '2026-03-02 00:46:23.307000', '2026-03-01 23:14:28.114000', 4, NULL, NULL),
+(1852, '$2b$04$B9kDjOhrL5/AUM0DGVSMEuUVc.ncscIdoVX0f3snqwUV6tDEFhKDe', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 09:08:13.691000', '2026-03-02 08:20:24.737000', 4, NULL, NULL),
+(1853, '$2b$04$Bna78hTtDxfxS3i8J6WR5e8wcpzOBIEzBko3PTsXvqcChChVBh01m', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 10:42:22.376000', '2026-03-02 10:35:47.901000', 4, NULL, NULL),
+(1854, '$2b$04$mhQ7i/lC2/OTqwb6YJ8ns.zIFOnQ1AC/kj3/djhePpbSMaBAOIdh6', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:01:42.189000', '2026-03-02 10:42:27.336000', 2, NULL, NULL),
+(1855, '$2b$04$PVueIoI.BLsmGOrvxSs/h.s0oIdPBaFm/wIuN2V5I24YEDodnhlae', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:11:59.878000', '2026-03-02 11:01:45.505000', 4, NULL, NULL),
+(1856, '$2b$04$/ZRtcIWCvhB9eqEBriKVPOeSpootD6OD0Ul6W/R9AF1u10QJVWibu', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:16:48.707000', '2026-03-02 11:12:02.742000', 2, NULL, NULL),
+(1857, '$2b$04$vyrlO8KvkxzF.E0amwnbCOgdKjWM4PPxxAOT0ApWlWqQMb/Hq.Y5.', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:21:06.147000', '2026-03-02 11:16:52.677000', 4, NULL, NULL),
+(1858, '$2b$04$k/sAmt/Hx/LBlR/jWtMeFuGtD0omkZz3Bm9ca6P/A.6bYKjVvW8vS', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:30:34.222000', '2026-03-02 11:21:10.104000', 2, NULL, NULL),
+(1859, '$2b$04$3PLA7kkw/KRxtb8HvPHU7u8oaW.t6Bh9JEfJ6MTVGOmqPCQAGFTka', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:45:46.671000', '2026-03-02 11:30:37.264000', 4, NULL, NULL),
+(1860, '$2b$04$2hPBPq5z1nYMeNzz8mVrZeCCyG5NLL1Zn.K219yf99mzZ49pyvaEC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:30:55.779000', '2026-03-02 11:30:49.339000', 2, NULL, NULL),
+(1861, '$2b$04$.3hykYbuUhzpkErsPi3r.egfJQK9sEuFPynhcY.DW4iKR9Y8up8ey', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:46:10.842000', '2026-03-02 11:30:59.229000', 4, NULL, NULL),
+(1862, '$2b$04$FEUVVonbmB2d448bQxZnjO4WPzHaECB75nvhDsjiCiYalrBHG30aa', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:49:23.966000', '2026-03-02 11:31:13.609000', 2, NULL, NULL),
+(1863, '$2b$04$5YnUhVMIHpjI0udIuogD/exoClY9.9ov9zUfcqW3495mPnmaz/7xq', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 11:49:39.288000', '2026-03-02 11:49:27.093000', 4, NULL, NULL),
+(1864, '$2b$04$QuoHC3Kt1n/ZYXje8QU20.Uf4vElRRphExS2OOrbgqX2NZtQUdKRC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 12:04:20.785000', '2026-03-02 11:49:41.681000', 2, NULL, NULL),
+(1865, '$2b$04$BvmxjHEeyEPW2hZJjM1.Xe/1oBd/mKL0knyJVOj1bDk/E0ddrCehq', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 13:06:53.783000', '2026-03-02 12:04:25.346000', 4, NULL, NULL),
+(1866, '$2b$04$C83/k6i0J8MX15R16i8vROiWWMsHEMLCGiSBwitbE4QwqQU4YP9Qq', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', '2026-03-02 14:03:03.151000', '2026-03-02 13:45:20.174000', 4, NULL, NULL);
 
 CREATE TABLE `traineeship_companies` (
   `company_id` int(11) NOT NULL,
@@ -23561,7 +23881,7 @@ ALTER TABLE `addresses`
   MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 ALTER TABLE `analytics_visits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7113;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7203;
 
 ALTER TABLE `auditlog`
   MODIFY `audit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
@@ -23591,7 +23911,7 @@ ALTER TABLE `cities`
   MODIFY `city_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 ALTER TABLE `classbook`
-  MODIFY `classbook_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=160;
+  MODIFY `classbook_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=165;
 
 ALTER TABLE `classbook_notes`
   MODIFY `classbook_note_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
@@ -23630,7 +23950,7 @@ ALTER TABLE `emergency_notifications`
   MODIFY `en_id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `employee_attendance`
-  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 ALTER TABLE `employee_bonuses`
   MODIFY `bonus_id` int(11) NOT NULL AUTO_INCREMENT;
@@ -23714,7 +24034,7 @@ ALTER TABLE `library_reservations`
   MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `login_history`
-  MODIFY `login_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2056;
+  MODIFY `login_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2071;
 
 ALTER TABLE `marking_scales`
   MODIFY `ms_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
@@ -23762,7 +24082,7 @@ ALTER TABLE `payments_payments`
   MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `permissions`
-  MODIFY `permission_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `permission_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 ALTER TABLE `persons`
   MODIFY `person_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
@@ -23831,7 +24151,7 @@ ALTER TABLE `student_history`
   MODIFY `student_history_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 ALTER TABLE `student_matrika_records`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 ALTER TABLE `student_medical_records`
   MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
@@ -23852,7 +24172,7 @@ ALTER TABLE `supervision_places`
   MODIFY `place_id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `system_heartbeats`
-  MODIFY `heartbeat_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5574;
+  MODIFY `heartbeat_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5742;
 
 ALTER TABLE `teachers_salary`
   MODIFY `salary_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
@@ -23864,7 +24184,7 @@ ALTER TABLE `timetable_schemas`
   MODIFY `ts_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=201;
 
 ALTER TABLE `tokens`
-  MODIFY `token_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1852;
+  MODIFY `token_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1867;
 
 ALTER TABLE `traineeship_companies`
   MODIFY `company_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
@@ -24278,3 +24598,7 @@ ALTER TABLE `user_roles`
 ALTER TABLE `webauthn_challenges`
   ADD CONSTRAINT `webauthn_challenges_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

@@ -1546,6 +1546,7 @@
         "no_class_desc": "Tento den není důvod chodit do školy.",
         "timetable_working_mode": "Pracovní režim",
         "room_timetable": "Rozvrh místnosti",
+        "generating_pdf": "Probíhá generování pdf dokument",
         "no_lessons": "Žádné hodiny k zobrazení"
     },
     "components": {
@@ -1851,11 +1852,15 @@
         "risks": "Rizika"
     },
     "employees": {
+        
         "list": "Seznam",
         "attendance": "Docházka",
         "attendance_status": {
+            "checkin": "Příchod",
             "checkin_success": "Příchod byl úspěšně zaevidován.",
             "checkin_failed": "Nepodařilo se zaznamenat příchod.",
+            "checkout": "Odchod",
+            "early_checkout": "Dřívější odchod",
             "checkout_success": "Odchod byl úspěšně zaevidován.",
             "checkout_failed": "Nepodařilo se zaznamenat odchod."
         },
@@ -1942,6 +1947,9 @@
         "edit_attendance": {
             "title": "Upravit docházku",
             "description": "Upravte nebo doplňte záznamy docházky zaměstnance."
+        },
+        "errors": {
+            "load_detail_failed": "Nepodařilo se načíst informace o zaměstnanci."
         }
     },
     "seasonal": {
@@ -2148,7 +2156,8 @@
     },
     "error": {
         "no_permission_title": "Nemáte oprávnění",
-        "no_permission_desc": "K zobrazení této stránky nemáte dostatečná oprávnění. Pokud se domníváte, že jde o chybu, kontaktujte správce školního systému."
+        "no_permission_desc": "K zobrazení této stránky nemáte dostatečná oprávnění. Pokud se domníváte, že jde o chybu, kontaktujte správce školního systému.",
+        "no_permission_action": "Zpět na hlavní stránce"
     },
     "architecture": {
         "title": "Správa budov",
