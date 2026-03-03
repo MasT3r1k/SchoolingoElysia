@@ -2,6 +2,7 @@ import { db } from '../../database';
 import { ConflictError, InternalServerError, NotFoundError } from '../utils/errors';
 import bcrypt from 'bcryptjs';
 import { sql } from 'kysely';
+import { randomString } from './random_string';
 
 export interface InstallationData {
     schoolName: string;
@@ -119,7 +120,7 @@ export class DomainService {
                     short_name: data.schoolShortName || data.schoolName.substring(0, 10),
                     district_id: data.districtId || 0,
                     country_id: data.country || null,
-                    code: 'SETUP-' + Date.now(), 
+                    code: randomString(6), 
                     owner_id: personId, // Link to admin person
                     total_storage_limit: 10737418240, 
                     apiToken: Bun.randomUUIDv7(),

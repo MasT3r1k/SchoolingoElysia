@@ -16,7 +16,6 @@ import { getAuthUser } from './src/utils/auth';
 import { uploadAPI } from './upload';
 import { Mailer } from "./mailer.module";
 
-
 const UPLOAD_DIR = './uploads';
 
 export const app = new Elysia({

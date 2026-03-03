@@ -67,7 +67,7 @@ export function validateCSRFToken(token: string, sessionId: string): boolean {
  */
 export const csrfMiddleware = new Elysia({ name: 'csrf' })
     .derive(({ cookie, headers }) => {
-        const sessionId = cookie?.token?.value || '';
+        const sessionId = cookie?.token?.value as string || '';
         
         return {
             csrf: {
