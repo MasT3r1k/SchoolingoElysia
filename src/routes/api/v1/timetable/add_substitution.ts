@@ -27,6 +27,7 @@ const elysiaAp = new Elysia()
         group_id,
         subject_id,
         teacher_id,
+        teacher2_id,
         room_id,
         start_date: start_date_str, start_hour,
         end_date: end_date_str, end_hour,
@@ -65,6 +66,7 @@ const elysiaAp = new Elysia()
             .set({
                 subject_id: subject_id,
                 teacher_id: teacher_id,
+                teacher2_id: teacher2_id || null,
                 room_id: room_id,
                 type: typeValue
             })
@@ -80,6 +82,7 @@ const elysiaAp = new Elysia()
                 group_id,
                 subject_id,
                 teacher_id,
+                teacher2_id: teacher2_id || null,
                 room_id,
                 start_date,
                 start_hour,
@@ -98,6 +101,7 @@ const elysiaAp = new Elysia()
         group_id: t.Optional(t.Nullable(t.Number())),
         subject_id: t.Optional(t.Nullable(t.Number())),
         teacher_id: t.Optional(t.Nullable(t.Number())),
+        teacher2_id: t.Optional(t.Nullable(t.Number())),
         room_id: t.Optional(t.Nullable(t.Number())),
         start_date: t.Optional(t.String()),
         start_hour: t.Optional(t.Number()),

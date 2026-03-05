@@ -71,7 +71,8 @@ const locales = new Elysia({ prefix: "/locales" })
 
   try {
     await fs.promises.access(filePath, fs.constants.F_OK);
-    const content = JSON.stringify(await fs.promises.readFile(filePath, 'utf-8')).replace(/\\r\\n/g, '').replace(/\\"/g, '"').replace(/  /g, '').slice(1, -1);
+    const fileContent = await fs.promises.readFile(filePath, 'utf-8');
+    const content = JSON.stringify(JSON.parse(fileContent));
     
     // Uložení do cache pouze v production režimu
     if (config.NODE_ENV === 'production') {

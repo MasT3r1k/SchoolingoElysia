@@ -200,7 +200,38 @@ const elysiaApp = new Elysia()
 
     const classService = await format_person_map_by_ids(class_serviceDB.map((student) => (student.student_id)));
 
-    return { classbook, students, lessonNumber, lessonTotal, classService }
+    // === VÝPOČET MAXIMÁLNÍHO POČTU HODIN TŘÍDY ===
+    const classIdQuery = await db.selectFrom('groups').select('class_id').where('group_id', '=', groupId).executeTakeFirst();
+    let classMaxHours = 0;
+    if (classIdQuery && classIdQuery.class_id) {
+       const classMaxHoursQuery = await db.selectFrom('timetable')
+         .innerJoin('groups', 'groups.group_id', 'timetable.group_id')
+         .select(['timetable.hour'])
+         .where('groups.class_id', '=', classIdQuery.class_id)
+         .where('timetable.day', '=', moment(date).isoWeekday() - 1)
+         .where((eb) => eb.or([
+            eb('timetable.type', '=', 0),
+            eb('timetable.type', '=', moment(date).isoWeek() % 2 === 0 ? 2 : 1)
+         ]))
+         .orderBy('timetable.hour', 'desc')
+         .executeTakeFirst();
+
+       const substitutionMaxHoursQuery = await db.selectFrom('substitution')
+         .innerJoin('groups', 'groups.group_id', 'substitution.group_id')
+         .select(['substitution.end_hour'])
+         .where('groups.class_id', '=', classIdQuery.class_id)
+         .where('substitution.start_date', '<=', moment(date).toDate())
+         .where('substitution.end_date', '>=', moment(date).toDate())
+         .orderBy('substitution.end_hour', 'desc')
+         .executeTakeFirst();
+         
+       classMaxHours = Math.max(
+         classMaxHoursQuery?.hour || 0,
+         substitutionMaxHoursQuery?.end_hour || 0
+       );
+    }
+
+    return { classbook, students, lessonNumber, lessonTotal, classService, classMaxHours }
   }, {
     query: t.Object({
       groupId: t.Optional(t.Number()),

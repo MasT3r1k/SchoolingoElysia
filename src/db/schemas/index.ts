@@ -122,6 +122,7 @@ import { StudentMatrikaRecordsTable } from './student_matrika_records'
 import { StudentNotesTable } from './student_notes'
 import { SchoolEvaluationTemplatesTable } from './school_evaluation_templates'
 import { ip_cacheTable } from './ip_cache'
+import { GdprConsentsTable, GdprUserConsentsTable, GdprTrainingTable, GdprUserTrainingTable, GdprRequestsTable, GdprReportsTable, GdprReviewsTable } from './gdpr'
 
 
 
@@ -261,6 +262,13 @@ export interface Database {
   tutoring_signups: TutoringSignupsTable
   school_evaluation_templates: SchoolEvaluationTemplatesTable
   ip_cache: ip_cacheTable
+  gdpr_consents: GdprConsentsTable
+  gdpr_user_consents: GdprUserConsentsTable
+  gdpr_training: GdprTrainingTable
+  gdpr_user_training: GdprUserTrainingTable
+  gdpr_requests: GdprRequestsTable
+  gdpr_reports: GdprReportsTable
+  gdpr_reviews: GdprReviewsTable
 }
 
 

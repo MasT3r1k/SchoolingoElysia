@@ -105,6 +105,113 @@ const app = new Elysia()
     })
   })
 
+  // GET /system/users/ldap_unimported - Get unimported LDAP users
+  .use(permissions(GlobalPermissions.USERS_VIEW))
+  .get('/system/users/ldap_unimported', async ({ user }: any) => {
+    try {
+      const { ldapGetUsers } = await import('../../../../functions/ldap.service');
+      const adUsers = await ldapGetUsers();
+      
+      const existingUsers = await db.selectFrom('users')
+        .select('username')
+        .execute();
+      
+      const existingUsernames = new Set(existingUsers.map(u => u.username.toLowerCase()));
+      const unimported = adUsers.filter((u: any) => !existingUsernames.has(u.username.toLowerCase()));
+      
+      return Response.json({ success: true, data: unimported });
+    } catch (err: any) {
+       return Response.json({ success: false, error: err.message || 'Nepodařilo se načíst uživatele z AD' }, { status: 500 });
+    }
+  })
+
+  // POST /system/users/ldap_import - Import LDAP users
+  .use(permissions(GlobalPermissions.USERS_EDIT))
+  .post('/system/users/ldap_import', async ({ user, body }: any) => {
+    const { users } = body;
+    if (!users || !Array.isArray(users) || users.length === 0) {
+      return Response.json({ error: 'invalid_data' }, { status: 400 });
+    }
+
+    try {
+      const importedUsers = [];
+      const bcrypt = await import('bcryptjs');
+      const dummyPasswordHash = await bcrypt.hash(Math.random().toString(36), 12);
+      
+      for (const u of users) {
+        const existing = await db.selectFrom('users').select('username').where('username', '=', u.username).executeTakeFirst();
+        if (existing) continue;
+
+        let personId: number | null = null;
+        
+        if (u.email) {
+          const existingEmail = await db.selectFrom('emails').select('person_id').where('email', '=', u.email).executeTakeFirst();
+          if (existingEmail) {
+            personId = existingEmail.person_id;
+          }
+        }
+
+        if (!personId) {
+          const personResult = await db.insertInto('persons')
+            .values({
+              first_name: u.first_name || '',
+              last_name: u.last_name || '',
+              gender: 0
+            } as any)
+            .executeTakeFirst();
+          personId = Number(personResult.insertId);
+
+          if (u.email) {
+              await db.insertInto('emails')
+                .ignore()
+                .values({
+                  person_id: personId,
+                  email: u.email,
+                  type: 'school',
+                  is_verified: true,
+                  description: 'Hlavní email'
+                } as any)
+                .execute();
+          }
+        }
+
+        const passwordResult = await db.insertInto('passwords')
+          .values({ password: dummyPasswordHash })
+          .executeTakeFirst();
+
+        const userResult = await db.insertInto('users')
+          .values({
+            username: u.username,
+            person_id: personId,
+            school_id: user.school_id,
+            role: u.role || 'student',
+            login_type: 'ldap',
+            password_id: Number(passwordResult.insertId),
+            locale: 'cs',
+            theme: 0
+          } as any)
+          .executeTakeFirst();
+
+        importedUsers.push({ user_id: Number(userResult.insertId), username: u.username });
+      }
+
+      return Response.json({ success: true, imported: importedUsers.length });
+    } catch (err: any) {
+      console.error('LDAP import error', err);
+      return Response.json({ success: false, error: 'Database error' }, { status: 500 });
+    }
+  }, {
+    body: t.Object({
+      users: t.Array(t.Object({
+        username: t.String(),
+        first_name: t.String(),
+        last_name: t.String(),
+        email: t.Optional(t.String()),
+        role: t.String()
+      }))
+    })
+  })
+
   // GET /system/users/:userId - Get a single user detail
   .use(permissions(GlobalPermissions.USERS_VIEW))
   .get('/system/users/:userId', async ({ user, params }: any) => {

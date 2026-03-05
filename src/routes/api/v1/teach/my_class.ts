@@ -2,9 +2,20 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
+import moment from 'moment';
+export enum AbsenceType {
+    ABSENCE,
+    EXCUSED,
+    UNEXCUSED,
+    NON_COUNT,
+    LATE,
+    EARLY,
+    DISTANCE
+}
 
-const app = new Elysia({ prefix: '/teach/my-class' })
-    .get('/', async ({ user, query, set }: any) => {
+
+const app = new Elysia()
+    .get('/teach/my-class', async ({ user, query, set }: any) => {
         if (!user) {
             set.status = 401;
             return { error: 'Unauthorized' };
@@ -87,19 +98,23 @@ const app = new Elysia({ prefix: '/teach/my-class' })
             full_name: studentNames.get(s.person_id)
         }));
 
-        // Fetch unexcused absences
-        const absencesResult = await db.selectFrom('absence')
+        // Fetch all absences
+        let absencesQuery = db.selectFrom('absence')
             .innerJoin('persons', 'persons.person_id', 'absence.student_id')
             .selectAll('absence')
             .select(['persons.first_name', 'persons.last_name'])
             .where('absence.student_id', 'in', studentIds)
             .innerJoin('classbook', 'classbook.classbook_id', 'absence.lesson_id')
-            .select(['classbook.date', 'classbook.day_hour', 'classbook.subject_id'])
-            .where((eb) => eb.and([
-                eb('absence.type', '=', 'missing' as any),
-                eb('absence.type', '!=', 'present' as any)
-            ]))
-            .execute();
+            .select(['classbook.date', 'classbook.day_hour', 'classbook.subject_id']);
+        
+        if (query.absenceStart) {
+            absencesQuery = absencesQuery.where('classbook.date', '>=', query.absenceStart);
+        }
+        if (query.absenceEnd) {
+            absencesQuery = absencesQuery.where('classbook.date', '<=', query.absenceEnd);
+        }
+
+        const absencesResult = await absencesQuery.orderBy('classbook.date', 'desc').execute();
         
         const absences = absencesResult.map(a => ({
             ...a,
@@ -179,13 +194,13 @@ const app = new Elysia({ prefix: '/teach/my-class' })
                  .innerJoin('classbook', 'classbook.classbook_id', 'absence.lesson_id')
                  .where('absence.student_id', 'in', studentIds)
                  .where('classbook.date', '=', todayStr)
-                 .where('absence.type', '!=', 'present' as any)
+                 .where('absence.type', '>', 0) // Meaning they have some absence record
                  .select(['absence.student_id', 'absence.type'])
                  .execute();
 
              const uniqueAbsent = new Set(todayAbsences.map(a => a.student_id)).size;
              const totalRecords = todayAbsences.length;
-             const excusedRecords = todayAbsences.filter(a => (a.type as any) === 'excused').length;
+             const excusedRecords = todayAbsences.filter(a => a.type === (AbsenceType.EXCUSED as any)).length;
              
              todayStats.present = Math.max(0, studentIds.length - uniqueAbsent);
              todayStats.absent = uniqueAbsent;
@@ -196,10 +211,10 @@ const app = new Elysia({ prefix: '/teach/my-class' })
         const allAbsenceStats = await db.selectFrom('absence')
             .innerJoin('classbook', 'classbook.classbook_id', 'absence.lesson_id')
              .where('absence.student_id', 'in', studentIds)
-             .where('absence.type', '!=', 'present' as any)
+             .where('absence.type', '!=', AbsenceType.NON_COUNT as any)
              .select((eb) => [
-                 sql<number>`COUNT(CASE WHEN absence.type = 'excused' THEN 1 END)`.as('excused'),
-                 sql<number>`COUNT(CASE WHEN absence.type = 'missing' OR absence.type = 'unexcused' THEN 1 END)`.as('unexcused'),
+                 sql<number>`COUNT(CASE WHEN absence.type = ${AbsenceType.EXCUSED} THEN 1 END)`.as('excused'),
+                 sql<number>`COUNT(CASE WHEN absence.type = ${AbsenceType.ABSENCE} OR absence.type = ${AbsenceType.UNEXCUSED} THEN 1 END)`.as('unexcused'),
                  sql<number>`COUNT(*)`.as('total')
              ])
              .executeTakeFirst();
@@ -225,7 +240,7 @@ const app = new Elysia({ prefix: '/teach/my-class' })
         };
 
     })
-    .post('/service', async ({ user, body, set }: any) => {
+    .post('/teach/my-class/service', async ({ user, body, set }: any) => {
         if (!user) {
             set.status = 401;
             return { error: 'Unauthorized' };
@@ -243,7 +258,7 @@ const app = new Elysia({ prefix: '/teach/my-class' })
 
         return { success: true };
     })
-    .post('/service/auto', async ({ user, body, set }: any) => {
+    .post('/teach/my-class/service/auto', async ({ user, body, set }: any) => {
         if (!user) {
             set.status = 401;
             return { error: 'Unauthorized' };
@@ -301,7 +316,7 @@ const app = new Elysia({ prefix: '/teach/my-class' })
 
         return { success: true, count: selected.length };
     })
-    .delete('/service/:id', async ({ user, params, set }: any) => {
+    .delete('/teach/my-class/service/:id', async ({ user, params, set }: any) => {
         if (!user) {
             set.status = 401;
             return { error: 'Unauthorized' };
@@ -313,7 +328,7 @@ const app = new Elysia({ prefix: '/teach/my-class' })
 
         return { success: true };
     })
-    .post('/absence/excuse', async ({ user, body, set }: any) => {
+    .post('/teach/my-class/absence/excuse', async ({ user, body, set }: any) => {
         if (!user) {
             set.status = 401;
             return { error: 'Unauthorized' };
@@ -323,11 +338,259 @@ const app = new Elysia({ prefix: '/teach/my-class' })
 
         await db.updateTable('absence')
             .set({
-                type: 'excused' as any,
+                type: AbsenceType.EXCUSED as any,
                 reason: reason
             })
             .where('student_id', '=', studentId)
             .where('lesson_id', '=', lessonId)
+            .execute();
+
+        return { success: true };
+    })
+    .post('/teach/my-class/absence/bulk', async ({ user, body, set }: any) => {
+        if (!user) {
+            set.status = 401;
+            return { error: 'Unauthorized' };
+        }
+
+        const { studentId, date, type, reason, note } = body as {
+            studentId: number,
+            date: string,
+            type: AbsenceType,
+            reason?: string,
+            note?: string
+        };
+
+        if (type === undefined) {
+             set.status = 400;
+             return { error: 'Type is required' };
+        }
+
+        // To ensure we can add absence even to lessons that haven't been 'opened' in classbook yet,
+        // we check the timetable and create missing classbook entries for the day.
+        const dayOfWeek = moment(date).isoWeekday() - 1;
+        const weekType = moment(date).isoWeek() % 2 === 0 ? 2 : 1;
+        
+        const timetableEntries = await db.selectFrom('timetable')
+            .innerJoin('student_groups', 'student_groups.group_id', 'timetable.group_id')
+            .where('student_groups.student_id', '=', studentId)
+            .where('timetable.day', '=', dayOfWeek)
+            .where((eb) => eb.or([
+                eb('timetable.type', '=', 0),
+                eb('timetable.type', '=', weekType)
+            ]))
+            .select(['timetable.group_id', 'timetable.subject_id', 'timetable.hour'])
+            .execute();
+
+        const validLessonIds: number[] = [];
+
+        for (const tt of timetableEntries) {
+            const isExistClassbook = await db.selectFrom('classbook')
+                .where('classbook.date', '=', date)
+                .where('classbook.day_hour', '=', tt.hour - 1)
+                .where('classbook.group_id', '=', tt.group_id)
+                .select('classbook.classbook_id')
+                .executeTakeFirst();
+            
+            if (!isExistClassbook) {
+                const inserted = await db.insertInto('classbook')
+                .values({
+                    date: date,
+                    day_hour: tt.hour - 1,
+                    group_id: tt.group_id,
+                    subject_id: tt.subject_id
+                })
+                .executeTakeFirst();
+                
+                if (inserted.insertId) validLessonIds.push(Number(inserted.insertId));
+            } else {
+                validLessonIds.push(isExistClassbook.classbook_id);
+            }
+        }
+
+        const lessons = validLessonIds.map(id => ({ classbook_id: id }));
+
+        for (const lesson of lessons) {
+            const exists = await db.selectFrom('absence')
+                .select('lesson_id')
+                .where('student_id', '=', studentId)
+                .where('lesson_id', '=', lesson.classbook_id)
+                .executeTakeFirst();
+            
+            if (exists) {
+                await db.updateTable('absence')
+                    .set({
+                        type: type as any,
+                        reason: reason || null,
+                        note: note || null
+                    })
+                    .where('student_id', '=', studentId)
+                    .where('lesson_id', '=', lesson.classbook_id)
+                    .execute();
+            } else {
+                await db.insertInto('absence')
+                    .values({
+                        student_id: studentId,
+                        lesson_id: lesson.classbook_id,
+                        type: type as any,
+                        reason: reason || null,
+                        note: note || null,
+                        minutes: null
+                    })
+                    .execute();
+            }
+        }
+
+        return { success: true, count: lessons.length };
+    })
+    .delete('/teach/my-class/absence/bulk', async ({ user, body, set }: any) => {
+        if (!user) {
+            set.status = 401;
+            return { error: 'Unauthorized' };
+        }
+
+        const { studentId, date } = body as { studentId: number, date: string };
+
+        const lessons = await db.selectFrom('classbook')
+            .where('date', '=', date)
+            .select('classbook_id')
+            .execute();
+
+        if (lessons.length > 0) {
+            await db.deleteFrom('absence')
+                .where('student_id', '=', studentId)
+                .where('lesson_id', 'in', lessons.map(l => l.classbook_id))
+                .execute();
+        }
+
+        return { success: true };
+    })
+    .put('/teach/my-class/absence', async ({ user, body, set }: any) => {
+        if (!user) {
+            set.status = 401;
+            return { error: 'Unauthorized' };
+        }
+
+        const { studentId, lessonId, date, hour, type, reason, note, minutes } = body as { 
+            studentId: number, 
+            lessonId?: number, 
+            date?: string,
+            hour?: number,
+            type: AbsenceType, 
+            reason?: string, 
+            note?: string,
+            minutes?: number
+        };
+
+        if (type === undefined) {
+             set.status = 400;
+             return { error: 'Type is required' };
+        }
+
+        let targetLessonId = lessonId;
+        if (!targetLessonId && date && hour !== undefined) {
+             let lesson = await db.selectFrom('classbook')
+                 .innerJoin('student_groups', 'student_groups.group_id', 'classbook.group_id')
+                 .where('student_groups.student_id', '=', studentId)
+                 .where('classbook.date', '=', date)
+                 .where('classbook.day_hour', '=', hour)
+                 .select('classbook.classbook_id')
+                 .executeTakeFirst();
+                 
+             if (!lesson) {
+                 // Try to create from timetable
+                 const dayOfWeek = moment(date).isoWeekday() - 1;
+                 const weekType = moment(date).isoWeek() % 2 === 0 ? 2 : 1;
+                 const tt = await db.selectFrom('timetable')
+                     .innerJoin('student_groups', 'student_groups.group_id', 'timetable.group_id')
+                     .where('student_groups.student_id', '=', studentId)
+                     .where('timetable.day', '=', dayOfWeek)
+                     .where('timetable.hour', '=', hour + 1)
+                     .where((eb) => eb.or([eb('timetable.type', '=', 0), eb('timetable.type', '=', weekType)]))
+                     .select(['timetable.group_id', 'timetable.subject_id'])
+                     .executeTakeFirst();
+                     
+                 if (tt) {
+                     const res = await db.insertInto('classbook')
+                     .values({
+                         date: date,
+                         day_hour: hour,
+                         group_id: tt.group_id,
+                         subject_id: tt.subject_id
+                     })
+                     .executeTakeFirst();
+                     
+                     if (res.insertId) targetLessonId = Number(res.insertId);
+                 }
+             } else {
+                 targetLessonId = lesson.classbook_id;
+             }
+        }
+
+        if (!targetLessonId) {
+             set.status = 404;
+             return { error: 'Nepodařilo se najít hodinu pro tento čas. Zřejmě není naplánována výuka.' };
+        }
+
+        const exists = await db.selectFrom('absence')
+            .select('lesson_id')
+            .where('student_id', '=', studentId)
+            .where('lesson_id', '=', targetLessonId)
+            .executeTakeFirst();
+
+        if (exists) {
+            await db.updateTable('absence')
+                .set({
+                    type: type as any,
+                    reason: reason || null,
+                    note: note || null,
+                    minutes: minutes || null
+                })
+                .where('student_id', '=', studentId)
+                .where('lesson_id', '=', targetLessonId)
+                .execute();
+        } else {
+            await db.insertInto('absence')
+                .values({
+                    student_id: studentId,
+                    lesson_id: targetLessonId as number,
+                    type: type as any,
+                    reason: reason || null,
+                    note: note || null,
+                    minutes: minutes || null
+                })
+                .execute();
+        }
+
+        return { success: true };
+    })
+    .delete('/teach/my-class/absence', async ({ user, body, set }: any) => {
+        if (!user) {
+            set.status = 401;
+            return { error: 'Unauthorized' };
+        }
+
+        const { studentId, lessonId, date, hour } = body as { studentId: number, lessonId?: number, date?: string, hour?: number };
+
+        let targetLessonId = lessonId;
+        if (!targetLessonId && date && hour !== undefined) {
+             const lesson = await db.selectFrom('classbook')
+                 .innerJoin('student_groups', 'student_groups.group_id', 'classbook.group_id')
+                 .where('student_groups.student_id', '=', studentId)
+                 .where('classbook.date', '=', date)
+                 .where('classbook.day_hour', '=', hour)
+                 .select('classbook.classbook_id')
+                 .executeTakeFirst();
+             if (lesson) targetLessonId = lesson.classbook_id;
+        }
+
+        if (!targetLessonId) {
+             return { success: true }; // Nothing to delete
+        }
+
+        await db.deleteFrom('absence')
+            .where('student_id', '=', studentId)
+            .where('lesson_id', '=', targetLessonId)
             .execute();
 
         return { success: true };

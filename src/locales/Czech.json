@@ -78,11 +78,15 @@
         "session_expired_alert": "Byli jste automaticky odhlášeni z důvodu bezpečnosti.",
         "logout_success_alert": "Odhlášení proběhlo úspěšně.",
         "errors": {
-            "longLoadingQR": "Načítání QR kódu trvá déle než by mělo, omlouváme se za komplikace",
             "429": "Přiliš mnoho pokusů o přihlášení, zkuste to znova za pár minut",
+            "longLoadingQR": "Načítání QR kódu trvá déle než by mělo, omlouváme se za komplikace",
             "invalid_username": "Uživatel nenalezen",
             "invalid_password": "Špatné heslo",
             "invalid_tfa": "Špatný kód"
+        },
+        "expired_password": {
+            "title": "Změna hesla",
+            "message": "Vaše heslo expirovalo. Pro pokračování si prosím nastavte nové heslo."
         }
     },
     "form": {
@@ -403,6 +407,7 @@
         "students": "Karta žáka",
         "employees": "Zaměstnanci",
         "account": "Můj účet",
+        "classes": "Třídy",
         "calendar": "Kalendář",
         "documents": "Dokumenty",
         "schedule": {
@@ -586,6 +591,7 @@
         "cancel": "Zrušit",
         "edit": "Upravit",
         "send": "Odeslat",
+        "detail": "Podrobnosti",
         "send_request": "Odeslat žádost",
         "view_all": "Zobrazit vše",
         "remove": "Odebrat",
@@ -653,6 +659,7 @@
                 "no_search_description": "Nebyly nalezeny žádné výsledky vyhledávání.",
                 "new_subject": "Nový předmět",
                 "teachers": "Vyučující (můžete přidat více)",
+                "tandem_teacher": "Tandemový učitel",
                 "choose_teacher": "Vybrat učitele",
                 "search_teacher": "Vyhledávat učitele",
                 "no_teachers": "Žádní učitelé",
@@ -699,6 +706,7 @@
         "title": "Přehled za školní rok %year%"
     },
     "students": {
+        "count": "studentů",
         "phone": "Telefon",
         "email": "Emailová adresa",
         "parent": "Rodič",
@@ -1415,12 +1423,12 @@
         },
         "change_password": "Změnit heslo",
         "passwords": {
+            "429": "Přiliš mnoho pokusů o změnu hesla, zkuste to později",
             "old_password": "Staré heslo",
             "new_password": "Nové heslo",
             "again_new_password": "Znova nové heslo",
             "success_changed": "Heslo bylo úspěšně změněno!",
-            "invalid_new_password": "Nemůžete zvolit tohle heslo",
-            "429": "Přiliš mnoho pokusů o změnu hesla, zkuste to později"
+            "invalid_new_password": "Nemůžete zvolit tohle heslo"
         },
         "language": "Jazyk",
         "languages": {
@@ -1851,8 +1859,18 @@
         "teachers": "Učitelé",
         "risks": "Rizika"
     },
+    "classes": {
+        "add_class": "Přidat třídu",
+        "search_class": "Hledat třídu",
+        "name_class": "Název třídy",
+        "year_class": "Ročník",
+        "no_classteacher": "Nepřiřazeno",
+        "field_of_study": "Obor studia",
+        "room_class": "Místnost třídy",
+        "no_room": "Žádná",
+        "students_count": "Počet studentů"
+    },
     "employees": {
-        
         "list": "Seznam",
         "attendance": "Docházka",
         "attendance_status": {
@@ -2245,9 +2263,15 @@
             "officer": "Pověřenec a žádosti",
             "admin": "Správa"
         },
+        "stats": {
+            "granted": "Udělené",
+            "denied": "Zamítnuté",
+            "pending": "Čeká na schválení"
+        },
         "overview": {
             "notifications": "Oznámení",
             "new_consents": "Máte %count% nových žádostí o souhlas.",
+            "view_all_consents": "Zobrazit všechny souhlasy",
             "pending_training": "Máte %count% neukončených školení.",
             "no_notifications": "Nemáte žádná nová oznámení.",
             "summary": "Souhrnný stav",
@@ -2290,6 +2314,9 @@
                 "instructions": "Poučení",
                 "reason_label": "Důvod (v případě nesouhlasu/odvolání)",
                 "personal_data": "Dotčené osobní údaje"
+            },
+            "remove_user": {
+                "verify_text": "smazat účet"
             }
         },
         "training": {
@@ -2319,7 +2346,7 @@
                 "breach_report": "Hlášení podezření",
                 "objection": "Námitka proti zpracování",
                 "data_request": "Žádost o přístup k údajům (Export)",
-                "forget_me": "Právo na výmaz (Smazat účet)"
+                "forget_me": "Smazat účet"
             },
             "report_form": {
                 "breach_title": "Hlášení podezření na porušení ochrany",

@@ -1,6 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { getAuthUser } from '../../../../utils/auth';
+import { setLdapConfig } from '../../../../functions/ldap.service';
 
 const app = new Elysia()
   .derive(async ({ cookie }) => ({
@@ -67,9 +68,20 @@ const app = new Elysia()
          }
     }
 
+    // Update SQLite config for ldap.service.ts
+    setLdapConfig(
+        server_url,
+        search_base,
+        bind_dn || '',
+        bind_password || '',
+        mapping_username || 'sAMAccountName'
+    );
+
     return Response.json({ success: true });
   }, {
     body: t.Object({
+        config_id: t.Optional(t.Number()),
+        type: t.Optional(t.Number()),
         server_url: t.String(),
         bind_dn: t.Optional(t.String()),
         bind_password: t.Optional(t.String()),
@@ -78,7 +90,7 @@ const app = new Elysia()
         mapping_username: t.Optional(t.String()),
         mapping_email: t.Optional(t.String()),
         mapping_name: t.Optional(t.String()),
-        enabled: t.Boolean()
+        enabled: t.Optional(t.Union([t.Boolean(), t.Number()]))
     })
   });
 

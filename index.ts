@@ -15,6 +15,7 @@ import { ws } from './websocket';
 import { getAuthUser } from './src/utils/auth';
 import { uploadAPI } from './upload';
 import { Mailer } from "./mailer.module";
+import { ldapRoutes } from './src/functions/ldap.service';
 
 const UPLOAD_DIR = './uploads';
 
@@ -67,8 +68,8 @@ export const app = new Elysia({
   .use(errorHandler)
   .use(requestLogger)
   .use(rateLimit)
-  .use(version)
   .use(uploadAPI)
+  .use(ldapRoutes)
   .use(version)
   
   // Authentication & Context Derivation

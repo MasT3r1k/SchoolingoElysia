@@ -13,7 +13,7 @@ const app = new Elysia()
             if (!user) return { error: 'unauthorized', status: 401 };
         }
 
-        const { action, lessonId, day, hour, subjectId, teacherId, roomId, groupId } = body;
+        const { action, lessonId, day, hour, subjectId, teacherId, teacher2Id, roomId, groupId } = body;
 
         try {
             if (action === 'delete') {
@@ -39,6 +39,7 @@ const app = new Elysia()
                     hour,
                     subject_id: subjectId,
                     teacher_id: teacherId || undefined, // Optional if not assigned
+                    teacher2_id: teacher2Id || null,
                     room_id: roomId || undefined,
                     group_id: groupId,
                     type // Default Normal or provided
@@ -100,6 +101,7 @@ const app = new Elysia()
             hour: t.Optional(t.Number()),
             subjectId: t.Optional(t.Number()),
             teacherId: t.Optional(t.Number()),
+            teacher2Id: t.Optional(t.Nullable(t.Number())),
             roomId: t.Optional(t.Number()),
             groupId: t.Optional(t.Number()),
             type: t.Optional(t.Number())

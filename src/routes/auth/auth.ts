@@ -8,6 +8,7 @@ import { getIPData } from '../../functions/get_ip_data';
 import { SecurityConfig } from '../../config/security.config';
 import { Mailer } from '../../../mailer.module';
 import { Utils } from '../../utils/utils';
+import { ldapLogin, parseLdapError, ldapChangePassword } from '../../functions/ldap.service';
 
 export async function authenticateUser(user_id: number, cookie: any, userAgent: string | null, ip: string | null) {
   try {
@@ -192,8 +193,20 @@ const elysiaApp = new Elysia()
       }
 
       // Validate password
-      // TODO ldap login
-      const isPasswordValid = user.login_type == "local" ? bcrypt.compareSync(password, user.password) : false;
+      let isPasswordValid = false;
+      let passwordErrorMsg = "Invalid password";
+      
+      if (user.login_type === "local") {
+        isPasswordValid = bcrypt.compareSync(password, user.password);
+      } else if (user.login_type === "ldap") {
+        try {
+          await ldapLogin(username, password);
+          isPasswordValid = true;
+        } catch (err: any) {
+          passwordErrorMsg = parseLdapError(err);
+          isPasswordValid = false;
+        }
+      }
 
       if (!isPasswordValid) {
         await db.insertInto("login_history")
@@ -203,7 +216,7 @@ const elysiaApp = new Elysia()
             type: 'password',
             ip: ipData.ip,
             user_agent: userAgent,
-            error: 'invalid_password',
+            error: user.login_type === 'ldap' ? passwordErrorMsg : 'invalid_password',
             city: ipData?.city ?? null,
             zip_code: ipData?.zip_code ?? null,
             region_name: ipData?.region_name ?? null,
@@ -214,7 +227,10 @@ const elysiaApp = new Elysia()
           })
           .execute();
 
-        return Response.json({ error: ["Invalid password"] });
+        return Response.json({ 
+          error: [passwordErrorMsg],
+          require_password_change: (passwordErrorMsg === "Password expired" || passwordErrorMsg === "User must change password")
+        });
       }
 
       // 2FA check
@@ -348,6 +364,44 @@ const elysiaApp = new Elysia()
       username: t.Optional(t.String()),
       password: t.Optional(t.String()),
       TFA: t.Optional(t.String())
+    }))
+  })
+  .post('/auth-change-expired-password', async ({ body, school, set }: any) => {
+    if (!school) {
+        set.status = 412;
+        return Response.json({ error: ['School not configured'] });
+    }
+    const { username, oldPassword, newPassword } = body;
+
+    let err = [];
+    if (!username) err.push('Missing username');
+    if (!oldPassword) err.push('Missing old password');
+    if (!newPassword) err.push('Missing new password');
+
+    if (err.length) return Response.json({ error: err });
+
+    const user = await db.selectFrom("users")
+      .select(['user_id', 'login_type'])
+      .where(sql`LOWER(users.username)`, '=', username.toLowerCase())
+      .where('users.school_id', '=', school.school_id)
+      .limit(1)
+      .executeTakeFirst();
+        
+    if (!user || user.login_type !== 'ldap') {
+      return Response.json({ error: ['Invalid user or not LDAP login type'] });
+    }
+      
+    try {
+        await ldapChangePassword(username, oldPassword, newPassword);
+        return Response.json({ success: true, stage: 'done' });
+    } catch (error: any) {
+        return Response.json({ error: [error.message || 'Unknown error'] });
+    }
+  }, {
+    body: t.Optional(t.Object({
+      username: t.Optional(t.String()),
+      oldPassword: t.Optional(t.String()),
+      newPassword: t.Optional(t.String())
     }))
   })
 
