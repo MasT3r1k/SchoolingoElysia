@@ -371,8 +371,16 @@ const app = new Elysia()
         const dayOfWeek = moment(date).isoWeekday() - 1;
         const weekType = moment(date).isoWeek() % 2 === 0 ? 2 : 1;
         
-        const timetableEntries = await db.selectFrom('timetable')
+        const schoolYear = await db.selectFrom('school_years')
+            .where('start', '<=', new Date(date))
+            .where('end', '>=', new Date(date))
+            .select('sy_id')
+            .executeTakeFirst();
+
+        const timetableEntries = schoolYear ? await db.selectFrom('timetable')
             .innerJoin('student_groups', 'student_groups.group_id', 'timetable.group_id')
+            .innerJoin('groups', 'groups.group_id', 'timetable.group_id')
+            .where('groups.year_id', '=', schoolYear.sy_id)
             .where('student_groups.student_id', '=', studentId)
             .where('timetable.day', '=', dayOfWeek)
             .where((eb) => eb.or([
@@ -380,7 +388,7 @@ const app = new Elysia()
                 eb('timetable.type', '=', weekType)
             ]))
             .select(['timetable.group_id', 'timetable.subject_id', 'timetable.hour'])
-            .execute();
+            .execute() : [];
 
         const validLessonIds: number[] = [];
 
@@ -501,26 +509,36 @@ const app = new Elysia()
                  // Try to create from timetable
                  const dayOfWeek = moment(date).isoWeekday() - 1;
                  const weekType = moment(date).isoWeek() % 2 === 0 ? 2 : 1;
-                 const tt = await db.selectFrom('timetable')
-                     .innerJoin('student_groups', 'student_groups.group_id', 'timetable.group_id')
-                     .where('student_groups.student_id', '=', studentId)
-                     .where('timetable.day', '=', dayOfWeek)
-                     .where('timetable.hour', '=', hour + 1)
-                     .where((eb) => eb.or([eb('timetable.type', '=', 0), eb('timetable.type', '=', weekType)]))
-                     .select(['timetable.group_id', 'timetable.subject_id'])
+                 const schoolYear = await db.selectFrom('school_years')
+                     .where('start', '<=', new Date(date))
+                     .where('end', '>=', new Date(date))
+                     .select('sy_id')
                      .executeTakeFirst();
-                     
-                 if (tt) {
-                     const res = await db.insertInto('classbook')
-                     .values({
-                         date: date,
-                         day_hour: hour,
-                         group_id: tt.group_id,
-                         subject_id: tt.subject_id
-                     })
-                     .executeTakeFirst();
-                     
-                     if (res.insertId) targetLessonId = Number(res.insertId);
+
+                 if (schoolYear) {
+                     const tt = await db.selectFrom('timetable')
+                         .innerJoin('student_groups', 'student_groups.group_id', 'timetable.group_id')
+                         .innerJoin('groups', 'groups.group_id', 'timetable.group_id')
+                         .where('groups.year_id', '=', schoolYear.sy_id)
+                         .where('student_groups.student_id', '=', studentId)
+                         .where('timetable.day', '=', dayOfWeek)
+                         .where('timetable.hour', '=', hour + 1)
+                         .where((eb) => eb.or([eb('timetable.type', '=', 0), eb('timetable.type', '=', weekType)]))
+                         .select(['timetable.group_id', 'timetable.subject_id'])
+                         .executeTakeFirst();
+                         
+                     if (tt) {
+                         const res = await db.insertInto('classbook')
+                         .values({
+                             date: date,
+                             day_hour: hour,
+                             group_id: tt.group_id,
+                             subject_id: tt.subject_id
+                         })
+                         .executeTakeFirst();
+                         
+                         if (res.insertId) targetLessonId = Number(res.insertId);
+                     }
                  }
              } else {
                  targetLessonId = lesson.classbook_id;

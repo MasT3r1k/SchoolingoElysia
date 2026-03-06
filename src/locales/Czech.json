@@ -2211,6 +2211,7 @@
             "serial_number": "Sériové číslo",
             "status": "Stav",
             "room": "Místnost",
+            "search_manager": "Hledat správce",
             "acquisition_date": "Datum pořízení",
             "purchase_price": "Pořizovací cena",
             "description": "Popis/Poznámka"

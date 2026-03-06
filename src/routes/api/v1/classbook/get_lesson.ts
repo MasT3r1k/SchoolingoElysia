@@ -34,13 +34,14 @@ const elysiaApp = new Elysia()
     // === VALIDACE QUERY ===
     const { date, hour, groupId } = query;
     if (date == undefined || hour == undefined || groupId == undefined) return { error: 'bad_query' };
+    const dateMoment = moment(date);
 
     // === NAČÍST PŘEDMĚT ===
     const subject = await db.selectFrom('timetable')
     .select([
       'timetable.subject_id'
     ])
-    .where('timetable.day', '=', moment(date).isoWeekday() - 1)
+    .where('timetable.day', '=', dateMoment.isoWeekday() - 1)
     .where('timetable.hour', '=', hour + 1)
     .where('timetable.group_id', '=', groupId)
     .executeTakeFirst();
@@ -57,7 +58,7 @@ const elysiaApp = new Elysia()
       .select([
         'classbook.classbook_id as classbook_id'
       ])
-      .where('classbook.date', '=', moment(date).format('YYYY-MM-DD'))
+      .where('classbook.date', '=', dateMoment.format('YYYY-MM-DD'))
       .where('classbook.day_hour', '=', hour)
       .where('classbook.group_id', '=', groupId)
       .executeTakeFirst();
@@ -65,7 +66,7 @@ const elysiaApp = new Elysia()
     if (!isExistClassbook) {
       await db.insertInto('classbook')
       .values({
-        date: moment(date).format('YYYY-MM-DD'),
+        date: dateMoment.format('YYYY-MM-DD'),
         day_hour: hour,
         group_id: groupId,
         subject_id: subjectId
@@ -92,7 +93,7 @@ const elysiaApp = new Elysia()
         'classbook.room_id',
         sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, syClass.start, CURDATE()) + 1, classes.suffix)`.as('class_name')
       ])
-      .where('classbook.date', '=', moment(date).format('YYYY-MM-DD'))
+      .where('classbook.date', '=', dateMoment.format('YYYY-MM-DD'))
       .where('classbook.day_hour', '=', hour)
       .where('classbook.group_id', '=', groupId)
       .executeTakeFirst();
@@ -193,10 +194,12 @@ const elysiaApp = new Elysia()
     .select([
       'class_service.student_id'
     ])
-    .where('class_service.start', '<=', date)
-    .where('class_service.end', '>=', date)
+    .where('class_service.start', '<=', dateMoment.format('YYYY-MM-DD'))
+    .where('class_service.end', '>=', dateMoment.format('YYYY-MM-DD'))
     .where('student_groups.group_id', '=', groupId)
     .execute();
+
+    console.log(class_serviceDB)
 
     const classService = await format_person_map_by_ids(class_serviceDB.map((student) => (student.student_id)));
 
@@ -208,10 +211,10 @@ const elysiaApp = new Elysia()
          .innerJoin('groups', 'groups.group_id', 'timetable.group_id')
          .select(['timetable.hour'])
          .where('groups.class_id', '=', classIdQuery.class_id)
-         .where('timetable.day', '=', moment(date).isoWeekday() - 1)
+         .where('timetable.day', '=', dateMoment.isoWeekday() - 1)
          .where((eb) => eb.or([
             eb('timetable.type', '=', 0),
-            eb('timetable.type', '=', moment(date).isoWeek() % 2 === 0 ? 2 : 1)
+            eb('timetable.type', '=', dateMoment.isoWeek() % 2 === 0 ? 2 : 1)
          ]))
          .orderBy('timetable.hour', 'desc')
          .executeTakeFirst();
@@ -220,8 +223,8 @@ const elysiaApp = new Elysia()
          .innerJoin('groups', 'groups.group_id', 'substitution.group_id')
          .select(['substitution.end_hour'])
          .where('groups.class_id', '=', classIdQuery.class_id)
-         .where('substitution.start_date', '<=', moment(date).toDate())
-         .where('substitution.end_date', '>=', moment(date).toDate())
+         .where('substitution.start_date', '<=', dateMoment.toDate())
+         .where('substitution.end_date', '>=', dateMoment.toDate())
          .orderBy('substitution.end_hour', 'desc')
          .executeTakeFirst();
          
@@ -231,7 +234,104 @@ const elysiaApp = new Elysia()
        );
     }
 
-    return { classbook, students, lessonNumber, lessonTotal, classService, classMaxHours }
+    // === VÝPOČET MINULÉ HODINY ===
+    const allTimetable = await db.selectFrom('timetable')
+         .select(['day', 'hour', 'type', 'subject_id'])
+         .where('group_id', '=', classbook.group_id)
+         .execute();
+
+    const allSubstitutions = await db.selectFrom('substitution')
+         .select(['start_date', 'start_hour', 'end_date', 'end_hour', 'subject_id', 'type'])
+         .where('group_id', '=', classbook.group_id)
+         .where('start_date', '<=', dateMoment.toDate())
+         .where('start_date', '>=', school_year.start as Date)
+         .execute();
+
+    let prevLessonDateStr: string | null = null;
+    let prevLessonHour: number | null = null;
+    
+    let checkDay = dateMoment.clone();
+    let currentCheckHour = hour; // this matches timetable hour for the lesson just *before* the current one natively
+
+    const prevLimit = moment(school_year.start);
+
+    outer: while (checkDay.isSameOrAfter(prevLimit, 'day')) {
+        const isoWeekday = checkDay.isoWeekday() - 1; // 0=Mon, 4=Fri
+        const isOddWeek = checkDay.isoWeek() % 2 !== 0;
+
+        for (let h = currentCheckHour; h >= 1; h--) {
+            let isOurSubject = false;
+            let cancelled = false;
+
+            const tt = allTimetable.find(t => t.day === isoWeekday && t.hour === h);
+            if (tt) {
+                if (tt.type === 0 || (tt.type === 1 && isOddWeek) || (tt.type === 2 && !isOddWeek)) {
+                    if (tt.subject_id === subjectId) {
+                        isOurSubject = true;
+                    }
+                }
+            }
+
+            const checkDayStart = checkDay.clone().startOf('day');
+            const thisDaySubstr = allSubstitutions.find(sub => {
+                const subStart = moment(sub.start_date).startOf('day');
+                const subEnd = moment(sub.end_date).startOf('day');
+                if (checkDayStart.isSameOrAfter(subStart) && checkDayStart.isSameOrBefore(subEnd)) {
+                    if (h >= sub.start_hour && h <= sub.end_hour) return true;
+                }
+                return false;
+            });
+
+            if (thisDaySubstr) {
+                if (thisDaySubstr.type === 'canceled') {
+                    cancelled = true; 
+                    isOurSubject = false;
+                } else if (thisDaySubstr.subject_id !== null) {
+                    if (thisDaySubstr.subject_id === subjectId) {
+                        isOurSubject = true;
+                        cancelled = false;
+                    } else {
+                        isOurSubject = false;
+                    }
+                }
+            }
+
+            if (isOurSubject && !cancelled) {
+                prevLessonDateStr = checkDay.format('YYYY-MM-DD');
+                prevLessonHour = h - 1;
+                break outer;
+            }
+        }
+        
+        checkDay.subtract(1, 'day');
+        if (checkDay.isoWeekday() > 5) {
+             checkDay.isoWeekday(5);
+        }
+        currentCheckHour = 15;
+    }
+
+    let previousLessonData: any = null;
+
+    if (prevLessonDateStr !== null && prevLessonHour !== null) {
+        const prevClassbook = await db.selectFrom('classbook')
+            .select(['topic', 'note', 'internal_note', 'classbook_id'])
+            .where('group_id', '=', classbook.group_id)
+            .where('subject_id', '=', subjectId)
+            .where('date', '=', prevLessonDateStr)
+            .where('day_hour', '=', prevLessonHour)
+            .executeTakeFirst();
+            
+        previousLessonData = {
+            date: prevLessonDateStr,
+            hour: prevLessonHour,
+            recorded: prevClassbook && (prevClassbook.topic || prevClassbook.note) ? true : false,
+            topic: prevClassbook?.topic || null,
+            note: prevClassbook?.note || null,
+            internal_note: prevClassbook?.internal_note || null
+        };
+    }
+
+    return { classbook, students, lessonNumber, lessonTotal, classService, classMaxHours, previousLesson: previousLessonData }
   }, {
     query: t.Object({
       groupId: t.Optional(t.Number()),

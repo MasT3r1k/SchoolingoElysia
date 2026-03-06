@@ -44,8 +44,18 @@ const app = new Elysia({ prefix: '/school' })
         if (!school) return { error: 'school_not_found', status: 412 };
 
         const buildings = await db.selectFrom('buildings')
-            .selectAll()
-            .where('school_id', '=', school.school_id)
+            .leftJoin('building_floors', 'building_floors.building_id', 'buildings.building_id')
+            .leftJoin('building_rooms', 'building_rooms.floor_id', 'building_floors.bf_id')
+            .select([
+                'buildings.building_id',
+                'buildings.school_id',
+                'buildings.name',
+                'buildings.type',
+                sql<number>`COUNT(building_rooms.room_id)`.as('rooms_count'),
+                sql<number>`COALESCE(SUM(building_rooms.capacity), 0)`.as('persons_capacity')
+            ])
+            .where('buildings.school_id', '=', school.school_id)
+            .groupBy('buildings.building_id')
             .execute();
 
         return { buildings };
@@ -134,6 +144,23 @@ const app = new Elysia({ prefix: '/school' })
             level: t.Number(),
             floor_plan: t.Optional(t.String())
         })
+    })
+    .delete('/architecture/floors/:id', async ({ params, school }: any) => {
+        // First verify the floor belongs to the school
+        const floor = await db.selectFrom('building_floors')
+            .innerJoin('buildings', 'buildings.building_id', 'building_floors.building_id')
+            .select('bf_id')
+            .where('bf_id', '=', Number(params.id))
+            .where('buildings.school_id', '=', school.school_id)
+            .executeTakeFirst();
+            
+        if (!floor) return { error: 'no_permission' };
+
+        await db.deleteFrom('building_floors')
+            .where('bf_id', '=', Number(params.id))
+            .execute();
+            
+        return { success: true };
     })
 
     // Rooms
