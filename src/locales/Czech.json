@@ -828,7 +828,9 @@
         "delete_folder": "Smazat složku",
         "download_file": "Stáhnout soubor",
         "save_file": "Uložit soubor",
-        "save_folder": "Uložit složku"
+        "save_folder": "Uložit složku",
+        "file_content": "Obsah souboru",
+        "file_content_placeholder": "Zadejte obsah souboru (nepovinné).."
     },
     "rewards": {
         "status": {

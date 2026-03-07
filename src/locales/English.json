@@ -737,7 +737,9 @@
         "delete_folder": "Delete folder",
         "download_file": "Download file",
         "save_file": "Save file",
-        "save_folder": "Save folder"
+        "save_folder": "Save folder",
+        "file_content": "File content",
+        "file_content_placeholder": "Enter file content (optional).."
     },
     "classbook": {
         "class_service": "Class monitor",
