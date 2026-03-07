@@ -5,5 +5,6 @@ export interface documentsTable {
   parent_id: Generated<number | null>;
   type: Generated<'file' | 'folder'>;
   name: Generated<string | null>;
-  file_id: Generated<number | null>
+  file_id: Generated<number | null>;
+  created_at: Generated<Date | null>;
 }
