@@ -1382,6 +1382,7 @@
         "no_child_selected": "Nevybrali jste žádné dítě",
         "select_receiver": "Vyberte příjemce zprávy",
         "search_receiver": "Vyhledávat příjemce",
+        "no_receivers": "Žádní uživatelé k dispozici.",
         "selected_receivers": "Vybraní příjemci:",
         "no_selected_receivers": "Nemáte vybrané žádné příjemce.",
         "hide_selected_receivers": "Vybrat další příjemce (%count%)",

@@ -1270,6 +1270,7 @@
         "no_child_selected": "You have not selected any child",
         "select_receiver": "Select message recipient",
         "search_receiver": "Search recipients",
+        "no_receivers": "No users available.",
         "selected_receivers": "Selected recipients:",
         "no_selected_receivers": "You have no selected recipients.",
         "hide_selected_receivers": "Select more recipients (%count%)",
