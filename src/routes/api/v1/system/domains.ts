@@ -2,13 +2,15 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { getAuthUser } from '../../../../utils/auth';
 
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+
 const app = new Elysia()
-  .derive(async ({ cookie }) => ({
-      user: await getAuthUser(cookie?.token?.value as string | undefined)
-  }))
-  .post('/system/domain', async ({ user, body }) => {
+  .post('/system/domain', async ({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.is_principal) {
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SCHOOL_EDIT);
+    if (!perm) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
@@ -38,11 +40,13 @@ const app = new Elysia()
         domain: t.String()
     })
   })
-  .delete('/system/domain', async ({ user, body }) => {
+  .delete('/system/domain', async ({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-      if (user.manager !== -1 && !user.is_principal) {
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SCHOOL_EDIT);
+    if (!perm) {
         return Response.json({ error: 'no_permission' }, { status: 403 });
-      }
+    }
 
     const { domainId } = body;
     

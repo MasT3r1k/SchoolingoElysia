@@ -6,5 +6,6 @@ export interface documentsTable {
   type: Generated<'file' | 'folder'>;
   name: Generated<string | null>;
   file_id: Generated<number | null>;
+  owner_id: number | null;
   created_at: Generated<Date | null>;
 }

@@ -1,12 +1,17 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
-import { permissions } from '../../../../middleware/permission.middleware';
+import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia()
   // POST /system/evaluation_templates - Vytvoření nebo aktualizace šablony hodnocení
-  .use(permissions(GlobalPermissions.SYSTEM_STATUS))
-  .post('/system/evaluation_templates', async ({ school, body }: any) => {
+  .post('/system/evaluation_templates', async ({ cookie, school, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SYSTEM_STATUS);
+    if (!perm) return { error: 'no_permission' };
+
     if (!school) return Response.json({ error: 'no_school' }, { status: 404 });
 
     const { templateId, type, text, value, isPublic } = body;
@@ -48,8 +53,12 @@ const app = new Elysia()
   })
 
   // DELETE /system/evaluation_templates - Smazání šablony hodnocení
-  .use(permissions(GlobalPermissions.SYSTEM_STATUS))
-  .delete('/system/evaluation_templates', async ({ school, body }: any) => {
+  .delete('/system/evaluation_templates', async ({ cookie, school, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SYSTEM_STATUS);
+    if (!perm) return { error: 'no_permission' };
+
     if (!school) return Response.json({ error: 'no_school' }, { status: 404 });
 
     const { templateId } = body;

@@ -2,13 +2,17 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
-import { permissions } from '../../../../middleware/permission.middleware';
+import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 
 const app = new Elysia()
-  .use(permissions(GlobalPermissions.AUDIT_VIEW))
-  .get('/system/audit', async ({ user, query }: any) => {
+  .get('/system/audit', async ({ cookie, query }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.AUDIT_VIEW);
+    if (!perm) return { error: 'no_permission' };
 
     const page = query.page ? parseInt(query.page) : 1;
     let limit = query.limit ? parseInt(query.limit) : 20;

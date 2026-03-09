@@ -1,13 +1,17 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
-import { permissions } from '../../../../middleware/permission.middleware';
+import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 
 const app = new Elysia({ prefix: '/school' })
-    .use(permissions(GlobalPermissions.ARCHITECTURE_VIEW))
-    .get('/architecture/overview', async ({ school }: any) => {
+    .get('/architecture/overview', async ({ cookie, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_VIEW);
+        if (!perm) return { error: 'no_permission' };
         if (!school) return { error: 'school_not_found', status: 412 };
 
         const stats = await Promise.all([
@@ -40,7 +44,11 @@ const app = new Elysia({ prefix: '/school' })
     })
 
     // Buildings CRUD
-    .get('/architecture/buildings', async ({ school }: any) => {
+    .get('/architecture/buildings', async ({ cookie, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_VIEW);
+        if (!perm) return { error: 'no_permission' };
         if (!school) return { error: 'school_not_found', status: 412 };
 
         const buildings = await db.selectFrom('buildings')
@@ -60,8 +68,11 @@ const app = new Elysia({ prefix: '/school' })
 
         return { buildings };
     })
-    .use(permissions(GlobalPermissions.ARCHITECTURE_EDIT))
-    .post('/architecture/buildings', async ({ body, school }: any) => {
+    .post('/architecture/buildings', async ({ cookie, body, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_EDIT);
+        if (!perm) return { error: 'no_permission' };
         if (!school) return { error: 'school_not_found', status: 412 };
 
         const { building_id, name, type } = body;
@@ -96,7 +107,11 @@ const app = new Elysia({ prefix: '/school' })
     })
 
     // Floors
-    .get('/architecture/buildings/:id/floors', async ({ params, school }: any) => {
+    .get('/architecture/buildings/:id/floors', async ({ cookie, params, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_VIEW);
+        if (!perm) return { error: 'no_permission' };
         
         const floors = await db.selectFrom('building_floors')
             .innerJoin('buildings', 'buildings.building_id', 'building_floors.building_id')
@@ -108,7 +123,11 @@ const app = new Elysia({ prefix: '/school' })
 
         return { floors };
     })
-    .post('/architecture/floors', async ({ body, school }: any) => {
+    .post('/architecture/floors', async ({ cookie, body, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_EDIT);
+        if (!perm) return { error: 'no_permission' };
 
         const { bf_id, building_id, level, floor_plan } = body;
 
@@ -145,7 +164,11 @@ const app = new Elysia({ prefix: '/school' })
             floor_plan: t.Optional(t.String())
         })
     })
-    .delete('/architecture/floors/:id', async ({ params, school }: any) => {
+    .delete('/architecture/floors/:id', async ({ cookie, params, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_EDIT);
+        if (!perm) return { error: 'no_permission' };
         // First verify the floor belongs to the school
         const floor = await db.selectFrom('building_floors')
             .innerJoin('buildings', 'buildings.building_id', 'building_floors.building_id')
@@ -164,7 +187,11 @@ const app = new Elysia({ prefix: '/school' })
     })
 
     // Rooms
-    .get('/architecture/floors/:id/rooms', async ({ params, school }: any) => {
+    .get('/architecture/floors/:id/rooms', async ({ cookie, params, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_VIEW);
+        if (!perm) return { error: 'no_permission' };
 
         const rooms = await db.selectFrom('building_rooms')
             .innerJoin('building_floors', 'building_floors.bf_id', 'building_rooms.floor_id')
@@ -188,7 +215,11 @@ const app = new Elysia({ prefix: '/school' })
 
         return { rooms };
     })
-    .post('/architecture/rooms', async ({ body, school }: any) => {
+    .post('/architecture/rooms', async ({ cookie, body, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_EDIT);
+        if (!perm) return { error: 'no_permission' };
 
         const { br_id, floor_id, name, type, description, manager, capacity, pos_x, pos_y } = body;
 
@@ -233,7 +264,11 @@ const app = new Elysia({ prefix: '/school' })
     })
 
     // Rooms All
-    .get('/architecture/rooms', async ({ school }: any) => {
+    .get('/architecture/rooms', async ({ cookie, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_VIEW);
+        if (!perm) return { error: 'no_permission' };
 
         const rooms = await db.selectFrom('building_rooms')
             .innerJoin('building_floors', 'building_floors.bf_id', 'building_rooms.floor_id')
@@ -258,7 +293,11 @@ const app = new Elysia({ prefix: '/school' })
 
         return { rooms };
     })
-    .delete('/architecture/rooms/:id', async ({ params }: any) => {
+    .delete('/architecture/rooms/:id', async ({ cookie, params }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_EDIT);
+        if (!perm) return { error: 'no_permission' };
         
         await db.deleteFrom('building_rooms')
             .where('room_id', '=', Number(params.id))
@@ -267,7 +306,11 @@ const app = new Elysia({ prefix: '/school' })
     })
 
     // Floors All
-    .get('/architecture/floors-all', async ({ school }: any) => {
+    .get('/architecture/floors-all', async ({ cookie, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_VIEW);
+        if (!perm) return { error: 'no_permission' };
 
         const floors = await db.selectFrom('building_floors')
             .innerJoin('buildings', 'buildings.building_id', 'building_floors.building_id')
@@ -278,7 +321,11 @@ const app = new Elysia({ prefix: '/school' })
         return { floors };
     })
     
-    .delete('/architecture/buildings/:id', async ({ params, school }: any) => {
+    .delete('/architecture/buildings/:id', async ({ cookie, params, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_EDIT);
+        if (!perm) return { error: 'no_permission' };
         await db.deleteFrom('buildings')
             .where('building_id', '=', Number(params.id))
             .where('school_id', '=', school.school_id)
@@ -287,7 +334,11 @@ const app = new Elysia({ prefix: '/school' })
     })
 
     // Supervision Places (Hallways/etc)
-    .get('/architecture/hallways', async ({ school }: any) => {
+    .get('/architecture/hallways', async ({ cookie, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_VIEW);
+        if (!perm) return { error: 'no_permission' };
         if (!school) return { error: 'school_not_found', status: 412 };
 
         const hallways = await db.selectFrom('supervision_places')
@@ -297,7 +348,11 @@ const app = new Elysia({ prefix: '/school' })
 
         return { hallways };
     })
-    .post('/architecture/hallways', async ({ body, school }: any) => {
+    .post('/architecture/hallways', async ({ cookie, body, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ARCHITECTURE_EDIT);
+        if (!perm) return { error: 'no_permission' };
         if (!school) return { error: 'school_not_found', status: 412 };
 
         const { placeId, name, description } = body;

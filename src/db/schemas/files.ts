@@ -17,5 +17,6 @@ export interface filesTable {
   deleted_at: Generated<Date | null>;
   last_accessed_at: Generated<Date | null>;
   modified_at: Generated<Date | null>;
+  status: Generated<number>;
   created_at: Generated<Date | null>;
 }

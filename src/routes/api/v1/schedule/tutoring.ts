@@ -1,16 +1,20 @@
-/**
- * Tutoring API Endpoints
- * Manage tutoring sessions (doučování)
- */
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia({ prefix: '/schedule' })
     // List available tutoring sessions
-    .get('/tutoring', async ({ user, school }: any) => {
+    .get('/tutoring', async ({ cookie, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
         if (!user || !school) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
+        }
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.TUTORING_VIEW);
+        if (!perm && user.role !== 'student') {
+            return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 
         const today = new Date();
@@ -70,12 +74,14 @@ const app = new Elysia({ prefix: '/schedule' })
     })
 
     // Create tutoring session (teacher only)
-    .post('/tutoring', async ({ body, user, school }: any) => {
+    .post('/tutoring', async ({ cookie, body, school }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
         if (!user || !school) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
 
-        if (user.role != "teacher" && user.role != "admin_staff") {
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.TUTORING_MANAGE);
+        if (!perm) {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 
@@ -121,7 +127,8 @@ const app = new Elysia({ prefix: '/schedule' })
     })
 
     // Sign up for session (student only)
-    .post('/tutoring/:id/signup', async ({ params, user }: any) => {
+    .post('/tutoring/:id/signup', async ({ cookie, params }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
         if (!user || user.role !== 'student') {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
@@ -177,7 +184,8 @@ const app = new Elysia({ prefix: '/schedule' })
     })
 
     // Sign out from session
-    .delete('/tutoring/:id/signup', async ({ params, user }: any) => {
+    .delete('/tutoring/:id/signup', async ({ cookie, params }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
         if (!user || user.role !== 'student') {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
@@ -195,8 +203,11 @@ const app = new Elysia({ prefix: '/schedule' })
     })
 
     // Cancel tutoring session
-    .delete('/tutoring/:id', async ({ params, user }: any) => {
-        if (!user || (user.role !== 'teacher' && user.role !== 'admin_staff')) {
+    .delete('/tutoring/:id', async ({ cookie, params }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return Response.json({ error: 'forbidden' }, { status: 403 });
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.TUTORING_MANAGE);
+        if (!perm && user.role !== 'teacher') {
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 

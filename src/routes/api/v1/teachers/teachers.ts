@@ -2,9 +2,16 @@ import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
+
 const elysiaAp = new Elysia()
-  
-  .get('/teachers', async({ query, school }: any) => {
+  .get('/teachers', async({ cookie, school }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_VIEW);
+    if (!perm) return { error: 'no_permission' };
     const result = await db.selectFrom('teachers')
       .leftJoin('users', 'users.person_id', 'teachers.person_id')
       .innerJoin('persons', 'teachers.person_id', 'persons.person_id')

@@ -1,16 +1,18 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
 import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia()
   // POST /system/update_school - Aktualizace nastavení školy
-  .post('/system/update_school', async ({ user, school, body }: any) => {
-    if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (!school) return Response.json({ error: 'no_school' }, { status: 404 });
+  .post('/system/update_school', async ({ cookie, school, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SCHOOL_EDIT);
+    if (!perm) return { error: 'no_permission' };
     
-    if (user.manager !== -1 && !user.is_principal) {
-      return Response.json({ error: 'no_permission' }, { status: 403 });
-    }
+    if (!school) return Response.json({ error: 'no_school' }, { status: 404 });
 
     const {
       name, shortcut, district, lesson_start, lesson_length, break_time, warn_absence, fastlogin, resetPasswordWithEmail, country, red_izo, ico, school_type, izo,

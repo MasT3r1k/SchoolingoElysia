@@ -3,10 +3,19 @@ import { db } from '../../../../../database';
 import { sql } from 'kysely';
 import moment from 'moment';
 
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
+
 const app = new Elysia()
     .group('/online', (app) => app
-        .get('/lessons', async ({ user }: any) => {
+        .get('/lessons', async ({ cookie }: any) => {
+            const user = await getAuthUser(cookie?.token?.value as string, cookie);
             if (!user) return { error: 'Unauthorized' };
+            const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ONLINE_LESSONS_VIEW);
+            if (!perm && user.role !== 'student' && user.role !== 'parent') {
+                return { error: 'forbidden' };
+            }
 
             let query = db.selectFrom('online_lessons as ol')
                 .leftJoin('users as u', 'u.user_id', 'ol.teacher')
@@ -51,8 +60,11 @@ const app = new Elysia()
 
             return await query.execute();
         })
-        .post('/lessons', async ({ user, body }: any) => {
-            if (!user || user.role !== 'teacher') return { error: 'Unauthorized' };
+        .post('/lessons', async ({ cookie, body }: any) => {
+            const user = await getAuthUser(cookie?.token?.value as string, cookie);
+            if (!user) return { error: 'Unauthorized' };
+            const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ONLINE_LESSONS_MANAGE);
+            if (!perm && user.role !== 'teacher') return { error: 'forbidden' };
             const { title, description, start, end, platform, link, target_type, target_id, subject_id, school } = body;
             
             if (!title || !start || !end || !platform || !link || !target_type || !target_id) {
@@ -71,13 +83,14 @@ const app = new Elysia()
                     target_type,
                     target_id,
                     subject_id: subject_id || null,
-                    school: user.school || school || 1,
+                    school: user.school_id || school || 1,
                 })
                 .execute();
             
             return { success: true, id: Number(result[0].insertId) };
         })
-        .post('/generate', async ({ user, body }: any) => {
+        .post('/generate', async ({ cookie, body }: any) => {
+            const user = await getAuthUser(cookie?.token?.value as string, cookie);
             if (!user) return { error: 'Unauthorized' };
             const { platform, title, start, end } = body;
             
@@ -146,8 +159,11 @@ const app = new Elysia()
 
             return { link };
         })
-        .delete('/lessons/:id', async ({ user, params }: any) => {
-            if (!user || user.role !== 'teacher') return { error: 'Unauthorized' };
+        .delete('/lessons/:id', async ({ cookie, params }: any) => {
+            const user = await getAuthUser(cookie?.token?.value as string, cookie);
+            if (!user) return { error: 'Unauthorized' };
+            const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ONLINE_LESSONS_MANAGE);
+            if (!perm && user.role !== 'teacher') return { error: 'forbidden' };
             
             await db.deleteFrom('online_lessons')
                 .where('lesson_id', '=', Number(params.id))

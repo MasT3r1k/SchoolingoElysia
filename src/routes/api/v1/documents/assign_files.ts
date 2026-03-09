@@ -1,6 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import moment from 'moment';
+import { DocumentPermissionService } from '../../../../functions/document_permission.service';
 
 const elysiaApp = new Elysia()
   
@@ -29,6 +30,11 @@ const elysiaApp = new Elysia()
         return Response.json({ error: 'no_user', details: 'no_db' });
     }
 
+    const hasWriteAccess = await DocumentPermissionService.hasAccess(user.user_id, body.parent_id, 'WRITE');
+    if (!hasWriteAccess) {
+      return Response.json({ error: 'no_permission' });
+    }
+
     try {
 
         for(const file_id of body.file_ids) {
@@ -36,10 +42,17 @@ const elysiaApp = new Elysia()
             .values({
                 parent_id: body.parent_id,
                 type: 'file',
-                file_id
+                file_id,
+                owner_id: user.user_id
             })
             .executeTakeFirst()
         }
+
+
+        await db.updateTable('files')
+        .set({ status: 1 })
+        .where('file_id', 'in', body.file_ids)
+        .execute();
 
         return { success: true };
     } catch (e) {

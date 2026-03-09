@@ -3,14 +3,16 @@ import { db } from '../../../../../database';
 import { getAuthUser } from '../../../../utils/auth';
 import { setLdapConfig } from '../../../../functions/ldap.service';
 
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+
 const app = new Elysia()
-  .derive(async ({ cookie }) => ({
-      user: await getAuthUser(cookie?.token?.value as string)
-  }))
   // POST /system/update_ldap - Update LDAP Configuration
-  .post('/system/update_ldap', async ({ user, body }) => {
+  .post('/system/update_ldap', async ({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.is_principal) {
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SCHOOL_EDIT);
+    if (!perm) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 

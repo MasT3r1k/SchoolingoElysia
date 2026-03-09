@@ -351,6 +351,7 @@
         "maintenance": "Údržba",
         "management": "Vedení",
         "personnel": "Personalista",
+        "class": "Třída",
         "other": "Ostatní",
         "unknown": "Neznámé",
         "undefined": "Neznámé"
@@ -366,17 +367,21 @@
         "full_name": "Jméno",
         "birthday": "Datum narození",
         "age": "Věk",
-        "gender": "Pohlaví"
+        "gender": "Pohlaví",
+        "titles": "Tituly",
+        "data_box": "Datová schránka"
     },
     "address": {
         "street": "Ulice",
         "house_number": "Číslo popisné",
         "city": "Město",
-        "postcode": "PSČ"
+        "postcode": "PSČ",
+        "residence": "Adresa bydliště"
     },
     "absence": {
         "absence": "Absence",
         "excused": "Omluvená absence",
+        "excluded": "Vyloučená Absence",
         "unexcused": "Neomluvená absence",
         "non_count": "Nezapočítaná absence",
         "late": "Pozdní příchod",
@@ -744,6 +749,7 @@
             "overview": "Přehled",
             "personal": "Osobní údaje",
             "parents": "Zákonní zástupci",
+            "contact": "Kontaktní údaje",
             "academic": "Studium",
             "matrika": "Matrika",
             "medical": "Zdravotní",
@@ -752,8 +758,11 @@
             "notes": "Poznámky",
             "evaluation": "Hodnocení",
             "educational_measures": "Výchovná opatření",
-            "timetable": "Rozvrh"
+            "timetable": "Rozvrh",
+            "relationship": "Vztah ke studentovi"
         },
+        "siblings": "Sourozenci",
+        "register_number": "Číslo ve výkazu",
         "matrika_fields": {
             "title": "Školní matrika",
             "highest_education": "Kód nejvyššího dosaženého vzdělání",
@@ -826,11 +835,33 @@
         "delete": "Smazat",
         "delete_file": "Smazat soubor",
         "delete_folder": "Smazat složku",
+        "delete_modal": {
+            "title": "Smazat soubor / složku",
+            "remove_access_title": "Odebrat přístup",
+            "remove_access_desc": "Oddělí soubor/složku od tohoto umístění, ale zůstane v systému i na disku.",
+            "complete_delete_title": "Kompletně smazat",
+            "complete_delete_desc": "Soubor/složka bude trvale odstraněna ze systému i z disku.",
+            "action_remove": "Odebrat přístup",
+            "action_delete": "Trvale smazat"
+        },
         "download_file": "Stáhnout soubor",
         "save_file": "Uložit soubor",
         "save_folder": "Uložit složku",
         "file_content": "Obsah souboru",
-        "file_content_placeholder": "Zadejte obsah souboru (nepovinné).."
+        "file_content_placeholder": "Zadejte obsah souboru (nepovinné)..",
+        "current_permissions": "Aktuální oprávnění",
+        "no_extra_permissions": "Žádná specifická oprávnění nejsou nastavena.",
+        "add_permission": "Přidat oprávnění",
+        "target_type": "Typ cíle",
+        "target": "Cíl (Role / Uživatel)",
+        "select_target": "Vyberte cíl",
+        "role": "Role",
+        "user": "Uživatel",
+        "everyone": "Všichni",
+        "permission_type": "Typ oprávnění",
+        "loading": "Načítání oprávnění...",
+        "add": "Přidat",
+        "deny": "Zakázat (DENY)"
     },
     "rewards": {
         "status": {
@@ -1259,7 +1290,8 @@
         "midterm": {
             "tabs": {
                 "marks": "Známky",
-                "reports": "Přehledy"
+                "reports": "Přehledy",
+                "absence": "Absence"
             },
             "years": [
                 "První",
@@ -1273,13 +1305,14 @@
                 "Devátý"
             ],
             "year": "%year% rok",
+            "behavior": "Chování",
             "mandatory_subjects": "Povinné předměty",
             "optional_subjects": "Nepovinné předměty",
             "report": {
                 "year_label": "ročník",
                 "semester": "pololetí",
                 "average": "Průměr",
-                "hours": "hodin",
+                "hours": "Celkem hodin",
                 "absence_excused": "Omluveno",
                 "absence_unexcused": "Neomluveno",
                 "issued": "Vysvědčení vydáno",
@@ -1290,6 +1323,12 @@
                     "failed": "Neprospěl(a)",
                     "not_evaluated": "Nehodnoceno"
                 }
+            },
+            "absence_log": {
+                "title": "Evidence docházky",
+                "lesson": "hod.",
+                "reason": "Důvod",
+                "no_records": "Žádné záznamy o absenci nebyly nalezeny."
             }
         },
         "predictor": {
@@ -1416,7 +1455,10 @@
         "draft_saved": "Koncept byl úspěšně uložen.",
         "no_subject": "(Bez předmětu)",
         "drafts_confirm": {
-            "delete_confirm": "Opravdu chcete smazat tento koncept?"
+            "delete_confirm": "Opravdu chcete smazat tento koncept?",
+            "delete_title": "Smažat rozpracovaný koncept?",
+            "delete_desc": "Opravdu si přejete smazat tento koncept? Tato akce je nevratná.",
+            "delete_btn": "Smazat koncept"
         }
     },
     "settings": {
@@ -1950,6 +1992,17 @@
             "current_balance": "Stávající zůstatek",
             "remaining_after": "Zůstatek po schválení",
             "request_more_days": "Požádat o více dovolené",
+            "request_extra_vacation": {
+                "title": "Žádost o navýšení dovolené",
+                "description": "Pokud Vám dochází dovolená, můžete požádat o její mimořádné navýšení pro aktuální rok.",
+                "amount_label": "Požadovaný počet dní navíc",
+                "reason_label": "Zdůvodnění žádosti",
+                "reason_placeholder": "Uveďte prosím, proč potřebujete více dovolené...",
+                "submit": "Odeslat žádost",
+                "success": "Žádost byla úspěšně odeslána k posouzení.",
+                "error": "Nepodařilo se odeslat žádost.",
+                "invalid_amount": "Zadejte platný počet dní (1-20)"
+            },
             "errors": {
                 "invalid_date": "Datum do musí být po datu od",
                 "insufficient_balance": "Zůstatek dovolené nesmí být záporný",

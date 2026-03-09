@@ -17,7 +17,7 @@ export class PermissionService {
     }
 
     if (user) {
-      if (user.manager === -1 || user.principal === true || user.principal === 1 || user.isPrincipal === true || user.is_principal === true || user.role === 'admin_staff') {
+      if (user.manager == -1 || user.principal == true || user.principal == 1 || user.isPrincipal == true || user.is_principal == true || user.role == 'admin_staff') {
         return true;
       }
     }

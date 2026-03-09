@@ -46,7 +46,33 @@ export const GlobalPermissions = {
 
   // Students
   STUDENT_EDIT: 'students.edit',
-  STUDENT_VIEW: 'students.view'
+  STUDENT_VIEW: 'students.view',
+
+  // Subjects
+  SUBJECTS_VIEW: 'subjects.view',
+  SUBJECTS_EDIT: 'subjects.edit',
+
+  // Timetable
+  TIMETABLE_VIEW: 'timetable.view',
+  TIMETABLE_EDIT: 'timetable.edit',
+
+  // School
+  SCHOOL_EDIT: 'school.edit',
+
+  // Traineeship
+  TRAINEESHIP_REMOVE_COMPANY: 'manager:traineeship:removeCompany',
+
+  // Tutoring
+  TUTORING_VIEW: 'tutoring.view',
+  TUTORING_MANAGE: 'tutoring.manage',
+
+  // Online Lessons
+  ONLINE_LESSONS_VIEW: 'online_lessons.view',
+  ONLINE_LESSONS_MANAGE: 'online_lessons.manage',
+
+  // GDPR
+  GDPR_VIEW: 'gdpr.view',
+  GDPR_MANAGE: 'gdpr.manage'
 } as const;
 
 export type PermissionKey = typeof GlobalPermissions[keyof typeof GlobalPermissions];

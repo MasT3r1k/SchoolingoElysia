@@ -1,14 +1,18 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
-import { permissions } from '../../../../middleware/permission.middleware';
+import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 
 const app = new Elysia()
   // GET /system - Načtení všech systémových nastavení
-  .use(permissions(GlobalPermissions.SYSTEM_STATUS))
-  .get('/system', async ({ school }: any) => {
+  .get('/system', async ({ cookie, school }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SYSTEM_STATUS);
+    if (!perm) return { error: 'no_permission' };
     if (!school) return Response.json({ error: 'no_school' }, { status: 404 });
 
     const schoolId = school.school_id;
@@ -165,8 +169,11 @@ const app = new Elysia()
   })
 
   // GET /system/scope - Načtení předmětů pro konkrétní obor
-  .use(permissions(GlobalPermissions.SYSTEM_STATUS))
-  .get('/system/scope', async ({ query }: any) => {
+  .get('/system/scope', async ({ cookie, query }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SYSTEM_STATUS);
+    if (!perm) return { error: 'no_permission' };
 
     if (query.scope_id === undefined) {
       return Response.json({ error: 'invalid_query' }, { status: 400 });

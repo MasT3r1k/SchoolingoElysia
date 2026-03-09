@@ -327,6 +327,7 @@
         "maintenance": "Maintenance",
         "management": "Management",
         "personnel": "Personnel",
+        "class": "Class",
         "other": "Other",
         "unknown": "Unknown",
         "undefined": "Unknown"
@@ -340,14 +341,17 @@
         "grandfather": "Grandfather",
         "grandmother": "Grandmother",
         "uncle": "Uncle",
-        "aunt": "Aunt"
+        "aunt": "Aunt",
+        "residence": "Residence Address"
     },
     "person": {
         "first_name": "First name",
         "last_name": "Last name",
         "full_name": "Name",
         "birthday": "Date of birth",
-        "gender": "Gender"
+        "gender": "Gender",
+        "titles": "Titles",
+        "data_box": "Data Box"
     },
     "absence": {
         "absence": "Absence",
@@ -657,6 +661,7 @@
             "overview": "Overview",
             "personal": "Personal info",
             "parents": "Legal guardians",
+            "contact": "Contact details",
             "academic": "Academic",
             "matrika": "Registry",
             "medical": "Medical",
@@ -665,8 +670,11 @@
             "notes": "Notes",
             "evaluation": "Evaluation",
             "educational_measures": "Educational measures",
-            "timetable": "Timetable"
+            "timetable": "Timetable",
+            "relationship": "Relationship to student"
         },
+        "siblings": "Siblings",
+        "register_number": "Register Number",
         "matrika_fields": {
             "title": "School Registry",
             "highest_education": "Highest Education Code",
@@ -735,11 +743,33 @@
         "delete": "Delete",
         "delete_file": "Delete file",
         "delete_folder": "Delete folder",
+        "delete_modal": {
+            "title": "Delete file / folder",
+            "remove_access_title": "Remove access",
+            "remove_access_desc": "Detaches the file/folder from this location, but it remains in the system and on disk.",
+            "complete_delete_title": "Completely delete",
+            "complete_delete_desc": "The file/folder will be permanently removed from the system and disk.",
+            "action_remove": "Remove access",
+            "action_delete": "Permanently delete"
+        },
         "download_file": "Download file",
         "save_file": "Save file",
         "save_folder": "Save folder",
         "file_content": "File content",
-        "file_content_placeholder": "Enter file content (optional).."
+        "file_content_placeholder": "Enter file content (optional)..",
+        "current_permissions": "Current permissions",
+        "no_extra_permissions": "No specific permissions are set.",
+        "add_permission": "Add permission",
+        "target_type": "Target type",
+        "target": "Target (Role / User)",
+        "select_target": "Select target",
+        "role": "Role",
+        "user": "User",
+        "everyone": "Everyone",
+        "permission_type": "Permission type",
+        "loading": "Loading permissions...",
+        "add": "Add",
+        "deny": "Deny"
     },
     "classbook": {
         "class_service": "Class monitor",
@@ -1170,6 +1200,7 @@
                 "Ninth"
             ],
             "year": "%year% year",
+            "behavior": "Behavior",
             "mandatory_subjects": "Mandatory subjects",
             "optional_subjects": "Optional subjects",
             "report": {
@@ -1301,7 +1332,22 @@
         "details": "Message details",
         "error_loading": "Failed to load message information",
         "noticeboard_not_active_title": "Noticeboard is currently inactive",
-        "noticeboard_not_active_desc": "Noticeboard has been disabled by system administrator. Contact your school administrator for more information."
+        "noticeboard_not_active_desc": "Noticeboard has been disabled by system administrator. Contact your school administrator for more information.",
+        "draft": "Draft",
+        "drafts": "Drafts",
+        "no_drafts": "You have no saved drafts.",
+        "select_draft": "No draft selected",
+        "select_draft_desc": "Select a draft on the left to view details or continue writing.",
+        "continue_writing": "Continue writing",
+        "draft_hint": "This message has not been sent yet.",
+        "draft_saved": "Draft successfully saved.",
+        "no_subject": "(No subject)",
+        "drafts_confirm": {
+            "delete_confirm": "Do you really want to delete this draft?",
+            "delete_title": "Delete draft",
+            "delete_desc": "Do you really wish to delete this draft? This action is irreversible.",
+            "delete_btn": "Delete draft"
+        }
     },
     "settings": {
         "alerts": {
@@ -1790,6 +1836,17 @@
             "current_balance": "Current balance",
             "remaining_after": "Balance after approval",
             "request_more_days": "Request more days",
+            "request_extra_vacation": {
+                "title": "Request extra vacation",
+                "description": "If you are running out of vacation, you can request an extraordinary increase for the current year.",
+                "amount_label": "Requested additional days",
+                "reason_label": "Reason for request",
+                "reason_placeholder": "Please state why you need more vacation...",
+                "submit": "Send request",
+                "success": "Request has been successfully sent for review.",
+                "error": "Failed to send request.",
+                "invalid_amount": "Enter a valid number of days (1-20)"
+            },
             "errors": {
                 "invalid_date": "The to date must be after the from date",
                 "insufficient_balance": "Vacation balance cannot be negative",

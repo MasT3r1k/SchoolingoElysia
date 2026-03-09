@@ -3,20 +3,25 @@ import { db } from "../../../../../database"
 import { sql } from 'kysely';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import moment from 'moment';
-import { permissions } from '../../../../middleware/permission.middleware';
+import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 
 const attendanceRouter = new Elysia()
   // GET /employees/attendance - Get attendance records
-  .use(permissions(GlobalPermissions.ATTENDANCE_VIEW))
-  .get('/employees/attendance', async({ user, school, query }: any) => {
+  .get('/employees/attendance', async({ cookie, school, query }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ATTENDANCE_VIEW);
+    if (!perm && user.person_id !== query.employeeId) return { error: 'no_permission' };
+
     // Check if attendance is enabled
     if (!school.employee_attendance_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
     }
-    // Check permissions - only admins can view all
-    const canViewAll = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
+    // Check permissions - only admins/managers can view all
+    const canViewAll = perm;
     
     let queryBuilder = db.selectFrom('employee_attendance')
       .leftJoin('teachers', 'employee_attendance.teacher_id', 'teachers.person_id')
@@ -82,8 +87,12 @@ const attendanceRouter = new Elysia()
     })
   })
   // POST /employees/attendance/checkin - Record check-in
-  .use(permissions(GlobalPermissions.ATTENDANCE_VIEW)) // Basic view includes self checkin
-  .post('/employees/attendance/checkin', async({ user, school, body }: any) => {
+  .post('/employees/attendance/checkin', async({ cookie, school, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ATTENDANCE_VIEW);
+    if (!perm) return { error: 'no_permission' };
+    
     // Check if attendance is enabled
     if (!school.employee_attendance_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
@@ -131,8 +140,12 @@ const attendanceRouter = new Elysia()
     })
   })
   // POST /employees/attendance/checkout - Record check-out
-  .use(permissions(GlobalPermissions.ATTENDANCE_VIEW))
-  .post('/employees/attendance/checkout', async({ user, school, body }: any) => {
+  .post('/employees/attendance/checkout', async({ cookie, school, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ATTENDANCE_VIEW);
+    if (!perm) return { error: 'no_permission' };
+    
     // Check if attendance is enabled
     if (!school.employee_attendance_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
@@ -188,8 +201,12 @@ const attendanceRouter = new Elysia()
     })
   })
   // PUT /employees/attendance/:id - Update attendance record (admin only)
-  .use(permissions(GlobalPermissions.ATTENDANCE_MANAGE))
-  .put('/employees/attendance/:id', async({ user, school, params, body }: any) => {
+  .put('/employees/attendance/:id', async({ cookie, school, params, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ATTENDANCE_MANAGE);
+    if (!perm) return { error: 'no_permission' };
+
     // Check if attendance is enabled
     if (!school.employee_attendance_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
@@ -226,8 +243,12 @@ const attendanceRouter = new Elysia()
     })
   })
   // POST /employees/attendance - Create attendance record (admin only)
-  .use(permissions(GlobalPermissions.ATTENDANCE_MANAGE))
-  .post('/employees/attendance', async({ user, school, body }: any) => {
+  .post('/employees/attendance', async({ cookie, school, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ATTENDANCE_MANAGE);
+    if (!perm) return { error: 'no_permission' };
+
     // Check if attendance is enabled
     if (!school.employee_attendance_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });

@@ -4,16 +4,16 @@ import { getAuthUser } from '../../../../utils/auth';
 import { format_person_by_id } from '../../../../functions/format_person_by_id'; // Assuming this exists given index.ts used it
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+
 const app = new Elysia()
-    .derive(async ({ cookie }) => ({
-        user: await getAuthUser(cookie?.token?.value as string)
-    }))
     // POST /system/update_subject - Create or update subject
-    .post('/system/update_subject', async ({ user, body }) => {
-        if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-        if (user.manager === -1 && !user.is_principal && user.role !== 'admin_staff') {
-            return Response.json({ error: 'no_permission' }, { status: 403 });
-        }
+    .post('/system/update_subject', async ({ cookie, body }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SUBJECTS_EDIT);
+        if (!perm) return { error: 'no_permission' };
 
         const { subjectId, subjectName, shortcut } = body;
 
@@ -57,11 +57,11 @@ const app = new Elysia()
     })
 
     // GET /system/subject_teachers - Get teachers for a subject
-    .get('/system/subject_teachers', async ({ user, query }) => {
-        if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-        if (user.manager === -1 && !user.is_principal && user.role !== 'admin_staff') {
-            return Response.json({ error: 'no_permission' }, { status: 403 });
-        }
+    .get('/system/subject_teachers', async ({ cookie, query }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SUBJECTS_VIEW);
+        if (!perm) return { error: 'no_permission' };
 
         const teachers = await db.selectFrom('teachers_subject')
             .leftJoin('persons', 'persons.person_id', 'teachers_subject.teacher_id')
@@ -93,11 +93,11 @@ const app = new Elysia()
     })
 
     // POST /system/subject_teachers/add
-    .post('/system/subject_teachers/add', async ({ user, body }) => {
-        if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-        if (user.manager === -1 && !user.is_principal && user.role !== 'admin_staff') {
-            return Response.json({ error: 'no_permission' }, { status: 403 });
-        }
+    .post('/system/subject_teachers/add', async ({ cookie, body }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SUBJECTS_EDIT);
+        if (!perm) return { error: 'no_permission' };
 
         // Verify teacher belongs to current school
         const teacherUser = await db.selectFrom('teachers')
@@ -137,11 +137,11 @@ const app = new Elysia()
     })
 
     // POST /system/subject_teachers/remove
-    .post('/system/subject_teachers/remove', async ({ user, body }) => {
-        if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-        if (user.manager === -1 && !user.is_principal && user.role !== 'admin_staff') {
-            return Response.json({ error: 'no_permission' }, { status: 403 });
-        }
+    .post('/system/subject_teachers/remove', async ({ cookie, body }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SUBJECTS_EDIT);
+        if (!perm) return { error: 'no_permission' };
 
         // Verify teacher belongs to current school
         const teacherUser = await db.selectFrom('teachers')

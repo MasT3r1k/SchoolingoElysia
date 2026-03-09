@@ -7,6 +7,8 @@ import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 
+import { DocumentPermissionService } from '../../../../functions/document_permission.service';
+
 const UPLOAD_DIR = './uploads';
 
 const app = new Elysia().post(
@@ -35,7 +37,9 @@ const app = new Elysia().post(
       return Response.json({ error: 'no_user', details: 'no_db' });
     }
 
-    if (auth.role != "teacher") {
+    // Permission check
+    const hasWriteAccess = await DocumentPermissionService.hasAccess(auth.user_id, parent_id, 'WRITE');
+    if (!hasWriteAccess) {
       return Response.json({ error: 'no_permission' });
     }
 
@@ -86,7 +90,8 @@ const app = new Elysia().post(
           parent_id,
           name,
           type: 'file',
-          file_id: Number(newFile.insertId) ?? null
+          file_id: Number(newFile.insertId) ?? null,
+          owner_id: auth.user_id
       })
       .executeTakeFirst();
 

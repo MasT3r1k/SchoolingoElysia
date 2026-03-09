@@ -2,6 +2,8 @@ import { Elysia, t } from 'elysia';
 import moment from 'moment';
 import { db } from '../../../../../database';
 
+import { DocumentPermissionService } from '../../../../functions/document_permission.service';
+
 const app = new Elysia().post(
   '/documents/rename_file',
   async ({ cookie, body }) => {
@@ -31,19 +33,18 @@ const app = new Elysia().post(
       return Response.json({ error: 'no_user', details: 'no_db' }, { status: 401 });
     }
 
-    if (auth.role != "teacher") {
+    // Get document_id from file_id
+    const document = await db.selectFrom('documents')
+        .select(['document_id', 'parent_id'])
+        .where('file_id', '=', file_id)
+        .executeTakeFirst();
+    
+    if (!document) return Response.json({ error: 'file_not_exist' }, { status: 422 });
+
+    const hasWriteAccess = await DocumentPermissionService.hasAccess(auth.user_id, document.document_id, 'WRITE');
+    if (!hasWriteAccess) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
-
-    // === Get File ===
-    const isExist = await db.selectFrom('documents')
-    .select([
-        'documents.file_id',
-        'documents.parent_id'
-    ])
-    .where('documents.file_id', '=', file_id)
-    .executeTakeFirst();
-    if (!isExist) return Response.json({ error: 'folder_not_exist' }, { status: 422 })
 
     // === Check if exist file with that name ===
     const isNewFileExist = await db.selectFrom('documents')
@@ -51,7 +52,7 @@ const app = new Elysia().post(
         'documents.file_id'
     ])
     .where('documents.name', '=', name)
-    .where('documents.parent_id', isExist.parent_id == null ? 'is' : '=', isExist.parent_id ?? null)
+    .where('documents.parent_id', document.parent_id == null ? 'is' : '=', document.parent_id ?? null)
     .executeTakeFirst();
     if (isNewFileExist) {
         return Response.json({ error: 'folder_already_exist' }, { status: 422 })

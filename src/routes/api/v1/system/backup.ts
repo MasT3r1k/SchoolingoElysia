@@ -3,15 +3,16 @@ import { db } from '../../../../../database';
 import { getAuthUser } from '../../../../utils/auth';
 import { backupService } from '../../../../functions/backup.service';
 
-const app = new Elysia()
-  .derive(async ({ cookie }) => ({
-    user: await getAuthUser(cookie?.token?.value as string)
-  }))
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
 
+const app = new Elysia()
   // POST /system/backup/interval - Update backup interval
-  .post('/system/backup/interval', async ({ user, body }) => {
+  .post('/system/backup/interval', async ({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.is_principal) {
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SYSTEM_STATUS);
+    if (!perm) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
@@ -40,9 +41,11 @@ const app = new Elysia()
   })
 
   // POST /system/backup/trigger - Trigger a manual backup
-  .post('/system/backup/trigger', async ({ user, body }) => {
+  .post('/system/backup/trigger', async ({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.is_principal) {
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SYSTEM_STATUS);
+    if (!perm) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 
@@ -80,9 +83,11 @@ const app = new Elysia()
   })
 
   // GET /system/backup/list - List all backups
-  .get('/system/backup/list', async ({ user }) => {
+  .get('/system/backup/list', async ({ cookie }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return Response.json({ error: 'unauthorized' }, { status: 401 });
-    if (user.manager !== -1 && !user.is_principal) {
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SYSTEM_STATUS);
+    if (!perm) {
       return Response.json({ error: 'no_permission' }, { status: 403 });
     }
 

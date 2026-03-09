@@ -3,15 +3,15 @@ import { db } from '../../../../../database';
 import { sql } from 'kysely';
 import { getAuthUser } from '../../../../utils/auth';
 
-const app = new Elysia()
-    .derive(async ({ cookie }) => ({
-        user: await getAuthUser(cookie?.token?.value as string)
-    }))
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
 
-    .post('/timetable/manage', async ({ body, user }) => {
-        if (!user || (!user.is_principal && user.manager != -1)) { 
-            if (!user) return { error: 'unauthorized', status: 401 };
-        }
+const app = new Elysia()
+    .post('/timetable/manage', async ({ cookie, body }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
+        if (!user) return { error: 'no_permission' };
+        const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.TIMETABLE_EDIT);
+        if (!perm) return { error: 'no_permission' };
 
         const { action, lessonId, day, hour, subjectId, teacherId, teacher2Id, roomId, groupId } = body;
 

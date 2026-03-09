@@ -3,15 +3,15 @@ import { db } from "../../../../../database"
 import { sql } from 'kysely';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
-import { permissions } from '../../../../middleware/permission.middleware';
+import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 
 import attendanceRouter from './attendance';
 import vacationsRouter from './vacations';
 import salariesRouter from './salaries';
 import bonusesRouter from './bonuses';
-import { PermissionService } from '../../../../functions/permission.service';
 
 const employeesRouter = new Elysia()
     .use(attendanceRouter)
@@ -19,8 +19,11 @@ const employeesRouter = new Elysia()
     .use(salariesRouter)
     .use(bonusesRouter)
   // POST /degrees - Create new degree (admin only)
-  .use(permissions(GlobalPermissions.EMPLOYEES_EDIT))
-  .post('/degrees', async({ body }) => {
+  .post('/degrees', async({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_EDIT);
+    if (!perm) return { error: 'no_permission' };
 
     const result = await db.insertInto('degrees')
       .values({
@@ -52,7 +55,10 @@ const employeesRouter = new Elysia()
     })
   })
   // GET /employees - List all employees (teachers)
-  .get('/employees', async({ user, query }: any) => {
+  .get('/employees', async({ cookie, query }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    
     // Check permissions - only admins can view all
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_VIEW);
     
@@ -133,12 +139,13 @@ const employeesRouter = new Elysia()
     })
   })
   // GET /employees/:id - Employee detail
-  .use(permissions(GlobalPermissions.EMPLOYEES_VIEW))
-  .get('/employees/:id', async({ user, params }: any) => {
+  .get('/employees/:id', async({ cookie, params }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
     const employeeId = parseInt(params.id);
     
     // Check permissions - only admins can view all
-    const canViewAll = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
+    const canViewAll = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_VIEW);
     
     if (!canViewAll && user.person_id !== employeeId) {
       return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
@@ -194,8 +201,11 @@ const employeesRouter = new Elysia()
     });
   })
   // POST /employees - Create new employee (admin only)
-  .use(permissions(GlobalPermissions.EMPLOYEES_EDIT))
-  .post('/employees', async({ user, body }: any) => {
+  .post('/employees', async({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_EDIT);
+    if (!perm) return { error: 'no_permission' };
 
     // Create person first
     const personResult = await db.insertInto('persons')
@@ -291,8 +301,11 @@ const employeesRouter = new Elysia()
     })
   })
   // PUT /employees/:id - Update employee (admin only)
-  .use(permissions(GlobalPermissions.EMPLOYEES_EDIT))
-  .put('/employees/:id', async({ user, params, body }: any) => {
+  .put('/employees/:id', async({ cookie, params, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_EDIT);
+    if (!perm) return { error: 'no_permission' };
     const employeeId = parseInt(params.id);
 
     // Check if employee exists
@@ -329,8 +342,11 @@ const employeesRouter = new Elysia()
     })
   })
   // DELETE /employees/:id - Remove employee (admin only)
-  .use(permissions(GlobalPermissions.EMPLOYEES_EDIT))
-  .delete('/employees/:id', async({ user, params }: any) => {
+  .delete('/employees/:id', async({ cookie, params }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_EDIT);
+    if (!perm) return { error: 'no_permission' };
     const employeeId = parseInt(params.id);
 
     // Check if employee exists

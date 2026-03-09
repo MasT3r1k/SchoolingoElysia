@@ -3,10 +3,14 @@ import { db } from "../../../../../database"
 import { sql } from 'kysely';
 import moment from 'moment';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 const elysiaApp = new Elysia()
-  .post('/timetable', async ({ body, user }: any) => {
+  .post('/timetable', async ({ body, cookie }: any) => {
     try {
+      const user = await getAuthUser(cookie?.token?.value as string, cookie);
       if (!user) {
         return Response.json({ error: 'unauthorized' }, { status: 401 });
       }
@@ -29,26 +33,28 @@ const elysiaApp = new Elysia()
       const sy_id = currentYear.sy_id;
 
       // --- Kontrola oprávnění ---
-      if (user.person_id !== targetId && type !== 'room') {
-        const isPrincipal = user.is_principal;
-        if (!isPrincipal) {
-          const isTeacher = await db.selectFrom('teachers')
-            .select(['person_id'])
-            .where('person_id', '=', user.person_id)
-            .executeTakeFirst();
-          
-          if (!isTeacher) {
-            const isParent = await db.selectFrom('family_relations')
+      const hasViewPerm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.TIMETABLE_VIEW);
+      
+      if (!hasViewPerm && user.person_id !== targetId && type !== 'room') {
+          // Check if parent of the student
+          const isParent = await db.selectFrom('family_relations')
               .select(['source_id'])
               .where('source_id', '=', targetId)
               .where('target_id', '=', user.person_id)
               .executeTakeFirst();
-            
-            if (!isParent) {
+          
+          if (!isParent) {
               return Response.json({ error: 'forbidden', details: 'You are not allowed to view this timetable' }, { status: 403 });
-            }
           }
-        }
+      }
+      
+      // Additional check for room: only teachers/admins can view room timetable if they don't have global view
+      if (type === 'room' && !hasViewPerm) {
+          const isTeacher = await db.selectFrom('teachers')
+            .select(['person_id'])
+            .where('person_id', '=', user.person_id)
+            .executeTakeFirst();
+          if (!isTeacher) return Response.json({ error: 'forbidden' }, { status: 403 });
       }
 
       // SQL fragment pro lock_room - bere v potaz pouze výuku ve stejném školním roce

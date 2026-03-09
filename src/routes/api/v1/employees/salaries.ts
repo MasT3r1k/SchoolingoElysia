@@ -1,25 +1,25 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import moment from 'moment';
-import { permissions } from '../../../../middleware/permission.middleware';
+import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 
 const salariesRouter = new Elysia()
   // GET /employees/salaries - Get salaries (admin/personnel only)
-  .use(permissions(GlobalPermissions.SALARIES_VIEW))
-  .get('/employees/salaries', async({ user, school, query }: any) => {
+  .get('/employees/salaries', async({ cookie, school, query }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SALARIES_VIEW);
+    if (!perm) return { error: 'no_permission' };
     // Check if salaries are enabled
     if (!school.employee_salaries_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
     }
 
     // Check permissions - only admins can view all
-    const canView = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
-    
-    if (!canView) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
+    const canView = perm;
 
     let queryBuilder = db.selectFrom('teachers_salary')
       .leftJoin('teachers', 'teachers_salary.teacher_id', 'teachers.person_id')
@@ -67,8 +67,11 @@ const salariesRouter = new Elysia()
     })
   })
   // POST /employees/salaries - Set salary (admin only)
-  .use(permissions(GlobalPermissions.SALARIES_MANAGE))
-  .post('/employees/salaries', async({ user, school, body }: any) => {
+  .post('/employees/salaries', async({ cookie, school, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SALARIES_MANAGE);
+    if (!perm) return { error: 'no_permission' };
     // Check if salaries are enabled
     if (!school.employee_salaries_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
@@ -110,8 +113,11 @@ const salariesRouter = new Elysia()
     })
   })
   // PUT /employees/salaries/:id - Update salary (admin only)
-  .use(permissions(GlobalPermissions.SALARIES_MANAGE))
-  .put('/employees/salaries/:id', async({ user, school, params, body }: any) => {
+  .put('/employees/salaries/:id', async({ cookie, school, params, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SALARIES_MANAGE);
+    if (!perm) return { error: 'no_permission' };
     // Check if salaries are enabled
     if (!school.employee_salaries_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
@@ -142,8 +148,11 @@ const salariesRouter = new Elysia()
     })
   })
   // GET /employees/salaries/history/:employeeId - Salary history (admin only)
-  .use(permissions(GlobalPermissions.SALARIES_VIEW))
-  .get('/employees/salaries/history/:employeeId', async({ user, school, params }: any) => {
+  .get('/employees/salaries/history/:employeeId', async({ cookie, school, params }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SALARIES_VIEW);
+    if (!perm) return { error: 'no_permission' };
     // Check if salaries are enabled
     if (!school.employee_salaries_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });

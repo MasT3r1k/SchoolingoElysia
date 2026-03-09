@@ -4,30 +4,16 @@ import { rateLimit } from 'elysia-rate-limit';
 import { app } from '../../../../../index';
 import moment from 'moment';
 
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
+
 const elysiaApp = new Elysia()
-  .post('/classbook/absence', async ({ cookie, body }) => {
-    // === AUTH ===
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const user = await db.selectFrom("tokens")
-      .innerJoin('users', 'users.user_id', 'tokens.user_id')
-      .innerJoin("passwords", "passwords.password_id", 'users.password_id')
-      .select([
-        'users.user_id',
-        'users.username',
-        'users.role',
-        'users.person_id',
-        'users.2fa',
-        'users.2fa_secret',
-        'passwords.password'
-      ])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', moment().toDate())
-      .executeTakeFirst();
-
-    if (!user) return { error: 'no_user', details: 'no_db' };
-    if (user.role != "teacher") return { error: 'no_permission' };
+  .post('/classbook/absence', async ({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.CLASSBOOK_EDIT);
+    if (!perm) return { error: 'no_permission' };
 
     // === VALIDACE QUERY ===
     const { classbook_id, student_id, type, reason, minutes, note } = body;

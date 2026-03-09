@@ -2,6 +2,9 @@ import { Elysia, t } from 'elysia';
 import moment from 'moment';
 import { db } from '../../../../../database';
 import { MainConfig } from '../../../../config/main.config';
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia().post(
   '/marks/add_mark',

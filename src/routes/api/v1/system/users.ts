@@ -4,13 +4,17 @@ import { sql } from 'kysely';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
 import moment from 'moment';
-import { permissions } from '../../../../middleware/permission.middleware';
+import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia()
   // GET /system/users - List users with cursor-based pagination
-  .use(permissions(GlobalPermissions.USERS_VIEW))
-  .get('/system/users', async ({ user, query }: any) => {
+  .get('/system/users', async ({ cookie, query }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.USERS_VIEW);
+    if (!perm) return { error: 'no_permission' };
 
     const { limit = 20, offset = 0, search = '', role = 'all', status = 'all' } = query;
 
@@ -106,8 +110,11 @@ const app = new Elysia()
   })
 
   // GET /system/users/ldap_unimported - Get unimported LDAP users
-  .use(permissions(GlobalPermissions.USERS_VIEW))
-  .get('/system/users/ldap_unimported', async ({ user }: any) => {
+  .get('/system/users/ldap_unimported', async ({ cookie }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.USERS_VIEW);
+    if (!perm) return { error: 'no_permission' };
     try {
       const { ldapGetUsers } = await import('../../../../functions/ldap.service');
       const adUsers = await ldapGetUsers();
@@ -126,8 +133,11 @@ const app = new Elysia()
   })
 
   // POST /system/users/ldap_import - Import LDAP users
-  .use(permissions(GlobalPermissions.USERS_EDIT))
-  .post('/system/users/ldap_import', async ({ user, body }: any) => {
+  .post('/system/users/ldap_import', async ({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.USERS_EDIT);
+    if (!perm) return { error: 'no_permission' };
     const { users } = body;
     if (!users || !Array.isArray(users) || users.length === 0) {
       return Response.json({ error: 'invalid_data' }, { status: 400 });
@@ -213,8 +223,11 @@ const app = new Elysia()
   })
 
   // GET /system/users/:userId - Get a single user detail
-  .use(permissions(GlobalPermissions.USERS_VIEW))
-  .get('/system/users/:userId', async ({ user, params }: any) => {
+  .get('/system/users/:userId', async ({ cookie, params }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.USERS_VIEW);
+    if (!perm) return { error: 'no_permission' };
 
     const userId = Number(params.userId);
     if (isNaN(userId)) return Response.json({ error: 'invalid_id' }, { status: 400 });
@@ -315,8 +328,11 @@ const app = new Elysia()
   })
 
   // PATCH /system/users/:userId - Update user details
-  .use(permissions(GlobalPermissions.USERS_EDIT))
-  .patch('/system/users/:userId', async ({ user, params, body }: any) => {
+  .patch('/system/users/:userId', async ({ cookie, params, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.USERS_EDIT);
+    if (!perm) return { error: 'no_permission' };
 
     const userId = Number(params.userId);
     if (isNaN(userId)) return Response.json({ error: 'invalid_id' }, { status: 400 });
@@ -373,8 +389,11 @@ const app = new Elysia()
   })
 
   // POST /system/users/:userId/reset-password - Reset user password
-  .use(permissions(GlobalPermissions.USERS_EDIT))
-  .post('/system/users/:userId/reset-password', async ({ user, params, body }: any) => {
+  .post('/system/users/:userId/reset-password', async ({ cookie, params, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.USERS_EDIT);
+    if (!perm) return { error: 'no_permission' };
 
     const userId = Number(params.userId);
     if (isNaN(userId)) return Response.json({ error: 'invalid_id' }, { status: 400 });

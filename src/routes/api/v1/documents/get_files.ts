@@ -2,33 +2,20 @@ import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import moment from 'moment';
 import { sql } from 'kysely';
+import { PermissionService } from '../../../../functions/permission.service';
+import { getAuthUser } from '../../../../utils/auth';
 
 const elysiaApp = new Elysia()
   
-  .post('/documents/files', async ({ cookie, body }) => {
-    const token = cookie.token?.value as string;
-    if (!token) {
-        return Response.json({ error: 'no_user', details: 'no_cookie' });
-    }
-
-    const user = await db.selectFrom("tokens")
-        .innerJoin('users', 'users.user_id', 'tokens.user_id')
-        .innerJoin("passwords", "passwords.password_id", 'users.password_id')
-        .select([
-            'users.user_id',
-            'users.username',
-            'users.2fa',
-            'users.2fa_secret',
-            'passwords.password'
-        ])
-        .where('tokens.token', '=', token)
-        .where('tokens.expires', '>=', moment().toDate())
-        .limit(1)
-        .executeTakeFirst()
-
+  .post('/documents/files', async ({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) {
-        return Response.json({ error: 'no_user', details: 'no_db' });
+        return Response.json({ error: 'no_user' });
     }
+
+    const userRoles = await PermissionService.getUserRoles(user.user_id);
+    const roleIds = userRoles.map(r => r.role_id);
+    const isSuperUser = user.manager === -1 || user.principal === true || user.role === 'admin_staff';
 
     try {
 
@@ -51,14 +38,61 @@ const elysiaApp = new Elysia()
             'files.modified_at',
             'documents.created_at',
             eb.selectFrom('documents as d2')
+                .select(eb2 => eb2.fn.countAll().as('count'))
                 .whereRef('d2.parent_id', '=', 'documents.document_id')
-                .select((eb2) => eb2.fn.countAll().as('files_count'))
-                .as('files_count')
+                .as('files_count'),
+            eb.selectFrom('document_permissions as dp')
+                .select(sql<string>`GROUP_CONCAT(dp.permission_type)`.as('perms'))
+                .whereRef('dp.document_id', '=', 'documents.document_id')
+                .where((eb2) => eb2.or([
+                    eb2('dp.user_id', '=', user.user_id),
+                    eb2('dp.role_id', 'in', roleIds.length > 0 ? [...roleIds, 0] : [0])
+                ]))
+                .as('effective_permissions')
         ])
         .where((eb) => eb.or([
             eb('files.deleted_at', 'is', null),
             eb('documents.type', '=', 'folder')
         ]))
+        .where((eb) => {
+            if (isSuperUser) return eb.and([]);
+            return eb.and([
+                // PRIORITY 1: Explicitly DENY takes precedence
+                eb.not(
+                    eb.exists(
+                        eb.selectFrom('document_permissions as dp_deny')
+                            .select(sql`1`.as('val'))
+                            .whereRef('dp_deny.document_id', '=', 'documents.document_id')
+                            .where('dp_deny.permission_type', '=', 'DENY')
+                            .where((eb2) => eb2.or([
+                                eb2('dp_deny.user_id', '=', user.user_id),
+                                eb2('dp_deny.role_id', 'in', roleIds.length > 0 ? [...roleIds, 0] : [0])
+                            ]))
+                    )
+                ),
+                // PRIORITY 2: Owner or explicit READ/WRITE or Public (no perms)
+                eb.or([
+                    eb('files.owner_id', '=', user.user_id),
+                    eb.exists(
+                        eb.selectFrom('document_permissions as dp2')
+                            .select(sql`1`.as('val'))
+                            .whereRef('dp2.document_id', '=', 'documents.document_id')
+                            .where('dp2.permission_type', 'in', ['READ', 'WRITE'])
+                            .where((eb2) => eb2.or([
+                                eb2('dp2.user_id', '=', user.user_id),
+                                eb2('dp2.role_id', 'in', roleIds.length > 0 ? [...roleIds, 0] : [0])
+                            ]))
+                    ),
+                    eb.not(
+                        eb.exists(
+                            eb.selectFrom('document_permissions as dp3')
+                                .select(sql`1`.as('val'))
+                                .whereRef('dp3.document_id', '=', 'documents.document_id')
+                        )
+                    )
+                ])
+            ])
+        })
         .where('documents.parent_id', body.parent_id == null ? 'is' : '=', body.parent_id ?? null)
         .execute();
 
@@ -96,13 +130,32 @@ const elysiaApp = new Elysia()
         }
 
         return files.map(
-          (file: any) => ({
-            ...file, 
-            name: file.name == null ? file.real_file_name : file.name, 
-            real_file_name: undefined,
-            file_size: file.type === 'folder' ? (folderMeta[file.document_id]?.size || 0) : Number(file.file_size),
-            modified_at: (file.type === 'folder' && folderMeta[file.document_id]?.modified_at) ? folderMeta[file.document_id].modified_at : (file.modified_at ?? file.created_at)
-          })
+          (file: any) => {
+            let perms = file.effective_permissions ? file.effective_permissions.split(',') : [];
+            if (isSuperUser || file.owner_id === user.user_id) {
+                if (!perms.includes('READ')) perms.push('READ');
+                if (!perms.includes('WRITE')) perms.push('WRITE');
+            }
+            // If no permissions are set at all for this file/folder, allow READ for everyone
+            // and WRITE only for superusers or owners
+            if (perms.length === 0) {
+                perms = ['READ'];
+                if (isSuperUser || file.owner_id === user.user_id) {
+                    perms.push('WRITE');
+                }
+            }
+            const canManage = isSuperUser || file.owner_id === user.user_id;
+            return {
+                ...file, 
+                name: file.name == null ? file.real_file_name : file.name, 
+                real_file_name: undefined,
+                file_size: file.type === 'folder' ? (folderMeta[file.document_id]?.size || 0) : Number(file.file_size),
+                modified_at: (file.type === 'folder' && folderMeta[file.document_id]?.modified_at) ? folderMeta[file.document_id].modified_at : (file.modified_at ?? file.created_at),
+                permissions: perms,
+                can_manage_permissions: canManage,
+                effective_permissions: undefined
+            };
+          }
         );
     } catch (e: any) {
       console.error('[Documents API Error]:', e);

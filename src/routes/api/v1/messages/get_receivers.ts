@@ -89,7 +89,7 @@ const app = new Elysia()
                 users: teachers.map(t => ({ person_id: t.person_id, role: t.role }))
             });
             result.push({
-                group: 'teacher',
+                group: 'teacher_select',
                 label: 'Učitelé - volný výběr',
                 users: teachers.map(t => ({ person_id: t.person_id, role: t.role }))
             });
@@ -126,13 +126,40 @@ const app = new Elysia()
     // D. STUDENTS ALL
     if (allowedTargets.includes('student')) {
         const students = await db.selectFrom('students')
-            .select(['person_id'])
-            .where('status', '=', 'active')
+            .leftJoin('classes', 'classes.class_id', 'students.class_id')
+            .leftJoin('school_years as sy', 'sy.sy_id', 'classes.year_id')
+            .select(['students.person_id', 'classes.class_id', 'classes.prefix', 'classes.suffix', 'sy.start as sy_start'])
+            .where('students.status', '=', 'active')
             .execute();
 
         if (students.length > 0) {
             const ids = students.map(s => s.person_id);
             allPersonIds.push(...ids);
+            
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth();
+            const classMap = new Map<number, { name: string, members: number[] }>();
+
+            students.forEach(s => {
+                if (!s.class_id || !s.sy_start) return;
+                const startYear = new Date(s.sy_start).getFullYear();
+                let yearDiff = currentYear - startYear;
+                if (currentMonth >= 8) yearDiff++;
+                const className = `${s.prefix}${yearDiff}${s.suffix}`;
+                
+                if (!classMap.has(s.class_id)) classMap.set(s.class_id, { name: className, members: [] });
+                classMap.get(s.class_id)?.members.push(s.person_id);
+            });
+
+            const classUsers = Array.from(classMap.entries()).map(([cid, data]) => ({
+                person_id: -1000 - cid,
+                full_name: data.name,
+                first_name: '',
+                last_name: data.name,
+                role: 'class',
+                members: data.members
+            })).sort((a, b) => a.full_name.localeCompare(b.full_name, 'cs'));
+
             result.push({
                 group: 'student',
                 label: 'Žák',
@@ -141,12 +168,12 @@ const app = new Elysia()
             result.push({
                 group: 'students_class',
                 label: 'Žáci - jedna třída',
-                users: ids.map(id => ({ person_id: id, role: 'student' }))
+                users: classUsers
             });
             result.push({
                 group: 'students_group',
                 label: 'Žáci - skupina tříd',
-                users: ids.map(id => ({ person_id: id, role: 'student' }))
+                users: classUsers
             });
             result.push({
                 group: 'students_all',
@@ -161,38 +188,48 @@ const app = new Elysia()
             result.push({
                 group: 'students_select_class',
                 label: 'Žáci - volný výběr tříd',
-                users: ids.map(id => ({ person_id: id, role: 'student' }))
+                users: classUsers
             });
         }
-
-        // E. STUDENTS GROUPED BY CLASS
-        const classesWithStudents = await db.selectFrom('students')
-            .innerJoin('classes', 'classes.class_id', 'students.class_id')
-            .select(['students.person_id', 'classes.prefix', 'classes.suffix'])
-            .where('students.status', '=', 'active')
-            .orderBy(['classes.prefix', 'classes.suffix'])
-            .execute();
-
-        const classMap = new Map<string, any[]>();
-        classesWithStudents.forEach(s => {
-            const className = `${s.prefix}.${s.suffix}`;
-            if (!classMap.has(className)) classMap.set(className, []);
-            classMap.get(className)?.push({ person_id: s.person_id, role: 'student', class: className });
-        });
     }
 
     // F. PARENTS
     if (allowedTargets.includes('parent')) {
-        // This requires finding persons who are targets in family_relations
-        const parents = await db.selectFrom('family_relations')
-            .innerJoin('persons', 'persons.person_id', 'family_relations.source_id') // source_id is the parent? Check roles
-            // Wait, usually family_relations: target_id is student, source_id is relative
-            .select(['family_relations.source_id as person_id'])
+        const parentsData = await db.selectFrom('family_relations')
+            .innerJoin('students', 'students.person_id', 'family_relations.source_id')
+            .leftJoin('classes', 'classes.class_id', 'students.class_id')
+            .leftJoin('school_years as sy', 'sy.sy_id', 'classes.year_id')
+            .select(['family_relations.source_id as person_id', 'classes.class_id', 'classes.prefix', 'classes.suffix', 'sy.start as sy_start'])
             .execute();
             
-        const ids = [...new Set(parents.map(p => p.person_id))];
+        const ids = [...new Set(parentsData.map(p => p.person_id))];
         if (ids.length > 0) {
             allPersonIds.push(...ids);
+
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth();
+            const parentClassMap = new Map<number, { name: string, members: Set<number> }>();
+
+            parentsData.forEach(p => {
+                if (!p.class_id || !p.sy_start) return;
+                const startYear = new Date(p.sy_start).getFullYear();
+                let yearDiff = currentYear - startYear;
+                if (currentMonth >= 8) yearDiff++;
+                const className = `${p.prefix}${yearDiff}${p.suffix}`;
+                
+                if (!parentClassMap.has(p.class_id)) parentClassMap.set(p.class_id, { name: className, members: new Set() });
+                parentClassMap.get(p.class_id)?.members.add(p.person_id);
+            });
+
+            const parentClassUsers = Array.from(parentClassMap.entries()).map(([cid, data]) => ({
+                person_id: -2000 - cid,
+                full_name: data.name,
+                first_name: '',
+                last_name: data.name,
+                role: 'class',
+                members: Array.from(data.members)
+            })).sort((a, b) => a.full_name.localeCompare(b.full_name, 'cs'));
+
             result.push({
                 group: 'parents_student',
                 label: 'Rodiče - jeden žák',
@@ -201,12 +238,12 @@ const app = new Elysia()
             result.push({
                 group: 'parents_class',
                 label: 'Rodiče - jedna třída',
-                users: ids.map(id => ({ person_id: id, role: 'parent' }))
+                users: parentClassUsers
             });
             result.push({
                 group: 'parents_group',
                 label: 'Rodiče - skupina tříd',
-                users: ids.map(id => ({ person_id: id, role: 'parent' }))
+                users: parentClassUsers
             });
             result.push({
                 group: 'parents_all',
@@ -221,7 +258,7 @@ const app = new Elysia()
             result.push({
                 group: 'parents_select_class',
                 label: 'Rodiče - volný výběr tříd',
-                users: ids.map(id => ({ person_id: id, role: 'parent' }))
+                users: parentClassUsers
             });
         }
     }
@@ -231,15 +268,42 @@ const app = new Elysia()
     if (uniqueIds.length > 0) {
         const names = await format_person_map_by_ids(uniqueIds);
         
+        // Fetch class info for students
+        const studentClassInfo = await db.selectFrom('students')
+            .innerJoin('classes', 'classes.class_id', 'students.class_id')
+            .innerJoin('school_years as sy', 'sy.sy_id', 'classes.year_id')
+            .select(['students.person_id', 'classes.prefix', 'classes.suffix', 'sy.start as sy_start'])
+            .where('students.person_id', 'in', uniqueIds)
+            .execute();
+            
+        const classMap = new Map<number, string>();
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth();
+
+        studentClassInfo.forEach(s => {
+            const startYear = new Date(s.sy_start).getFullYear();
+            let yearDiff = currentYear - startYear;
+            if (currentMonth >= 8) yearDiff++; // Školní rok začíná v září
+            
+            const className = `${s.prefix}${yearDiff}${s.suffix}`;
+            classMap.set(s.person_id, className);
+        });
+
         result.forEach(group => {
             group.users.forEach(u => {
+                if (u.role === 'class') return;
                 const fullName = names.get(u.person_id) || `Neznámý (${u.person_id})`;
                 u.full_name = fullName;
                 const parts = fullName.split(' ');
                 u.last_name = parts[parts.length - 1] || '';
                 u.first_name = parts[0] || '';
+                
+                // Add class info if it's a student
+                if (u.role === 'student' && classMap.has(u.person_id)) {
+                    u.role = `${u.role}_${classMap.get(u.person_id)}`;
+                }
             });
-            group.users.sort((a, b) => a.last_name.localeCompare(b.last_name, 'cs'));
+            group.users.sort((a, b) => (a.last_name || '').localeCompare(b.last_name || '', 'cs'));
         });
     }
 

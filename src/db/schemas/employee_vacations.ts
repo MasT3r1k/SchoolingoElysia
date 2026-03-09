@@ -15,7 +15,7 @@ export interface EmployeeVacationRequestsTable {
   start_date: string
   end_date: string
   days: number
-  type: 'vacation' | 'inability_to_work' | 'personal_obstacle' | 'education' | 'school_event' | 'business_trip' | 'other'
+  type: 'vacation' | 'inability_to_work' | 'personal_obstacle' | 'education' | 'school_event' | 'business_trip' | 'other' | 'extra_vacation'
   status: 'pending' | 'approved' | 'rejected'
   reason: string | null
   approved_by: number | null

@@ -1,16 +1,20 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
-import { permissions } from '../../../../middleware/permission.middleware';
+import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 
 const bonusesRouter = new Elysia()
   // GET /employees/bonuses - Get bonuses
-  .use(permissions(GlobalPermissions.BONUSES_VIEW))
-  .get('/employees/bonuses', async({ user, query }: any) => {
+  .get('/employees/bonuses', async({ cookie, query }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_VIEW);
+    if (!perm && user.person_id !== query.employeeId) return { error: 'no_permission' };
 
     // Check permissions - only admins can view all
-    const canViewAll = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
+    const canViewAll = perm;
     
     let queryBuilder = db.selectFrom('employee_bonuses')
       .leftJoin('teachers', 'employee_bonuses.teacher_id', 'teachers.person_id')
@@ -87,8 +91,11 @@ const bonusesRouter = new Elysia()
     })
   })
   // POST /employees/bonuses - Add bonus (admin only)
-  .use(permissions(GlobalPermissions.BONUSES_MANAGE))
-  .post('/employees/bonuses', async({ user, body }: any) => {
+  .post('/employees/bonuses', async({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_MANAGE);
+    if (!perm) return { error: 'no_permission' };
     
 
     await db.insertInto('employee_bonuses')
@@ -116,8 +123,11 @@ const bonusesRouter = new Elysia()
     })
   })
   // PUT /employees/bonuses/:id - Update bonus
-  .use(permissions(GlobalPermissions.BONUSES_MANAGE))
-  .put('/employees/bonuses/:id', async({ user, params, body }: any) => {
+  .put('/employees/bonuses/:id', async({ cookie, params, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_MANAGE);
+    if (!perm) return { error: 'no_permission' };
     const bonusId = parseInt(params.id);
     
 
@@ -140,8 +150,11 @@ const bonusesRouter = new Elysia()
     })
   })
   // PUT /employees/bonuses/:id/paid - Mark as paid
-  .use(permissions(GlobalPermissions.BONUSES_MANAGE))
-  .put('/employees/bonuses/:id/paid', async({ user, params }: any) => {
+  .put('/employees/bonuses/:id/paid', async({ cookie, params }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_MANAGE);
+    if (!perm) return { error: 'no_permission' };
     const bonusId = parseInt(params.id);
     
 
@@ -156,8 +169,11 @@ const bonusesRouter = new Elysia()
     return Response.json({ success: true, message: 'Bonus marked as paid' });
   })
   // DELETE /employees/bonuses/:id - Delete bonus (only if not paid)
-  .use(permissions(GlobalPermissions.BONUSES_MANAGE))
-  .delete('/employees/bonuses/:id', async({ user, params }: any) => {
+  .delete('/employees/bonuses/:id', async({ cookie, params }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_MANAGE);
+    if (!perm) return { error: 'no_permission' };
     const bonusId = parseInt(params.id);
     
 

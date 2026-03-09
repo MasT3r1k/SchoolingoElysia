@@ -1,9 +1,13 @@
 import { Elysia, t } from 'elysia'
 import { db } from '../../../../database'
 import { sql } from 'kysely'
+import { PermissionService } from '../../../functions/permission.service';
+import { GlobalPermissions } from '../../../config/permissions.config';
+import { getAuthUser } from '../../../utils/auth';
 
 export const gdprRoutes = new Elysia({ prefix: '/gdpr' })
-    .get('/consents', async ({ user }: any) => {
+    .get('/consents', async ({ cookie }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
         if (!user) return { error: 'Unauthorized' }
 
         const ownConsents = await db.selectFrom('gdpr_consents')
@@ -65,7 +69,8 @@ export const gdprRoutes = new Elysia({ prefix: '/gdpr' })
 
         return { consents: allConsents }
     })
-    .put('/consents', async ({ user, body }: any) => {
+    .put('/consents', async ({ cookie, body }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
         if (!user) return { error: 'Unauthorized' }
         const { consent_id, granted, target_user_id } = body as { consent_id: number, granted: boolean | null, target_user_id: number }
 
@@ -114,7 +119,8 @@ export const gdprRoutes = new Elysia({ prefix: '/gdpr' })
             target_user_id: t.Number()
         })
     })
-    .get('/training', async ({ user }: any) => {
+    .get('/training', async ({ cookie }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
         if (!user) return { error: 'Unauthorized' }
 
         const training = await db.selectFrom('gdpr_training')
@@ -140,7 +146,8 @@ export const gdprRoutes = new Elysia({ prefix: '/gdpr' })
             status: t.status || 'not_started'
         })) }
     })
-    .get('/export-requests', async ({ user }: any) => {
+    .get('/export-requests', async ({ cookie }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
         if (!user) return { error: 'Unauthorized' }
 
         const requests = await db.selectFrom('gdpr_requests')
@@ -151,7 +158,8 @@ export const gdprRoutes = new Elysia({ prefix: '/gdpr' })
 
         return { requests }
     })
-    .post('/export', async ({ user }: any) => {
+    .post('/export', async ({ cookie }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
         if (!user) return { error: 'Unauthorized' }
 
         const result = await db.insertInto('gdpr_requests')
@@ -165,7 +173,8 @@ export const gdprRoutes = new Elysia({ prefix: '/gdpr' })
 
         return { success: true, request_id: Number(result.insertId) }
     })
-    .delete('/account', async ({ user }: any) => {
+    .delete('/account', async ({ cookie }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
         if (!user) return { error: 'Unauthorized' }
 
         await db.insertInto('gdpr_requests')
@@ -179,7 +188,8 @@ export const gdprRoutes = new Elysia({ prefix: '/gdpr' })
 
         return { success: true }
     })
-    .post('/report', async ({ user, body }: any) => {
+    .post('/report', async ({ cookie, body }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
         if (!user) return { error: 'Unauthorized' }
         const { type, subject, message } = body as { type: 'breach' | 'objection', subject: string, message: string }
 
@@ -201,7 +211,8 @@ export const gdprRoutes = new Elysia({ prefix: '/gdpr' })
             message: t.String()
         })
     })
-    .patch('/training/:id/status', async ({ user, params, body }: any) => {
+    .patch('/training/:id/status', async ({ cookie, params, body }: any) => {
+        const user = await getAuthUser(cookie?.token?.value as string, cookie);
         if (!user) return { error: 'Unauthorized' }
         const { status } = body as { status: 'not_started' | 'in_progress' | 'completed' | 'failed' }
 
@@ -236,8 +247,13 @@ export const gdprRoutes = new Elysia({ prefix: '/gdpr' })
 
     // --- ADMIN ROUTES ---
     .group('/admin', (app) => app
-        .derive(async ({ user } : any) => {
-            if (!user || !['management', 'admin_staff', 'manager'].includes(user.role)) {
+        .derive(async ({ cookie } : any) => {
+            const user = await getAuthUser(cookie?.token?.value as string, cookie);
+            if (!user) {
+                 throw new Error('Unauthorized admin access')
+            }
+            const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.GDPR_MANAGE);
+            if (!perm) {
                 throw new Error('Unauthorized admin access')
             }
             return { isAdmin: true }

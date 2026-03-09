@@ -1,15 +1,18 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
-import { permissions } from '../../../../middleware/permission.middleware';
-import { GlobalPermissions } from '../../../../config/permissions.config';
 import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
+import { getAuthUser } from '../../../../utils/auth';
 
 
 const app = new Elysia()
   // GET /system/roles - Načtení všech rolí a všech dostupných oprávnění
-  .use(permissions(GlobalPermissions.ROLES_VIEW))
-  .get('/system/roles', async () => {
+  .get('/system/roles', async ({ cookie }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ROLES_VIEW);
+    if (!perm) return { error: 'no_permission' };
 
     const [roles, rolePermissions] = await Promise.all([
       db.selectFrom('roles')
@@ -39,8 +42,11 @@ const app = new Elysia()
   })
 
   // POST /system/update_role - Vytvoření nebo úprava role
-  .use(permissions(GlobalPermissions.ROLES_EDIT))
-  .post('/system/update_role', async ({ body }: any) => {
+  .post('/system/update_role', async ({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ROLES_EDIT);
+    if (!perm) return { error: 'no_permission' };
 
     const { roleId, name, key, description, permissionIds } = body;
 
@@ -101,8 +107,11 @@ const app = new Elysia()
   })
 
   // DELETE /system/role - Smazání role
-  .use(permissions(GlobalPermissions.ROLES_EDIT))
-  .delete('/system/role', async ({ body }: any) => {
+  .delete('/system/role', async ({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ROLES_EDIT);
+    if (!perm) return { error: 'no_permission' };
 
     const { roleId } = body;
 

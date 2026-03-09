@@ -87,6 +87,7 @@ import { marking_scales_groupsTable } from './marking_scales_groups'
 import { scopes_subjectsTable } from './scopes_subjects'
 import { ClassbookNotesTable } from './classbook_notes'
 import { documentsTable } from './documents'
+import { document_permissionsTable } from './document_permissions'
 import { semester_gradesTable } from './semester_grades'
 import { notificationsTable } from './notifications'
 import { notificationRulesTable } from './notification_rules'
@@ -122,7 +123,9 @@ import { StudentMatrikaRecordsTable } from './student_matrika_records'
 import { StudentNotesTable } from './student_notes'
 import { SchoolEvaluationTemplatesTable } from './school_evaluation_templates'
 import { ip_cacheTable } from './ip_cache'
+import { ReportCardsTable } from './report_cards'
 import { GdprConsentsTable, GdprUserConsentsTable, GdprTrainingTable, GdprUserTrainingTable, GdprRequestsTable, GdprReportsTable, GdprReviewsTable } from './gdpr'
+import { MessageRecipientGroupTable, MessageRecipientGroupMemberTable } from './message_recipient_groups'
 
 
 
@@ -144,6 +147,7 @@ export interface Database {
   class_service: Class_serviceTable
   countries: CountriesTable
   documents: documentsTable
+  document_permissions: document_permissionsTable
   degrees: DegreesTable
   districts: DistrictsTable
   education_measures: educationMeasuresTable
@@ -269,6 +273,9 @@ export interface Database {
   gdpr_requests: GdprRequestsTable
   gdpr_reports: GdprReportsTable
   gdpr_reviews: GdprReviewsTable
+  report_cards: ReportCardsTable
+  message_recipient_groups: MessageRecipientGroupTable
+  message_recipient_group_members: MessageRecipientGroupMemberTable
 }
 
 

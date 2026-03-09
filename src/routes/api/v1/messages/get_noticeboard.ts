@@ -3,20 +3,13 @@ import { db } from '../../../../../database';
 import { sql } from 'kysely';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
+import { getAuthUser } from '../../../../utils/auth';
+
 const app = new Elysia()
-  .get('/messages/noticeboard', async ({ cookie, query }) => {
-    const token = cookie.token?.value as string;
-    if (!token) return { error: 'no_user', details: 'no_cookie' };
-
-    const auth = await db
-      .selectFrom('tokens')
-      .leftJoin('users', 'users.user_id', 'tokens.user_id')
-      .select(['tokens.user_id', 'users.person_id', 'users.school_id'])
-      .where('tokens.token', '=', token)
-      .where('tokens.expires', '>=', new Date())
-      .executeTakeFirst();
-
-    if (!auth) return { error: 'no_user', details: 'no_db' };
+  .get('/messages/noticeboard', async ({ cookie, query }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_user' };
+    const auth = user;
 
     const totalRows = await db.selectFrom('messages')
     .select(sql`COUNT(*)`.as('count'))

@@ -1,17 +1,21 @@
 import { Elysia, t } from 'elysia';
 import { db } from "../../../../../database"
 import { sql } from 'kysely';
-import { permissions } from '../../../../middleware/permission.middleware';
+import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
+import { getAuthUser } from '../../../../utils/auth';
 
 
 const vacationsRouter = new Elysia()
   // GET /employees/vacations/balance - Get vacation balance
-  .use(permissions(GlobalPermissions.VACATIONS_VIEW))
-  .get('/employees/vacations/balance', async({ user, school, query }: any) => {
-    
-    const canViewAll = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
+  .get('/employees/vacations/balance', async({ cookie, school, query }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.VACATIONS_VIEW);
+    if (!perm && user.person_id !== query.employeeId) return { error: 'no_permission' };
+
+    const canViewAll = perm;
     
     const employeeId = canViewAll && query.employeeId ? query.employeeId : user.person_id;
     const year = query.year || new Date().getFullYear();
@@ -67,8 +71,11 @@ const vacationsRouter = new Elysia()
     })
   })
   // POST /employees/vacations/balance/adjust - Adjust vacation entitlement (Admin only)
-  .use(permissions(GlobalPermissions.VACATIONS_MANAGE))
-  .post('/employees/vacations/balance/adjust', async({ user, body }: any) => {
+  .post('/employees/vacations/balance/adjust', async({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.VACATIONS_MANAGE);
+    if (!perm) return { error: 'no_permission' };
 
     const currentYear = new Date().getFullYear();
 
@@ -110,10 +117,13 @@ const vacationsRouter = new Elysia()
     })
   })
   // GET /employees/vacations/requests - Get vacation requests
-  .use(permissions(GlobalPermissions.VACATIONS_VIEW))
-  .get('/employees/vacations/requests', async({ user, query }: any) => {
-    
-    const canViewAll = user.manager == -1 || user.is_principal || user.role === 'admin_staff';
+  .get('/employees/vacations/requests', async({ cookie, query }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.VACATIONS_VIEW);
+    if (!perm && user.person_id !== query.employeeId) return { error: 'no_permission' };
+
+    const canViewAll = perm;
     
     let queryBuilder = db.selectFrom('employee_vacation_requests')
       .leftJoin('teachers', 'employee_vacation_requests.teacher_id', 'teachers.person_id')
@@ -172,8 +182,11 @@ const vacationsRouter = new Elysia()
     })
   })
   // POST /employees/vacations/request - Create vacation request
-  .use(permissions(GlobalPermissions.VACATIONS_VIEW))
-  .post('/employees/vacations/request', async({ user, school, body }: any) => {
+  .post('/employees/vacations/request', async({ cookie, school, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.VACATIONS_VIEW);
+    if (!perm) return { error: 'no_permission' };
     // Check if vacation requests are enabled
     if (!school.employee_vacation_requests_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
@@ -239,8 +252,11 @@ const vacationsRouter = new Elysia()
     })
   })
   // PUT /employees/vacations/request/:id/approve - Approve request
-  .use(permissions(GlobalPermissions.VACATIONS_MANAGE))
-  .put('/employees/vacations/request/:id/approve', async({ user, params }: any) => {
+  .put('/employees/vacations/request/:id/approve', async({ cookie, params }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.VACATIONS_MANAGE);
+    if (!perm) return { error: 'no_permission' };
     const requestId = parseInt(params.id);
     
     // Authorization check removed as handled by middleware
@@ -278,13 +294,27 @@ const vacationsRouter = new Elysia()
         .where('teacher_id', '=', request.teacher_id)
         .where('year', '=', year)
         .execute();
+    } else if (request.type === 'extra_vacation') {
+      const year = new Date(request.start_date).getFullYear();
+
+      await db.updateTable('employee_vacation_balance')
+        .set({
+          entitlement: sql`entitlement + ${request.days}`,
+          remaining: sql`remaining + ${request.days}`,
+        } as any)
+        .where('teacher_id', '=', request.teacher_id)
+        .where('year', '=', year)
+        .execute();
     }
 
     return Response.json({ success: true, message: 'Request approved' });
   })
   // PUT /employees/vacations/request/:id/reject - Reject request
-  .use(permissions(GlobalPermissions.VACATIONS_MANAGE))
-  .put('/employees/vacations/request/:id/reject', async({ user, params, body }: any) => {
+  .put('/employees/vacations/request/:id/reject', async({ cookie, params, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.VACATIONS_MANAGE);
+    if (!perm) return { error: 'no_permission' };
     const requestId = parseInt(params.id);
     
     // Authorization check already handled by middleware
