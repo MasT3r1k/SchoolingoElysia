@@ -6,7 +6,7 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
 import { validateBody, createSubstitutionSchema } from '../../../../utils/validation.schemas';
-import { notificationBroadcaster } from '../../../../functions/notification-broadcaster';
+import { notificationService } from '../../../../functions/notification.service';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import moment from 'moment';
 
@@ -185,11 +185,13 @@ const app = new Elysia({ prefix: '/schedule' })
         const userIds = students.map(s => s.user_id).filter(Boolean) as number[];
         
         if (userIds.length > 0) {
-            await notificationBroadcaster.notifyScheduleChange(userIds, {
-                date: new Date(date),
-                changeType: type as 'cancelled' | 'substitution' | 'room_change',
-                description: note || undefined
-            });
+            for (const userId of userIds) {
+                await notificationService.sendNotification('substitution_new', userId, {
+                    date: new Date(date),
+                    changeType: type as 'cancelled' | 'substitution' | 'room_change',
+                    description: note || undefined
+                });
+            }
         }
 
         return Response.json({ substitution_id: Number(result[0].insertId), success: true });

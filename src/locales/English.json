@@ -1143,6 +1143,10 @@
         "weight": "Weight",
         "description": "Description",
         "no_subjects": "No grades",
+        "empty": {
+            "title": "No grades yet",
+            "description": "It looks like the student doesn't have any grades recorded in this period yet."
+        },
         "interm": {
             "by_subjects": "By subjects",
             "chronologically": "Chronologically",
@@ -1254,6 +1258,13 @@
         "no_messages": "No messages found.",
         "topic": "Title",
         "receiver": "Message recipient",
+        "seen_by": "Seen by",
+        "confirmed_by": "Confirmed by",
+        "recipients_list": "Recipients list",
+        "read_at": "Read at",
+        "confirmed_at": "Confirmed at",
+        "not_read_yet": "Not read yet",
+        "not_confirmed_yet": "Not confirmed yet",
         "student": "Student",
         "search_messages": "Search by author",
         "findreceiver": "Search recipient name",
@@ -1273,6 +1284,9 @@
         "no_receivers": "No users available.",
         "selected_receivers": "Selected recipients:",
         "no_selected_receivers": "You have no selected recipients.",
+        "select_all": "Select all",
+        "deselect_all": "Deselect all",
+        "add_group_members": "Add group members",
         "hide_selected_receivers": "Select more recipients (%count%)",
         "show_selected_receivers": "Show selected recipients (%count%)",
         "file_limit_info": "You have selected %count% files out of %limit%.",
@@ -1305,6 +1319,7 @@
         },
         "copy_classteacher": "Copy to class teacher",
         "copy_parents": "Copy to parents",
+        "copy_student": "Copy to student",
         "as_principal": "As principal",
         "to_all": "To all",
         "sus_error": "Some weird error occurred, click to reset to basic type",
@@ -1473,6 +1488,18 @@
                 "success_title": "Deleted!",
                 "success_description": "You successfully deleted passkey %passkey%."
             }
+        },
+        "avatar": "Avatar Settings",
+        "avatar_settings": {
+            "description": "Customize your appearance using DiceBear avatars here. Changes are reflected across the entire system.",
+            "preview": "Preview",
+            "history": "Avatar History",
+            "random": "Random Suggestions",
+            "error": "An error occurred while saving the avatar.",
+            "seed": "Seed",
+            "save_seed": "Save seed",
+            "seed_hint": "Seed is used to generate a unique look. You can enter your name, nickname, or any text.",
+            "variant": "Variant %number%"
         }
     },
     "timetable": {

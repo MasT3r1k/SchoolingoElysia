@@ -126,6 +126,8 @@ import { ip_cacheTable } from './ip_cache'
 import { ReportCardsTable } from './report_cards'
 import { GdprConsentsTable, GdprUserConsentsTable, GdprTrainingTable, GdprUserTrainingTable, GdprRequestsTable, GdprReportsTable, GdprReviewsTable } from './gdpr'
 import { MessageRecipientGroupTable, MessageRecipientGroupMemberTable } from './message_recipient_groups'
+import { AvatarHistoryTable } from './avatar_history'
+
 
 
 
@@ -276,6 +278,8 @@ export interface Database {
   report_cards: ReportCardsTable
   message_recipient_groups: MessageRecipientGroupTable
   message_recipient_group_members: MessageRecipientGroupMemberTable
+  avatar_history: AvatarHistoryTable
 }
+
 
 

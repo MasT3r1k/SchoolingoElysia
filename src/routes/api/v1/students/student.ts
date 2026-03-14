@@ -68,6 +68,7 @@ const elysiaApp = new Elysia()
             'persons.first_name',
             'persons.last_name',
             'persons.gender',
+            'persons.avatar',
             'persons.birthday',
             'persons.birthnum',
             'persons.nationality_id',
@@ -194,7 +195,19 @@ const elysiaApp = new Elysia()
                 ON a.lesson_id = c.classbook_id 
                 AND a.student_id = students.person_id
               WHERE sg.student_id = students.person_id
-            )`.as('absence_rate_unexcused')
+            )`.as('absence_rate_unexcused'),
+            sql<number>`(
+              SELECT COUNT(*) + 1
+              FROM students s2
+              INNER JOIN persons p2 ON s2.person_id = p2.person_id
+              WHERE s2.class_id = students.class_id
+              AND s2.status = 'active'
+              AND (
+                p2.last_name < persons.last_name
+                OR (p2.last_name = persons.last_name AND p2.first_name < persons.first_name)
+                OR (p2.last_name = persons.last_name AND p2.first_name = persons.first_name AND p2.person_id < persons.person_id)
+              )
+            )`.as('class_rank')
           ])
           .where('persons.person_id', '=', id)
           .executeTakeFirstOrThrow(),
@@ -249,7 +262,8 @@ const elysiaApp = new Elysia()
             'addresses.street',
             'addresses.house_number as houseNumber',
             'cities.city_name as city',
-            'cities.postcode'
+            'cities.postcode',
+            'persons.data_box as dataBox'
           ])
           .where('family_relations.source_id', '=', id)
           .execute(),
@@ -353,19 +367,98 @@ const elysiaApp = new Elysia()
       }));
 
       const result: any = {};
-
+      
       if (show.includes('basic')) {
         Object.assign(result, studentResult);
         if (studentResult.person_id) {
           result.full_name = await format_person_by_id(studentResult.person_id);
+        }
+
+        // Generate avatar if null
+        if (!result.avatar) {
+          const defaultAvatar = {
+            collection: 'thumbs',
+            options: {
+              seed: result.full_name
+            }
+          };
+          const avatarData = JSON.stringify(defaultAvatar);
+          
+          await db.updateTable('persons')
+            .set({ avatar: avatarData })
+            .where('person_id', '=', id)
+            .execute();
+            
+          result.avatar = avatarData;
         }
         result.last_grades = lastGrades;
         result.recent_absences = recentAbsences;
       }
       if (show.includes('groups')) result.groups = groups;
       if (show.includes('parents')) {
-        const parentNames = await format_person_map_by_ids(parents.map((parent) => (parent.id)));
-        result.parents = parents.map((parent) => ({ ...parent, fullName: parentNames.get(parent.id) }));
+        const parentIds = parents.map(p => p.id);
+        if (parentIds.length > 0) {
+          const parentNames = await format_person_map_by_ids(parentIds);
+          
+          // Fetch siblings for all parents at once for efficiency
+          const allSiblings = await db.selectFrom('family_relations')
+            .innerJoin('persons', 'family_relations.source_id', 'persons.person_id')
+            .leftJoin('students', 'persons.person_id', 'students.person_id')
+            .leftJoin('classes', 'students.class_id', 'classes.class_id')
+            .leftJoin('school_years as sy', 'classes.year_id', 'sy.sy_id')
+            .leftJoin('scopes', 'classes.scope_id', 'scopes.scope_id')
+            .leftJoin('persons as teacher', 'classes.teacher_id', 'teacher.person_id')
+            .select([
+              'family_relations.target_id as parentId',
+              'persons.person_id as id',
+              'persons.first_name',
+              'persons.last_name',
+              'persons.gender',
+              'persons.birthday',
+              sql`concat(
+                classes.prefix,
+                TIMESTAMPDIFF(YEAR, sy.start, CURDATE()) + 1,
+                classes.suffix
+              )`.as('class_name'),
+              sql<string>`scopes.name`.as('field_of_study'),
+              'classes.teacher_id',
+              sql<number>`(
+                SELECT COUNT(*) + 1
+                FROM students s2
+                INNER JOIN persons p2 ON s2.person_id = p2.person_id
+                WHERE s2.class_id = students.class_id
+                AND s2.status = 'active'
+                AND (
+                  p2.last_name < persons.last_name
+                  OR (p2.last_name = persons.last_name AND p2.first_name < persons.first_name)
+                  OR (p2.last_name = persons.last_name AND p2.first_name = persons.first_name AND p2.person_id < persons.person_id)
+                )
+              )`.as('class_rank')
+            ])
+            .where('family_relations.target_id', 'in', parentIds)
+            .where('family_relations.source_id', '!=', id)
+            .orderBy('persons.last_name', 'asc')
+            .orderBy('persons.first_name', 'asc')
+            .execute();
+
+          const siblingIdToFullName = await format_person_map_by_ids(allSiblings.map(s => s.id));
+          const teacherIds = allSiblings.map(s => s.teacher_id).filter((tid): tid is number => tid !== null);
+          const teacherNames = await format_person_map_by_ids(teacherIds);
+
+          const siblingsByParent = allSiblings.map(s => ({
+            ...s,
+            fullName: siblingIdToFullName.get(s.id),
+            teacher_name: s.teacher_id ? teacherNames.get(s.teacher_id) : ''
+          }));
+
+          result.parents = parents.map((parent) => ({ 
+            ...parent, 
+            fullName: parentNames.get(parent.id),
+            siblings: siblingsByParent.filter(s => s.parentId == parent.id)
+          }));
+        } else {
+          result.parents = [];
+        }
       }
       if (show.includes('timetable')) {
         result.timetable = timetable;
@@ -424,6 +517,25 @@ const elysiaApp = new Elysia()
         }));
       }
 
+      if (show.includes('evaluation')) {
+        result.evaluations = await db.selectFrom('messages')
+          .innerJoin('messages_receivers', 'messages_receivers.message_id', 'messages.message_id')
+          .innerJoin('persons', 'persons.person_id', 'messages.author_id')
+          .select([
+            'messages.message_id',
+            'messages.topic',
+            'messages.message',
+            'messages.sent_at',
+            'messages.message_rating_type',
+            'persons.first_name as teacher_first_name',
+            'persons.last_name as teacher_last_name',
+          ])
+          .where('messages.type', '=', 3)
+          .where('messages_receivers.receiver_id', '=', id)
+          .orderBy('messages.sent_at', 'desc')
+          .execute();
+      }
+
       return Response.json(result);
 
     } catch (e) {
@@ -435,7 +547,7 @@ const elysiaApp = new Elysia()
       id: t.Number()
     }),
     query: t.Object({
-      type: t.String({ default: 'basic,groups,timetable,parents,medical,matrika,notes' }),
+      type: t.String({ default: 'basic,groups,timetable,parents,medical,matrika,notes,evaluation' }),
       time: t.String({ default: moment().format("YYYY-MM-DD") })
     })
   })
@@ -714,7 +826,7 @@ const elysiaApp = new Elysia()
       return { error: 'no_permission' };
     }
     // @ts-ignore
-    const { mode, role, personId, firstName, lastName, gender, prefixTitle, suffixTitle, email, phone, address } = body;
+    const { mode, role, personId, firstName, lastName, gender, prefixTitle, suffixTitle, email, phone, address, dataBox } = body;
 
 
     try {
@@ -740,7 +852,8 @@ const elysiaApp = new Elysia()
             .values({
               first_name: firstName,
               last_name: lastName,
-              gender: gender ?? 0
+              gender: gender ?? 0,
+              data_box: dataBox || null
             })
             .executeTakeFirstOrThrow();
 
@@ -851,7 +964,8 @@ const elysiaApp = new Elysia()
             .set({
               first_name: firstName,
               last_name: lastName,
-              gender: gender ?? 0
+              gender: gender ?? 0,
+              data_box: dataBox || null
             })
             .where('person_id', '=', personId)
             .execute();

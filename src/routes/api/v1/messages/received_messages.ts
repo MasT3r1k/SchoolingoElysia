@@ -22,7 +22,7 @@ const app = new Elysia()
     .leftJoin('messages', 'messages.message_id', 'messages_receivers.message_id')
     .select(sql`COUNT(*)`.as('count'))
     .where('messages_receivers.receiver_id', '=', auth.person_id)
-    .where('messages.type', '=', 0)
+    .where('messages.type', 'in', [0, 1, 2, 3])
     .executeTakeFirst()
     .then(r => Number(r?.count ?? 0));
 
@@ -42,7 +42,7 @@ const app = new Elysia()
         'messages_receivers.read_at',
         'messages_receivers.confirmed_at'
     ])
-    .where('messages.type', '=', 0)
+    .where('messages.type', 'in', [0, 1, 2, 3])
     .where('messages_receivers.receiver_id', '=', auth.person_id)
     .offset(query.offset || 0)
     .limit(query.limit || 20)

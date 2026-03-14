@@ -31,6 +31,7 @@ const elysiaApp = new Elysia()
         'persons.first_name',
         'persons.last_name',
         'persons.gender',
+        'persons.avatar',
         'students.status',
         sql<string>`(SELECT email FROM emails WHERE emails.person_id = persons.person_id AND emails.is_verified = 1 LIMIT 1)`.as('email'),
         sql<string>`(SELECT number FROM phone_numbers WHERE phone_numbers.person_id = persons.person_id AND phone_numbers.is_verified = 1 LIMIT 1)`.as('phone'),
@@ -153,9 +154,32 @@ const elysiaApp = new Elysia()
     const personIds = results.map(r => r.person_id).filter((id): id is number => id !== null);
     const formattedNames = await format_person_map_by_ids(personIds);
 
-    const data = results.map(r => ({
-      ...r,
-      full_name: r.person_id ? formattedNames.get(r.person_id) : `${r.first_name} ${r.last_name}`
+    const data = await Promise.all(results.map(async (r) => {
+      const fullName = r.person_id ? formattedNames.get(r.person_id) : `${r.first_name} ${r.last_name}`;
+      let avatar = r.avatar;
+
+      if (!avatar) {
+        const defaultAvatar = {
+          collection: 'thumbs',
+          options: {
+            seed: fullName
+          }
+        };
+        const avatarData = JSON.stringify(defaultAvatar);
+        
+        await db.updateTable('persons')
+          .set({ avatar: avatarData })
+          .where('person_id', '=', r.person_id)
+          .execute();
+          
+        avatar = avatarData;
+      }
+
+      return {
+        ...r,
+        full_name: fullName,
+        avatar: avatar
+      };
     }));
 
     return Response.json({

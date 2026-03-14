@@ -31,10 +31,17 @@ const app = new Elysia()
 
         const events = await db
             .selectFrom('events')
-            .selectAll()
-            .where('date', '>=', new Date(startDate))
-            .where('date', '<=', new Date(endDate))
-            .orderBy('date', 'asc')
+            .select([
+                'event_id',
+                'event_name as name',
+                'event_description as description',
+                'event_date as date',
+                'event_type as type',
+                'class_id as classId'
+            ])
+            .where('event_date', '>=', startDate)
+            .where('event_date', '<=', endDate)
+            .orderBy('event_date', 'asc')
             .execute();
 
         return Response.json({ events });
@@ -59,7 +66,14 @@ const app = new Elysia()
 
         const event = await db
             .selectFrom('events')
-            .selectAll()
+            .select([
+                'event_id',
+                'event_name as name',
+                'event_description as description',
+                'event_date as date',
+                'event_type as type',
+                'class_id as classId'
+            ])
             .where('event_id', '=', parseInt(params.id))
             .executeTakeFirst();
 
@@ -90,25 +104,30 @@ const app = new Elysia()
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 
-        const { name, description, date, type } = body;
+        const { name, description, date, type, classId } = body;
 
         const result = await db
             .insertInto('events')
             .values({
                 event_name: name,
                 event_description: description || null,
-                created_time: new Date(date),
-                event_type: type || 'event'
+                event_date: date,
+                event_type: type || 'event',
+                class_id: classId || null,
+                created_by: auth.user_id
             })
             .execute();
 
-        return Response.json({ event_id: Number(result[0].insertId), success: true });
+        const insertId = Number(result[0].insertId);
+
+        return Response.json({ event_id: insertId, success: true });
     }, {
         body: t.Object({
             name: t.String(),
             description: t.Optional(t.String()),
             date: t.String(),
-            type: t.Optional(t.String())
+            type: t.Optional(t.String()),
+            classId: t.Optional(t.Nullable(t.Number()))
         })
     })
 

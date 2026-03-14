@@ -14,7 +14,7 @@ const attendanceRouter = new Elysia()
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ATTENDANCE_VIEW);
-    if (!perm && user.person_id !== query.employeeId) return { error: 'no_permission' };
+    if (!perm && query.employeeId != undefined && user.person_id !== query.employeeId) return { error: 'no_permission' };
 
     // Check if attendance is enabled
     if (!school.employee_attendance_enabled) {
@@ -90,7 +90,7 @@ const attendanceRouter = new Elysia()
   .post('/employees/attendance/checkin', async({ cookie, school, body }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
-    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ATTENDANCE_VIEW);
+    const perm = user.role == "teacher";
     if (!perm) return { error: 'no_permission' };
     
     // Check if attendance is enabled
@@ -143,7 +143,7 @@ const attendanceRouter = new Elysia()
   .post('/employees/attendance/checkout', async({ cookie, school, body }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
-    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.ATTENDANCE_VIEW);
+    const perm = user.role == "teacher";
     if (!perm) return { error: 'no_permission' };
     
     // Check if attendance is enabled

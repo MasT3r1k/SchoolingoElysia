@@ -70,6 +70,14 @@ const app = new Elysia()
           'schools.employee_vacation_requests_enabled',
           'schools.employee_attendance_enabled',
           'schools.employee_salaries_enabled',
+          'schools.documents_enabled',
+          'schools.traineeship_enabled',
+          'schools.online_enabled',
+          'schools.noticeboard_student_enabled',
+          'schools.noticeboard_teacher_enabled',
+          'schools.tests_enabled',
+          'schools.rewards_enabled',
+          'schools.demo_enabled',
         ])
         .where('schools.school_id', '=', schoolId)
         .limit(1)

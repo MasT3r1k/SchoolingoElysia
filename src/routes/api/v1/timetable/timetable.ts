@@ -36,16 +36,28 @@ const elysiaApp = new Elysia()
       const hasViewPerm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.TIMETABLE_VIEW);
       
       if (!hasViewPerm && user.person_id !== targetId && type !== 'room') {
+        if (type == 'class') {
+          const classDB = await db.selectFrom('classes')
+          .select([
+            'classes.teacher_id'
+          ])
+          .where('classes.class_id', '=', targetId)
+          .executeTakeFirst();
+          if (classDB && classDB?.teacher_id !== user.person_id) {
+            return Response.json({ error: 'forbidden', details: 'You are not allowed to view this timetable' }, { status: 403 });
+          } 
+        } else {
           // Check if parent of the student
           const isParent = await db.selectFrom('family_relations')
-              .select(['source_id'])
-              .where('source_id', '=', targetId)
-              .where('target_id', '=', user.person_id)
-              .executeTakeFirst();
+            .select(['source_id'])
+            .where('source_id', '=', targetId)
+            .where('target_id', '=', user.person_id)
+            .executeTakeFirst();
           
           if (!isParent) {
-              return Response.json({ error: 'forbidden', details: 'You are not allowed to view this timetable' }, { status: 403 });
+            return Response.json({ error: 'forbidden', details: 'You are not allowed to view this timetable' }, { status: 403 });
           }
+        }
       }
       
       // Additional check for room: only teachers/admins can view room timetable if they don't have global view

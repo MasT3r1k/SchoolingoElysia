@@ -30,7 +30,7 @@ const app = new Elysia()
             result.push({
                 id: group.group_id,
                 name: group.name,
-                members: members.map(m => m.person_id)
+                members: members.map(m => m.person_id).filter(id => id !== auth.person_id)
             });
         }
         return result;

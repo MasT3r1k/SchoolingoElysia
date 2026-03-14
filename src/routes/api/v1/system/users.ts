@@ -109,6 +109,215 @@ const app = new Elysia()
     })
   })
 
+  // GET /system/users/classes - List all classes for the school (for new user student assignment)
+  .get('/system/users/classes', async ({ cookie }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.USERS_VIEW);
+    if (!perm) return { error: 'no_permission' };
+
+    const classes = await db.selectFrom('classes')
+      .innerJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
+      .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
+      .select([
+        'classes.class_id',
+        'classes.prefix',
+        'classes.suffix',
+        sql<string>`concat(classes.prefix, COALESCE(TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, ''), classes.suffix)`.as('class_name')
+      ])
+      .where('scopes.school_id', '=', user.school_id)
+      .execute();
+
+    return Response.json({ success: true, data: classes });
+  })
+
+  // GET /system/users/unlinked_persons - Get persons who don't have a user account yet
+  .get('/system/users/unlinked_persons', async ({ cookie }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.USERS_VIEW);
+    if (!perm) return { error: 'no_permission' };
+
+    // Unlinked Students
+    const unlinked_students = await db.selectFrom('persons')
+      .innerJoin('students', 'students.person_id', 'persons.person_id')
+      .innerJoin('classes', 'classes.class_id', 'students.class_id')
+      .innerJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
+      .leftJoin('users', 'users.person_id', 'persons.person_id')
+      .select([
+        'persons.person_id',
+        'persons.first_name',
+        'persons.last_name',
+        sql<string>`'student'`.as('suggested_role')
+      ])
+      .where('scopes.school_id', '=', user.school_id)
+      .where('users.user_id', 'is', null)
+      .execute();
+
+    // Unlinked Teachers/Staff
+    const unlinked_teachers = await db.selectFrom('persons')
+      .innerJoin('teachers', 'teachers.person_id', 'persons.person_id')
+      .leftJoin('users', 'users.person_id', 'persons.person_id')
+      .select([
+        'persons.person_id',
+        'persons.first_name',
+        'persons.last_name',
+        sql<string>`'teacher'`.as('suggested_role')
+      ])
+      .where('teachers.school_id', '=', user.school_id)
+      .where('users.user_id', 'is', null)
+      .execute();
+
+    // Unlinked Parents
+    const unlinked_parents = await db.selectFrom('persons')
+      .innerJoin('family_relations', 'family_relations.target_id', 'persons.person_id')
+      .innerJoin('students', 'students.person_id', 'family_relations.source_id')
+      .innerJoin('classes', 'classes.class_id', 'students.class_id')
+      .innerJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
+      .leftJoin('users', 'users.person_id', 'persons.person_id')
+      .select([
+        'persons.person_id',
+        'persons.first_name',
+        'persons.last_name',
+        sql<string>`'parent'`.as('suggested_role')
+      ])
+      .where('scopes.school_id', '=', user.school_id)
+      .where('users.user_id', 'is', null)
+      .execute();
+
+    // Deduplicate (person might be a parent and a teacher, etc.)
+    const all = [...unlinked_students, ...unlinked_teachers, ...unlinked_parents];
+    const unique = Array.from(new Map(all.map(item => [item.person_id, item])).values());
+
+    return Response.json({ success: true, data: unique });
+  })
+
+  // POST /system/users - Create a new user or link an existing person
+  .post('/system/users', async ({ cookie, body }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.USERS_EDIT);
+    if (!perm) return { error: 'no_permission' };
+
+    const { mode, person_id, username, password, role, first_name, last_name, email, class_id, is_distance, employee_number, cabinet_id, contract_type, hours_per_week } = body;
+
+
+    // Validation
+    if (!username || username.length < 3) return Response.json({ error: 'invalid_username' }, { status: 400 });
+    if (!password || password.length < 8) return Response.json({ error: 'password_too_short' }, { status: 400 });
+
+    const existing = await db.selectFrom('users').select('user_id').where('username', '=', username).executeTakeFirst();
+    if (existing) return Response.json({ error: 'username_exists' }, { status: 400 });
+
+    try {
+      return await db.transaction().execute(async (trx) => {
+        let pId = person_id;
+
+        if (mode === 'new') {
+          // Create new person
+          const personResult = await trx.insertInto('persons')
+            .values({
+              first_name: first_name || '',
+              last_name: last_name || '',
+              gender: 0
+            } as any)
+            .executeTakeFirstOrThrow();
+          pId = Number(personResult.insertId);
+
+          if (email) {
+            await trx.insertInto('emails')
+              .values({
+                person_id: pId,
+                email,
+                type: 'school',
+                is_verified: true,
+                description: 'Hlavní email'
+              } as any)
+              .execute();
+          }
+
+          // Create student/teacher record if needed
+          if (role === 'student' && class_id) {
+            await trx.insertInto('students')
+              .values({
+                person_id: pId,
+                class_id,
+                status: 'active',
+                abroad: is_distance ? 1 : 0
+              } as any)
+              .execute();
+          } else if (role === 'teacher' || role === 'management' || role === 'admin_staff') {
+            await trx.insertInto('teachers')
+              .values({
+                person_id: pId,
+                school_id: user.school_id,
+                role: (role === 'teacher' || role === 'management' || role === 'admin_staff') ? role : 'teacher',
+                status: 'active',
+                employee_number: employee_number || null,
+                cabinet_id: cabinet_id || null,
+                contract_type: contract_type || 'fulltime',
+                hours_per_week: hours_per_week || 40
+              } as any)
+              .execute();
+          }
+
+        } else {
+          // Mode import: person_id must be provided
+          if (!pId) return Response.json({ error: 'missing_person_id' }, { status: 400 });
+          
+          // Verify person exists and is not already linked
+          const personCheck = await trx.selectFrom('users').select('user_id').where('person_id', '=', pId).executeTakeFirst();
+          if (personCheck) return Response.json({ error: 'person_already_linked' }, { status: 400 });
+        }
+
+        // Hash and save password
+        const bcrypt = await import('bcryptjs');
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const passwordResult = await trx.insertInto('passwords')
+          .values({ password: hashedPassword })
+          .executeTakeFirstOrThrow();
+
+        // Create user
+        const userResult = await trx.insertInto('users')
+          .values({
+            username,
+            person_id: pId,
+            school_id: user.school_id,
+            role,
+            login_type: 'local',
+            password_id: Number(passwordResult.insertId),
+            locale: 'cs',
+            theme: 0
+          } as any)
+          .executeTakeFirstOrThrow();
+
+        return { success: true, user_id: Number(userResult.insertId) };
+      });
+    } catch (err: any) {
+      console.error('User creation error:', err);
+      return Response.json({ error: 'db_error', details: err.message }, { status: 500 });
+    }
+  }, {
+    body: t.Object({
+      mode: t.Union([t.Literal('new'), t.Literal('import')]),
+      person_id: t.Optional(t.Number()),
+      username: t.String(),
+      password: t.String(),
+      role: t.String(),
+      first_name: t.Optional(t.String()),
+      last_name: t.Optional(t.String()),
+      email: t.Optional(t.String()),
+      class_id: t.Optional(t.Number()),
+      is_distance: t.Optional(t.Boolean()),
+      employee_number: t.Optional(t.String()),
+      cabinet_id: t.Optional(t.Union([t.Number(), t.Null()])),
+      contract_type: t.Optional(t.String()),
+      hours_per_week: t.Optional(t.Number())
+    })
+
+  })
+
+
   // GET /system/users/ldap_unimported - Get unimported LDAP users
   .get('/system/users/ldap_unimported', async ({ cookie }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);

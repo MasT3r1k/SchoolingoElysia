@@ -59,6 +59,7 @@ const app = new Elysia()
             .select(['person_id', 'role'])
             .where('status', '=', 'active')
             .where('role', 'in', ['management', 'admin_staff'])
+            .where('person_id', '!=', auth.person_id)
             .execute();
         
         if (staff.length > 0) {
@@ -74,11 +75,35 @@ const app = new Elysia()
 
     // B. TEACHERS ALL
     if (allowedTargets.includes('teacher')) {
-        const teachers = await db.selectFrom('teachers')
+        let teacherIds: number[] = [];
+        
+        if (body.child_id && body.message_type === 2) {
+            // Get ONLY class teacher for excuses
+            const classTeacher = await db.selectFrom('students')
+                .innerJoin('classes', 'classes.class_id', 'students.class_id')
+                .select('classes.teacher_id')
+                .where('students.person_id', '=', body.child_id)
+                .executeTakeFirst();
+            
+            if (classTeacher?.teacher_id) {
+                teacherIds.push(classTeacher.teacher_id);
+            }
+        }
+
+        let teachersQuery = db.selectFrom('teachers')
             .select(['person_id', 'role'])
             .where('status', '=', 'active')
             .where('role', '=', 'teacher')
-            .execute();
+            .where('person_id', '!=', auth.person_id);
+
+        if (teacherIds.length > 0) {
+            teachersQuery = teachersQuery.where('person_id', 'in', teacherIds);
+        } else if (body.child_id && body.message_type === 2) {
+            // If it's an excuse but no class teacher found, return empty to avoid sending to all teachers
+            teachersQuery = teachersQuery.where('person_id', '=', -1);
+        }
+
+        const teachers = await teachersQuery.execute();
             
         if (teachers.length > 0) {
             const ids = teachers.map(t => t.person_id);
@@ -110,6 +135,7 @@ const app = new Elysia()
             .select(['students.person_id'])
             .where('timetable.teacher_id', '=', auth.person_id)
             .where('students.status', '=', 'active')
+            .where('students.person_id', '!=', auth.person_id)
             .execute();
 
         const ids = [...new Set(myStudents.map(s => s.person_id))];
@@ -130,6 +156,7 @@ const app = new Elysia()
             .leftJoin('school_years as sy', 'sy.sy_id', 'classes.year_id')
             .select(['students.person_id', 'classes.class_id', 'classes.prefix', 'classes.suffix', 'sy.start as sy_start'])
             .where('students.status', '=', 'active')
+            .where('students.person_id', '!=', auth.person_id)
             .execute();
 
         if (students.length > 0) {
@@ -310,7 +337,8 @@ const app = new Elysia()
     return result;
   }, {
     body: t.Object({
-      message_type: t.Optional(t.Number())
+      message_type: t.Optional(t.Number()),
+      child_id: t.Optional(t.Number())
     }),
   });
 

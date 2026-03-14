@@ -1,30 +1,26 @@
-/**
- * Notification Broadcaster
- * Sends real-time notifications to users via WebSocket and Web Push
- */
-
 import { wsClientManager } from './ws-client-manager';
 import { db } from '../../database';
 import webpush from 'web-push';
+import { MainConfig } from '../config/main.config';
 
 // Notification types
 export type NotificationType = 
-    | 'grade_new'
-    | 'homework_new'
-    | 'message_new'
-    | 'absence_new'
-    | 'substitution_new'
-    | 'reward_new'
-    | 'schedule_change'
+    | 'new_grade'
+    | 'new_homework'
+    | 'new_message'
+    | 'new_absence'
+    | 'new_login'
+    | 'new_substitution'
+    | 'new_reward'
     | 'announcement'
     | 'leave_reaction'
     | 'leave_request'
     | 'leave_balance_low';
 
 export interface NotificationPayload {
-    type: NotificationType;
-    title: string;
-    body: string;
+    type: string;
+    title?: string;
+    body?: string;
     data?: Record<string, any>;
     url?: string;
     icon?: string;
@@ -40,7 +36,7 @@ if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
     webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 }
 
-class NotificationBroadcaster {
+class NotificationService {
     /**
      * Send notification to a specific user
      */
@@ -61,8 +57,12 @@ class NotificationBroadcaster {
             .where('type', '=', notification.type)
             .executeTakeFirst();
 
-        if (!rule?.enabled) {
-            return; // User has disabled this notification type
+        const isEnabledByDefault = MainConfig.DEFAULT_NOTIFICATION.includes(notification.type as any);
+        
+        if (rule) {
+            if (!rule.enabled) return; // User explicitly disabled
+        } else if (!isEnabledByDefault) {
+            return; // Not enabled by default and no rule
         }
 
         // 3. Send push notification if user has subscriptions and is offline
@@ -92,6 +92,111 @@ class NotificationBroadcaster {
     }
 
     /**
+     * Send a notification by type (Generic entry point)
+     */
+    async sendNotification(type: string, user_id: number, data: any): Promise<void> {
+        let payload: NotificationPayload | null = null;
+
+        switch (type) {
+            case 'new_grade':
+            case 'grade_new':
+                payload = {
+                    type,
+                    data: data,
+                    url: '/marks/interm',
+                    icon: 'star'
+                };
+                break;
+            case 'new_homework':
+            case 'homework_new':
+                payload = {
+                    type,
+                    data: data,
+                    url: '/teach/homeworks',
+                    icon: 'book-2'
+                };
+                break;
+            case 'new_message':
+            case 'message_new':
+                payload = {
+                    type,
+                    data: data,
+                    url: `/messages/received?id=${data.messageId}`,
+                    icon: 'message'
+                };
+                break;
+            case 'new_absence':
+            case 'absence_new':
+                payload = {
+                    type,
+                    data: data,
+                    url: '/teach/absence',
+                    icon: 'calendar-x'
+                };
+                break;
+            case 'new_substitution':
+            case 'substitution_new':
+                payload = {
+                    type,
+                    data: data,
+                    url: '/teach/timetable',
+                    icon: 'calendar-event'
+                };
+                break;
+            case 'new_reward':
+            case 'reward_new':
+                payload = {
+                    type,
+                    data: data,
+                    url: '/teach/rewards',
+                    icon: 'trophy'
+                };
+                break;
+            case 'leave_reaction':
+                payload = {
+                    type,
+                    data: data,
+                    url: '/teach/leave',
+                    icon: data.status === 'approved' ? 'check' : 'x'
+                };
+                break;
+            case 'leave_request':
+                payload = {
+                    type,
+                    data: data,
+                    url: `/system/employees/vacations?id=${data.requestId}`,
+                    icon: 'file-text'
+                };
+                break;
+            case 'leave_balance_low':
+                payload = {
+                    type,
+                    data: data,
+                    url: '/teach/leave',
+                    icon: 'alert-triangle'
+                };
+                break;
+            case 'announcement':
+                payload = {
+                    type,
+                    data: data,
+                    url: data.url,
+                    icon: 'bullhorn'
+                };
+                break;
+            default:
+                payload = {
+                    type,
+                    data: data
+                }
+        }
+
+        if (payload) {
+            await this.sendToUser(user_id, payload);
+        }
+    }
+
+    /**
      * Send notification when a new grade is added
      */
     async notifyNewGrade(studentuser_id: number, data: {
@@ -101,14 +206,7 @@ class NotificationBroadcaster {
         topic?: string;
         teacherName: string;
     }): Promise<void> {
-        await this.sendToUser(studentuser_id, {
-            type: 'grade_new',
-            title: 'Nová známka',
-            body: `${data.subject}: ${data.grade} (váha ${data.weight})${data.topic ? ` - ${data.topic}` : ''}`,
-            data: data,
-            url: '/marks/interm',
-            icon: 'star'
-        });
+        await this.sendNotification('new_grade', studentuser_id, data);
     }
 
     /**
@@ -120,15 +218,7 @@ class NotificationBroadcaster {
         dueDate: Date;
         teacherName: string;
     }): Promise<void> {
-        const notification: NotificationPayload = {
-            type: 'homework_new',
-            title: 'Nový domácí úkol',
-            body: `${data.subject}: ${data.title} (termín: ${data.dueDate.toLocaleDateString('cs-CZ')})`,
-            data: data,
-            url: '/teach/homeworks',
-            icon: 'book-2'
-        };
-        await this.sendToUsers(studentUserIds, notification);
+        await Promise.all(studentUserIds.map(userId => this.sendNotification('new_homework', userId, data)));
     }
 
     /**
@@ -140,14 +230,7 @@ class NotificationBroadcaster {
         preview?: string;
         messageId: number;
     }): Promise<void> {
-        await this.sendToUser(recipientuser_id, {
-            type: 'message_new',
-            title: `Zpráva od ${data.senderName}`,
-            body: data.subject,
-            data: data,
-            url: `/messages/received?id=${data.messageId}`,
-            icon: 'message'
-        });
+        await this.sendNotification('new_message', recipientuser_id, data);
     }
 
     /**
@@ -158,17 +241,9 @@ class NotificationBroadcaster {
         hours: number;
         type: 'unexcused' | 'excused' | 'late';
     }): Promise<void> {
-        const notification: NotificationPayload = {
-            type: 'absence_new',
-            title: 'Nová absence',
-            body: `${data.date.toLocaleDateString('cs-CZ')}: ${data.hours} hodin (${data.type === 'unexcused' ? 'neomluveno' : data.type === 'excused' ? 'omluveno' : 'pozdní příchod'})`,
-            data: data,
-            url: '/teach/absence',
-            icon: 'calendar-x'
-        };
-        
-        await this.sendToUser(studentuser_id, notification);
-        await this.sendToUsers(parentUserIds, notification);
+        const enrichedData = { ...data, absenceType: data.type };
+        await this.sendNotification('new_absence', studentuser_id, enrichedData);
+        await Promise.all(parentUserIds.map(userId => this.sendNotification('new_absence', userId, enrichedData)));
     }
 
     /**
@@ -181,27 +256,7 @@ class NotificationBroadcaster {
         changeType: 'cancelled' | 'substitution' | 'room_change';
         description?: string;
     }): Promise<void> {
-        let body = '';
-        switch (data.changeType) {
-            case 'cancelled':
-                body = `${data.date.toLocaleDateString('cs-CZ')}: ${data.originalSubject} - hodina zrušena`;
-                break;
-            case 'substitution':
-                body = `${data.date.toLocaleDateString('cs-CZ')}: ${data.originalSubject} → ${data.newSubject}`;
-                break;
-            case 'room_change':
-                body = `${data.date.toLocaleDateString('cs-CZ')}: ${data.originalSubject} - ${data.description}`;
-                break;
-        }
-
-        await this.sendToUsers(userIds, {
-            type: 'schedule_change',
-            title: 'Změna rozvrhu',
-            body,
-            data: data,
-            url: '/teach/timetable',
-            icon: 'calendar-event'
-        });
+        await Promise.all(userIds.map(userId => this.sendNotification('new_substitution', userId, data)));
     }
 
     /**
@@ -212,14 +267,7 @@ class NotificationBroadcaster {
         type: 'financial' | 'certificate' | 'prize' | 'other';
         amount?: number;
     }): Promise<void> {
-        await this.sendToUser(studentuser_id, {
-            type: 'reward_new',
-            title: 'Nová odměna',
-            body: data.amount ? `${data.title} - ${data.amount} Kč` : data.title,
-            data: data,
-            url: '/teach/rewards',
-            icon: 'trophy'
-        });
+        await this.sendNotification('new_reward', studentuser_id, data);
     }
 
     /**
@@ -232,14 +280,7 @@ class NotificationBroadcaster {
         approverName: string;
         comment?: string;
     }): Promise<void> {
-        await this.sendToUser(teacheruser_id, {
-            type: 'leave_reaction',
-            title: `Dovolená ${data.status === 'approved' ? 'schválena' : 'zamítnuta'}`,
-            body: `${data.startDate.toLocaleDateString('cs-CZ')} - ${data.endDate.toLocaleDateString('cs-CZ')}${data.comment ? `: ${data.comment}` : ''}`,
-            data: data,
-            url: '/teach/leave',
-            icon: data.status === 'approved' ? 'check' : 'x'
-        });
+        await this.sendNotification('leave_reaction', teacheruser_id, data);
     }
 
     /**
@@ -251,14 +292,7 @@ class NotificationBroadcaster {
         endDate: Date;
         requestId: number;
     }): Promise<void> {
-        await this.sendToUsers(recipientUserIds, {
-            type: 'leave_request',
-            title: 'Nová žádost o dovolenou',
-            body: `${data.employeeName}: ${data.startDate.toLocaleDateString('cs-CZ')} - ${data.endDate.toLocaleDateString('cs-CZ')}`,
-            data: data,
-            url: `/system/employees/vacations?id=${data.requestId}`,
-            icon: 'file-text'
-        });
+        await Promise.all(recipientUserIds.map(userId => this.sendNotification('leave_request', userId, data)));
     }
 
     /**
@@ -268,14 +302,7 @@ class NotificationBroadcaster {
         balance: number;
         threshold: number;
     }): Promise<void> {
-        await this.sendToUser(user_id, {
-            type: 'leave_balance_low',
-            title: 'Nízký zůstatek dovolené',
-            body: `Váš zůstatek dovolené klesl na ${data.balance} dní. (Limit: ${data.threshold})`,
-            data: data,
-            url: '/teach/leave',
-            icon: 'alert-triangle'
-        });
+        await this.sendNotification('leave_balance_low', user_id, data);
     }
 
     /**
@@ -294,8 +321,8 @@ class NotificationBroadcaster {
                 .execute();
 
             const pushPayload = JSON.stringify({
-                title: notification.title,
-                body: notification.body,
+                title: notification.title || notification.type,
+                body: notification.body || '',
                 icon: notification.icon || '/assets/logo/logo-48.png',
                 badge: '/assets/logo/logo-48.png',
                 url: notification.url,
@@ -338,9 +365,9 @@ class NotificationBroadcaster {
                     user_id,
                     type: notification.type,
                     data: JSON.stringify({
+                        ...notification.data,
                         title: notification.title,
-                        body: notification.body,
-                        ...notification.data
+                        body: notification.body
                     })
                     // read_at and created_at are auto-generated
                 })
@@ -351,4 +378,4 @@ class NotificationBroadcaster {
     }
 }
 
-export const notificationBroadcaster = new NotificationBroadcaster();
+export const notificationService = new NotificationService();

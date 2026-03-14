@@ -152,7 +152,7 @@ const salariesRouter = new Elysia()
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SALARIES_VIEW);
-    if (!perm) return { error: 'no_permission' };
+    if (!perm && params.employeeId != user.person_id) return { error: 'no_permission' };
     // Check if salaries are enabled
     if (!school.employee_salaries_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });

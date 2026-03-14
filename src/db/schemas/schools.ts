@@ -56,4 +56,13 @@ export interface schoolsTable {
   employee_vacation_requests_enabled: number;
   employee_attendance_enabled: number;
   employee_salaries_enabled: number;
+  // Module settings
+  documents_enabled: number;
+  traineeship_enabled: number;
+  online_enabled: number;
+  noticeboard_student_enabled: number;
+  noticeboard_teacher_enabled: number;
+  tests_enabled: number;
+  rewards_enabled: number;
+  demo_enabled: number;
 }

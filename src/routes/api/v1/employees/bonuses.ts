@@ -127,7 +127,7 @@ const bonusesRouter = new Elysia()
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_MANAGE);
-    if (!perm) return { error: 'no_permission' };
+    if (!perm && user.person_id != params.id) return { error: 'no_permission' };
     const bonusId = parseInt(params.id);
     
 
@@ -154,7 +154,7 @@ const bonusesRouter = new Elysia()
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_MANAGE);
-    if (!perm) return { error: 'no_permission' };
+    if (!perm && user.person_id != params.id) return { error: 'no_permission' };
     const bonusId = parseInt(params.id);
     
 
@@ -173,7 +173,7 @@ const bonusesRouter = new Elysia()
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_MANAGE);
-    if (!perm) return { error: 'no_permission' };
+    if (!perm && user.person_id != params.id) return { error: 'no_permission' };
     const bonusId = parseInt(params.id);
     
 

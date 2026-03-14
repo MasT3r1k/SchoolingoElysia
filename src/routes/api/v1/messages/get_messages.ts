@@ -36,7 +36,7 @@ const app = new Elysia()
         'messages_receivers.confirmed_at'
       ])
       .groupBy('messages.message_id')
-      .where('messages.type', '=', 0)
+      .where('messages.type', 'not in', [1])
 
     if (query.receiver_id) {
       baseQuery = baseQuery.where('messages_receivers.receiver_id', '=', query.receiver_id);

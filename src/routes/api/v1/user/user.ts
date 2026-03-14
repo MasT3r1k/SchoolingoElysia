@@ -209,5 +209,43 @@ const app = new Elysia()
 
     return createResponse(user, cookie);
   })
+  .get('/user/avatar-history', async ({ cookie, query }) => {
+      const token = cookie.token?.value as string;
+      if (!token) {
+        return createErrorResponse('no_user', 'no_cookie');
+      }
+
+      const user = await db.selectFrom("tokens")
+        .select('user_id')
+        .where('token', '=', token)
+        .where('expires', '>=', moment().toDate())
+        .executeTakeFirst();
+
+      if (!user) {
+        return createErrorResponse('no_user', 'no_db');
+      }
+
+      const limit = query.limit && !isNaN(Number(query.limit)) ? Math.min(Math.max(Number(query.limit), 1), 50) : 10;
+
+      const history = await db.selectFrom("avatar_history")
+        .select(['avatar', 'created_at'])
+        .where('user_id', '=', user.user_id)
+        .orderBy('created_at', 'desc')
+        .limit(limit)
+        .execute();
+
+      const parsedHistory = history.map(h => {
+          try {
+              return {
+                  avatar: typeof h.avatar === 'string' ? JSON.parse(h.avatar) : h.avatar,
+                  created_at: h.created_at
+              };
+          } catch (e) {
+              return null;
+          }
+      }).filter(h => h !== null);
+
+      return createResponse({ history: parsedHistory }, cookie);
+  })
 
 export default app;

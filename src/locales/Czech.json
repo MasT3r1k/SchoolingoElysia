@@ -238,6 +238,11 @@
         "behind_count": "Pozadu o %count% verzí",
         "system_update_loading": "Načítám informace o nejnovější verzi.",
         "system_error_loading_version": "Nastala nečekaná chyba při načítání verze systému.",
+        "update_button": "Aktualizovat nyní",
+        "update_later": "Aktualizovat později",
+        "update_title": "Aktualizace systému",
+        "new_version": "Nová verze",
+        "current_version": "Aktuální verze",
         "system_has_valid_license": "Škola má platnou licenci systému!",
         "activated": "Aktivováno",
         "deactivated": "Deaktivováno",
@@ -574,7 +579,27 @@
     "notifications": {
         "title": "Notifikace",
         "empty": "Žádné příchozí notifikace",
-        "mark_all_read": "Přečíst všechny oznámení"
+        "mark_all_read": "Přečíst všechny oznámení",
+        "message": {
+            "title": "Zpráva od %senderName%",
+            "description": "%subject%"
+        },
+        "new_login": {
+            "title": "Neznámé přihlášení",
+            "description": "Zaznamenali jsme nové přihlášení z neznámého zařízení ze %city%, %country_code%."
+        },
+        "new_grade": {
+            "title": "Nová známka",
+            "description": "Dostal jste novou známku %mark%."
+        },
+        "homework": {
+            "title": "Nový domácí úkol",
+            "description": "Byl přidán nový úkol z předmětu %subject%."
+        },
+        "reward": {
+            "title": "Nová odměna",
+            "description": "Za splněné aktivity máš novou odměnu."
+        }
     },
     "devices": {
         "current_device": "Aktuální připojení",
@@ -762,6 +787,8 @@
             "relationship": "Vztah ke studentovi"
         },
         "siblings": "Sourozenci",
+        "class_rank": "Pořadí v třídní knize",
+        "tk_rank": "%rank%. v TK",
         "register_number": "Číslo ve výkazu",
         "matrika_fields": {
             "title": "Školní matrika",
@@ -1247,6 +1274,10 @@
         "description": "Popisek",
         "no_marks": "Žádné známky",
         "no_marks_desc": "Nedostal jste ještě žádnou známku",
+        "empty": {
+            "title": "Zatím žádné známky",
+            "description": "Vypadá to, že žák zatím nemá v tomto období zapsané žádné známky."
+        },
         "interm": {
             "by_subjects": "Podle předmětů",
             "chronologically": "Chronologicky",
@@ -1366,6 +1397,13 @@
         "topic": "Titulek",
         "receiver": "Příjemce zprávy",
         "target_groups": "Cílové třídy",
+        "seen_by": "Vidělo",
+        "confirmed_by": "Potvrdilo",
+        "recipients_list": "Seznam příjemců",
+        "read_at": "Přečteno",
+        "confirmed_at": "Potvrzeno",
+        "not_read_yet": "Dosud nepřečteno",
+        "not_confirmed_yet": "Dosud nepotvrzeno",
         "student": "Žák",
         "search_messages": "Vyhledat podle autora",
         "findreceiver": "Vyhledejte jméno přijemce",
@@ -1385,6 +1423,9 @@
         "no_receivers": "Žádní uživatelé k dispozici.",
         "selected_receivers": "Vybraní příjemci:",
         "no_selected_receivers": "Nemáte vybrané žádné příjemce.",
+        "select_all": "Vybrat vše",
+        "deselect_all": "Odebrat vše",
+        "add_group_members": "Vložit členy skupiny",
         "hide_selected_receivers": "Vybrat další příjemce (%count%)",
         "show_selected_receivers": "Zobrazit vybrané příjemce (%count%)",
         "file_limit_info": "Máte vybráno %count% souborů z %limit%.",
@@ -1405,6 +1446,7 @@
             "empty": "Nemáte žádné domácí úkoly",
             "not_selected": "Není vybraný žádný domácí úkol. Nejprve prosím vyberte úkol, abychom mohli zobrazit příjemce zprávy."
         },
+        "sent": "Zpráva byla úspěšně odeslána",
         "receivers": {
             "all_selected_noticeboard": "Zpráva se zobrazí na nástěnce všem",
             "from_class": "z %class%",
@@ -1417,6 +1459,7 @@
         },
         "copy_classteacher": "Kopie třídnímu učiteli",
         "copy_parents": "Kopie rodičům",
+        "copy_student": "Kopie žákovi",
         "as_principal": "Jako ředitel",
         "to_all": "Všem",
         "sus_error": "Nastala nějaká podivná chyba, klikni pro obnovení na základní typ",
@@ -1463,6 +1506,8 @@
         }
     },
     "settings": {
+
+
         "alerts": {
             "change_password_warning": "Změněním hesla se automaticky odhlásíte ze všech přihlášených zařízení, kromě tohoto zařízení!"
         },
@@ -1585,7 +1630,21 @@
                 "success_title": "Smázano!",
                 "success_description": "Úspěšně jste smazal passkey %passkey%."
             }
+        },
+        "avatar": "Nastavení avatara",
+        "avatar_settings": {
+            "description": "Zde si můžete upravit svůj avatar, který se zobrazuje v celém systému.",
+            "preview": "Náhled",
+            "history": "Historie avatarů",
+            "random": "Náhodné návrhy",
+            "error": "Nastala chyba při ukládání avatara",
+            "seed": "Semínko (Seed)",
+            "save_seed": "Uložit seed",
+            "seed_hint": "Seed slouží ke generování unikátního vzhledu. Můžete zadat své jméno, přezdívku nebo libovolný text.",
+            "variant": "Varianta %number%"
         }
+
+
     },
     "timetable": {
         "this_week": "Tento týden",

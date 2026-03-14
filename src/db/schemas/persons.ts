@@ -11,4 +11,6 @@ export interface Persons {
   address_id: Generated<number | null>
   insurance_id: Generated<number | null>
   nationality_id: Generated<number | null>
+  data_box: string | null
+  avatar: string | null
 }

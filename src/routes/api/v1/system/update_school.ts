@@ -19,7 +19,8 @@ const app = new Elysia()
       modules,
       gdpr_firstname, gdpr_lastname, gdpr_phone, gdpr_email, gdpr_mobile, gdpr_databox, gdpr_web,
       msg_max_length, msg_attachments_max_count, msg_attachments_max_size, msg_type_private_active, msg_type_official_active, msg_type_noticeboard_active, noticeboard_max_length,
-      employee_vacation_days_default, employee_vacation_requests_enabled, employee_attendance_enabled, employee_salaries_enabled
+      employee_vacation_days_default, employee_vacation_requests_enabled, employee_attendance_enabled, employee_salaries_enabled,
+      documents_enabled, traineeship_enabled, online_enabled, noticeboard_student_enabled, noticeboard_teacher_enabled, tests_enabled, rewards_enabled, demo_enabled
     } = body;
 
     // Parse lesson_start (HH:MM) to hours and minutes
@@ -72,7 +73,15 @@ const app = new Elysia()
         employee_vacation_days_default: employee_vacation_days_default ?? 25,
         employee_vacation_requests_enabled: employee_vacation_requests_enabled ? 1 : 0,
         employee_attendance_enabled: employee_attendance_enabled ? 1 : 0,
-        employee_salaries_enabled: employee_salaries_enabled ? 1 : 0
+        employee_salaries_enabled: employee_salaries_enabled ? 1 : 0,
+        documents_enabled: documents_enabled ? 1 : 0,
+        traineeship_enabled: traineeship_enabled ? 1 : 0,
+        online_enabled: online_enabled ? 1 : 0,
+        noticeboard_student_enabled: noticeboard_student_enabled ? 1 : 0,
+        noticeboard_teacher_enabled: noticeboard_teacher_enabled ? 1 : 0,
+        tests_enabled: tests_enabled ? 1 : 0,
+        rewards_enabled: rewards_enabled ? 1 : 0,
+        demo_enabled: demo_enabled ? 1 : 0
       })
       .where('school_id', '=', school.school_id)
       .execute();
@@ -113,7 +122,15 @@ const app = new Elysia()
       employee_vacation_days_default: t.Optional(t.Number()),
       employee_vacation_requests_enabled: t.Optional(t.Boolean()),
       employee_attendance_enabled: t.Optional(t.Boolean()),
-      employee_salaries_enabled: t.Optional(t.Boolean())
+      employee_salaries_enabled: t.Optional(t.Boolean()),
+      documents_enabled: t.Optional(t.Boolean()),
+      traineeship_enabled: t.Optional(t.Boolean()),
+      online_enabled: t.Optional(t.Boolean()),
+      noticeboard_student_enabled: t.Optional(t.Boolean()),
+      noticeboard_teacher_enabled: t.Optional(t.Boolean()),
+      tests_enabled: t.Optional(t.Boolean()),
+      rewards_enabled: t.Optional(t.Boolean()),
+      demo_enabled: t.Optional(t.Boolean())
     })
   });
 

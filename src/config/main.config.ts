@@ -69,5 +69,5 @@ export const MainConfig = MainConfigSchema.parse({
 
   MARKING_SCALE: [90, 75, 60, 45],
 
-  DEFAULT_NOTIFICATION: ["new_grade"]
+  DEFAULT_NOTIFICATION: ["grade_new", "homework_new", "message_new", "absence_new", "substitution_new", "announcement"]
 });

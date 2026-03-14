@@ -65,6 +65,37 @@ const app = new Elysia()
 
                 return Response.json({ status: true });
             
+            case "UPDATE_AVATAR":
+                const { avatar } = body;
+                if (!avatar) {
+                    return Response.json({ error: 'no_avatar' });
+                }
+
+                try {
+                    const avatarStr = JSON.stringify(avatar);
+                    await db.updateTable("users")
+                    .set({ avatar: avatarStr })
+                    .where('user_id', '=', user.user_id)
+                    .execute();
+
+                    // Remove existing entry to move it to top
+                    await db.deleteFrom("avatar_history")
+                    .where('user_id', '=', user.user_id)
+                    .where('avatar', '=', avatarStr)
+                    .execute();
+
+                    await db.insertInto("avatar_history")
+                    .values({
+                        user_id: user.user_id,
+                        avatar: avatarStr
+                    })
+                    .execute();
+
+                    return Response.json({ status: true });
+                } catch(e) {
+                    console.error(e);
+                    return Response.json({ error: 'db_error' });
+                }
 
             default:
                 return Response.json({ error: 'no_method' });
@@ -73,7 +104,8 @@ const app = new Elysia()
         body: t.Object({
             method: t.Optional(t.String()),
             theme: t.Optional(t.Number()),
-            language: t.Optional(t.String())
+            language: t.Optional(t.String()),
+            avatar: t.Optional(t.Any())
         }),
     })
 
