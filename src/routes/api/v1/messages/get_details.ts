@@ -24,6 +24,7 @@ const app = new Elysia()
     const message = await db
         .selectFrom('messages')
         .leftJoin('persons', 'messages.author_id', 'persons.person_id')
+        .leftJoin('users', 'users.person_id', 'persons.person_id')
         .select([
             'messages.message_id',
             'messages.topic',
@@ -34,6 +35,7 @@ const app = new Elysia()
             'messages.sent_at',
             'messages.deleted',
             'messages.require_confirm',
+            'users.avatar'
         ])
         .where('messages.message_id', '=', messageId)
         .executeTakeFirst();
@@ -45,6 +47,7 @@ const app = new Elysia()
     const receivers = await db
         .selectFrom('messages_receivers')
         .innerJoin('persons', 'messages_receivers.receiver_id', 'persons.person_id')
+        .leftJoin('users', 'users.person_id', 'persons.person_id')
         .leftJoin('students', 'persons.person_id', 'students.person_id')
         .leftJoin('classes', 'students.class_id', 'classes.class_id')
         .leftJoin('student_groups', 'students.person_id', 'student_groups.student_id')
@@ -55,7 +58,8 @@ const app = new Elysia()
             'persons.last_name',
             sql`concat(classes.prefix, TIMESTAMPDIFF(YEAR, school_years.start, CURDATE()) + 1, classes.suffix)`.as('className'),
             'messages_receivers.read_at',
-            'messages_receivers.confirmed_at'
+            'messages_receivers.confirmed_at',
+            'users.avatar'
         ])
         .where('messages_receivers.message_id', '=', messageId)
         .execute();
@@ -82,7 +86,8 @@ const app = new Elysia()
                 lastName: r.last_name,
                 groupName: primaryGroup, 
                 read_at: r.read_at,
-                confirmed_at: r.confirmed_at
+                confirmed_at: r.confirmed_at,
+                avatar: r.avatar
             });
         }
     });
@@ -102,7 +107,8 @@ const app = new Elysia()
         author: {
             first_name: message.first_name,
             last_name: message.last_name,
-            full_name: authorName
+            full_name: authorName,
+            avatar: message.avatar
         },
         receivers: formattedReceivers,
         target_groups: uniqueClasses

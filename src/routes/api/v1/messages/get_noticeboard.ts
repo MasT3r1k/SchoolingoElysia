@@ -39,6 +39,7 @@ const app = new Elysia()
         'messages.require_confirm',
         'messages_receivers.read_at',
         'messages_receivers.confirmed_at',
+        'author_user.avatar'
     ])
     .where('messages.type', '=', 1)
     .offset(query.offset || 0)
@@ -55,7 +56,8 @@ const app = new Elysia()
         author: {
             first_name: message.first_name,
             last_name: message.last_name,
-            full_name: people.get(message.author_id)
+            full_name: people.get(message.author_id),
+            avatar: message.avatar
         }
     }))
 

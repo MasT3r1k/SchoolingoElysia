@@ -42,12 +42,14 @@ const app = new Elysia()
         if (messageIds.length > 0) {
             allRecipients = await db
                 .selectFrom('messages_receivers')
-                .leftJoin('persons', 'persons.person_id', 'messages_receivers.receiver_id')
+                .innerJoin('persons', 'persons.person_id', 'messages_receivers.receiver_id')
+                .leftJoin('users', 'users.person_id', 'persons.person_id')
                 .select([
                     'messages_receivers.message_id', 
-                    'persons.personId as person',
-                    sql<string>`concat(persons.first_name, ' ', persons.lastName)`.as('name'),
-                    'messages_receivers.read_at' 
+                    'persons.person_id as person',
+                    sql<string>`concat(persons.first_name, ' ', persons.last_name)`.as('name'),
+                    'messages_receivers.read_at',
+                    'users.avatar'
                 ])
                 .where('messages_receivers.message_id', 'in', messageIds)
                 .execute()
@@ -112,11 +114,13 @@ const app = new Elysia()
         // Get recipients with read status
         const recipients = await db
             .selectFrom('messages_receivers')
-            .leftJoin('persons', 'persons.person_id', 'messages_receivers.receiver_id')
+            .innerJoin('persons', 'persons.person_id', 'messages_receivers.receiver_id')
+            .leftJoin('users', 'users.person_id', 'persons.person_id')
             .select([
-                'persons.personId as person',
-                sql<string>`concat(persons.first_name, ' ', persons.lastName)`.as('name'),
-                'messages_receivers.read_at'
+                'persons.person_id as person',
+                sql<string>`concat(persons.first_name, ' ', persons.last_name)`.as('name'),
+                'messages_receivers.read_at',
+                'users.avatar'
             ])
             .where('messages_receivers.message_id', '=', messageId)
             .execute();

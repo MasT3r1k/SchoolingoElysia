@@ -29,6 +29,7 @@ const app = new Elysia()
     const messagesDB = await db.selectFrom('messages_receivers')
     .leftJoin('messages', 'messages.message_id', 'messages_receivers.message_id')
     .leftJoin('persons', 'messages.author_id', 'persons.person_id')
+    .leftJoin('users', 'users.person_id', 'persons.person_id')
     .select([
         'messages.message_id',
         'messages.topic',
@@ -40,7 +41,8 @@ const app = new Elysia()
         'messages.deleted',
         'messages.require_confirm',
         'messages_receivers.read_at',
-        'messages_receivers.confirmed_at'
+        'messages_receivers.confirmed_at',
+        'users.avatar'
     ])
     .where('messages.type', 'in', [0, 1, 2, 3])
     .where('messages_receivers.receiver_id', '=', auth.person_id)
@@ -58,7 +60,8 @@ const app = new Elysia()
         author: {
             first_name: message.first_name,
             last_name: message.last_name,
-            full_name: people.get(message.author_id as number)
+            full_name: people.get(message.author_id as number),
+            avatar: message.avatar
         }
     }))
 
