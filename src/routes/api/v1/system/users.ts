@@ -44,6 +44,7 @@ const app = new Elysia()
         'users.role',
         'persons.first_name',
         'persons.last_name',
+        'persons.avatar',
         'users.created_at',
         'users.updated_at',
         'login_history.created as last_login',
@@ -148,6 +149,7 @@ const app = new Elysia()
         'persons.person_id',
         'persons.first_name',
         'persons.last_name',
+        'persons.avatar',
         sql<string>`'student'`.as('suggested_role')
       ])
       .where('scopes.school_id', '=', user.school_id)
@@ -162,6 +164,7 @@ const app = new Elysia()
         'persons.person_id',
         'persons.first_name',
         'persons.last_name',
+        'persons.avatar',
         sql<string>`'teacher'`.as('suggested_role')
       ])
       .where('teachers.school_id', '=', user.school_id)
@@ -179,6 +182,7 @@ const app = new Elysia()
         'persons.person_id',
         'persons.first_name',
         'persons.last_name',
+        'persons.avatar',
         sql<string>`'parent'`.as('suggested_role')
       ])
       .where('scopes.school_id', '=', user.school_id)
@@ -473,6 +477,7 @@ const app = new Elysia()
         'users.updated_at',
         'persons.first_name',
         'persons.last_name',
+        'persons.avatar',
         'persons.birthday',
         'persons.gender',
         'login_history.created as last_login',

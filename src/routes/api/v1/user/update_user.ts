@@ -14,6 +14,7 @@ const app = new Elysia()
         .innerJoin('users', 'users.user_id', 'tokens.user_id')
         .select([
             'users.user_id',
+            'users.person_id',
             'users.username',
             'users.2fa',
             'users.2fa_activated',
@@ -77,6 +78,14 @@ const app = new Elysia()
                     .set({ avatar: avatarStr })
                     .where('user_id', '=', user.user_id)
                     .execute();
+
+                    // Also update persons table for consistency
+                    if (user.person_id) {
+                        await db.updateTable("persons")
+                        .set({ avatar: avatarStr })
+                        .where('person_id', '=', user.person_id)
+                        .execute();
+                    }
 
                     // Remove existing entry to move it to top
                     await db.deleteFrom("avatar_history")

@@ -323,6 +323,53 @@
             }
         }
     },
+    "education_measures": {
+        "title": "Výchovná opatření",
+        "new_measure": "Nové opatření",
+        "filter": "Filtr:",
+        "praise_count": "%count% pochval",
+        "other_count": "%count% ostatních",
+        "issued_by": "Udělil:",
+        "delete_tooltip": "Smazat",
+        "no_measures": "Žádná opatření",
+        "no_measures_hint": "Zatím nebyla udělena žádná výchovná opatření.",
+        "delete_confirm": "Opravdu chcete smazat toto opatření?",
+        "student": "Žák",
+        "select_student": "Vyber studenta",
+        "search_student_placeholder": "Hledat žáka podle jména",
+        "type": "Typ opatření",
+        "date": "Datum",
+        "reason": "Důvod",
+        "reason_placeholder": "Důvod pro udělení opatření...",
+        "note": "Poznámka",
+        "note_placeholder": "Volitelná poznámka",
+        "give_measure": "Udělit opatření",
+        "types": {
+            "all": "Všechny",
+            "praise": "Pochvala",
+            "reprimand": "Důtka",
+            "warning": "Napomenutí",
+            "reduced_behavior": "Snížená známka z chování",
+            "other": "Jiné"
+        },
+        "category": "Kategorie",
+        "categories": {
+            "positive": "Pozitivní",
+            "negative": "Negativní"
+        },
+        "severity": "Závažnost",
+        "severities": {
+            "low": "Nízká závažnost",
+            "medium": "Střední závažnost",
+            "high": "Vysoká závažnost"
+        },
+        "reduced_behavior_info": {
+            "select_student": "Vyberte žáka pro zobrazení podrobností",
+            "loading": "Probíhá načítání stavu známky z chování žáka",
+            "current_mark": "Tenhle student má známku z chování: %mark%",
+            "already_has_mark": "Tenhle student má již známku z chování: %mark%"
+        }
+    },
     "calendar": {
         "title": "%month%, %year%",
         "date": "Termín",
@@ -1641,7 +1688,8 @@
             "seed": "Semínko (Seed)",
             "save_seed": "Uložit seed",
             "seed_hint": "Seed slouží ke generování unikátního vzhledu. Můžete zadat své jméno, přezdívku nebo libovolný text.",
-            "variant": "Varianta %number%"
+            "variant": "Varianta %number%",
+            "style": "Styl avataru"
         }
 
 

@@ -255,6 +255,7 @@ const app = new Elysia()
       .where('teachers.school_id', '=', user.school_id)
       .select([
         'teachers.person_id as teacher_id',
+        'persons.avatar',
         sql`CONCAT(persons.first_name, ' ', persons.last_name)`.as('full_name'),
         sql`MAX(subjects.label)`.as('subject'),
         sql`0`.as('class_average'),
@@ -265,6 +266,7 @@ const app = new Elysia()
       .execute()
       .then(rows => rows.map(row => ({
         teacher_id: row.teacher_id,
+        avatar: row.avatar,
         full_name: row.full_name as string,
         subject: row.subject as string || 'N/A',
         class_average: Number(row.class_average),
@@ -336,12 +338,14 @@ const app = new Elysia()
     .leftJoin('users', 'users.person_id', 'risk_stats.person_id')
     .leftJoin('classes', 'classes.class_id', 'risk_stats.class_id')
     .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
+    .leftJoin('persons', 'persons.person_id', 'risk_stats.person_id')
     .where((eb) => eb.or([
         eb('users.school_id', '=', user.school_id),
         eb('scopes.school_id', '=', user.school_id)
     ]))
     .select([
         'risk_stats.person_id as student_id',
+        'persons.avatar',
         'risk_stats.absence_score',
         'risk_stats.grade_score',
         'risk_stats.risk_score',
@@ -361,6 +365,7 @@ const app = new Elysia()
             grade_score: student.grade_score,
             grade_average: student.avg_grade,
             risk_score: student.risk_score,
+            avatar: student.avatar,
             full_name: student_names.get(student.student_id)
         }));
     });
