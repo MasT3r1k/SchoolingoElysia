@@ -7,6 +7,14 @@ export interface Changelog {
 
 export const changelog: Changelog[] = [
     {
+        version: '1.0',
+        date: '17. 03. 2026',
+        type: 'major',
+        changes: [
+            'Aktualizace pro dlouhodobou maturitní zkoušku'
+        ]
+    },
+    {
         version: '2.3.9b',
         date: '16. 12. 2025',
         type: 'patch',

@@ -59,7 +59,7 @@ const app = new Elysia()
     /* 🔹 text zprávy */
     if (query.q) {
       baseQuery = baseQuery.where(
-        sql`LOWER(messages.message) LIKE ${'%' + query.q.toLowerCase() + '%'}`
+        sql`LOWER(messages.message) LIKE ${'%' + query.q.toLowerCase() + '%'}` as any
       );
     }
 
@@ -78,7 +78,7 @@ const app = new Elysia()
                     WHERE ma.message_id = messages.message_id
                   )`
           }
-        `
+        ` as any
       );
     }
 
@@ -116,6 +116,74 @@ const app = new Elysia()
     const people_ids = [...new Set(messagesDB.map(m => m.author_id!))];
     const people = await format_person_map_by_ids(people_ids);
 
+    /* 🔹 příjemci */
+    const message_ids = messagesDB.map(m => m.message_id!);
+    const receiversDB = await db
+      .selectFrom('messages_receivers')
+      .leftJoin('persons', 'persons.person_id', 'messages_receivers.receiver_id')
+      .leftJoin('users', 'users.person_id', 'messages_receivers.receiver_id')
+      .select([
+        'messages_receivers.message_id',
+        'messages_receivers.receiver_id',
+        'persons.first_name',
+        'persons.last_name',
+        'users.avatar'
+      ])
+      .where('messages_receivers.message_id', 'in', message_ids)
+      .execute();
+
+    const receiver_people_ids = [...new Set(receiversDB.map(r => r.receiver_id!))];
+    const receiver_people = await format_person_map_by_ids(receiver_people_ids);
+
+    const receiversByMessage = new Map<number, any[]>();
+    receiversDB.forEach(r => {
+      const msgId = r.message_id!;
+      if (!receiversByMessage.has(msgId)) {
+        receiversByMessage.set(msgId, []);
+      }
+      receiversByMessage.get(msgId)!.push({
+        person_id: r.receiver_id,
+        first_name: r.first_name,
+        last_name: r.last_name,
+        full_name: receiver_people.get(r.receiver_id as number),
+        avatar: r.avatar
+      });
+    });
+
+    /* 🔹 přílohy */
+    const attachmentsDB = await db
+      .selectFrom('messages_files')
+      .leftJoin('files', 'files.file_id', 'messages_files.file_id')
+      .select([
+        'messages_files.message_id',
+        'files.file_id',
+        'files.file_uuid',
+        'files.name',
+        'files.mime_type',
+        'files.file_size',
+        'files.real_file_name'
+      ])
+      .where('messages_files.message_id', 'in', message_ids)
+      .execute();
+
+    const attachmentsByMessage = new Map<number, any[]>();
+    attachmentsDB.forEach(a => {
+      const msgId = a.message_id!;
+      if (!attachmentsByMessage.has(msgId)) {
+        attachmentsByMessage.set(msgId, []);
+      }
+      if (a.file_id) {
+        attachmentsByMessage.get(msgId)!.push({
+          file_id: a.file_id,
+          file_uuid: a.file_uuid,
+          name: a.name,
+          mime_type: a.mime_type,
+          file_size: a.file_size,
+          real_file_name: a.real_file_name
+        });
+      }
+    });
+
     const messages = messagesDB.map(m => ({
       ...m,
       author: {
@@ -123,7 +191,9 @@ const app = new Elysia()
         last_name: m.last_name,
         full_name: people.get(m.author_id as number),
         avatar: m.avatar
-      }
+      },
+      receivers: receiversByMessage.get(m.message_id!) || [],
+      attachments: attachmentsByMessage.get(m.message_id!) || []
     }));
 
     return {

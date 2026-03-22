@@ -19,7 +19,6 @@ export async function get_total_lessons(start: moment.Moment, end: moment.Moment
         current.add(1, 'week');
     }
 
-    // === Teď zjístíme rozvrh a sečteme ===
     /// Získání rozvrhu
     const timetable = await db.selectFrom('timetable')
     .select([
@@ -33,14 +32,9 @@ export async function get_total_lessons(start: moment.Moment, end: moment.Moment
 
     /// Sčítání čísla hodiny
     let lessonNumber = 0;
-    /// Vynásobení za každý týden (type == 0)
-    lessonNumber += timetable.filter((timetable_lesson) => timetable_lesson.type == 0).length * (oddCount + evenCount);
-
-    /// Přičtení za lichý hodiny
-    lessonNumber += timetable.filter((timetable_lesson) => timetable_lesson.type == 1).length * oddCount;
-
-    /// Přičtení za sudý hodiny
-    lessonNumber += timetable.filter((timetable_lesson) => timetable_lesson.type == 2).length * evenCount;
+    lessonNumber += timetable.filter((timetable_lesson) => timetable_lesson.type == 0).length * (oddCount + evenCount); // Přičtení hodin týdně
+    lessonNumber += timetable.filter((timetable_lesson) => timetable_lesson.type == 1).length * oddCount; // Přičtení hodin (lichý týden)
+    lessonNumber += timetable.filter((timetable_lesson) => timetable_lesson.type == 2).length * evenCount; // Přičtení hodin (sudý týden)
 
     return lessonNumber;
 }
