@@ -5,6 +5,7 @@ export interface EventsTable {
   event_name: string;
   event_description: string | null;
   event_date: string | Date;
+  event_end_date: string | Date | null;
   event_type: string;
   class_id: number | null;
   created_by: number | null;

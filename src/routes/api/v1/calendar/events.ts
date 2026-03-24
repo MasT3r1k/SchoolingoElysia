@@ -36,11 +36,24 @@ const app = new Elysia()
                 'event_name as name',
                 'event_description as description',
                 'event_date as date',
+                'event_end_date as endDate',
                 'event_type as type',
                 'class_id as classId'
             ])
-            .where('event_date', '>=', startDate)
-            .where('event_date', '<=', endDate)
+            .where((eb) => eb.or([
+                eb.and([
+                    eb('event_date', '>=', startDate),
+                    eb('event_date', '<=', endDate)
+                ]),
+                eb.and([
+                    eb('event_end_date', '>=', startDate),
+                    eb('event_end_date', '<=', endDate)
+                ]),
+                eb.and([
+                    eb('event_date', '<=', startDate),
+                    eb('event_end_date', '>=', endDate)
+                ])
+            ]))
             .orderBy('event_date', 'asc')
             .execute();
 
@@ -71,6 +84,7 @@ const app = new Elysia()
                 'event_name as name',
                 'event_description as description',
                 'event_date as date',
+                'event_end_date as endDate',
                 'event_type as type',
                 'class_id as classId'
             ])
@@ -104,7 +118,7 @@ const app = new Elysia()
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 
-        const { name, description, date, type, classId } = body;
+        const { name, description, date, endDate, type, classId } = body;
 
         const result = await db
             .insertInto('events')
@@ -112,6 +126,7 @@ const app = new Elysia()
                 event_name: name,
                 event_description: description || null,
                 event_date: date,
+                event_end_date: endDate || null,
                 event_type: type || 'event',
                 class_id: classId || null,
                 created_by: auth.user_id
@@ -126,6 +141,7 @@ const app = new Elysia()
             name: t.String(),
             description: t.Optional(t.String()),
             date: t.String(),
+            endDate: t.Optional(t.Nullable(t.String())),
             type: t.Optional(t.String()),
             classId: t.Optional(t.Nullable(t.Number()))
         })
@@ -151,9 +167,16 @@ const app = new Elysia()
 
         const eventId = parseInt(params.id);
 
+        const updateData: any = {};
+        if (body.name !== undefined) updateData.event_name = body.name;
+        if (body.description !== undefined) updateData.event_description = body.description;
+        if (body.date !== undefined) updateData.event_date = body.date;
+        if (body.endDate !== undefined) updateData.event_end_date = body.endDate;
+        if (body.type !== undefined) updateData.event_type = body.type;
+
         await db
             .updateTable('events')
-            .set(body as any)
+            .set(updateData)
             .where('event_id', '=', eventId)
             .execute();
 
@@ -164,6 +187,7 @@ const app = new Elysia()
             name: t.Optional(t.String()),
             description: t.Optional(t.String()),
             date: t.Optional(t.String()),
+            endDate: t.Optional(t.Nullable(t.String())),
             type: t.Optional(t.String())
         })
     })

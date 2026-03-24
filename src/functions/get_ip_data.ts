@@ -1,5 +1,9 @@
 import { db } from '../../database';
 import moment from 'moment';
+import { config } from '../config/app.config';
+
+let publicIP: string | null = null;
+let lastPublicIPFetch = 0;
 
 // TypeScript interface pro různé IP API služby
 interface IpApiResponse {
@@ -36,13 +40,68 @@ interface IpWhoisResponse {
   continent_code?: string;
 }
 
+interface IpQueryResponse {
+  ip: string;
+  location?: {
+    country: string;
+    country_code: string;
+    city: string;
+    state: string;
+    zipcode: string;
+    latitude: number;
+    longitude: number;
+    timezone: string;
+    localtime: string;
+  };
+  isp?: {
+    asn: string;
+    org: string;
+    isp: string;
+  };
+  risk?: {
+    is_mobile: boolean;
+    is_vpn: boolean;
+    is_tor: boolean;
+    is_proxy: boolean;
+    is_datacenter: boolean;
+    risk_score: number;
+  };
+}
+
+export async function getActualIP(ip: string | null): Promise<string | null> {
+  if (!ip || ip === '::1' || ip === '127.0.0.1' || ip === 'localhost') {
+    // 1. Zkusíme config.DEV_IP
+    if (config.DEV_IP) {
+      console.log('[IP Lookup] Localhost detected, using DEV_IP from config:', config.DEV_IP);
+      return config.DEV_IP;
+    } 
+    // 2. Zkusíme veřejnou IP stroje (pokud nebyla získána v posledních 30 minutách)
+    if (!publicIP || (Date.now() - lastPublicIPFetch > 30 * 60 * 1000)) {
+      try {
+        const res = await fetch('https://api64.ipify.org?format=json');
+        const data = await res.json() as { ip: string };
+        if (data.ip) {
+          publicIP = data.ip;
+          lastPublicIPFetch = Date.now();
+          console.log('[IP Lookup] Public IP detected for fallback:', publicIP);
+        }
+      } catch (e) {
+        console.warn('[IP Lookup] Failed to fetch public IP for fallback.');
+      }
+    }
+    if (publicIP) return publicIP;
+  }
+  return ip;
+}
+
 /**
  * Získá geografické informace o IP adrese
  * Používá několik fallback služeb pro maximální spolehlivost
  * @param ip - IP adresa k vyhledání
  * @returns Geografické informace nebo null hodnoty pokud selžou všechny služby
  */
-export async function getIPData(ip: string) {
+export async function getIPData(ip: string | null) {
+  ip = await getActualIP(ip);
   const fallbackData = {
     ip: ip || null,
     city: null,
@@ -103,28 +162,51 @@ export async function getIPData(ip: string) {
 
   let resultData = null;
 
-  // 1. Primární služba: ip-api.com
+  // 1. Primární služba: ipquery.io (Kompletně free s HTTPS podporou)
   try {
-    const res = await fetchWithTimeout(`http://ip-api.com/json/${ip}`, TIMEOUT_MS);
-    const data = await res.json() as IpApiResponse;
+    const res = await fetchWithTimeout(`https://api.ipquery.io/${ip}`, TIMEOUT_MS);
+    const data = await res.json() as IpQueryResponse;
     
-    if (data.status === "success") {
+    if (data.ip) {
       resultData = {
-        ip: data.query || ip,
-        city: data.city ?? null,
-        zip_code: data.zip ?? null,
-        region_name: data.regionName ?? null,
-        country: data.country ?? null,
-        country_code: data.countryCode ?? null,
-        continent: data.continent ?? null,
-        continent_code: data.continentCode ?? null
+        ip: data.ip || ip,
+        city: data.location?.city ?? null,
+        zip_code: data.location?.zipcode ?? null,
+        region_name: data.location?.state ?? null,
+        country: data.location?.country ?? null,
+        country_code: data.location?.country_code ?? null,
+        continent: null, // ipquery.io neposkytuje kontinent přímo
+        continent_code: null
       };
     }
   } catch (e) {
-    console.warn('[IP Lookup] ip-api.com failed.');
+    console.warn('[IP Lookup] api.ipquery.io failed.');
   }
 
-  // 2. Backup služba: ipapi.co
+  // 2. Backup služba: ip-api.com
+  if (!resultData) {
+    try {
+      const res = await fetchWithTimeout(`http://ip-api.com/json/${ip}`, TIMEOUT_MS);
+      const data = await res.json() as IpApiResponse;
+      
+      if (data.status === "success") {
+        resultData = {
+          ip: data.query || ip,
+          city: data.city ?? null,
+          zip_code: data.zip ?? null,
+          region_name: data.regionName ?? null,
+          country: data.country ?? null,
+          country_code: data.countryCode ?? null,
+          continent: data.continent ?? null,
+          continent_code: data.continentCode ?? null
+        };
+      }
+    } catch (e) {
+      console.warn('[IP Lookup] ip-api.com failed.');
+    }
+  }
+
+  // 3. Backup služba: ipapi.co
   if (!resultData) {
     try {
       const res = await fetchWithTimeout(`https://ipapi.co/${ip}/json/`, TIMEOUT_MS);
@@ -153,7 +235,7 @@ export async function getIPData(ip: string) {
     }
   }
 
-  // 3. Třetí backup: ipwhois.app
+  // 4. Třetí backup: ipwhois.app
   if (!resultData) {
     try {
       const res = await fetchWithTimeout(`http://ipwhois.app/json/${ip}`, TIMEOUT_MS);

@@ -82,8 +82,8 @@
         "session_expired_alert": "You have been automatically logged out for security reasons.",
         "logout_success_alert": "Logout was successful.",
         "errors": {
-            "longLoadingQR": "Loading the QR code is taking longer than expecting, we apologize for the inconvenience",
             "429": "Too many login attempts, please try again in a few minutes",
+            "longLoadingQR": "Loading the QR code is taking longer than expecting, we apologize for the inconvenience",
             "invalid_username": "User not found",
             "invalid_password": "Incorrect password",
             "invalid_tfa": "Incorrect code"
@@ -346,7 +346,17 @@
         "date": "Date",
         "placeholder": "Select date and time",
         "from": "From",
-        "to": "To"
+        "to": "To",
+        "event_types": {
+            "event": "Event",
+            "school_event": "School Event",
+            "director_day_off": "Director's Day Off",
+            "exam": "Exam / Test",
+            "excursion": "Excursion",
+            "holiday": "Holiday / Public Holiday",
+            "competition": "Competition",
+            "meeting": "Parent Meeting"
+        }
     },
     "time": {
         "minute": "minute",
@@ -552,8 +562,87 @@
     },
     "notifications": {
         "title": "Notifications",
+        "list_subtitle": "List of all your notifications and alerts",
+        "unread": "Unread",
+        "read": "Read",
+        "summary_loaded": "Loaded",
+        "empty_title": "No notifications",
         "empty": "No incoming notifications",
-        "mark_all_read": "Read all notifications"
+        "loading_more": "Loading more...",
+        "end_of_list": "That's all",
+        "mark_all_read": "Read all notifications",
+        "message": {
+            "title": "Message from %senderName%",
+            "description": "%subject%"
+        },
+        "new_login": {
+            "title": "New login",
+            "description": "We noticed a new login from an unknown device in %city%, %country_code%."
+        },
+        "new_grade": {
+            "title": "New grade",
+            "description": "You received a new grade %mark%."
+        },
+        "homework": {
+            "title": "New homework",
+            "description": "A new homework has been added for %subject%."
+        },
+        "reward": {
+            "title": "New reward",
+            "description": "You have a new reward for completed activities."
+        },
+        "settings": {
+            "title": "Notification settings",
+            "subtitle": "Manage your notification rules and settings",
+            "push": {
+                "title": "Push Notifications",
+                "subtitle": "Instant notification directly in your browser",
+                "enable": "Enable",
+                "active_title": "Push notifications are active",
+                "active_desc": "You will receive notifications even when the page is not open",
+                "inactive_title": "Push notifications are not enabled",
+                "inactive_desc": "Enable push notifications for instant notification of important events"
+            },
+            "simple": {
+                "title": "Simple Notifications",
+                "subtitle": "Quick toggle of basic notifications"
+            },
+            "advanced": {
+                "title": "Advanced Rules",
+                "subtitle": "Set conditions for specific notifications",
+                "empty": "You have no advanced rules",
+                "add": "Add advanced rule",
+                "active": "Active",
+                "value": "Value",
+                "hours": "Number of hours",
+                "percent": "Absence in %",
+                "days_before": "Days before deadline",
+                "leave_days": "Balance falls below (days)"
+            },
+            "types": {
+                "grade_new": "New grade",
+                "grade_new_desc": "Notification when a new grade is added",
+                "homework_new": "New homework",
+                "homework_new_desc": "Notification when a new homework is assigned",
+                "message_new": "New message",
+                "message_new_desc": "Notification when a new message is received",
+                "absence_new": "New absence",
+                "absence_new_desc": "Notification when an absence is recorded",
+                "substitution_new": "New substitution lesson",
+                "substitution_new_desc": "Notification when the schedule changes",
+                "reward_new": "New reward",
+                "reward_new_desc": "Notification when a new reward is received",
+                "leave_reaction": "Vacation reaction",
+                "leave_reaction_desc": "Notification on approval or rejection of vacation",
+                "leave_request": "New vacation request",
+                "leave_request_desc": "Notification of a new vacation request from an employee",
+                "advanced_grade_average_above": "Average higher than",
+                "advanced_grade_average_below": "Average lower than",
+                "advanced_absence_count_above": "Absence higher than",
+                "advanced_homework_deadline_soon": "Upcoming homework deadline",
+                "advanced_leave_balance_low": "Low vacation balance"
+            }
+        }
     },
     "devices": {
         "current_device": "Current session",
@@ -1418,12 +1507,12 @@
         },
         "change_password": "Change password",
         "passwords": {
+            "429": "Too many password change attempts, please try again later",
             "old_password": "Old password",
             "new_password": "New password",
             "again_new_password": "New password again",
             "success_changed": "Password successfully changed!",
-            "invalid_new_password": "You cannot choose this password",
-            "429": "Too many password change attempts, please try again later"
+            "invalid_new_password": "You cannot choose this password"
         },
         "language": "Language",
         "languages": {
@@ -2195,6 +2284,180 @@
             "cabinet": "Cabinet",
             "office": "Office",
             "hallway": "Hallway"
+        }
+    },
+    "gdpr": {
+        "sidebar": "GDPR",
+        "title": "GDPR - Data Protection",
+        "subtitle": "Manage your consents, reports and training",
+        "tabs": {
+            "overview": "Overview",
+            "consents": "Consents",
+            "training": "Training",
+            "officer": "DPO & Requests",
+            "admin": "Administration"
+        },
+        "stats": {
+            "granted": "Granted",
+            "denied": "Denied",
+            "pending": "Pending"
+        },
+        "overview": {
+            "notifications": "Notifications",
+            "new_consents": "You have %count% new consent requests.",
+            "view_all_consents": "View all consents",
+            "pending_training": "You have %count% pending training courses.",
+            "no_notifications": "You have no new notifications.",
+            "summary": "Summary",
+            "consents_granted": "Consents granted",
+            "consents_denied": "Consents denied",
+            "training_completed": "Completed training"
+        },
+        "consents": {
+            "title": "Consent Management",
+            "my_consents": "My Consents",
+            "parent_consents": "PARENT CONSENTS",
+            "child_consents": "CHILD CONSENTS",
+            "no_consents": "No consents to display.",
+            "until_end_of_studies": "end of studies",
+            "table": {
+                "consent": "Consent",
+                "personal_data": "Personal data",
+                "purpose": "Purpose",
+                "valid_until": "Until",
+                "status": "Status",
+                "actions": "Actions"
+            },
+            "status": {
+                "new": "New",
+                "granted": "Granted",
+                "denied": "Denied",
+                "revoked": "Revoked",
+                "revocation_pending": "Revocation request",
+                "cancelled": "Cancelled",
+                "expired": "Expired"
+            },
+            "types": {
+                "essential": "Essential processing",
+                "analytics": "Analytics",
+                "marketing": "Marketing",
+                "third_party": "Third party",
+                "profiling": "Profiling"
+            },
+            "actions": {
+                "agree": "Agree",
+                "disagree": "Disagree",
+                "revoke": "Revoke",
+                "detail": "Detail",
+                "bulk_agree": "Accept all",
+                "bulk_revoke": "Revoke all"
+            },
+            "detail": {
+                "title": "Consent Detail",
+                "description": "Description",
+                "purpose": "Purpose of processing",
+                "instructions": "Instructions",
+                "reason_label": "Reason (for disagreement/revocation)",
+                "personal_data": "Affected personal data"
+            },
+            "remove_user": {
+                "verify_text": "delete account"
+            }
+        },
+        "training": {
+            "title": "Training and Tests",
+            "mandatory_training": "Mandatory training and certificates",
+            "no_training": "No training available.",
+            "active_training": "Active Training",
+            "completed_training": "Training History",
+            "table": {
+                "name": "Training Name",
+                "valid_to": "Valid To",
+                "questions": "Questions",
+                "status": "Status",
+                "score": "Score"
+            },
+            "status": {
+                "not_started": "Not Started",
+                "in_progress": "In Progress",
+                "completed": "Completed",
+                "failed": "Failed"
+            },
+            "take_test": "Start Test",
+            "results": "Results"
+        },
+        "officer": {
+            "title": "Data Protection Officer (DPO)",
+            "contact_info": "DPO Contact Information",
+            "actions": {
+                "breach_report": "Report a breach",
+                "objection": "Objection to processing",
+                "data_request": "Data access request (Export)",
+                "forget_me": "Delete account"
+            },
+            "report_form": {
+                "breach_title": "Report of suspected data breach",
+                "objection_title": "Objection to processing of personal data",
+                "description": "Here you can send a message to the DPO and school management.",
+                "subject": "Subject",
+                "message": "Message body",
+                "submit": "Submit report",
+                "success": "Report was successfully submitted and registered."
+            }
+        },
+        "admin": {
+            "title": "GDPR Administration",
+            "tabs": {
+                "consents": "Manage Consents",
+                "training": "Manage Training",
+                "reports": "Reports & Requests",
+                "templates": "Manage Templates",
+                "checklist": "Checklist"
+            },
+            "consents": {
+                "new": "New consent request",
+                "from_template": "From template",
+                "active": "Active",
+                "inactive": "Inactive",
+                "table": {
+                    "id": "ID",
+                    "title": "Title",
+                    "target": "Target Group",
+                    "active": "Active",
+                    "status": "Status"
+                },
+                "form": {
+                    "title": "Consent Title",
+                    "target_group": "Target Group",
+                    "validity": "Validity",
+                    "purpose": "Purpose",
+                    "instructions": "Instructions",
+                    "respondents": "Select Respondents"
+                }
+            },
+            "training": {
+                "new": "New training",
+                "monitor": "Monitor progress",
+                "evaluation": "Evaluation",
+                "form": {
+                    "name": "Name",
+                    "description": "Description",
+                    "passing_score": "Passing score",
+                    "questions": "Question definitions"
+                }
+            },
+            "reports": {
+                "title": "Reports and Objections",
+                "status": {
+                    "new": "New",
+                    "processing": "In Progress",
+                    "closed": "Closed"
+                }
+            },
+            "actions": {
+                "edit": "Edit",
+                "delete": "Delete"
+            }
         }
     }
 }

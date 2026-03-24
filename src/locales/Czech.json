@@ -375,7 +375,17 @@
         "date": "Termín",
         "placeholder": "Vyberte datum a čas",
         "from": "Od",
-        "to": "Do"
+        "to": "Do",
+        "event_types": {
+            "event": "Událost",
+            "school_event": "Akce školy",
+            "director_day_off": "Ředitelské volno",
+            "exam": "Zkouška / Test",
+            "excursion": "Exkurze",
+            "holiday": "Prázdniny / Státní svátek",
+            "competition": "Soutěž / Olympiáda",
+            "meeting": "Schůzka rodičů"
+        }
     },
     "time": {
         "minute": "minuta",
@@ -625,7 +635,14 @@
     },
     "notifications": {
         "title": "Notifikace",
+        "list_subtitle": "Seznam všech vašich oznámení a upozornění",
+        "unread": "Nepřečtené",
+        "read": "Přečtené",
+        "summary_loaded": "Načteno",
+        "empty_title": "Žádné notifikace",
         "empty": "Žádné příchozí notifikace",
+        "loading_more": "Načítání dalších...",
+        "end_of_list": "To je vše",
         "mark_all_read": "Přečíst všechny oznámení",
         "message": {
             "title": "Zpráva od %senderName%",
@@ -646,6 +663,58 @@
         "reward": {
             "title": "Nová odměna",
             "description": "Za splněné aktivity máš novou odměnu."
+        },
+        "settings": {
+            "title": "Nastavení notifikací",
+            "subtitle": "Spravujte svá notifikační pravidla a nastavení",
+            "push": {
+                "title": "Push Notifikace",
+                "subtitle": "Okamžité upozornění přímo v prohlížeči",
+                "enable": "Povolit",
+                "active_title": "Push notifikace jsou aktivní",
+                "active_desc": "Budete dostávat upozornění i když není stránka otevřená",
+                "inactive_title": "Push notifikace nejsou povoleny",
+                "inactive_desc": "Povolte push notifikace pro okamžité upozornění na důležité události"
+            },
+            "simple": {
+                "title": "Jednoduché Notifikace",
+                "subtitle": "Rychlé zapnutí/vypnutí základních upozornění"
+            },
+            "advanced": {
+                "title": "Pokročilá Pravidla",
+                "subtitle": "Nastavte podmínky pro specifická upozornění",
+                "empty": "Nemáte žádná pokročilá pravidla",
+                "add": "Přidat pokročilé pravidlo",
+                "active": "Aktivní",
+                "value": "Hodnota",
+                "hours": "Počet hodin",
+                "percent": "Absence v %",
+                "days_before": "Dny před termínem",
+                "leave_days": "Zůstatek klesne pod (dny)"
+            },
+            "types": {
+                "grade_new": "Nová známka",
+                "grade_new_desc": "Upozornění při přidání nové známky",
+                "homework_new": "Nový domácí úkol",
+                "homework_new_desc": "Upozornění při zadání nového úkolu",
+                "message_new": "Nová zpráva",
+                "message_new_desc": "Upozornění při přijetí nové zprávy",
+                "absence_new": "Nová absence",
+                "absence_new_desc": "Upozornění při zapsání absence",
+                "substitution_new": "Nová suplující hodina",
+                "substitution_new_desc": "Upozornění při změně rozvrhu",
+                "reward_new": "Nová odměna",
+                "reward_new_desc": "Upozornění při obdržení nové odměny",
+                "leave_reaction": "Reakce na dovolenou",
+                "leave_reaction_desc": "Upozornění na schválení či zamítnutí dovolené",
+                "leave_request": "Nová žádost o dovolenou",
+                "leave_request_desc": "Upozornění na novou žádost o dovolenou od zaměstnance",
+                "advanced_grade_average_above": "Průměr vyšší než",
+                "advanced_grade_average_below": "Průměr nižší než",
+                "advanced_absence_count_above": "Absence vyšší než",
+                "advanced_homework_deadline_soon": "Blížící se termín úkolu",
+                "advanced_leave_balance_low": "Nízký zůstatek dovolené"
+            }
         }
     },
     "devices": {
@@ -1553,8 +1622,6 @@
         }
     },
     "settings": {
-
-
         "alerts": {
             "change_password_warning": "Změněním hesla se automaticky odhlásíte ze všech přihlášených zařízení, kromě tohoto zařízení!"
         },
@@ -1691,8 +1758,6 @@
             "variant": "Varianta %number%",
             "style": "Styl avataru"
         }
-
-
     },
     "timetable": {
         "this_week": "Tento týden",
@@ -2446,13 +2511,16 @@
         "consents": {
             "title": "Správa souhlasů",
             "my_consents": "Moje souhlasy",
-            "child_consents": "Souhlasy dítěte: %name%",
+            "child_consents": "SOUHLASY DÍTĚTE",
             "table": {
                 "consent": "Souhlas",
                 "status": "Stav",
                 "granted_at": "Uděleno dne",
                 "expires_at": "Platnost do",
-                "actions": "Akce"
+                "actions": "Akce",
+                "personal_data": "Osobní údaje",
+                "purpose": "Účel použití",
+                "valid_until": "Do"
             },
             "status": {
                 "new": "Nový",
@@ -2468,8 +2536,8 @@
                 "disagree": "Nesouhlasit",
                 "revoke": "Odvolat",
                 "detail": "Detail",
-                "bulk_agree": "Povolit vše",
-                "bulk_revoke": "Odvolat volitelné"
+                "bulk_agree": "Přijmout vše",
+                "bulk_revoke": "Odvolat vše"
             },
             "detail": {
                 "title": "Detail souhlasu",
@@ -2481,6 +2549,16 @@
             },
             "remove_user": {
                 "verify_text": "smazat účet"
+            },
+            "parent_consents": "SOUHLASY RODIČE",
+            "no_consents": "Žádné souhlasy k zobrazení.",
+            "until_end_of_studies": "konce studia",
+            "types": {
+                "essential": "Nezbytné školní účely",
+                "analytics": "Analytické účely",
+                "marketing": "Marketing a propagace",
+                "third_party": "Třetí strany",
+                "profiling": "Profilování"
             }
         },
         "training": {
@@ -2501,7 +2579,9 @@
                 "failed": "Nesplněno"
             },
             "take_test": "Spustit test",
-            "results": "Výsledky"
+            "results": "Výsledky",
+            "mandatory_training": "Povinná školení a certifikace",
+            "no_training": "Žádná školení k dispozici."
         },
         "officer": {
             "title": "Pověřenec pro ochranu osobních údajů (DPO)",
@@ -2548,7 +2628,9 @@
                     "purpose": "Účel",
                     "instructions": "Poučení",
                     "respondents": "Výběr respondentů"
-                }
+                },
+                "active": "Aktivní",
+                "inactive": "Neaktivní"
             },
             "training": {
                 "new": "Nové školení",
@@ -2568,6 +2650,10 @@
                     "processing": "Rozpracováno",
                     "closed": "Uzavřeno"
                 }
+            },
+            "actions": {
+                "edit": "Upravit",
+                "delete": "Smazat"
             }
         }
     }

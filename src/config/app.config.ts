@@ -26,6 +26,7 @@ const envSchema = z.object({
   MICROSOFT_CLIENT_ID: z.optional(z.string()),
   MICROSOFT_CLIENT_SECRET: z.optional(z.string()),
   MICROSOFT_TENANT_ID: z.optional(z.string()),
+  DEV_IP: z.optional(z.string()),
 });
 
 export const config = envSchema.parse(process.env);

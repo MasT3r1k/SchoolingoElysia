@@ -12,6 +12,7 @@ import { SecurityConfig } from '../../config/security.config';
 import { maskEmail } from '../../functions/mask_email';
 import { verify_password } from '../../functions/verify_password';
 import { verifyTFA } from '../../functions/verifyTFA';
+import { getActualIP } from '../../functions/get_ip_data';
 
 // 🔹 Globální proměnná pro testovací transporter
 const transporter = nodemailer.createTransport({
@@ -57,6 +58,7 @@ const elysiaApp = new Elysia()
     '/forgot-pass',
     async ({ body, store, request }: any) => {
       const { username, token, selectedEmail, emailCode, newPassword, TFA } = body;
+      const actualIP = await getActualIP(store.ip);
 
       if (!transporter) {
         console.error('❌ Email transporter not initialized');
@@ -104,7 +106,7 @@ const elysiaApp = new Elysia()
               created_at: moment().toDate(),
               expires_at,
               otp_code,
-              ip: store.ip,
+              ip: actualIP,
               user_agent: request.headers.get('user-agent') || 'unknown',
             })
             .execute();
@@ -128,7 +130,7 @@ const elysiaApp = new Elysia()
               user_id: user.user_id,
               type: "reset_password",
               data: JSON.stringify({}),
-              ip: store.ip
+              ip: actualIP
           })
           .execute()
 
@@ -262,7 +264,7 @@ const elysiaApp = new Elysia()
         // aktualizuje usera
         await db
           .updateTable('users')
-          .set({ password: passwordId })
+          .set({ password_id: passwordId })
           .where('user_id', '=', user.user_id)
           .executeTakeFirst();
 
@@ -271,7 +273,7 @@ const elysiaApp = new Elysia()
             user_id: user.user_id,
             type: "change_password",
             data: JSON.stringify({}),
-            ip: store.ip
+            ip: actualIP
         })
         .execute()
         

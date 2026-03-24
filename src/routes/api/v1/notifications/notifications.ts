@@ -16,6 +16,9 @@ const app = new Elysia()
 
     if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
+    const offset = parseInt(query.offset as string) || 0;
+    const limit = parseInt(query.limit as string) || 15;
+
     const notifications = await db.selectFrom('notifications')
     .select([
         'notification_id',
@@ -27,10 +30,12 @@ const app = new Elysia()
     ])
     .where('notifications.user_id', '=', auth.user_id)
     .orderBy('notifications.created_at', 'desc')
+    .limit(limit)
+    .offset(offset)
     .execute();
    
     return notifications;
 
-  });
+  })
 
 export default app;
