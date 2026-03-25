@@ -650,7 +650,7 @@
         },
         "new_login": {
             "title": "Neznámé přihlášení",
-            "description": "Zaznamenali jsme nové přihlášení z neznámého zařízení ze %city%, %country_code%."
+            "description": "Zaznamenali jsme nové neznámé zařízení ze %city%, %flag_country_code% %country_code%."
         },
         "new_grade": {
             "title": "Nová známka",
@@ -720,6 +720,11 @@
     "devices": {
         "current_device": "Aktuální připojení",
         "active_now": "Právě aktivní",
+        "remove_confirm_title": "Odhlášení zařízení",
+        "remove_confirm_all_text": "Opravdu si přejete odhlásit všechna ostatní zařízení? Budete muset provést přihlášení na všech ostatních místech.",
+        "remove_confirm_single_text": "Opravdu si přejete odhlásit toto zařízení? Budete na něm muset provést opětovné přihlášení.",
+        "remove_confirm_all_btn": "Odhlásit všechna",
+        "remove_confirm_single_btn": "Odhlásit zařízení",
         "logout_all_other": "Odhlásit všechny"
     },
     "buttons": {
@@ -1499,6 +1504,7 @@
         }
     },
     "messages": {
+        "back": "Vrátit se na seznam",
         "privacy": "Zprávy poslané přes aplikaci %app% se nedají považovat za soukromé. K zprávům mají přístup včetně přijemců i ředistelství školy a správci systému.",
         "excuse_message": "Tento druh zprávy se posílá přímo do omluvenek třídnímu učiteli.",
         "type": "Typ zprávy",
