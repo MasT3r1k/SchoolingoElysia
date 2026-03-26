@@ -1778,7 +1778,8 @@
         "timetable_working_mode": "Pracovní režim",
         "room_timetable": "Rozvrh místnosti",
         "generating_pdf": "Probíhá generování pdf dokument",
-        "no_lessons": "Žádné hodiny k zobrazení"
+        "no_lessons": "Žádné hodiny k zobrazení",
+        "exempted": "Uvolněn"
     },
     "components": {
         "datalist": {

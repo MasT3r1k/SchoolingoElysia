@@ -251,7 +251,7 @@ const elysiaApp = new Elysia()
         
         let groupNumbers = groups.length ? groups.map(g => g.group_id) : [-1];
 
-        const [timetableResult, substitutionResult, absences] = await Promise.all([
+        const [timetableResult, substitutionResult, absences, exemptions] = await Promise.all([
           db.selectFrom('timetable')
             .innerJoin('subjects', 'timetable.subject_id', 'subjects.subject_id')
             .innerJoin('groups', 'groups.group_id', 'timetable.group_id')
@@ -296,11 +296,20 @@ const elysiaApp = new Elysia()
             .where('absence.student_id', '=', targetId)
             .where('classbook.date', '>=', time.startOf('isoWeek').format('YYYY-MM-DD')) 
             .where('classbook.date', '<=', time.endOf('isoWeek').format('YYYY-MM-DD'))
+            .execute(),
+
+          db.selectFrom('student_subject_exemptions')
+            .select(['subject_id', 'valid_from', 'valid_to', 'note'])
+            .where('student_id', '=', targetId)
+            .where((eb) => eb.and([
+                eb.or([eb('valid_to', 'is', null), eb('valid_to', '>=', time.startOf('isoWeek').format('YYYY-MM-DD'))]),
+                eb('valid_from', '<=', time.endOf('isoWeek').format('YYYY-MM-DD'))
+            ]))
             .execute()
         ]);
 
         const processed = await processResults(timetableResult, substitutionResult);
-        return Response.json({ ...processed, absences });
+        return Response.json({ ...processed, absences, exemptions });
 
       } else if (targetRoles?.is_teacher) {
         

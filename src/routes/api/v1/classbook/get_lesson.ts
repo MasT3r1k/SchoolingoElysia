@@ -111,6 +111,16 @@ const elysiaApp = new Elysia()
     .where('absence.student_id', 'in', studentsDB.map((student) => student.student_id))
     .execute();
 
+    const studentExemptions = await db.selectFrom('student_subject_exemptions')
+      .select(['student_id', 'note'])
+      .where('student_id', 'in', studentsDB.map((s) => s.student_id))
+      .where('subject_id', '=', subjectId)
+      .where((eb) => eb.and([
+          eb.or([eb('valid_to', 'is', null), eb('valid_to', '>=', classbook.date as string)]),
+          eb('valid_from', '<=', classbook.date as string)
+      ]))
+      .execute();
+
     const studentTotalAbsence = await db
       .selectFrom('absence')
       .leftJoin('classbook', 'classbook.classbook_id', 'absence.lesson_id')
@@ -143,7 +153,8 @@ const elysiaApp = new Elysia()
         last_name: student.last_name || '',
         full_name: studentFullNames.get(student.student_id) || '',
         total_absence: studentTotalAbsence.find(s => s.student_id == student.student_id)?.total_hours || 0,
-        absence: absenceIndexed
+        absence: absenceIndexed,
+        exemption: studentExemptions.find(e => e.student_id === student.student_id) || null
       };
     })
     .sort((a, b) => {

@@ -127,6 +127,7 @@ import { ReportCardsTable } from './report_cards'
 import { GdprConsentsTable, GdprUserConsentsTable, GdprTrainingTable, GdprUserTrainingTable, GdprRequestsTable, GdprReportsTable, GdprReviewsTable } from './gdpr'
 import { MessageRecipientGroupTable, MessageRecipientGroupMemberTable } from './message_recipient_groups'
 import { AvatarHistoryTable } from './avatar_history'
+import { StudentSubjectExemptionsTable } from './student_subject_exemptions'
 
 
 
@@ -279,6 +280,7 @@ export interface Database {
   message_recipient_groups: MessageRecipientGroupTable
   message_recipient_group_members: MessageRecipientGroupMemberTable
   avatar_history: AvatarHistoryTable
+  student_subject_exemptions: StudentSubjectExemptionsTable
 }
 
 

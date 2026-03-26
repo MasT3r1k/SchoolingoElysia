@@ -5,5 +5,6 @@ export enum AbsenceType {
     NON_COUNT,
     LATE,
     EARLY,
-    DISTANCE
+    DISTANCE,
+    EXCLUDED
 }

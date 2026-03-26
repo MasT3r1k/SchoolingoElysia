@@ -25,6 +25,28 @@ const elysiaApp = new Elysia()
         || minutes == undefined
         || note == undefined) return { error: 'bad_query' };
 
+    // === KONTROLA UVOLNĚNÍ (EXEMPTION) ===
+    const classbookLesson = await db.selectFrom('classbook')
+      .select(['subject_id', 'date'])
+      .where('classbook_id', '=', classbook_id)
+      .executeTakeFirst();
+
+    if (classbookLesson) {
+        const isExempted = await db.selectFrom('student_subject_exemptions')
+            .select(['exemption_id'])
+            .where('student_id', '=', student_id)
+            .where('subject_id', '=', classbookLesson.subject_id)
+            .where((eb) => eb.and([
+                eb.or([eb('valid_to', 'is', null), eb('valid_to', '>=', classbookLesson.date as string)]),
+                eb('valid_from', '<=', classbookLesson.date as string)
+            ]))
+            .executeTakeFirst();
+
+        if (isExempted) {
+            return { error: 'student_is_exempted', message: 'Student je z této výuky uvolněn a absenci nelze měnit.' };
+        }
+    }
+
     const isExistAbsence = await db.selectFrom('absence')
     .select([
         'absence.lesson_id',
