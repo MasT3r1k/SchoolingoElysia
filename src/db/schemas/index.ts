@@ -128,6 +128,7 @@ import { GdprConsentsTable, GdprUserConsentsTable, GdprTrainingTable, GdprUserTr
 import { MessageRecipientGroupTable, MessageRecipientGroupMemberTable } from './message_recipient_groups'
 import { AvatarHistoryTable } from './avatar_history'
 import { StudentSubjectExemptionsTable } from './student_subject_exemptions'
+import { educationMeasureTypesTable } from './education_measure_types'
 
 
 
@@ -281,6 +282,7 @@ export interface Database {
   message_recipient_group_members: MessageRecipientGroupMemberTable
   avatar_history: AvatarHistoryTable
   student_subject_exemptions: StudentSubjectExemptionsTable
+  education_measure_types: educationMeasureTypesTable
 }
 
 

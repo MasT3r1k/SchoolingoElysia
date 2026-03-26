@@ -495,6 +495,23 @@ const elysiaApp = new Elysia()
           .where('student_id', '=', id)
           .orderBy('created_at', 'desc')
           .execute();
+
+        result.subject_exemptions = await db.selectFrom('student_subject_exemptions')
+          .leftJoin('subjects', 'subjects.subject_id', 'student_subject_exemptions.subject_id')
+          .select([
+            'student_subject_exemptions.exemption_id',
+            'student_subject_exemptions.student_id',
+            'student_subject_exemptions.subject_id',
+            'subjects.label as subject_name',
+            'subjects.shortcut as subject_shortcut',
+            'student_subject_exemptions.valid_from',
+            'student_subject_exemptions.valid_to',
+            'student_subject_exemptions.note',
+            'student_subject_exemptions.created_at'
+          ])
+          .where('student_id', '=', id)
+          .orderBy('student_subject_exemptions.created_at', 'desc')
+          .execute();
       }
 
       if (studentResult.teacher_id) {
@@ -550,6 +567,123 @@ const elysiaApp = new Elysia()
       type: t.String({ default: 'basic,groups,timetable,parents,medical,matrika,notes,evaluation' }),
       time: t.String({ default: moment().format("YYYY-MM-DD") })
     })
+  })
+
+  .get('/student/:id/exemptions', async ({ cookie, params: { id } }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW);
+    if (!perm) return { error: 'no_permission' };
+
+    return await db.selectFrom('student_subject_exemptions')
+      .leftJoin('subjects', 'subjects.subject_id', 'student_subject_exemptions.subject_id')
+      .select([
+        'student_subject_exemptions.exemption_id',
+        'student_subject_exemptions.student_id',
+        'student_subject_exemptions.subject_id',
+        'subjects.label as subject_name',
+        'subjects.shortcut as subject_shortcut',
+        'student_subject_exemptions.valid_from',
+        'student_subject_exemptions.valid_to',
+        'student_subject_exemptions.note',
+        'student_subject_exemptions.created_at'
+      ])
+      .where('student_id', '=', id)
+      .orderBy('student_subject_exemptions.created_at', 'desc')
+      .execute();
+  }, {
+    params: t.Object({ id: t.Number() })
+  })
+
+  .post('/student/:id/exemptions', async ({ cookie, params: { id }, body }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) return { error: 'no_permission' };
+
+    try {
+      await db.insertInto('student_subject_exemptions')
+        .values({
+          student_id: id,
+          subject_id: body.subject_id,
+          valid_from: body.valid_from ? new Date(body.valid_from) : null,
+          valid_to: body.valid_to ? new Date(body.valid_to) : null,
+          note: body.note,
+          created_by: user.person_id as number
+        })
+        .execute();
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      return new Response(JSON.stringify({ error: 'Failed' }), { status: 500 });
+    }
+  }, {
+    params: t.Object({ id: t.Number() }),
+    body: t.Object({
+      subject_id: t.Number(),
+      valid_from: t.Optional(t.Nullable(t.String())),
+      valid_to: t.Optional(t.Nullable(t.String())),
+      note: t.Optional(t.Nullable(t.String()))
+    })
+  })
+
+  .delete('/student/:id/exemptions/:exemptionId', async ({ cookie, params: { id, exemptionId } }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) return { error: 'no_permission' };
+
+    try {
+      await db.deleteFrom('student_subject_exemptions')
+        .where('exemption_id', '=', exemptionId)
+        .where('student_id', '=', id)
+        .execute();
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      return new Response(JSON.stringify({ error: 'Failed' }), { status: 500 });
+    }
+  }, {
+    params: t.Object({
+      id: t.Number(),
+      exemptionId: t.Number()
+    })
+  })
+
+  .get('/student/:id/subjects', async ({ cookie, params: { id } }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW);
+    if (!perm) return { error: 'no_permission' };
+
+    // Get subjects for this student (based on their class/scope)
+    const studentClass = await db.selectFrom('students')
+      .leftJoin('classes', 'classes.class_id', 'students.class_id')
+      .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
+      .select([
+        'classes.class_id',
+        'classes.scope_id',
+        sql<number>`TIMESTAMPDIFF(YEAR, school_years.start, CURDATE())`.as('class_index')
+      ])
+      .where('students.person_id', '=', id)
+      .executeTakeFirst();
+
+    if (!studentClass) return [];
+
+    return await db.selectFrom('scopes_subjects')
+      .leftJoin('subjects', 'subjects.subject_id', 'scopes_subjects.subject_id')
+      .select([
+        'subjects.subject_id',
+        'subjects.label',
+        'subjects.shortcut'
+      ])
+      .where('scopes_subjects.scope_id', '=', studentClass.scope_id as number)
+      .where('scopes_subjects.year', '=', studentClass.class_index as number)
+      .where('scopes_subjects.hours_per_week', '>=', 1)
+      .orderBy('subjects.label', 'asc')
+      .execute();
+  }, {
+    params: t.Object({ id: t.Number() })
   })
 
   .patch('/student/:id/matrika', async ({ params: { id }, body, cookie }) => {

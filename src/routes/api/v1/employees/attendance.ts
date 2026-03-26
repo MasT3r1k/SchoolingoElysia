@@ -100,7 +100,7 @@ const attendanceRouter = new Elysia()
     
     const now = moment()
     const today = now.format('YYYY-MM-DD');
-    const timeNow = now.format('HH:MM');
+    const timeNow = now.format('HH:mm');
 
     // Check if already checked in today
     const existing = await db.selectFrom('employee_attendance')
@@ -153,7 +153,7 @@ const attendanceRouter = new Elysia()
     
     const now = moment()
     const today = now.format('YYYY-MM-DD');
-    const timeNow = now.format('HH:MM');
+    const timeNow = now.format('HH:mm');
 
     // Find recent record for today
     const existing = await db.selectFrom('employee_attendance')

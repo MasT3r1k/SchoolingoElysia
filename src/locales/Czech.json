@@ -325,7 +325,7 @@
     },
     "education_measures": {
         "title": "Výchovná opatření",
-        "new_measure": "Nové opatření",
+        "new_measure": "Nové výchovné opatření",
         "filter": "Filtr:",
         "praise_count": "%count% pochval",
         "other_count": "%count% ostatních",
@@ -368,6 +368,48 @@
             "loading": "Probíhá načítání stavu známky z chování žáka",
             "current_mark": "Tenhle student má známku z chování: %mark%",
             "already_has_mark": "Tenhle student má již známku z chování: %mark%"
+        },
+        "form": {
+            "term": "Pololetí",
+            "select_term": "Vyberte pololetí",
+            "select_type": "Vyberte typ",
+            "manage_types": "Nastavení typů",
+            "ref_number": "Číslo jednací",
+            "generate": "Generovat",
+            "measure_text": "Text opatření",
+            "from_template": "Ze šablony",
+            "copy_to_report": "Zkopírovat Text opatření jako Text na vysvědčení",
+            "report_text": "Text na vysvědčení"
+        },
+        "templates": {
+            "title": "Šablony opatření",
+            "add": "Přidat šablonu",
+            "edit": "Upravit šablonu",
+            "name": "Název šablony",
+            "content": "Obsah šablony",
+            "save": "Uložit šablonu",
+            "name_placeholder": "např. DŮTKA ŘŠ",
+            "content_placeholder": "Zadejte text výchovného opatření...",
+            "table_name": "Název",
+            "table_text": "Text",
+            "add_new_text": "Přidat nový text",
+            "insert_text": "Vložit text"
+        },
+        "types_management": {
+            "title": "Typy opatření",
+            "add": "Přidat typ",
+            "edit": "Upravit typ",
+            "shortcut": "Zkratka",
+            "order": "Pořadí",
+            "label_1st": "1. pád",
+            "label_4th": "4. pád",
+            "save": "Uložit typ",
+            "shortcut_placeholder": "např. dŘŠ",
+            "label_1st_placeholder": "např. důtka ředitele školy",
+            "label_4th_placeholder": "např. důtku ředitele školy",
+            "alert_info": "Při úpravě textu doporučujeme zachovat původní význam opatření. Původní ani již udělená opatření nelze mazat.",
+            "sort": "Seřadit",
+            "add_measure_type": "Přidat typ výchovného opatření"
         }
     },
     "calendar": {
@@ -741,6 +783,7 @@
         "back": "Zpátky",
         "cancel": "Zrušit",
         "edit": "Upravit",
+        "duplicate": "Duplikovat",
         "send": "Odeslat",
         "detail": "Podrobnosti",
         "send_request": "Odeslat žádost",

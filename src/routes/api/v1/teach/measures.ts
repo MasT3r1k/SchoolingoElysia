@@ -248,6 +248,147 @@ const app = new Elysia()
         params: t.Object({
             id: t.String()
         })
+    })
+
+    // List education measure types
+    .get('/measure/types', async ({ cookie }) => {
+        const token = cookie.token?.value as string;
+        if (!token) {
+            return Response.json({ error: 'unauthorized' }, { status: 401 });
+        }
+
+        const auth = await db
+            .selectFrom('tokens')
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.role'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+
+        if (!auth) {
+            return Response.json({ error: 'unauthorized' }, { status: 401 });
+        }
+
+        const types = await db
+            .selectFrom('education_measure_types')
+            .selectAll()
+            .orderBy('order', 'asc')
+            .execute();
+
+        return Response.json({ types });
+    })
+
+    // Create education measure type (admin only)
+    .post('/measure/types', async ({ body, cookie }) => {
+        const token = cookie.token?.value as string;
+        if (!token) {
+            return Response.json({ error: 'unauthorized' }, { status: 401 });
+        }
+
+        const auth = await db
+            .selectFrom('tokens')
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.role'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+
+        if (auth?.role !== 'admin_staff') {
+            return Response.json({ error: 'forbidden' }, { status: 403 });
+        }
+
+        const result = await db
+            .insertInto('education_measure_types')
+            .values({
+                shortcut: body.shortcut,
+                label_1st: body.label_1st,
+                label_4th: body.label_4th,
+                order: body.order || 0
+            })
+            .execute();
+
+        return Response.json({ emt_id: Number(result[0].insertId), success: true });
+    }, {
+        body: t.Object({
+            shortcut: t.String(),
+            label_1st: t.String(),
+            label_4th: t.String(),
+            order: t.Optional(t.Number())
+        })
+    })
+
+    // Delete education measure type (admin only)
+    .delete('/measure/types/:id', async ({ params, cookie }) => {
+        const token = cookie.token?.value as string;
+        if (!token) {
+            return Response.json({ error: 'unauthorized' }, { status: 401 });
+        }
+
+        const auth = await db
+            .selectFrom('tokens')
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.role'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+
+        if (auth?.role !== 'admin_staff') {
+            return Response.json({ error: 'forbidden' }, { status: 403 });
+        }
+
+        await db
+            .deleteFrom('education_measure_types')
+            .where('emt_id', '=', parseInt(params.id))
+            .execute();
+
+        return Response.json({ success: true });
+    }, {
+        params: t.Object({
+            id: t.String()
+        })
+    })
+
+    // Update education measure type (admin only)
+    .put('/measure/types/:id', async ({ params, body, cookie }) => {
+        const token = cookie.token?.value as string;
+        if (!token) {
+            return Response.json({ error: 'unauthorized' }, { status: 401 });
+        }
+
+        const auth = await db
+            .selectFrom('tokens')
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.role'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+
+        if (auth?.role !== 'admin_staff') {
+            return Response.json({ error: 'forbidden' }, { status: 403 });
+        }
+
+        await db
+            .updateTable('education_measure_types')
+            .set({
+                shortcut: body.shortcut,
+                label_1st: body.label_1st,
+                label_4th: body.label_4th,
+                order: body.order
+            })
+            .where('emt_id', '=', parseInt(params.id))
+            .execute();
+
+        return Response.json({ success: true });
+    }, {
+        params: t.Object({
+            id: t.String()
+        }),
+        body: t.Object({
+            shortcut: t.Optional(t.String()),
+            label_1st: t.Optional(t.String()),
+            label_4th: t.Optional(t.String()),
+            order: t.Optional(t.Number())
+        })
     });
 
 export default app;

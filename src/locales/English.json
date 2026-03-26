@@ -339,6 +339,48 @@
             "loading": "Loading student's behavior mark status",
             "current_mark": "This student has a behavior mark: %mark%",
             "already_has_mark": "This student already has a behavior mark: %mark%"
+        },
+        "form": {
+            "term": "Term",
+            "select_term": "Select term",
+            "select_type": "Select type",
+            "manage_types": "Manage types",
+            "ref_number": "Reference number",
+            "generate": "Generate",
+            "measure_text": "Measure text",
+            "from_template": "From template",
+            "copy_to_report": "Copy measure text to report card",
+            "report_text": "Report card text"
+        },
+        "templates": {
+            "title": "Measure templates",
+            "add": "Add template",
+            "edit": "Edit template",
+            "name": "Template name",
+            "content": "Template content",
+            "save": "Save template",
+            "name_placeholder": "e.g. DIRECTOR REPRIMAND",
+            "content_placeholder": "Enter the text of the educational measure...",
+            "table_name": "Name",
+            "table_text": "Text",
+            "add_new_text": "Add new text",
+            "insert_text": "Insert text"
+        },
+        "types_management": {
+            "title": "Measure types",
+            "add": "Add type",
+            "edit": "Edit type",
+            "shortcut": "Abbreviation",
+            "order": "Order",
+            "label_1st": "1st case",
+            "label_4th": "4th case",
+            "save": "Save type",
+            "shortcut_placeholder": "e.g. DR",
+            "label_1st_placeholder": "e.g. director's reprimand",
+            "label_4th_placeholder": "e.g. director's reprimand",
+            "alert_info": "When editing the text, we recommend keeping the original meaning of the measure. Original and already granted measures cannot be deleted.",
+            "sort": "Sort",
+            "add_measure_type": "Add educational measure type"
         }
     },
     "calendar": {

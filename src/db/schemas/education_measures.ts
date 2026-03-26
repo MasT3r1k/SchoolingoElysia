@@ -3,7 +3,7 @@ import { Generated } from 'kysely'
 export interface educationMeasuresTable {
   em_id: Generated<number>
   student_id: number
-  type: Generated<'praise' | 'reprimand_classteacher' | 'reprimand_principal' | 'warning' | 'reduced_behavior' | 'other'>
+  type: Generated<string>
   category: Generated<'positive' | 'negative'>
   severity: Generated<'low' | 'medium' | 'high'>
   reason: string
