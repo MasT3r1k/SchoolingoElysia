@@ -1,7 +1,5 @@
 import { Elysia, t } from "elysia";
-
 import { db } from "../../../../../database";
-
 
 // Define Open Library Response Type (Partial)
 interface OpenLibraryBook {
@@ -16,7 +14,7 @@ interface OpenLibraryBook {
     notes?: string;
 }
 
-export const library = new Elysia({ prefix: '/library' })
+export default new Elysia({ prefix: '/library' })
     .get('/lookup', async ({ query, set, user }: any) => {
         if (!user) {
             set.status = 401;
@@ -79,28 +77,38 @@ export const library = new Elysia({ prefix: '/library' })
             .selectAll('library_books')
             .select((eb) => [
                 eb.selectFrom('library_copies')
-                    .whereRef('library_copies.bookId', '=', 'library_books.bookId')
+                    .whereRef('library_copies.book_id', '=', 'library_books.book_id')
                     .where('status', '=', 'available')
                     .select(eb.fn.countAll<number>().as('count'))
                     .as('available_copies'),
                 eb.selectFrom('library_copies')
-                    .whereRef('library_copies.bookId', '=', 'library_books.bookId')
+                    .whereRef('library_copies.book_id', '=', 'library_books.book_id')
                     .select(eb.fn.countAll<number>().as('count'))
                     .as('total_copies')
             ])
-            .orderBy('createdAt', 'desc')
+            .orderBy('created_at', 'desc')
             .execute();
     })
     .post('/books', async ({ body, set, user }: any) => {
         if (!user) { set.status = 401; return { error: "Unauthorized" }; }
         try {
-            const { copies, ...bookData } = body;
+            const { copies, author, genreId, coverUrl, published_year, pages, description, ...bookData } = body;
             
             // Insert Book
             const result = await db.insertInto('library_books')
                 .values({
                     ...bookData,
-                    createdAt: new Date()
+                    title: body.title,
+                    isbn: body.isbn,
+                    publisher: body.publisher,
+                    published_year: published_year,
+                    year_publication: published_year || new Date().getFullYear(),
+                    genre_id: genreId || 1, // Default to first genre
+                    pages: pages || 0,
+                    description: description,
+                    cover_url: coverUrl,
+                    edition_number: 1,
+                    created_at: new Date()
                 })
                 .executeTakeFirst();
             
@@ -109,11 +117,13 @@ export const library = new Elysia({ prefix: '/library' })
             // Insert Copies if requested
             if (copies && copies > 0) {
                 const copiesData = Array.from({ length: copies }).map((_, i) => ({
-                    bookId: bookId,
-                    copyNumber: i + 1,
+                    book_id: bookId,
+                    copy_number: i + 1,
                     status: 'available' as const,
-                    condition: 'new',
-                    shelfLocation: 'Reception' // Default location
+                    condition: 'new' as const,
+                    location: 'Reception', // Default location
+                    acquisition_date: new Date(),
+                    notes: ''
                 }));
                 
                 await db.insertInto('library_copies')
@@ -144,28 +154,37 @@ export const library = new Elysia({ prefix: '/library' })
     .get('/loans', async ({ user, set }: any) => {
         if (!user) { set.status = 401; return { error: "Unauthorized" }; }
         return await db.selectFrom('library_loans')
-            .innerJoin('library_copies', 'library_copies.copyId', 'library_loans.copyId')
-            .innerJoin('library_books', 'library_books.bookId', 'library_copies.bookId')
-            .select(['library_loans.loanId', 'library_loans.dueDate', 'library_loans.status', 'library_loans.loanDate',
-                     'library_books.title', 'library_books.author', 'library_books.coverUrl'])
-            .where('borrowerId', '=', user.user_id)
+            .innerJoin('library_copies', 'library_copies.copy_id', 'library_loans.copy_id')
+            .innerJoin('library_books', 'library_books.book_id', 'library_copies.book_id')
+            .select(['library_loans.loan_id', 'library_loans.due_date', 'library_loans.status', 'library_loans.loan_date',
+                     'library_books.title', 'library_books.cover_url'])
+            .where('reader_id', '=', user.user_id)
             .where('library_loans.status', '=', 'ongoing')
-            .orderBy('dueDate', 'asc')
+            .orderBy('due_date', 'asc')
             .execute();
     })
     .post('/copies', async ({ body, set, user }: any) => {
         if (!user) { set.status = 401; return { error: "Unauthorized" }; }
         try {
             const { bookId, count } = body;
-            const copiesData = Array.from({ length: count }).map((_, i) => ({
-                bookId: bookId,
-                copyNumber: 0, // Should calculate max copy number... simplification for now or auto-increment if copyId is distinct
-                status: 'available' as const,
-                condition: 'new',
-                shelfLocation: 'Reception'
-            }));
             
-            // Note: Simplification. Ideally we fetch max copyNumber for the book first.
+            // Get max copy number for this book
+            const maxCopyResult = await db.selectFrom('library_copies')
+                .where('book_id', '=', bookId)
+                .select(eb => eb.fn.max('copy_number').as('max_copy'))
+                .executeTakeFirst();
+            
+            const startCopyNumber = (Number(maxCopyResult?.max_copy) || 0) + 1;
+
+            const copiesData = Array.from({ length: count }).map((_, i) => ({
+                book_id: bookId,
+                copy_number: startCopyNumber + i,
+                status: 'available' as const,
+                condition: 'new' as const,
+                location: 'Reception',
+                acquisition_date: new Date(),
+                notes: ''
+            }));
             
             await db.insertInto('library_copies')
                 .values(copiesData)
@@ -181,14 +200,14 @@ export const library = new Elysia({ prefix: '/library' })
     })
     .post('/borrow', async ({ body, set, user }: any) => {
         if (!user) { set.status = 401; return { error: "Unauthorized" }; }
-        const { userId, copyId } = body;
+        const { user_id, copyId } = body;
 
         // Transaction
         try {
             // Check availability
             const copy = await db.selectFrom('library_copies')
-                .select(['status', 'bookId'])
-                .where('copyId', '=', copyId)
+                .select(['status', 'book_id'])
+                .where('copy_id', '=', copyId)
                 .executeTakeFirst();
 
             if (!copy || copy.status !== 'available') {
@@ -199,18 +218,19 @@ export const library = new Elysia({ prefix: '/library' })
             // Create Loan
             await db.insertInto('library_loans')
                 .values({
-                    copyId,
-                    borrowerId: userId, // Mapped to borrowerId
-                    loanDate: new Date(),
-                    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
-                    status: 'ongoing'
+                    copy_id: copyId,
+                    reader_id: user_id,
+                    loan_date: new Date(),
+                    due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
+                    status: 'ongoing',
+                    notes: ''
                 })
                 .execute();
 
             // Update Copy Status
             await db.updateTable('library_copies')
                 .set({ status: 'checked_out' })
-                .where('copyId', '=', copyId)
+                .where('copy_id', '=', copyId)
                 .execute();
 
             return { message: "Book borrowed successfully" };
@@ -233,8 +253,8 @@ export const library = new Elysia({ prefix: '/library' })
         try {
             // Find active loan for this copy
             const loan = await db.selectFrom('library_loans')
-                .select('loanId')
-                .where('copyId', '=', copyId)
+                .select('loan_id')
+                .where('copy_id', '=', copyId)
                 .where('status', '=', 'ongoing')
                 .executeTakeFirst();
 
@@ -247,15 +267,15 @@ export const library = new Elysia({ prefix: '/library' })
             await db.updateTable('library_loans')
                 .set({ 
                     status: 'returned',
-                    returnDate: new Date()
+                    return_date: new Date()
                 })
-                .where('loanId', '=', loan.loanId)
+                .where('loan_id', '=', loan.loan_id)
                 .execute();
 
             // Update Copy Status
             await db.updateTable('library_copies')
                 .set({ status: 'available' })
-                .where('copyId', '=', copyId)
+                .where('copy_id', '=', copyId)
                 .execute();
 
             return { message: "Book returned successfully" };

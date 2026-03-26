@@ -3,7 +3,7 @@ import { db } from '../../../../../database';
 import { config } from '../../../../../src/config/app.config';
 import { sql } from 'kysely';
 
-export const googleAuth = new Elysia()
+export default new Elysia()
     .group('/auth/google', (app) => app
         .get('/connect', async ({ query, cookie, set }) => {
             if (!config.GOOGLE_CLIENT_ID) return { error: 'Google Auth not configured' };

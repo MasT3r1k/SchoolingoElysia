@@ -2,7 +2,7 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { config } from '../../../../../src/config/app.config';
 
-export const microsoftAuth = new Elysia()
+export default new Elysia()
     .group('/auth/microsoft', (app) => app
         .get('/connect', async ({ query }) => {
              if (!config.MICROSOFT_CLIENT_ID) return { error: 'Microsoft Auth not configured' };
