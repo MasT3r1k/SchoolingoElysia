@@ -94,11 +94,27 @@ const app = new Elysia()
       created: c.created,
     }));
 
+    const exemptions = await db
+      .selectFrom('student_subject_exemptions')
+      .select(['student_id', 'valid_from', 'valid_to', 'note'])
+      .where('student_id', 'in', student_ids)
+      .where((eb) => eb.or([
+        eb('subject_id', '=', body.subject_id),
+        eb('subject_id', 'is', null)
+      ]))
+      .execute();
+
     const studentsWithMarks = student_ids.map((student_id: number) => {
       const studentMarks = gradeColumns.map((col: any) => {
         const grade = grades.find((g: any) => g.student_id === student_id && g.column_id === col.column_id);
         return grade ? grade.mark : null;
       });
+
+      const exemption = exemptions.find(e => 
+        e.student_id === student_id && 
+        (!e.valid_from || new Date(e.valid_from) <= new Date()) && 
+        (!e.valid_to || new Date(e.valid_to) >= new Date())
+      );
 
       return {
         student_id,
@@ -109,6 +125,8 @@ const app = new Elysia()
           verbal_assessment: g.verbal_assessment
         })),
         marks: studentMarks,
+        is_exempted: !!exemption,
+        exemption_note: exemption?.note || null
       };
     });
 

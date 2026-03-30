@@ -51,6 +51,36 @@ const app = new Elysia()
     const people_ids = Array.from( new Set(messagesDB.map((m) => m.author_id!)) );
     const people = await format_person_map_by_ids(people_ids);
 
+    /* 🔹 přílohy */
+    const messageIds = messagesDB.map(m => m.message_id);
+    const filesDB = await db
+        .selectFrom('messages_files')
+        .innerJoin('files', 'messages_files.file_id', 'files.file_id')
+        .select([
+            'messages_files.message_id',
+            'files.file_id',
+            'files.file_uuid',
+            'files.real_file_name as name',
+            'files.file_format',
+            'files.file_size',
+            'files.mime_type'
+        ])
+        .where('messages_files.message_id', 'in', messageIds)
+        .execute();
+
+    const filesMap = new Map<number, any[]>();
+    filesDB.forEach(f => {
+        if (!filesMap.has(f.message_id)) filesMap.set(f.message_id, []);
+        filesMap.get(f.message_id)!.push({
+            file_id: f.file_id,
+            file_uuid: f.file_uuid,
+            name: f.name,
+            file_format: f.file_format,
+            file_size: f.file_size,
+            mime_type: f.mime_type
+        });
+    });
+
     const messages = messagesDB.map((message, index) => ({
         ...message,
         author: {
@@ -58,7 +88,8 @@ const app = new Elysia()
             last_name: message.last_name,
             full_name: people.get(message.author_id),
             avatar: message.avatar
-        }
+        },
+        files: filesMap.get(message.message_id) || []
     }))
 
     return { total: totalRows, messages };

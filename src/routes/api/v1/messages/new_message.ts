@@ -207,7 +207,7 @@ const app = new Elysia()
     }
   }, {
     body: t.Object({
-      topic: t.Optional(t.String()),
+      topic: t.Optional(t.Nullable(t.String())),
       message: t.String(),
       recipients: t.Array(t.Number()),
       type: t.Optional(t.Number()),
@@ -217,11 +217,11 @@ const app = new Elysia()
       copy_to_students: t.Optional(t.Boolean()),
       files: t.Optional(t.Array(t.Number())),
       draft_id: t.Optional(t.Nullable(t.Number())),
-      excuse_date_from: t.Optional(t.String()),
-      excuse_date_to: t.Optional(t.String()),
-      excuse_hour_from: t.Optional(t.Number()),
-      excuse_hour_to: t.Optional(t.Number()),
-      excuse_all_day: t.Optional(t.Boolean())
+      excuse_date_from: t.Optional(t.Nullable(t.String())),
+      excuse_date_to: t.Optional(t.Nullable(t.String())),
+      excuse_hour_from: t.Optional(t.Nullable(t.Number())),
+      excuse_hour_to: t.Optional(t.Nullable(t.Number())),
+      excuse_all_day: t.Optional(t.Nullable(t.Boolean()))
     })
   });
 

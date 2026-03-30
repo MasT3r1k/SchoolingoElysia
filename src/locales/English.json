@@ -1298,6 +1298,7 @@
         "create_mark": "Create grade",
         "edit_points": "Edit points",
         "create_points": "Add points",
+        "exempted_from_subject": "Excluded from subject",
         "topic": "Title",
         "type": "Grading type",
         "types": {

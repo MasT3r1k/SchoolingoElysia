@@ -102,6 +102,20 @@ const app = new Elysia()
         r.full_name = receiverNames.get(r.person_id);
     });
 
+    const files = await db
+        .selectFrom('messages_files')
+        .innerJoin('files', 'messages_files.file_id', 'files.file_id')
+        .select([
+            'files.file_id',
+            'files.file_uuid',
+            'files.real_file_name as name',
+            'files.file_format',
+            'files.file_size',
+            'files.mime_type'
+        ])
+        .where('messages_files.message_id', '=', messageId)
+        .execute();
+
      return {
         ...message,
         author: {
@@ -111,7 +125,8 @@ const app = new Elysia()
             avatar: message.avatar
         },
         receivers: formattedReceivers,
-        target_groups: uniqueClasses
+        target_groups: uniqueClasses,
+        files: files
     };
 
   }, {

@@ -917,8 +917,11 @@
         "average_grade": "Průměr známek",
         "average": "Průměr",
         "absence": "Absence (%)",
+        "measure_educations": "Kázeňská opatření",
         "edit_personal": "Upravit osobní údaje",
         "edit_personal_description": "Upravte osobní údaje studenta, jako je jméno, příjmení, třída, pohlaví nebo datum narození.",
+        "basic_info": "Základní informace",
+        "insurance": "Pojišťovna",
         "save_history": {
             "title": "Typ uložení změn",
             "description": "Chcete změnu uložit k určitému datu v historii, nebo jen opravit aktuální data?",
@@ -929,6 +932,10 @@
             "item": "Položka",
             "original_value": "Původní hodnota",
             "new_value": "Nová hodnota"
+        },
+        "edit_address": {
+            "title": "Upravit adresu",
+            "description": "Změna trvalého bydliště studenta"
         },
         "manage_parent": {
             "title": "Správa zákonných zástupců",
@@ -949,6 +956,12 @@
             "educational_measures": "Výchovná opatření",
             "timetable": "Rozvrh",
             "relationship": "Vztah ke studentovi"
+        },
+        "add_note": {
+            "title": "Přidat poznámku k žákovi"
+        },
+        "edit_note": {
+            "title": "Upravit poznámku žáka"
         },
         "siblings": "Sourozenci",
         "class_rank": "Pořadí v třídní knize",
@@ -980,6 +993,9 @@
         },
         "create_parent": {
             "title": "Vytvořit nového zákonného zástupce"
+        },
+        "edit_parent": {
+            "title": "Upravit zákonného zástupce"
         },
         "remove_parent": {
             "title": "Odebrat zákonného zástupce",
@@ -1414,6 +1430,7 @@
         "create_mark": "Vytvořit známku",
         "edit_points": "Upravit body",
         "create_points": "Přidat body",
+        "exempted_from_subject": "Vyloučen z výuky předmětu",
         "topic": "Titulek",
         "type": "Druh známkování",
         "types": {
@@ -2134,10 +2151,18 @@
         "no_classteacher": "Nepřiřazeno",
         "field_of_study": "Obor studia",
         "room_class": "Místnost třídy",
+        "study_length": "Délka studia",
+        "date_of_start": "Datum nástupu",
         "no_room": "Žádná",
         "students_count": "Počet studentů"
     },
     "employees": {
+        "errors": {
+            "load_failed": "Nepodařilo se načíst seznam zaměstnanců",
+            "load_detail_failed": "Nepodařilo se načíst detail zaměstnance",
+            "no_permission_title": "Nemáte přístup k ostatním zaměstnancům",
+            "no_permission_desc": "Pro zobrazení seznamu zaměstnanců školy nemáte dostatečná oprávnění. Pokud se domníváte, že byste tento přístup měli mít, kontaktujte prosím správce systému."
+        },
         "list": "Seznam",
         "attendance": "Docházka",
         "attendance_status": {
