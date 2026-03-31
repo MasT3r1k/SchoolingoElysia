@@ -358,11 +358,21 @@ const elysiaApp = new Elysia()
             db.selectFrom('employee_vacation_requests').select(['start_date', 'end_date', 'type'])
               .where('teacher_id', '=', targetId).where('status', '=', 'approved')
               .where('start_date', '<=', time.endOf('isoWeek').format('YYYY-MM-DD'))
-              .where('end_date', '>=', time.startOf('isoWeek').format('YYYY-MM-DD')).execute()
+              .where('end_date', '>=', time.startOf('isoWeek').format('YYYY-MM-DD')).execute(),
           ]);
 
+          const classbooksResult = await db.selectFrom('classbook')
+              .select(['date', 'day_hour', 'group_id', 'subject_id', 'topic'])
+              .where('date', '>=', time.startOf('isoWeek').format('YYYY-MM-DD'))
+              .where('date', '<=', time.endOf('isoWeek').format('YYYY-MM-DD'))
+              .where((eb) => eb.or([
+                eb('teacher_id', '=', targetId),
+                eb('group_id', 'in', timetableResult.length ? timetableResult.map((t: any) => t.group_id) : [-1])
+              ]))
+              .execute();
+
           const processed = await processResults(timetableResult, substitutionResult);
-          return Response.json({ ...processed, working_modes: workingModesResult });
+          return Response.json({ ...processed, working_modes: workingModesResult, classbooks: classbooksResult });
 
         } else if (type === "supervision") {
           const supervisionResult = await db.selectFrom('supervisions')

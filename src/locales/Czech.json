@@ -784,6 +784,7 @@
         "remove_authenticator_app": "Odebrat aplikaci autentizace",
         "jump_to_2FA_settings": "Přejít do nastavení 2FA",
         "upload_files": "Nahrát soubory",
+        "add_reward": "Přidat odměnu",
         "back": "Zpátky",
         "cancel": "Zrušit",
         "edit": "Upravit",
@@ -794,6 +795,7 @@
         "view_all": "Zobrazit vše",
         "remove": "Odebrat",
         "save": "Uložit",
+        "saving": "Ukládání",
         "save_changes": "Uložit změny",
         "reset": "Obnovit"
     },
@@ -1013,6 +1015,16 @@
             "remove_student": "Odpojit od studenta",
             "remove_all_students": "Zrušit všechna zastoupení",
             "delete_person": "Smazat osobu ze systému"
+        },
+        "add_reward": {
+            "title": "Odměny a ocenění",
+            "description": "Zde můžete udělit žákovi odměnu.",
+            "reward_name": "Název odměny",
+            "reward_name_placeholder": "Např. Pochvala za reprezentaci",
+            "reward_description": "Popis odměny / důvod",
+            "reward_description_placeholder": "Slovní hodnocení nebo popis důvodu k odměně",
+            "reward_type": "Typ odměny",
+            "reward_money": "Částka"
         }
     },
     "documents": {
@@ -1076,11 +1088,46 @@
         "deny": "Zakázat (DENY)"
     },
     "rewards": {
+        "title": "Odměny k vyzvednutí",
+        "subtitle": "Přehled odměn čekajících na vyzvednutí v kanceláři školy",
+        "pending_banner": {
+            "one": "Máte jednu odměnu k vyzvednutí!",
+            "few": "Máte %count% odměny k vyzvednutí!",
+            "many": "Máte %count% odměn k vyzvednutí!"
+        },
+        "visit_office": "Navštivte kancelář školy pro vyzvednutí.",
         "status": {
             "all": "Všechny",
-            "pending": "K vyzvednutí",
-            "collected": "Vyzvednuto"
-        }
+            "pending": "Čeká na vyzvednutí",
+            "collected": "Vyzvednuto",
+            "collected_at": "Vyzvednuto: %date%"
+        },
+        "stats": {
+            "pending": "Čeká na vyzvednutí",
+            "total_amount": "Celkem finanční odměny"
+        },
+        "type": {
+            "financial": "Finanční",
+            "certificate": "Certifikát/Diplom",
+            "prize": "Věcná cena",
+            "other": "Jiné"
+        },
+        "created_at": "Vytvořeno",
+        "given_by": "Udělil",
+        "mark_collected": "Označit jako vybrané",
+        "no_rewards": "Žádné odměny",
+        "no_rewards_desc": "Momentálně nejsou evidovány žádné odměny k vyzvednutí.",
+        "student_no_rewards": "Tento žák zatím nemá v této kategorii žádné odměny.",
+        "total_given": "Celkem udělených odměn",
+        "last_evaluation": "Poslední hodnocení",
+        "no_evaluation": "Žádné hodnocení",
+        "award_reward": "Udělit odměnu",
+        "amount_label": "Částka: %amount% Kč",
+        "loading": "Načítání odměn...",
+        "confirm_delete": "Opravdu si přejete tuto položku trvale odstranit?",
+        "confirm_delete_desc": "Tato akce je nevratná a odměna bude trvale odebrána.",
+        "delete_confirm_title": "Odebrat odměnu?",
+        "delete_reward_btn": "Odebrat odměnu"
     },
     "classbook": {
         "class_service": "Pořádková služba",
@@ -1097,6 +1144,7 @@
         "placeholder_teacher_note": "Napište učitelskou poznámku k hodině (nepovinné)",
         "lesson_teacher_note_note": "Tato poznámka není zobrazena studentům.",
         "save_lesson": "Zapsat hodinu",
+        "lesson_saved_success": "Zápis hodiny byl úspěšně uložen.",
         "save_absence": "Zapsat absenci",
         "last_lesson": "Minulá hodina",
         "total_students": "Celkem studentů",
@@ -1107,6 +1155,8 @@
         "homework_timeline": "Zadáno: %start% | Odevzdat do: %end% | Odevzdalo: %submitted%/%total%",
         "add_note_btn": "Přidat poznámku",
         "last_lesson_not_written": "Minulá hodina ještě není zapsána.",
+        "no_homework": "Žádné domácí úkoly",
+        "no_homework_desc": "Nezadal jste ještě žádné domácí úkoly",
         "add_homework": {
             "title": "Nový domácí úkol",
             "homework_title": "Titulek úkolu",
@@ -2164,9 +2214,9 @@
     "employees": {
         "errors": {
             "load_failed": "Nepodařilo se načíst seznam zaměstnanců",
-            "load_detail_failed": "Nepodařilo se načíst detail zaměstnance",
             "no_permission_title": "Nemáte přístup k ostatním zaměstnancům",
-            "no_permission_desc": "Pro zobrazení seznamu zaměstnanců školy nemáte dostatečná oprávnění. Pokud se domníváte, že byste tento přístup měli mít, kontaktujte prosím správce systému."
+            "no_permission_desc": "Pro zobrazení seznamu zaměstnanců školy nemáte dostatečná oprávnění. Pokud se domníváte, že byste tento přístup měli mít, kontaktujte prosím správce systému.",
+            "load_detail_failed": "Nepodařilo se načíst informace o zaměstnanci."
         },
         "list": "Seznam",
         "attendance": "Docházka",
@@ -2273,9 +2323,6 @@
         "edit_attendance": {
             "title": "Upravit docházku",
             "description": "Upravte nebo doplňte záznamy docházky zaměstnance."
-        },
-        "errors": {
-            "load_detail_failed": "Nepodařilo se načíst informace o zaměstnanci."
         }
     },
     "seasonal": {
@@ -2499,8 +2546,23 @@
         "new_building": "Nová budova",
         "new_room": "Nová místnost",
         "new_item": "Nová položka",
+        "edit_building": "Upravit budovu",
         "edit_room": "Upravit místnost",
         "edit_item": "Upravit položku",
+        "new_floor": "Nové patro",
+        "edit_floor": "Upravit patro",
+        "delete_building_title": "Odebrat budovu?",
+        "delete_building_desc": "Opravdu si přejete tuto budovu smazat? Tato akce je nevratná a přijdete i o všechna patra a místnosti v ní.",
+        "delete_building_btn": "Smazat budovu",
+        "delete_floor_title": "Odebrat patro?",
+        "delete_floor_desc": "Opravdu si přejete smazat toto patro? Tato akce je nevratná a přijdete tak i o všechny místnosti v tomto patře.",
+        "delete_floor_btn": "Smazat patro",
+        "delete_room_title": "Odebrat místnost?",
+        "delete_room_desc": "Opravdu si přejete smazat tuto místnost? Tato akce je nevratná.",
+        "delete_room_btn": "Smazat místnost",
+        "delete_item_title": "Odebrat majetek?",
+        "delete_item_desc": "Opravdu si přejete smazat tuto položku z evidence majetku? Tato akce je nevratná.",
+        "delete_item_btn": "Smazat majetek",
         "room_name": "Název místnosti",
         "room_type": "Typ místnosti",
         "room_manager": "Správce místnosti",

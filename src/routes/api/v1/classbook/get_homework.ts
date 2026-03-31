@@ -20,9 +20,10 @@ const elysiaApp = new Elysia()
     if (subjectId == undefined || groupId == undefined) return { error: 'bad_query' };
 
     // === NAČTENÍ DOMÁCÍCH ÚKOL ===
-    const homework = await db.selectFrom('homework')
+    const homework: any[] = await db.selectFrom('homework')
     .select([
         'homework.homework_id',
+        'homework.headline',
         'homework.homework',
         'homework.assigned_at',
         'homework.due_date',
@@ -32,6 +33,26 @@ const elysiaApp = new Elysia()
     .where('homework.subject_id', '=', subjectId)
     .orderBy('homework.due_date', 'desc')
     .execute();
+
+    if (homework.length > 0) {
+        const h_ids = homework.map(h => h.homework_id);
+        const submissions = await db.selectFrom('student_homework')
+          .leftJoin('persons', 'persons.person_id', 'student_homework.student_id')
+          .select([
+             'student_homework.homework_id',
+             'student_homework.student_id',
+             'persons.first_name',
+             'persons.last_name',
+             'student_homework.submitted',
+             'student_homework.finished'
+          ])
+          .where('student_homework.homework_id', 'in', h_ids)
+          .execute();
+          
+        for (let hw of homework) {
+           hw.submissions = submissions.filter(s => s.homework_id === hw.homework_id);
+        }
+    }
 
     return homework;
 

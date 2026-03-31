@@ -950,6 +950,22 @@
         "add": "Add",
         "deny": "Deny"
     },
+    "rewards": {
+        "status": {
+            "all": "All",
+            "pending": "To be collected",
+            "collected": "Collected"
+        },
+        "type": {
+            "financial": "Financial",
+            "certificate": "Certificate/Diploma",
+            "prize": "Gift/Prize",
+            "other": "Other"
+        },
+        "confirm_delete": "Are you sure you want to remove this reward?",
+        "delete_confirm_title": "Remove reward?",
+        "delete_reward_btn": "Remove reward"
+    },
     "classbook": {
         "class_service": "Class monitor",
         "write_lesson": "Record lesson",
@@ -965,6 +981,7 @@
         "placeholder_teacher_note": "Enter teacher note for lesson (optional)",
         "lesson_teacher_note_note": "This note is not visible to students.",
         "save_lesson": "Save lesson",
+        "lesson_saved_success": "Lesson record was successfully saved.",
         "save_absence": "Save attendance",
         "last_lesson": "Previous lesson",
         "total_students": "Total students",

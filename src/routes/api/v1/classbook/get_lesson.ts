@@ -25,7 +25,8 @@ const elysiaApp = new Elysia()
     // === NAČÍST PŘEDMĚT ===
     const subject = await db.selectFrom('timetable')
     .select([
-      'timetable.subject_id'
+      'timetable.subject_id',
+      'timetable.teacher_id'
     ])
     .where('timetable.day', '=', dateMoment.isoWeekday() - 1)
     .where('timetable.hour', '=', hour + 1)
@@ -36,7 +37,7 @@ const elysiaApp = new Elysia()
       return { error: 'invalid_subject' };
     }
 
-    const subjectId = subject.subject_id;
+    const { subject_id: subjectId, teacher_id } = subject;
 
     // === NAČTENÍ NEBO VYTVOŘENÍ ZÁPISU ===
     const isExistClassbook = await db.selectFrom('classbook')
@@ -55,9 +56,16 @@ const elysiaApp = new Elysia()
         date: dateMoment.format('YYYY-MM-DD'),
         day_hour: hour,
         group_id: groupId,
-        subject_id: subjectId
+        subject_id: subjectId,
+        teacher_id: teacher_id
       })
       .execute();
+    } else {
+      await db.updateTable('classbook')
+        .set({ teacher_id: teacher_id })
+        .where('classbook_id', '=', isExistClassbook.classbook_id)
+        .where('teacher_id', 'is', null)
+        .execute();
     }
 
     const classbook = await db.selectFrom('classbook')
@@ -116,8 +124,8 @@ const elysiaApp = new Elysia()
       .where('student_id', 'in', studentsDB.map((s) => s.student_id))
       .where('subject_id', '=', subjectId)
       .where((eb) => eb.and([
-          eb.or([eb('valid_to', 'is', null), eb('valid_to', '>=', classbook.date as string)]),
-          eb('valid_from', '<=', classbook.date as string)
+          eb.or([eb('valid_to', 'is', null), eb('valid_to', '>=', classbook.date as Date)]),
+          eb('valid_from', '<=', classbook.date as Date)
       ]))
       .execute();
 
