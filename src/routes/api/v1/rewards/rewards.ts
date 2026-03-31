@@ -9,7 +9,7 @@ import { format_person_map_by_ids } from '../../../../functions/format_person_by
 
 const app = new Elysia()
     // Get rewards for current user (student view) or all rewards (teacher view)
-    .get('/rewards', async ({ cookie }) => {
+    .get('/rewards', async ({ cookie, query: { studentId } }) => {
         const token = cookie.token?.value as string;
         if (!token) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
@@ -55,6 +55,9 @@ const app = new Elysia()
         if (!isTeacher) {
             // Student sees only their rewards
             query = query.where('rewards.student_id', '=', auth.person_id);
+        } else if (studentId) {
+            // Teacher/Admin can filter by studentId
+            query = query.where('rewards.student_id', '=', parseInt(studentId));
         }
 
         const rewards = await query
@@ -66,6 +69,10 @@ const app = new Elysia()
         const peopleNames = await format_person_map_by_ids(peopleIds);
 
         return Response.json({ rewards: rewards.map((reward) => ({...reward, teacherName: peopleNames.get(reward.teacherId), studentName: peopleNames.get(reward.student_id) })) });
+    }, {
+        query: t.Object({
+            studentId: t.Optional(t.String())
+        })
     })
 
     // Create a new reward (teacher only)

@@ -849,7 +849,8 @@
             "evaluation": "Evaluation",
             "educational_measures": "Educational measures",
             "timetable": "Timetable",
-            "relationship": "Relationship to student"
+            "relationship": "Relationship to student",
+            "rewards": "Rewards"
         },
         "siblings": "Siblings",
         "register_number": "Register Number",

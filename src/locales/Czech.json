@@ -432,16 +432,20 @@
     "time": {
         "minute": "minuta",
         "minutes": "minut",
+        "day": "Den",
         "daily": "Denně",
         "week": "Týden",
         "weekly": "Týdně",
         "month": "Měsíc",
         "monthly": "Měsíčně",
         "to_today": "K dnešku",
+        "30days": "30 dní",
+        "semester": "pololetí",
         "first_term": "1. pololetí",
         "second_term": "2. pololetí",
         "school_year": "Školní rok",
-        "older": "Starší"
+        "older": "Starší",
+        "custom": "Vlastní"
     },
     "roles": {
         "all": "Všechny role",
@@ -955,7 +959,8 @@
             "evaluation": "Hodnocení",
             "educational_measures": "Výchovná opatření",
             "timetable": "Rozvrh",
-            "relationship": "Vztah ke studentovi"
+            "relationship": "Vztah ke studentovi",
+            "rewards": "Odměny"
         },
         "add_note": {
             "title": "Přidat poznámku k žákovi"
