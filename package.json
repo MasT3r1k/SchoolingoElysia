@@ -41,7 +41,7 @@
     "mime-types": "^3.0.2",
     "moment": "^2.30.1",
     "mysql2": "latest",
-    "nodemailer": "^7.0.9",
+    "nodemailer": "^8.0.5",
     "otpauth": "^9.4.0",
     "otplib": "^12.0.1",
     "web-push": "^3.6.7",
