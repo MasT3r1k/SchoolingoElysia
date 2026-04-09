@@ -414,7 +414,44 @@ INSERT INTO `analytics_visits` (`id`, `user_id`, `visitor_id`, `url`, `path`, `m
 (8474, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 21:31:24', 12),
 (8475, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/main', '/main', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 21:31:36', 1),
 (8476, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 21:31:38', 119),
-(8477, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students/1', '/students/1', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 21:34:26', NULL);
+(8477, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students/1', '/students/1', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 21:34:26', NULL),
+(8478, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:42:50', NULL),
+(8479, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students/1', '/students/1', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:42:51', 16),
+(8480, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students', '/students', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:43:07', 1),
+(8481, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/classes', '/classes', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:43:09', 1),
+(8482, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/classes/1', '/classes/1', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:43:10', 2),
+(8483, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/students/1', '/students/1', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:43:12', 0),
+(8484, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture', '/admin/architecture', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:43:14', NULL),
+(8485, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/buildings', '/admin/architecture/buildings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:43:15', 0),
+(8486, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/rooms', '/admin/architecture/rooms', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:43:15', NULL),
+(8487, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/admin/architecture/inventory', '/admin/architecture/inventory', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:43:16', 0),
+(8488, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/schedule/template_timetable', '/schedule/template_timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:43:16', 1),
+(8489, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/marks/intermrecord', '/marks/intermrecord', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:43:18', 0),
+(8490, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:44:23', NULL),
+(8491, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:44:24', 0),
+(8492, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:44:25', 0),
+(8493, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:44:25', 0),
+(8494, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:44:26', 0),
+(8495, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:44:26', NULL),
+(8496, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:44:27', 6),
+(8497, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:44:33', 117),
+(8498, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/send', '/messages/send', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:46:31', 0),
+(8499, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/received', '/messages/received', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:46:32', NULL),
+(8500, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/sent', '/messages/sent', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:46:33', 0),
+(8501, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/messages/drafts', '/messages/drafts', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:46:34', 0),
+(8502, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/archive', '/archive', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:09', NULL),
+(8503, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/settings', '/user/settings', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:09', 0),
+(8504, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/cookies', '/user/cookies', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:10', 0),
+(8505, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/notifications', '/user/notifications', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:10', 0),
+(8506, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/devices', '/user/devices', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:11', NULL),
+(8507, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user/logins', '/user/logins', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:11', NULL),
+(8508, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/user', '/user', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:11', 0),
+(8509, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/documents', '/documents', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:12', NULL),
+(8510, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/calendar', '/calendar', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:13', 0),
+(8511, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/timetable', '/teach/timetable', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:15', NULL),
+(8512, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/substitution', '/teach/substitution', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:15', 0),
+(8513, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/tutoring', '/teach/tutoring', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:16', NULL),
+(8514, 4, 'be4106ea-09c7-4c41-8f4c-c5ccdc5e24b0', 'http://localhost:4200/teach/classbook', '/teach/classbook', 'GET', 'unknown', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:47:16', 535);
 
 CREATE TABLE `auditlog` (
   `audit_id` int(11) NOT NULL,
@@ -486,7 +523,8 @@ INSERT INTO `auditlog` (`audit_id`, `user_id`, `type`, `data`, `ip`, `created`) 
 (61, NULL, 'backup_created', '{\"action\":\"database_backup\",\"filename\":\"schoolingo_backup_2026-03-26_13-19-44.sql\",\"size\":1124694,\"description\":\"Scheduled automatic backup (Startup check)\",\"commitHash\":\"37f315498fedca2ddeb0ca499cc154f856a094f9\"}', NULL, '2026-03-26 14:19:45.231040'),
 (62, NULL, 'backup_created', '{\"action\":\"database_backup\",\"filename\":\"schoolingo_backup_2026-03-29_07-56-20.sql\",\"size\":1213036,\"description\":\"Scheduled automatic backup (Startup check)\",\"commitHash\":\"938b8686f639f87c65a30c70e7facfc39c6ce76f\"}', NULL, '2026-03-29 09:56:21.702958'),
 (63, NULL, 'backup_created', '{\"action\":\"database_backup\",\"filename\":\"schoolingo_backup_2026-03-30_15-16-41.sql\",\"size\":1364591,\"description\":\"Scheduled automatic backup (Startup check)\",\"commitHash\":\"b7ff7a7866c7ab0ab6448a283a3139185588ec70\"}', NULL, '2026-03-30 17:16:42.241175'),
-(64, NULL, 'backup_created', '{\"action\":\"database_backup\",\"filename\":\"schoolingo_backup_2026-03-31_19-11-33.sql\",\"size\":1418445,\"description\":\"Scheduled automatic backup (Startup check)\",\"commitHash\":\"c733ddd5cfa2d1860dcf94e51a2cd4708334b08d\"}', NULL, '2026-03-31 21:11:34.485194');
+(64, NULL, 'backup_created', '{\"action\":\"database_backup\",\"filename\":\"schoolingo_backup_2026-03-31_19-11-33.sql\",\"size\":1418445,\"description\":\"Scheduled automatic backup (Startup check)\",\"commitHash\":\"c733ddd5cfa2d1860dcf94e51a2cd4708334b08d\"}', NULL, '2026-03-31 21:11:34.485194'),
+(65, NULL, 'backup_created', '{\"action\":\"database_backup\",\"filename\":\"schoolingo_backup_2026-04-01_19-23-51.sql\",\"size\":1482266,\"description\":\"Scheduled automatic backup (Startup check)\",\"commitHash\":\"67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa\"}', NULL, '2026-04-01 21:23:52.785750');
 
 CREATE TABLE `avatar_history` (
   `id` int(11) NOT NULL,
@@ -605,7 +643,8 @@ INSERT INTO `backups` (`backup_id`, `filename`, `size`, `type`, `status`, `creat
 (54, 'schoolingo_backup_2026-03-26_13-19-44.sql', 1124694, 'auto', 'success', '2026-03-26 13:19:45', '37f315498fedca2ddeb0ca499cc154f856a094f9'),
 (55, 'schoolingo_backup_2026-03-29_07-56-20.sql', 1213036, 'auto', 'success', '2026-03-29 07:56:21', '938b8686f639f87c65a30c70e7facfc39c6ce76f'),
 (56, 'schoolingo_backup_2026-03-30_15-16-41.sql', 1364591, 'auto', 'success', '2026-03-30 15:16:42', 'b7ff7a7866c7ab0ab6448a283a3139185588ec70'),
-(57, 'schoolingo_backup_2026-03-31_19-11-33.sql', 1418445, 'auto', 'success', '2026-03-31 19:11:34', 'c733ddd5cfa2d1860dcf94e51a2cd4708334b08d');
+(57, 'schoolingo_backup_2026-03-31_19-11-33.sql', 1418445, 'auto', 'success', '2026-03-31 19:11:34', 'c733ddd5cfa2d1860dcf94e51a2cd4708334b08d'),
+(58, 'schoolingo_backup_2026-04-01_19-23-51.sql', 1482266, 'auto', 'success', '2026-04-01 19:23:52', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa');
 
 CREATE TABLE `buildings` (
   `building_id` int(11) NOT NULL,
@@ -2300,7 +2339,13 @@ INSERT INTO `login_history` (`login_id`, `user_id`, `type`, `success`, `error`, 
 (2261, 4, 'password', 1, NULL, '109.164.51.14', 41, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 21:12:13.050553', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
 (2262, 12, 'password', 0, 'Invalid password', '109.164.51.14', NULL, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 21:19:54.156231', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
 (2263, 1, 'password', 1, NULL, '109.164.51.14', 42, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 21:20:07.625804', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
-(2264, 4, 'password', 1, NULL, '109.164.51.14', 43, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 21:27:19.012371', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL);
+(2264, 4, 'password', 1, NULL, '109.164.51.14', 43, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 21:27:19.012371', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(2265, 4, 'password', 1, NULL, '109.164.51.14', 44, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 13:42:46.203340', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(2266, 1, 'password', 1, NULL, '109.164.51.14', 45, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 17:56:41.877554', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(2267, 1, 'password', 1, NULL, '109.164.51.14', 46, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 18:48:32.530623', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(2268, 1, 'password', 1, NULL, '109.164.51.14', 47, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 19:35:39.041134', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(2269, 1, 'password', 1, NULL, '109.164.51.14', 48, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 20:12:13.951121', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL),
+(2270, 1, 'password', 1, NULL, '109.164.51.14', 49, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 21:06:03.494795', 'České Budějovice', '370 01', 'Jihočeský kraj', 'Czechia', 'CZ', NULL, NULL);
 
 CREATE TABLE `login_qrcodes` (
   `qrcode` varchar(255) NOT NULL,
@@ -5802,7 +5847,7 @@ INSERT INTO `messages_receivers` (`message_id`, `receiver_id`, `read_at`, `confi
 (10, 2, '2026-03-10 14:33:12', NULL),
 (11, 2, '2026-03-29 21:25:04', NULL),
 (12, 2, '2026-03-29 15:49:42', NULL),
-(13, 1, NULL, NULL),
+(13, 1, '2026-04-01 19:40:45', NULL),
 (14, 2, '2026-03-29 15:49:42', NULL);
 
 CREATE TABLE `message_groups` (
@@ -6786,30 +6831,31 @@ CREATE TABLE `student_homework` (
   `student_id` int(11) NOT NULL,
   `homework_id` int(11) NOT NULL,
   `submitted` tinyint(1) NOT NULL DEFAULT 0,
-  `finished` tinyint(1) NOT NULL DEFAULT 0
+  `finished` tinyint(1) NOT NULL DEFAULT 0,
+  `type` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `student_homework` (`student_id`, `homework_id`, `submitted`, `finished`) VALUES
-(1, 7, 0, 0),
-(1, 13, 0, 0),
-(24, 7, 0, 0),
-(24, 13, 0, 0),
-(25, 7, 0, 0),
-(25, 13, 0, 0),
-(26, 7, 0, 0),
-(26, 13, 0, 0),
-(27, 7, 0, 0),
-(27, 13, 0, 0),
-(28, 7, 0, 0),
-(28, 13, 0, 0),
-(29, 7, 0, 0),
-(29, 13, 0, 0),
-(30, 7, 0, 0),
-(30, 13, 0, 0),
-(31, 7, 0, 0),
-(31, 13, 0, 0),
-(32, 7, 0, 0),
-(32, 13, 0, 0);
+INSERT INTO `student_homework` (`student_id`, `homework_id`, `submitted`, `finished`, `type`) VALUES
+(1, 7, 0, 0, 2),
+(1, 13, 0, 0, 2),
+(24, 7, 0, 0, 0),
+(24, 13, 0, 0, 0),
+(25, 7, 0, 0, 0),
+(25, 13, 0, 0, 0),
+(26, 7, 0, 0, 0),
+(26, 13, 0, 0, 0),
+(27, 7, 0, 0, 0),
+(27, 13, 0, 0, 0),
+(28, 7, 0, 0, 0),
+(28, 13, 0, 0, 0),
+(29, 7, 0, 0, 0),
+(29, 13, 0, 0, 0),
+(30, 7, 0, 0, 0),
+(30, 13, 0, 0, 0),
+(31, 7, 0, 0, 0),
+(31, 13, 0, 0, 0),
+(32, 7, 0, 0, 0),
+(32, 13, 0, 0, 0);
 
 CREATE TABLE `student_matrika` (
   `student_id` int(11) NOT NULL,
@@ -10739,7 +10785,235 @@ INSERT INTO `system_heartbeats` (`heartbeat_id`, `recorded_at`, `version`, `comm
 (19342, '2026-03-31 21:32:20', '2.3.9b', 'c733ddd5cfa2d1860dcf94e51a2cd4708334b08d', 0, NULL),
 (19343, '2026-03-31 21:33:20', '2.3.9b', 'c733ddd5cfa2d1860dcf94e51a2cd4708334b08d', 0, NULL),
 (19344, '2026-03-31 21:34:20', '2.3.9b', 'c733ddd5cfa2d1860dcf94e51a2cd4708334b08d', 0, NULL),
-(19345, '2026-03-31 21:35:20', '2.3.9b', 'c733ddd5cfa2d1860dcf94e51a2cd4708334b08d', 0, NULL);
+(19345, '2026-03-31 21:35:20', '2.3.9b', 'c733ddd5cfa2d1860dcf94e51a2cd4708334b08d', 0, NULL),
+(19346, '2026-03-31 21:36:20', '2.3.9b', 'c733ddd5cfa2d1860dcf94e51a2cd4708334b08d', 0, NULL),
+(19347, '2026-04-01 13:40:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19348, '2026-04-01 13:41:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19349, '2026-04-01 13:42:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19350, '2026-04-01 13:43:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19351, '2026-04-01 13:44:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19352, '2026-04-01 13:45:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19353, '2026-04-01 13:46:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19354, '2026-04-01 13:47:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19355, '2026-04-01 13:48:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19356, '2026-04-01 13:49:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19357, '2026-04-01 13:55:41', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19358, '2026-04-01 13:56:41', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19359, '2026-04-01 17:55:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19360, '2026-04-01 17:56:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19361, '2026-04-01 17:57:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19362, '2026-04-01 17:58:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19363, '2026-04-01 17:59:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19364, '2026-04-01 18:00:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19365, '2026-04-01 18:01:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19366, '2026-04-01 18:02:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19367, '2026-04-01 18:03:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19368, '2026-04-01 18:04:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19369, '2026-04-01 18:05:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19370, '2026-04-01 18:06:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19371, '2026-04-01 18:07:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19372, '2026-04-01 18:08:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19373, '2026-04-01 18:09:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19374, '2026-04-01 18:10:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19375, '2026-04-01 18:11:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19376, '2026-04-01 18:12:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19377, '2026-04-01 18:13:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19378, '2026-04-01 18:14:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19379, '2026-04-01 18:15:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL);
+INSERT INTO `system_heartbeats` (`heartbeat_id`, `recorded_at`, `version`, `commit_hash`, `is_update`, `note`) VALUES
+(19380, '2026-04-01 18:16:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19381, '2026-04-01 18:17:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19382, '2026-04-01 18:18:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19383, '2026-04-01 18:19:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19384, '2026-04-01 18:20:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19385, '2026-04-01 18:21:21', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19386, '2026-04-01 18:21:38', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19387, '2026-04-01 18:22:38', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19388, '2026-04-01 18:23:12', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19389, '2026-04-01 18:24:12', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19390, '2026-04-01 18:25:12', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19391, '2026-04-01 18:26:12', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19392, '2026-04-01 18:27:12', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19393, '2026-04-01 18:28:17', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19394, '2026-04-01 18:29:17', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19395, '2026-04-01 18:30:17', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19396, '2026-04-01 18:30:25', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19397, '2026-04-01 18:30:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19398, '2026-04-01 18:31:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19399, '2026-04-01 18:32:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19400, '2026-04-01 18:33:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19401, '2026-04-01 18:34:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19402, '2026-04-01 18:35:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19403, '2026-04-01 18:36:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19404, '2026-04-01 18:37:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19405, '2026-04-01 18:38:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19406, '2026-04-01 18:39:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19407, '2026-04-01 18:40:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19408, '2026-04-01 18:41:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19409, '2026-04-01 18:42:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19410, '2026-04-01 18:43:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19411, '2026-04-01 18:44:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19412, '2026-04-01 18:45:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19413, '2026-04-01 18:46:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19414, '2026-04-01 18:47:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19415, '2026-04-01 18:48:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19416, '2026-04-01 18:49:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19417, '2026-04-01 18:50:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19418, '2026-04-01 18:51:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19419, '2026-04-01 18:52:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19420, '2026-04-01 18:53:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19421, '2026-04-01 18:54:27', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19422, '2026-04-01 18:54:33', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'shutdown'),
+(19423, '2026-04-01 18:54:41', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19424, '2026-04-01 18:55:41', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19425, '2026-04-01 18:55:59', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19426, '2026-04-01 18:56:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19427, '2026-04-01 18:57:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19428, '2026-04-01 18:58:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19429, '2026-04-01 18:59:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19430, '2026-04-01 19:00:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19431, '2026-04-01 19:01:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19432, '2026-04-01 19:02:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19433, '2026-04-01 19:03:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19434, '2026-04-01 19:04:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19435, '2026-04-01 19:05:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19436, '2026-04-01 19:06:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19437, '2026-04-01 19:07:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19438, '2026-04-01 19:08:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19439, '2026-04-01 19:09:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19440, '2026-04-01 19:10:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19441, '2026-04-01 19:11:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19442, '2026-04-01 19:12:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19443, '2026-04-01 19:13:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19444, '2026-04-01 19:14:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19445, '2026-04-01 19:15:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19446, '2026-04-01 19:16:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19447, '2026-04-01 19:17:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19448, '2026-04-01 19:18:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19449, '2026-04-01 19:19:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19450, '2026-04-01 19:20:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19451, '2026-04-01 19:21:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19452, '2026-04-01 19:22:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19453, '2026-04-01 19:23:07', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19454, '2026-04-01 19:23:52', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19455, '2026-04-01 19:24:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19456, '2026-04-01 19:25:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19457, '2026-04-01 19:26:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19458, '2026-04-01 19:27:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19459, '2026-04-01 19:28:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19460, '2026-04-01 19:29:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19461, '2026-04-01 19:30:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19462, '2026-04-01 19:31:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19463, '2026-04-01 19:32:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19464, '2026-04-01 19:33:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19465, '2026-04-01 19:34:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19466, '2026-04-01 19:35:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19467, '2026-04-01 19:36:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19468, '2026-04-01 19:37:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19469, '2026-04-01 19:38:03', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19470, '2026-04-01 19:38:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19471, '2026-04-01 19:39:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19472, '2026-04-01 19:40:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19473, '2026-04-01 19:41:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19474, '2026-04-01 19:42:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19475, '2026-04-01 19:43:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19476, '2026-04-01 19:44:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19477, '2026-04-01 19:45:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19478, '2026-04-01 19:46:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19479, '2026-04-01 19:47:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19480, '2026-04-01 19:48:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19481, '2026-04-01 19:49:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19482, '2026-04-01 19:50:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19483, '2026-04-01 19:51:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19484, '2026-04-01 19:52:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19485, '2026-04-01 19:53:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19486, '2026-04-01 19:54:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19487, '2026-04-01 19:55:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19488, '2026-04-01 19:56:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19489, '2026-04-01 19:57:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19490, '2026-04-01 19:58:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19491, '2026-04-01 19:59:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19492, '2026-04-01 20:00:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19493, '2026-04-01 20:01:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19494, '2026-04-01 20:02:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19495, '2026-04-01 20:03:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19496, '2026-04-01 20:04:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19497, '2026-04-01 20:05:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19498, '2026-04-01 20:06:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19499, '2026-04-01 20:07:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19500, '2026-04-01 20:08:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19501, '2026-04-01 20:09:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19502, '2026-04-01 20:10:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19503, '2026-04-01 20:11:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19504, '2026-04-01 20:12:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19505, '2026-04-01 20:13:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19506, '2026-04-01 20:14:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19507, '2026-04-01 20:15:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19508, '2026-04-01 20:16:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19509, '2026-04-01 20:17:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19510, '2026-04-01 20:18:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19511, '2026-04-01 20:19:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19512, '2026-04-01 20:20:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19513, '2026-04-01 20:21:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19514, '2026-04-01 20:22:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19515, '2026-04-01 20:23:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19516, '2026-04-01 20:24:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19517, '2026-04-01 20:25:31', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19518, '2026-04-01 20:26:14', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19519, '2026-04-01 20:26:26', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19520, '2026-04-01 20:27:14', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19521, '2026-04-01 20:27:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19522, '2026-04-01 20:28:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19523, '2026-04-01 20:29:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19524, '2026-04-01 20:30:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19525, '2026-04-01 20:31:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19526, '2026-04-01 20:32:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19527, '2026-04-01 20:33:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19528, '2026-04-01 20:34:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19529, '2026-04-01 20:35:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19530, '2026-04-01 20:36:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19531, '2026-04-01 20:37:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19532, '2026-04-01 20:38:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19533, '2026-04-01 20:39:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19534, '2026-04-01 20:40:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19535, '2026-04-01 20:41:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19536, '2026-04-01 20:42:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19537, '2026-04-01 20:43:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19538, '2026-04-01 20:44:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19539, '2026-04-01 20:45:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19540, '2026-04-01 20:46:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19541, '2026-04-01 20:47:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19542, '2026-04-01 20:48:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19543, '2026-04-01 20:49:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19544, '2026-04-01 20:50:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19545, '2026-04-01 20:51:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19546, '2026-04-01 20:52:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19547, '2026-04-01 20:53:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19548, '2026-04-01 20:54:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19549, '2026-04-01 20:55:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19550, '2026-04-01 20:56:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19551, '2026-04-01 20:57:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19552, '2026-04-01 20:58:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19553, '2026-04-01 20:59:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19554, '2026-04-01 21:00:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19555, '2026-04-01 21:01:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19556, '2026-04-01 21:02:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19557, '2026-04-01 21:03:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19558, '2026-04-01 21:04:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19559, '2026-04-01 21:05:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19560, '2026-04-01 21:06:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19561, '2026-04-01 21:07:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19562, '2026-04-01 21:08:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19563, '2026-04-01 21:09:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19564, '2026-04-01 21:10:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19565, '2026-04-01 21:11:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19566, '2026-04-01 21:12:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19567, '2026-04-01 21:13:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19568, '2026-04-01 21:14:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19569, '2026-04-01 21:15:23', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19570, '2026-04-01 21:15:58', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, 'startup'),
+(19571, '2026-04-01 21:16:58', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL),
+(19572, '2026-04-01 21:17:58', '2.3.9b', '67a4fec6ee10ac06e7b4d4496a16c7dba3df7dfa', 0, NULL);
 
 CREATE TABLE `teachers` (
   `person_id` int(11) NOT NULL,
@@ -11008,7 +11282,13 @@ INSERT INTO `tokens` (`token_id`, `token`, `password_id`, `user_agent`, `expires
 (40, '$2b$04$Re6PvyUE2FUIbPc4oHZjvem3JQUCIHsT2buWNVkgAdIEX67gFjpa2', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 23:04:49.406000', '2026-03-31 22:49:48.769000', 4, NULL, '109.164.51.14'),
 (41, '$2b$04$IbphLC2wi73J1juJRtfPTe7D8cdxl17RuoaxSeQqbyMTVd26ZReYi', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 23:34:45.496000', '2026-03-31 23:12:13.018000', 4, NULL, '109.164.51.14'),
 (42, '$2b$04$GECwqmq6CprlnjsUf6NnvOU8XCfI5cWVgdKZrbDtzbrRWqkOoh2ce', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 23:27:16.928000', '2026-03-31 23:20:07.624000', 1, NULL, '109.164.51.14'),
-(43, '$2b$04$pbIzzFKqtnjj0e0j15pCi.6BW2eSerj2XF0Ylu/l6IWIKAvy343xC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 23:49:37.771000', '2026-03-31 23:27:19.010000', 4, NULL, '109.164.51.14');
+(43, '$2b$04$pbIzzFKqtnjj0e0j15pCi.6BW2eSerj2XF0Ylu/l6IWIKAvy343xC', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-03-31 23:49:37.771000', '2026-03-31 23:27:19.010000', 4, NULL, '109.164.51.14'),
+(44, '$2b$04$8zqeG2.Df7JtwUL1UshcE.VkplYvlJlvgit5kYm6/hML/npahwO9W', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 16:11:14.485000', '2026-04-01 15:42:46.203000', 4, NULL, '109.164.51.14'),
+(45, '$2b$04$SpI00ylsC6IEWbX6tKWkLuOqtQJOfePAioTg.9uNfFHNmcfwtV1gK', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 20:43:29.812000', '2026-04-01 19:56:41.876000', 1, NULL, '109.164.51.14'),
+(46, '$2b$04$Gm8NhUOAKz8yLjpkVN/A7uoSj3c01TcJKRTRuhfv.YPNqtT/x7Whu', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 21:34:31.497000', '2026-04-01 20:48:32.527000', 1, NULL, '109.164.51.14'),
+(47, '$2b$04$.fxeSZb4SFgdbAWQ3neo..cbK77bVVBAPp83LifD0L6zNxNt2mcsm', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 22:02:48.619000', '2026-04-01 21:35:39.032000', 1, NULL, '109.164.51.14'),
+(48, '$2b$04$BOvFxo13ILjpVzViZfbaROylILsmYZ7EB2lLxlslLiDNOZglPUGSG', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 22:55:59.222000', '2026-04-01 22:12:13.937000', 1, NULL, '109.164.51.14'),
+(49, '$2b$04$AdriQDWyv0pZVPgSNu8Kt.XuZYFzJzbiaKIj79ILQyDv4.GY50w.m', 1, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0', '2026-04-01 23:32:22.425000', '2026-04-01 23:06:03.482000', 1, NULL, '109.164.51.14');
 
 CREATE TABLE `traineeship_companies` (
   `company_id` int(11) NOT NULL,
@@ -11195,7 +11475,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `users` (`user_id`, `person_id`, `username`, `password_id`, `login_type`, `role`, `manager`, `principal`, `theme`, `locale`, `password_changed`, `recommend_change_password`, `cookies`, `school_id`, `auto_select_next_week`, `fastlogin`, `levels_exp`, `2fa`, `2fa_secret`, `2fa_activated`, `avatar`, `created_at`, `updated_at`) VALUES
-(1, 1, 'kosik', 1, 'local', 'student', 0, 0, 1, 'cs', '2025-10-14', 0, 1, 1, 1, 1, 745, 0, 'KAWWUUIQHNLE64TC', '2025-10-14 09:35:04', '{\"type\":\"thumbs\",\"radius\":50,\"seed\":\"26yt70\",\"rotate\":341,\"eyes\":\"variant6W14\",\"eyesColor\":\"3c2005\",\"face\":\"variant5\",\"faceOffsetX\":0,\"mouth\":\"variant1\",\"mouthColor\":\"000000\",\"shapeColor\":\"f0d5be\",\"backgroundColor\":\"1c799f\"}', '2026-02-08 20:20:28', '2026-03-15 09:46:32'),
+(1, 1, 'kosik', 1, 'local', 'student', 0, 0, 1, 'cs', '2025-10-14', 0, 1, 1, 1, 1, 745, 0, 'GRQCQYL4GNCEYT2N', '2025-10-14 09:35:04', '{\"type\":\"thumbs\",\"radius\":50,\"seed\":\"26yt70\",\"rotate\":341,\"eyes\":\"variant6W14\",\"eyesColor\":\"3c2005\",\"face\":\"variant5\",\"faceOffsetX\":0,\"mouth\":\"variant1\",\"mouthColor\":\"000000\",\"shapeColor\":\"f0d5be\",\"backgroundColor\":\"1c799f\"}', '2026-02-08 20:20:28', '2026-04-01 19:41:35'),
 (2, 2, 'pizinger', 1, 'local', 'teacher', 0, 0, 1, 'cs', NULL, 0, 1, 1, 1, 1, 0, 0, 'IIVUCG3XBA2TGCAI', '2025-06-27 14:33:48', '{\"type\":\"thumbs\",\"radius\":50,\"seed\":\"9jjrig\",\"rotate\":37,\"faceOffsetX\":15,\"eyes\":\"variant1W12\",\"eyesColor\":\"000000\",\"backgroundColor\":\"transparent\"}', '2026-02-08 20:20:28', '2026-03-18 15:25:16'),
 (3, 33, 'testrodic', 1, 'local', 'parent', 0, 0, 1, 'cs', NULL, 0, 2, 1, 1, 1, 0, 0, NULL, '2025-06-27 14:33:48', '{}', '2026-02-08 20:20:28', '2026-02-08 20:20:28'),
 (4, 4, 'admin', 1, 'local', 'teacher', -1, 1, 1, 'cs', '2026-03-08', 0, 5, 1, 1, 1, 0, 0, 'EYEVWHD6ON4C4DAI', '2026-03-04 20:48:37', '{\"type\":\"thumbs\",\"seed\":\"jszgw3\",\"radius\":50,\"rotate\":37,\"eyes\":\"variant4W10\",\"eyesColor\":\"000000\",\"face\":\"variant2\",\"mouth\":\"variant2\",\"mouthColor\":\"ffffff\",\"shapeColor\":\"c68642\",\"backgroundColor\":\"transparent\",\"faceOffsetX\":-13}', '2026-02-08 20:20:28', '2026-03-29 12:04:20'),
@@ -11954,16 +12234,16 @@ ALTER TABLE `addresses`
   MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 ALTER TABLE `analytics_visits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8478;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8515;
 
 ALTER TABLE `auditlog`
-  MODIFY `audit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `audit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 ALTER TABLE `avatar_history`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 ALTER TABLE `backups`
-  MODIFY `backup_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `backup_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 ALTER TABLE `buildings`
   MODIFY `building_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
@@ -12134,7 +12414,7 @@ ALTER TABLE `library_reservations`
   MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `login_history`
-  MODIFY `login_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2265;
+  MODIFY `login_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2271;
 
 ALTER TABLE `marking_scales`
   MODIFY `ms_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
@@ -12281,7 +12561,7 @@ ALTER TABLE `supervision_places`
   MODIFY `place_id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `system_heartbeats`
-  MODIFY `heartbeat_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19346;
+  MODIFY `heartbeat_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19573;
 
 ALTER TABLE `teachers_salary`
   MODIFY `salary_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
@@ -12293,7 +12573,7 @@ ALTER TABLE `timetable_schemas`
   MODIFY `ts_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=201;
 
 ALTER TABLE `tokens`
-  MODIFY `token_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `token_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 ALTER TABLE `traineeship_companies`
   MODIFY `company_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
