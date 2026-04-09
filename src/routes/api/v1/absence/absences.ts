@@ -104,10 +104,11 @@ const elysiaApp = new Elysia()
               'classbook.day_hour',
               'classbook.subject_id'
             ])
+            .where('classbook.date', '>=', start.format("YYYY-MM-DD"))
+            .where('classbook.date', '<=', end.format("YYYY-MM-DD"))
             .where('school_years.current', '=', true)
             .where('classbook.group_id', 'in', groupNumbers)
             .where('absence.student_id', '=', id)
-            .where('absence.type', 'not in', absences as number[])
             .execute()
         ])
         return Response.json(absence);

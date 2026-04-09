@@ -100,14 +100,19 @@ const elysiaApp = new Elysia()
         const [absence, timetable] = await Promise.all([
           db.selectFrom('absence')
             .leftJoin('classbook', 'classbook.classbook_id', 'absence.lesson_id')
+            .leftJoin('groups', 'classbook.group_id', 'groups.group_id')
+            .leftJoin('school_years', 'school_years.sy_id', 'groups.year_id')
             .select([
               sql`COUNT(classbook.subject_id)`.as('count'),
               'classbook.subject_id'
             ])
             .where('classbook.date', '>=', start.format("YYYY-MM-DD"))
             .where('classbook.date', '<=', end.format("YYYY-MM-DD"))
+            .where('school_years.current', '=', true)
+            .where('classbook.group_id', 'in', groupNumbers)
             .where('absence.student_id', '=', id)
             .where('absence.type', 'not in', ignored_absences as number[])
+            .groupBy('classbook.subject_id')
             .execute(),
 
           db.selectFrom('timetable')
@@ -156,10 +161,10 @@ const elysiaApp = new Elysia()
             lesson.total_lessons = lessonNumber;
         });
 
-        absence.forEach((absence: any) => {
-            let lessonData = lessons[absence.subject];
+        absence.forEach((ab: any) => {
+            let lessonData = lessons[ab.subject_id];
             if (lessonData) {
-              lessons[absence.subject].absence = absence.count;
+              lessonData.absence = parseInt(ab.count);
             }
         });
 

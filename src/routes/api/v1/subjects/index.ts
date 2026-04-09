@@ -138,10 +138,27 @@ const elysiaApp = new Elysia({ prefix: '/subjects' })
           .execute();
 
         const teacherIds = teachersQuery.map(t => t.teacher_id).filter((id): id is number => id !== null);
-        let teacherNames: string[] = [];
+        let teachers: { name: string; email: string | null }[] = [];
         if (teacherIds.length > 0) {
             const nameMap = await format_person_map_by_ids(teacherIds);
-            teacherNames = teacherIds.map(id => nameMap.get(id) || '');
+            // Fetch verified emails and avatars
+            const emailRows = await db.selectFrom('emails')
+              .select(['person_id', 'email'])
+              .where('person_id', 'in', teacherIds)
+              .execute();
+            const userRows = await db.selectFrom('users')
+              .select(['person_id', 'avatar'])
+              .where('person_id', 'in', teacherIds)
+              .execute();
+            
+            const emailMap = new Map<number, string | null>(emailRows.map(e => [e.person_id as number, e.email ?? null]));
+            const avatarMap = new Map<number, string | null>(userRows.map(u => [u.person_id as number, u.avatar ?? null]));
+
+            teachers = teacherIds.map(id => ({
+              name: nameMap.get(id) || '',
+              email: emailMap.get(id) ?? null,
+              avatar: avatarMap.get(id) ?? null
+            }));
         }
 
         return {
@@ -151,7 +168,7 @@ const elysiaApp = new Elysia({ prefix: '/subjects' })
           hours_per_week: subject.hours_per_week,
           is_mandatory: subject.is_mandatory,
           color: subject.color,
-          teachers: teacherNames
+          teachers
         };
       }));
 

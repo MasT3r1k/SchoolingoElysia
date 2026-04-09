@@ -1434,6 +1434,11 @@
         "all": "Všechny",
         "homework": "Domácí úkol",
         "no_homework_to_submit": "Nemátě žádný úkol k odevzdání",
+        "status": {
+            "todo": "Neodevzdáno",
+            "in_progress": "Rozpracováno",
+            "done": "Odevzdáno"
+        },
         "detail": {
             "title": "Podrobnosti o úkolu"
         }

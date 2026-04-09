@@ -44,7 +44,8 @@ const elysiaApp = new Elysia()
              'persons.first_name',
              'persons.last_name',
              'student_homework.submitted',
-             'student_homework.finished'
+             'student_homework.finished',
+             'student_homework.type'
           ])
           .where('student_homework.homework_id', 'in', h_ids)
           .execute();

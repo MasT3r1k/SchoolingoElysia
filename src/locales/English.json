@@ -1265,6 +1265,11 @@
         "all": "All",
         "homework": "Homework",
         "no_homework_to_submit": "You have no homework to submit",
+        "status": {
+            "todo": "Not submitted",
+            "in_progress": "In progress",
+            "done": "Submitted"
+        },
         "detail": {
             "title": "Homework details"
         }

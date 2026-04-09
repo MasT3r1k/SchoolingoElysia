@@ -5,4 +5,5 @@ export interface Student_homeworkTable {
   homework_id: number
   submitted: Generated<boolean>
   finished: Generated<boolean>
+  type: Generated<number>
 }
