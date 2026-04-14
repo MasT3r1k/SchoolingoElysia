@@ -1628,6 +1628,7 @@
     },
     "messages": {
         "back": "Vrátit se na seznam",
+        "privacy_title": "Zprávy poslané přes %app% nejsou soukromé",
         "privacy": "Zprávy poslané přes aplikaci %app% se nedají považovat za soukromé. K zprávům mají přístup včetně přijemců i ředistelství školy a správci systému.",
         "excuse_message": "Tento druh zprávy se posílá přímo do omluvenek třídnímu učiteli.",
         "type": "Typ zprávy",
@@ -1694,6 +1695,8 @@
         "sent": "Zpráva byla úspěšně odeslána",
         "receivers": {
             "all_selected_noticeboard": "Zpráva se zobrazí na nástěnce všem",
+            "all_selected": "Vybráni všichni",
+            "choose_receiver": "Vybrat příjemce",
             "from_class": "z %class%",
             "from_child": "žáka %child%"
         },
@@ -1710,6 +1713,8 @@
         "sus_error": "Nastala nějaká podivná chyba, klikni pro obnovení na základní typ",
         "excuse": "Omluvit",
         "excuse_myself": "Omluvit sám sebe",
+        "all_day": "Celý den",
+        "excuse_all_day": "Omluvit na celý den",
         "types": {
             "message": "Klasická zpráva",
             "homework": "Odevzdání úkolu",
@@ -1720,7 +1725,8 @@
             "error": "No message types found"
         },
         "buttons": {
-            "send_message": "Poslat zprávu"
+            "send_message": "Poslat zprávu",
+            "save_draft": "Uložit koncept"
         },
         "upload": {
             "note": "Soubory jsou automaticky přiloženy ke zprávě.",
