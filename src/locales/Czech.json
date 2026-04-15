@@ -562,6 +562,27 @@
             "groups": "Diskuze",
             "noticeboard": "Nástěnka"
         },
+        "payments": {
+            "main": "Platby",
+            "class_fund": "Třídní fond",
+            "graduate_class_fund": "Třídní fond absolventů",
+            "listing": "Zpracování výpisů",
+            "unaccounted_documents": "Nezaúčtované doklady",
+            "documents": "Přehled dokladů",
+            "regular_payments": "Pravidelné platby",
+            "new_payment": "Nová platba",
+            "new_deposit": "Nový vklad",
+            "accounts": "Přehled účtů",
+            "settings": "Nastavení plateb"
+        },
+        "canteen": {
+            "main": "Jídelna",
+            "menu": "Jídelníček",
+            "order": "Objednávky",
+            "dispensing": "Výdeje",
+            "meals": "Jídla",
+            "settings": "Nastavení jídelny"
+        },
         "traineeship": {
             "overview": "Můj přehled",
             "main": "Odborná praxe",
