@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; padding: 40px; color: #111; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 15px; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header .meta { text-align: right; font-size: 13px; color: #444; }
+        .school-name { font-size: 14px; font-weight: 500; color: #666; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; font-size: 14px; }
+        th { background: #f8f9fa; font-weight: 700; }
+        .footer { margin-top: 60px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 11px; color: #666; border-top: 1px solid #eee; padding-top: 20px; }
+        .signature { text-align: center; }
+        .signature-line { width: 200px; border-bottom: 1px solid #222; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Seznam žáků</h1>
+            <p class="school-name">Informační systém Schoolingo</p>
+        </div>
+        <div class="meta">
+            <p><b>Datum generování:</b> {{genDate}}</p>
+            {{#if className}}<p><b>Třída:</b> {{className}}</p>{{/if}}
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 40px;">#</th>
+                <th>Příjmení a jméno</th>
+                <th>Uživatelské jméno</th>
+                <th>E-mail</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each reportData}}
+            <tr>
+                <td>{{add @index 1}}</td>
+                <td>{{this.last_name}} {{this.first_name}}</td>
+                <td>{{this.username}}</td>
+                <td>{{this.email}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>Tento dokument byl automaticky vygenerován systémem Schoolingo.</p>
+        <div class="signature">
+            <p>Podpis odpovědné osoby</p>
+            <div class="signature-line"></div>
+        </div>
+    </div>
+</body>
+</html>

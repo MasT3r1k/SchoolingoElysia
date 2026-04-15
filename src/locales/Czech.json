@@ -614,7 +614,8 @@
             "manage_files": "Správa souborů",
             "manage_messages": "Správa zpráv",
             "monitoring": "Monitorování",
-            "auditlog": "Auditlog"
+            "auditlog": "Auditlog",
+            "reports": "Sestavy"
         },
         "architecture": {
             "title": "Architektura školy"
@@ -2832,6 +2833,37 @@
                 "edit": "Upravit",
                 "delete": "Smazat"
             }
+        }
+    },
+    "reports": {
+        "title": "Sestavy a tiskové výstupy",
+        "subtitle": "Generování tiskových sestav ze systému",
+        "types": {
+            "student_list": "Seznam žáků",
+            "student_list_desc": "Vytiskne seznam žáků vybrané třídy.",
+            "student_marks": "Známky žáka",
+            "student_marks_desc": "Přehled průběžné klasifikace vybraného žáka.",
+            "class_marks": "Známky třídy",
+            "class_marks_desc": "Hromadný přehled klasifikace celé třídy.",
+            "grade_overview": "Přehled za období",
+            "grade_overview_desc": "Pololetní a závěrečná klasifikace (vysvědčení/katalog)."
+        },
+        "config": {
+            "select_class": "Výběr třídy",
+            "select_student": "Výběr žáka",
+            "choose_class": "-- Vyberte třídu --",
+            "choose_student": "-- Vyberte žáka --",
+            "generate": "Generovat sestavu"
+        },
+        "preview": {
+            "edit_params": "Upravit parametry",
+            "print": "Tisk sestavy",
+            "school_system": "Schoolingo Digital School System",
+            "gen_date": "Datum generování",
+            "class": "Třída",
+            "student": "Žák",
+            "footer": "Dokument vygenerován systémem Schoolingo. Strana 1 / 1",
+            "signature": "Razítko a podpis"
         }
     }
 }
