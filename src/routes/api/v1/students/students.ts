@@ -18,13 +18,15 @@ const elysiaApp = new Elysia()
     let queryBuilder = db.selectFrom('students')
       .leftJoin('users', 'users.person_id', 'students.person_id')
       .leftJoin('classes', 'students.class_id', 'classes.class_id')
-      .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
       .where((eb) => eb.or([
         eb('users.school_id', '=', school.school_id),
         eb('scopes.school_id', '=', school.school_id)
       ]))
       .leftJoin('persons', 'students.person_id', 'persons.person_id')
+      .leftJoin('addresses', 'persons.address_id', 'addresses.address_id')
+      .leftJoin('cities', 'addresses.city_id', 'cities.city_id')
       .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
+      .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
       .select([
         'users.user_id',
         'persons.person_id',
@@ -32,7 +34,21 @@ const elysiaApp = new Elysia()
         'persons.last_name',
         'persons.gender',
         'persons.avatar',
+        'persons.birthnum',
+        'persons.insurance_id',
+        'addresses.street',
+        'addresses.house_number',
+        'cities.city_name',
+        'cities.postcode',
         'students.status',
+        sql<string>`(
+          SELECT GROUP_CONCAT(concat(p_p.last_name, ' ', p_p.first_name) SEPARATOR ', ')
+          FROM family_relations fr
+          INNER JOIN persons p_p ON p_p.person_id = fr.target_id
+          WHERE fr.source_id = students.person_id
+          AND fr.role IN ('father', 'mother', 'guardian')
+          LIMIT 1
+        )`.as('guardian1_name'),
         sql<string>`(SELECT email FROM emails WHERE emails.person_id = persons.person_id AND emails.is_verified = 1 LIMIT 1)`.as('email'),
         sql<string>`(SELECT number FROM phone_numbers WHERE phone_numbers.person_id = persons.person_id AND phone_numbers.is_verified = 1 LIMIT 1)`.as('phone'),
         'persons.birthday',
@@ -49,6 +65,18 @@ const elysiaApp = new Elysia()
             AND gc.status = 'active'
             AND g.mark IS NOT NULL
         )`.as('average_grade'),
+        sql<number>`(
+          SELECT COUNT(*) + 1
+          FROM students s2
+          INNER JOIN persons p2 ON s2.person_id = p2.person_id
+          WHERE s2.class_id = students.class_id
+          AND s2.status = 'active'
+          AND (
+            p2.last_name < persons.last_name
+            OR (p2.last_name = persons.last_name AND p2.first_name < persons.first_name)
+            OR (p2.last_name = persons.last_name AND p2.first_name = persons.first_name AND p2.person_id < persons.person_id)
+          )
+        )`.as('class_order'),
         sql<string>`(
             SELECT ROUND(
             CASE 
@@ -195,7 +223,7 @@ const elysiaApp = new Elysia()
     query: t.Object({
 			limit: t.Optional(t.Number({
         minimum: 1,
-        maximum: 100,
+        maximum: 1000,
         default: 50
       })),
 			offset: t.Optional(t.Number({

@@ -4,19 +4,49 @@
     <meta charset="UTF-8">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-        body { font-family: 'Inter', sans-serif; padding: 40px; color: #111; }
-        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 15px; }
-        .header h1 { margin: 0; font-size: 24px; }
+        body { font-family: 'Inter', sans-serif; padding: 20px; color: #111; font-size: 8pt; }
+        .header { margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 8px; }
+        .header h1 { margin: 0; font-size: 16pt; }
+        .header .meta { font-size: 9pt; color: #666; margin-top: 4px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 0.1px solid #000; padding: 3px; text-align: center; }
+        th { background: #f5f5f5; font-weight: bold; font-size: 7pt; }
+        .text-left { text-align: left; }
+        .row-num { width: 15pt; color: #333; }
+        .student-name { width: 120pt; white-space: nowrap; overflow: hidden; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Přehled známek třídy: {{className}}</h1>
-        <div style="text-align: right; font-size: 13px;">Datum: {{genDate}}</div>
+        <h1>Klasifikační přehled</h1>
+        <div class="meta">
+            {{#if className}}Třída: <strong>{{className}}</strong>{{/if}} 
+            | Generováno: {{genDate}}
+        </div>
     </div>
-    <div style="margin-top: 20px;">
-        <p>Tento dokument bude obsahovat tabulku se známkami všech žáků ve třídě.</p>
-        <pre>{{json reportData}}</pre>
-    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="row-num">#</th>
+                <th class="student-name text-left">Jméno žáka</th>
+                {{#each subjects}}
+                <th>{{this.subject_short}}</th>
+                {{/each}}
+            </tr>
+        </thead>
+        <tbody>
+            {{#each data}}
+            <tr>
+                <td class="row-num">{{add @index 1}}.</td>
+                <td class="student-name text-left">{{this.full_name}}</td>
+                {{#each ../subjects}}
+                <td>{{lookup ../this (concat 'subject_' this.subject_id)}}</td>
+                {{/each}}
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
 </body>
 </html>

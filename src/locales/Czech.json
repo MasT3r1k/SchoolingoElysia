@@ -819,6 +819,7 @@
         "send_request": "Odeslat žádost",
         "view_all": "Zobrazit vše",
         "remove": "Odebrat",
+        "delete": "Smazat",
         "save": "Uložit",
         "saving": "Ukládání",
         "save_changes": "Uložit změny",
@@ -1884,7 +1885,7 @@
             },
             "edit": {
                 "title": "Upravujete passkey",
-                "description": "Upravením názvu níže si upravíte pouze označení passkey, které vidíte zde v nastavení. Nemá to žádný vliv na fungování passkey přihlašování.",
+                "description": "Přejmenováním klíče %passkey% změníte pouze jeho označení zde v nastavení. Tato úprava nemá žádný vliv na samotné fungování přihlašování.",
                 "form": {
                     "name": {
                         "label": "Popis passkey",
@@ -1896,6 +1897,7 @@
                 "success_description": "Úspěšně jste upravil název passkey na %passkey%."
             },
             "remove": {
+                "modal_title": "Smazání passkey",
                 "title": "Smazat %passkey% passkey?",
                 "description": "Opravdu si přejete smazat passkey? Tato akce nelze vrátit zpět!",
                 "success_title": "Smázano!",
@@ -2308,6 +2310,9 @@
                 "other": "Ostatní"
             }
         },
+        "edit_employee": {
+            "title": "Upravit zaměstnance"
+        },
         "request_vacation": {
             "title": "Žádost o dovolenou",
             "description": "Každý učitel potřebuje občas upustit páru.",
@@ -2359,7 +2364,15 @@
         "edit_attendance": {
             "title": "Upravit docházku",
             "description": "Upravte nebo doplňte záznamy docházky zaměstnance."
-        }
+        },
+        "subjects": "Předměty",
+        "professional": "Profesní rozvoj",
+        "agenda": "BOZP a Agenda",
+        "documents": "Dokumenty",
+        "evaluation": "Hodnocení",
+        "equipment": "Vybavení",
+        "history": "Historie",
+        "timetable": "Rozvrh"
     },
     "seasonal": {
         "toggle": {

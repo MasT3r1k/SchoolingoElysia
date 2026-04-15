@@ -7,17 +7,19 @@ import { format_person_map_by_ids } from '../../../../functions/format_person_by
 import { getAuthUser } from '../../../../utils/auth';
 
 
-const vacationsRouter = new Elysia()
-  // GET /employees/vacations/balance - Get vacation balance
-  .get('/employees/vacations/balance', async({ cookie, school, query }: any) => {
+export const vacationsRouter = new Elysia({ prefix: '/vacations' })
+  // GET /balance - Get vacation balance
+  .get('/balance', async({ cookie, school, query, params = {} }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
+    
+    const employeeId = parseInt(params.id);
+    if (isNaN(employeeId)) return { error: 'invalid_id' };
+
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.VACATIONS_VIEW);
-    if (!perm && user.person_id !== query.employeeId) return { error: 'no_permission' };
+    if (!perm && user.person_id !== employeeId) return { error: 'no_permission' };
 
     const canViewAll = perm;
-    
-    const employeeId = canViewAll && query.employeeId ? query.employeeId : user.person_id;
     const year = query.year || new Date().getFullYear();
 
     let balance = await db.selectFrom('employee_vacation_balance')
@@ -70,8 +72,8 @@ const vacationsRouter = new Elysia()
       year: t.Optional(t.Number()),
     })
   })
-  // POST /employees/vacations/balance/adjust - Adjust vacation entitlement (Admin only)
-  .post('/employees/vacations/balance/adjust', async({ cookie, body }: any) => {
+  // POST /balance/adjust - Adjust vacation entitlement (Admin only)
+  .post('/balance/adjust', async({ cookie, body }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.VACATIONS_MANAGE);
@@ -116,12 +118,16 @@ const vacationsRouter = new Elysia()
         reason: t.Optional(t.String())
     })
   })
-  // GET /employees/vacations/requests - Get vacation requests
-  .get('/employees/vacations/requests', async({ cookie, query }: any) => {
+  // GET /requests - Get vacation requests
+  .get('/requests', async({ cookie, query, params = {} }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
+    
+    const employeeId = params.id ? parseInt(params.id) : (query.employeeId ? parseInt(query.employeeId) : null);
+    if (params.id && isNaN(employeeId!)) return { error: 'invalid_id' };
+
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.VACATIONS_VIEW);
-    if (!perm && user.person_id !== query.employeeId) return { error: 'no_permission' };
+    if (!perm && user.person_id !== employeeId) return { error: 'no_permission' };
 
     const canViewAll = perm;
     
@@ -156,8 +162,8 @@ const vacationsRouter = new Elysia()
     // If not admin, only show own requests
     if (!canViewAll) {
       queryBuilder = queryBuilder.where('employee_vacation_requests.teacher_id', '=', user.person_id);
-    } else if (query.employeeId) {
-      queryBuilder = queryBuilder.where('employee_vacation_requests.teacher_id', '=', query.employeeId);
+    } else {
+      queryBuilder = queryBuilder.where('employee_vacation_requests.teacher_id', '=', employeeId);
     }
 
 
@@ -176,13 +182,12 @@ const vacationsRouter = new Elysia()
     query: t.Object({
       limit: t.Optional(t.Number({ minimum: 1, maximum: 100, default: 50 })),
       offset: t.Optional(t.Number({ minimum: 0, default: 0 })),
-      employeeId: t.Optional(t.Number()),
       status: t.Optional(t.String()),
       type: t.Optional(t.String()),
     })
   })
-  // POST /employees/vacations/request - Create vacation request
-  .post('/employees/vacations/request', async({ cookie, school, body }: any) => {
+  // POST /request - Create vacation request
+  .post('/request', async({ cookie, school, body, params = {} }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.VACATIONS_VIEW);
@@ -224,7 +229,7 @@ const vacationsRouter = new Elysia()
 
     await db.insertInto('employee_vacation_requests')
       .values({
-        teacher_id: user.person_id!,
+        teacher_id: (params.id || user.person_id) as any,
         start_date: body.startDate,
         end_date: body.endDate,
         days: diffDays,
@@ -251,13 +256,13 @@ const vacationsRouter = new Elysia()
       reason: t.Optional(t.String()),
     })
   })
-  // PUT /employees/vacations/request/:id/approve - Approve request
-  .put('/employees/vacations/request/:id/approve', async({ cookie, params }: any) => {
+  // PUT /request/:requestId/approve - Approve request
+  .put('/request/:requestId/approve', async({ cookie, params }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.VACATIONS_MANAGE);
     if (!perm) return { error: 'no_permission' };
-    const requestId = parseInt(params.id);
+    const requestId = parseInt(params.requestId);
     
     // Authorization check removed as handled by middleware
 
@@ -309,13 +314,13 @@ const vacationsRouter = new Elysia()
 
     return Response.json({ success: true, message: 'Request approved' });
   })
-  // PUT /employees/vacations/request/:id/reject - Reject request
-  .put('/employees/vacations/request/:id/reject', async({ cookie, params, body }: any) => {
+  // PUT /request/:requestId/reject - Reject request
+  .put('/request/:requestId/reject', async({ cookie, params, body }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.VACATIONS_MANAGE);
     if (!perm) return { error: 'no_permission' };
-    const requestId = parseInt(params.id);
+    const requestId = parseInt(params.requestId);
     
     // Authorization check already handled by middleware
 
@@ -337,4 +342,4 @@ const vacationsRouter = new Elysia()
     })
   });
 
-export default vacationsRouter;
+// End of file

@@ -45,6 +45,11 @@ export async function renderPdf(
         return arr && arr.length > 0;
     });
 
+    Handlebars.registerHelper('concat', function(...args) {
+        args.pop(); // Remove Handlebars options object
+        return args.join('');
+    });
+
   const templatePath = path.join(
     __dirname,
     'templates',

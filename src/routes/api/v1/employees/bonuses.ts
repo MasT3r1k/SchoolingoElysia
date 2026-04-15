@@ -5,13 +5,17 @@ import { GlobalPermissions } from '../../../../config/permissions.config';
 import { getAuthUser } from '../../../../utils/auth';
 
 
-const bonusesRouter = new Elysia()
-  // GET /employees/bonuses - Get bonuses
-  .get('/employees/bonuses', async({ cookie, query }: any) => {
+export const bonusesRouter = new Elysia({ prefix: '/bonuses' })
+  // GET / - Get bonuses
+  .get('/', async({ cookie, query, params = {} }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
+
+    const employeeId = params.id ? parseInt(params.id) : (query.employeeId ? parseInt(query.employeeId) : null);
+    if (params.id && isNaN(employeeId!)) return { error: 'invalid_id' };
+
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_VIEW);
-    if (!perm && user.person_id !== query.employeeId) return { error: 'no_permission' };
+    if (!perm && user.person_id !== employeeId) return { error: 'no_permission' };
 
     // Check permissions - only admins can view all
     const canViewAll = perm;
@@ -90,8 +94,8 @@ const bonusesRouter = new Elysia()
       dateTo: t.Optional(t.String()),
     })
   })
-  // POST /employees/bonuses - Add bonus (admin only)
-  .post('/employees/bonuses', async({ cookie, body }: any) => {
+  // POST / - Add bonus (admin only)
+  .post('/', async({ cookie, body }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_MANAGE);
@@ -122,13 +126,11 @@ const bonusesRouter = new Elysia()
       reason: t.String(),
     })
   })
-  // PUT /employees/bonuses/:id - Update bonus
-  .put('/employees/bonuses/:id', async({ cookie, params, body }: any) => {
+  // PUT /:bonusId - Update bonus
+  .put('/:bonusId', async({ cookie, params, body }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
-    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_MANAGE);
-    if (!perm && user.person_id != params.id) return { error: 'no_permission' };
-    const bonusId = parseInt(params.id);
+    const bonusId = parseInt(params.bonusId);
     
 
     await db.updateTable('employee_bonuses')
@@ -149,13 +151,11 @@ const bonusesRouter = new Elysia()
       reason: t.Optional(t.String()),
     })
   })
-  // PUT /employees/bonuses/:id/paid - Mark as paid
-  .put('/employees/bonuses/:id/paid', async({ cookie, params }: any) => {
+  // PUT /:bonusId/paid - Mark as paid
+  .put('/:bonusId/paid', async({ cookie, params }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
-    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_MANAGE);
-    if (!perm && user.person_id != params.id) return { error: 'no_permission' };
-    const bonusId = parseInt(params.id);
+    const bonusId = parseInt(params.bonusId);
     
 
     await db.updateTable('employee_bonuses')
@@ -168,13 +168,11 @@ const bonusesRouter = new Elysia()
 
     return Response.json({ success: true, message: 'Bonus marked as paid' });
   })
-  // DELETE /employees/bonuses/:id - Delete bonus (only if not paid)
-  .delete('/employees/bonuses/:id', async({ cookie, params }: any) => {
+  // DELETE /:bonusId - Delete bonus (only if not paid)
+  .delete('/:bonusId', async({ cookie, params }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
-    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.BONUSES_MANAGE);
-    if (!perm && user.person_id != params.id) return { error: 'no_permission' };
-    const bonusId = parseInt(params.id);
+    const bonusId = parseInt(params.bonusId);
     
 
     // Check if paid
@@ -196,4 +194,4 @@ const bonusesRouter = new Elysia()
     return Response.json({ success: true, message: 'Bonus deleted' });
   });
 
-export default bonusesRouter;
+// End of file

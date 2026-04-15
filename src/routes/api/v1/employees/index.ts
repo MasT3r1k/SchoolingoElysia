@@ -6,18 +6,21 @@ import { format_person_by_id } from '../../../../functions/format_person_by_id';
 import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
 import { getAuthUser } from '../../../../utils/auth';
+import moment from 'moment';
 
+import { attendanceRouter } from './attendance';
+import { vacationsRouter } from './vacations';
+import { salariesRouter } from './salaries';
+import { bonusesRouter } from './bonuses';
+import { agendaRouter } from './agenda';
+import { professionalRouter } from './professional';
+import { equipmentRouter } from './equipment';
+import { evaluationRouter } from './evaluation';
+import { historyRouter } from './history';
+import { subjectsRouter } from './subjects';
+import { documentsRouter } from './documents';
 
-import attendanceRouter from './attendance';
-import vacationsRouter from './vacations';
-import salariesRouter from './salaries';
-import bonusesRouter from './bonuses';
-
-const employeesRouter = new Elysia()
-    .use(attendanceRouter)
-    .use(vacationsRouter)
-    .use(salariesRouter)
-    .use(bonusesRouter)
+const employeesRouter = new Elysia({ prefix: '/employees' })
   // POST /degrees - Create new degree (admin only)
   .post('/degrees', async({ cookie, body }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
@@ -54,8 +57,78 @@ const employeesRouter = new Elysia()
       weight: t.Optional(t.Number()),
     })
   })
-  // GET /employees - List all employees (teachers)
-  .get('/employees', async({ cookie, query }: any) => {
+  // GET /summary - Get employee statistics
+  .get('/summary', async({ cookie, school }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    
+    const now = moment();
+    const today = now.format('YYYY-MM-DD');
+    const dayOfWeek = (now.isoWeekday() - 1); // 0 (Mon) - 6 (Sun)
+    
+    // 1. Total Employees
+    const totalResult = await db.selectFrom('teachers')
+      .select(sql<number>`count(*)`.as('total'))
+      .where('school_id', '=', user.school_id!)
+      .executeTakeFirst();
+    
+    // 2. Currently Present (checked in, not checked out)
+    const presentResult = await db.selectFrom('employee_attendance')
+      .select(sql<number>`count(distinct teacher_id)`.as('total'))
+      .where('date', '=', today)
+      .where('check_out', 'is', null)
+      .executeTakeFirst();
+
+    // 3. Supposed to be present today (has at least one lesson today)
+    // We count unique teachers from both teacher_id and teacher2_id
+    const currentYearIdSubquery = db.selectFrom('school_years')
+      .select('sy_id')
+      .where('start', '<=', today as any)
+      .where('end', '>=', today as any)
+      .limit(1);
+
+    const supposedResult = await db.selectFrom((eb) => 
+      eb.selectFrom('timetable')
+        .innerJoin('groups', 'groups.group_id', 'timetable.group_id')
+        .select('teacher_id as person_id')
+        .where('timetable.day', '=', dayOfWeek)
+        .where('groups.year_id', '=', currentYearIdSubquery)
+        .where('teacher_id', 'is not', null)
+        .union(
+          eb.selectFrom('timetable')
+            .innerJoin('groups', 'groups.group_id', 'timetable.group_id')
+            .select('teacher2_id as person_id')
+            .where('timetable.day', '=', dayOfWeek)
+            .where('groups.year_id', '=', currentYearIdSubquery)
+            .where('teacher2_id', 'is not', null) as any
+        ).as('today_teachers')
+    )
+    .select(sql<number>`count(*)`.as('total'))
+    .executeTakeFirst();
+
+    // 4. On approved vacation/absence
+    const vacationResult = await db.selectFrom('employee_vacation_requests')
+      .select(sql<number>`count(distinct teacher_id)`.as('total'))
+      .where('status', '=', 'approved')
+      .where('start_date', '<=', today)
+      .where('end_date', '>=', today)
+      .executeTakeFirst();
+
+    const total = Number(totalResult?.total || 0);
+    const present = Number(presentResult?.total || 0);
+    const supposed = Number(supposedResult?.total || 0);
+    const onVacation = Number(vacationResult?.total || 0);
+
+    return Response.json({
+      total,
+      present,
+      supposed,
+      onVacation,
+      absencePercentage: supposed > 0 ? Math.round(((supposed - present) / supposed) * 100) : 0
+    });
+  })
+  // GET / - List all employees (teachers)
+  .get('/', async({ cookie, query }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     
@@ -138,70 +211,14 @@ const employeesRouter = new Elysia()
       search: t.Optional(t.String()),
     })
   })
-  // GET /employees/:id - Employee detail
-  .get('/employees/:id', async({ cookie, params }: any) => {
-    const user = await getAuthUser(cookie?.token?.value as string, cookie);
-    if (!user) return { error: 'no_permission' };
-    const employeeId = parseInt(params.id);
-    
-    // Check permissions - only admins can view all
-    const canViewAll = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_VIEW);
-    
-    if (!canViewAll && user.person_id !== employeeId) {
-      return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
-    }
+  // Global sub-resources (admin views of all employees)
+  .use(attendanceRouter)
+  .use(vacationsRouter)
+  .use(salariesRouter)
+  .use(bonusesRouter)
 
-    const employeeResult = await db.selectFrom('teachers')
-      .leftJoin('persons', 'teachers.person_id', 'persons.person_id')
-      .leftJoin('users', 'users.person_id', 'persons.person_id')
-      .select([
-        'teachers.person_id',
-        'persons.first_name',
-        'persons.last_name',
-        'teachers.role',
-        'teachers.cabinet_id',
-        'teachers.department',
-        'teachers.contract_type',
-        sql<string>`DATE_FORMAT(persons.birthday, '%Y-%m-%d')`.as('date_of_birth'),
-      ])
-      .where('teachers.person_id', '=', employeeId)
-      .where('teachers.school_id', '=', user.school_id)
-      .executeTakeFirst();
-
-    if (!employeeResult) {
-      return new Response(JSON.stringify({ error: 'no_employee' }), { status: 404 });
-    }
-
-    const employee: any = employeeResult;
-    employee.full_name = await format_person_by_id(employee.person_id);
-
-    // Get emails
-    const emails = await db.selectFrom('emails')
-      .select([
-        'email',
-        'is_verified'
-      ])
-      .where('person_id', '=', employeeId)
-      .execute();
-
-    // Get phones
-    const phones = await db.selectFrom('phone_numbers')
-      .select([
-        'code',
-        'number',
-        'is_verified'
-      ])
-      .where('person_id', '=', employeeId)
-      .execute();
-
-    return Response.json({
-      ...employee,
-      emails,
-      phones
-    });
-  })
-  // POST /employees - Create new employee (admin only)
-  .post('/employees', async({ cookie, body }: any) => {
+  // POST / - Create new employee (admin only)
+  .post('/', async({ cookie, body }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_EDIT);
@@ -300,73 +317,155 @@ const employeesRouter = new Elysia()
       degrees: t.Optional(t.Array(t.Number())),
     })
   })
-  // PUT /employees/:id - Update employee (admin only)
-  .put('/employees/:id', async({ cookie, params, body }: any) => {
-    const user = await getAuthUser(cookie?.token?.value as string, cookie);
-    if (!user) return { error: 'no_permission' };
-    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_EDIT);
-    if (!perm) return { error: 'no_permission' };
-    const employeeId = parseInt(params.id);
 
-    // Check if employee exists
-    const employee = await db.selectFrom('teachers')
-      .select('person_id')
-      .where('person_id', '=', employeeId)
-      .where('teachers.school_id', '=', user.school_id!)
-      .executeTakeFirst();
+  // Employee-specific sub-resources and detail
+  .group('/:id', {
+    params: t.Object({ id: t.Numeric() })
+  }, (app) => app
+    .use(attendanceRouter)
+    .use(vacationsRouter)
+    .use(salariesRouter)
+    .use(bonusesRouter)
+    .use(agendaRouter)
+    .use(professionalRouter)
+    .use(equipmentRouter)
+    .use(evaluationRouter)
+    .use(historyRouter)
+    .use(subjectsRouter)
+    .use(documentsRouter)
 
-    if (!employee) {
-      return new Response(JSON.stringify({ error: 'no_employee' }), { status: 404 });
-    }
+    // GET /:id - Employee detail
+    .get('/', async({ cookie, params }: any) => {
+      const user = await getAuthUser(cookie?.token?.value as string, cookie);
+      if (!user) return { error: 'no_permission' };
+      const employeeId = parseInt(params.id);
+      
+      // Check permissions - only admins can view all
+      const canViewAll = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_VIEW);
+      
+      if (!canViewAll && user.person_id !== employeeId) {
+        return new Response(JSON.stringify({ error: 'no_permission' }), { status: 403 });
+      }
 
-    // Update teachers table
-    await db.updateTable('teachers')
-      .set({
-        role: body.role,
-        cabinet_id: body.cabinet,
-        department: body.department,
-        contract_type: body.contractType,
-      })
-      .where('person_id', '=', employeeId)
-      .where('school_id', '=', user.school_id!)
-      .execute();
+      const employeeResult = await db.selectFrom('teachers')
+        .leftJoin('persons', 'teachers.person_id', 'persons.person_id')
+        .leftJoin('users', 'users.person_id', 'persons.person_id')
+        .select([
+          'teachers.person_id',
+          'persons.first_name',
+          'persons.last_name',
+          'teachers.role',
+          'teachers.cabinet_id',
+          'teachers.department',
+          'teachers.contract_type',
+          sql<string>`DATE_FORMAT(persons.birthday, '%Y-%m-%d')`.as('date_of_birth'),
+        ])
+        .where('teachers.person_id', '=', employeeId)
+        .where('teachers.school_id', '=', user.school_id)
+        .executeTakeFirst();
 
-    return Response.json({ success: true, message: 'Employee updated' });
+      if (!employeeResult) {
+        return new Response(JSON.stringify({ error: 'no_employee' }), { status: 404 });
+      }
 
-  }, {
-    body: t.Object({
-      role: t.Optional(t.UnionEnum(['teacher', 'admin_staff', 'maintenance', 'management', 'personnel', 'other'])),
-      cabinet: t.Optional(t.Number()),
-      department: t.Optional(t.String()),
-      contractType: t.Optional(t.UnionEnum(['fulltime', 'parttime', 'dpp', 'dpc'])),
+      const employee: any = employeeResult;
+      employee.full_name = await format_person_by_id(employee.person_id);
+
+      // Get emails
+      const emails = await db.selectFrom('emails')
+        .select([
+          'email',
+          'is_verified'
+        ])
+        .where('person_id', '=', employeeId)
+        .execute();
+
+      // Get phones
+      const phones = await db.selectFrom('phone_numbers')
+        .select([
+          'code',
+          'number',
+          'is_verified'
+        ])
+        .where('person_id', '=', employeeId)
+        .execute();
+
+      return Response.json({
+        ...employee,
+        emails,
+        phones
+      });
     })
-  })
-  // DELETE /employees/:id - Remove employee (admin only)
-  .delete('/employees/:id', async({ cookie, params }: any) => {
-    const user = await getAuthUser(cookie?.token?.value as string, cookie);
-    if (!user) return { error: 'no_permission' };
-    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_EDIT);
-    if (!perm) return { error: 'no_permission' };
-    const employeeId = parseInt(params.id);
 
-    // Check if employee exists
-    const employee = await db.selectFrom('teachers')
-      .select('person_id')
-      .where('person_id', '=', employeeId)
-      .where('teachers.school_id', '=', user.school_id!)
-      .executeTakeFirst();
+    // PUT /:id - Update employee (admin only)
+    .put('/', async({ cookie, params, body }: any) => {
+      const user = await getAuthUser(cookie?.token?.value as string, cookie);
+      if (!user) return { error: 'no_permission' };
+      const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_EDIT);
+      if (!perm) return { error: 'no_permission' };
+      const employeeId = parseInt(params.id);
 
-    if (!employee) {
-      return new Response(JSON.stringify({ error: 'no_employee' }), { status: 404 });
-    }
+      // Check if employee exists
+      const employee = await db.selectFrom('teachers')
+        .select('person_id')
+        .where('person_id', '=', employeeId)
+        .where('teachers.school_id', '=', user.school_id!)
+        .executeTakeFirst();
 
-    // Delete from teachers table
-    await db.deleteFrom('teachers')
-      .where('person_id', '=', employeeId)
-      .where('school_id', '=', user.school_id!)
-      .execute();
+      if (!employee) {
+        return new Response(JSON.stringify({ error: 'no_employee' }), { status: 404 });
+      }
 
-    return Response.json({ success: true, message: 'Employee removed' });
-  });
+      // Update teachers table
+      await db.updateTable('teachers')
+        .set({
+          role: body.role,
+          cabinet_id: body.cabinet,
+          department: body.department,
+          contract_type: body.contractType,
+        })
+        .where('person_id', '=', employeeId)
+        .where('school_id', '=', user.school_id!)
+        .execute();
+
+      return Response.json({ success: true, message: 'Employee updated' });
+
+    }, {
+      body: t.Object({
+        role: t.Optional(t.UnionEnum(['teacher', 'admin_staff', 'maintenance', 'management', 'personnel', 'other'])),
+        cabinet: t.Optional(t.Number()),
+        department: t.Optional(t.String()),
+        contractType: t.Optional(t.UnionEnum(['fulltime', 'parttime', 'dpp', 'dpc'])),
+      })
+    })
+
+    // DELETE /:id - Remove employee (admin only)
+    .delete('/', async({ cookie, school, params }: any) => {
+      const user = await getAuthUser(cookie?.token?.value as string, cookie);
+      if (!user) return { error: 'no_permission' };
+      const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.EMPLOYEES_EDIT);
+      if (!perm) return { error: 'no_permission' };
+      const employeeId = parseInt(params.id);
+
+      // Check if employee exists
+      const employee = await db.selectFrom('teachers')
+        .select('person_id')
+        .where('person_id', '=', employeeId)
+        .where('teachers.school_id', '=', user.school_id!)
+        .executeTakeFirst();
+
+      if (!employee) {
+        return new Response(JSON.stringify({ error: 'no_employee' }), { status: 404 });
+      }
+
+      // Delete from teachers table
+      await db.deleteFrom('teachers')
+        .where('person_id', '=', employeeId)
+        .where('school_id', '=', user.school_id!)
+        .execute();
+
+      return Response.json({ success: true, message: 'Employee removed' });
+    })
+  );
 
 export default employeesRouter;

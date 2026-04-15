@@ -129,6 +129,11 @@ import { MessageRecipientGroupTable, MessageRecipientGroupMemberTable } from './
 import { AvatarHistoryTable } from './avatar_history'
 import { StudentSubjectExemptionsTable } from './student_subject_exemptions'
 import { educationMeasureTypesTable } from './education_measure_types'
+import { TeachersEducationTable } from './teachers_education'
+import { TeachersAgendaTable } from './teachers_agenda'
+import { TeachersEquipmentTable } from './teachers_equipment'
+import { TeachersEvaluationsTable } from './teachers_evaluations'
+import { TeachersHistoryTable } from './teachers_history'
 
 
 
@@ -283,6 +288,11 @@ export interface Database {
   avatar_history: AvatarHistoryTable
   student_subject_exemptions: StudentSubjectExemptionsTable
   education_measure_types: educationMeasureTypesTable
+  teachers_education: TeachersEducationTable
+  teachers_agenda: TeachersAgendaTable
+  teachers_equipment: TeachersEquipmentTable
+  teachers_evaluations: TeachersEvaluationsTable
+  teachers_history: TeachersHistoryTable
 }
 
 

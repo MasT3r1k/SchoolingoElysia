@@ -6,13 +6,17 @@ import { GlobalPermissions } from '../../../../config/permissions.config';
 import { getAuthUser } from '../../../../utils/auth';
 
 
-const salariesRouter = new Elysia()
-  // GET /employees/salaries - Get salaries (admin/personnel only)
-  .get('/employees/salaries', async({ cookie, school, query }: any) => {
+export const salariesRouter = new Elysia({ prefix: '/salaries' })
+  // GET / - Get salaries (admin/personnel only)
+  .get('/', async({ cookie, school, query, params = {} }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
+    
+    const employeeId = params.id ? parseInt(params.id) : (query.employeeId ? parseInt(query.employeeId) : null);
+    if (params.id && isNaN(employeeId!)) return { error: 'invalid_id' };
+
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SALARIES_VIEW);
-    if (!perm) return { error: 'no_permission' };
+    if (!perm && user.person_id !== employeeId) return { error: 'no_permission' };
     // Check if salaries are enabled
     if (!school.employee_salaries_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
@@ -36,10 +40,9 @@ const salariesRouter = new Elysia()
         'teachers_salary.currency',
         'teachers_salary.deductions',
       ])
-      .where('teachers_salary.teacher_id', 'is not', null)
-
-    // Filter by employee
-    if (query.employeeId) {
+    if (employeeId) {
+      queryBuilder = queryBuilder.where('teachers_salary.teacher_id', '=', employeeId);
+    } else if (query.employeeId) {
       queryBuilder = queryBuilder.where('teachers_salary.teacher_id', '=', query.employeeId);
     }
 
@@ -62,12 +65,11 @@ const salariesRouter = new Elysia()
 
   }, {
     query: t.Object({
-      employeeId: t.Optional(t.Number()),
       activeOnly: t.Optional(t.Boolean()),
     })
   })
-  // POST /employees/salaries - Set salary (admin only)
-  .post('/employees/salaries', async({ cookie, school, body }: any) => {
+  // POST / - Set salary (admin only)
+  .post('/', async({ cookie, school, body, params = {} }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SALARIES_MANAGE);
@@ -77,19 +79,21 @@ const salariesRouter = new Elysia()
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
     }
     
+    const employeeId = params.id ? parseInt(params.id) : body.teacherId;
+    if (isNaN(employeeId)) return { error: 'invalid_id' };
 
     // End current salary if exists
     const today = new Date().toISOString().split('T')[0];
     await db.updateTable('teachers_salary')
       .set({ valid_to: today })
-      .where('teacher_id', '=', body.teacherId)
+      .where('teacher_id', '=', employeeId)
       .where('valid_to', 'is', null)
       .execute();
 
     // Insert new salary
     await db.insertInto('teachers_salary')
       .values({
-        teacher_id: body.teacherId,
+        teacher_id: employeeId,
         role: body.role || '',
         salary: body.salary,
         valid_from: body.validFrom,
@@ -112,8 +116,8 @@ const salariesRouter = new Elysia()
       deductions: t.Optional(t.Number()),
     })
   })
-  // PUT /employees/salaries/:id - Update salary (admin only)
-  .put('/employees/salaries/:id', async({ cookie, school, params, body }: any) => {
+  // PUT /:salaryId - Update salary (admin only)
+  .put('/:salaryId', async({ cookie, school, params, body }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SALARIES_MANAGE);
@@ -122,7 +126,7 @@ const salariesRouter = new Elysia()
     if (!school.employee_salaries_enabled) {
       return new Response(JSON.stringify({ error: 'feature_disabled' }), { status: 403 });
     }
-    const salaryId = parseInt(params.id);
+    const salaryId = parseInt(params.salaryId);
     
 
     await db.updateTable('teachers_salary')
@@ -147,8 +151,8 @@ const salariesRouter = new Elysia()
       deductions: t.Optional(t.Number()),
     })
   })
-  // GET /employees/salaries/history/:employeeId - Salary history (admin only)
-  .get('/employees/salaries/history/:employeeId', async({ cookie, school, params }: any) => {
+  // GET /history/:employeeId - Salary history (admin only)
+  .get('/history/:employeeId', async({ cookie, school, params }: any) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.SALARIES_VIEW);
@@ -170,4 +174,4 @@ const salariesRouter = new Elysia()
     return Response.json({ data: history });
   });
 
-export default salariesRouter;
+// End of file

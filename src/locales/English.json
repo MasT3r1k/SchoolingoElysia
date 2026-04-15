@@ -1686,6 +1686,7 @@
                 "success_description": "You successfully updated passkey name to %passkey%."
             },
             "remove": {
+                "modal_title": "Delete passkey",
                 "title": "Delete %passkey% passkey?",
                 "description": "Do you really wish to delete passkey? This action cannot be undone!",
                 "success_title": "Deleted!",
@@ -2095,7 +2096,15 @@
         },
         "edit_attendance": {
             "title": "Edit attendance"
-        }
+        },
+        "subjects": "Subjects",
+        "professional": "Professional Development",
+        "agenda": "H&S and Agenda",
+        "documents": "Documents",
+        "evaluation": "Evaluation",
+        "equipment": "Equipment",
+        "history": "History",
+        "timetable": "Timetable"
     },
     "seasonal": {
         "toggle": {

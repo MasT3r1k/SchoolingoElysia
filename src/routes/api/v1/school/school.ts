@@ -109,6 +109,7 @@ const elysiaApp = new Elysia()
         'scopes.name as fieldOfStudy',
         'persons.first_name as teacher_first_name',
         'persons.last_name as teacher_last_name',
+        'persons.avatar as teacher_avatar',
         'building_rooms.name as classroom',
         sql<number>`(SELECT COUNT(person_id) FROM students WHERE students.class_id = classes.class_id)`.as('studentsCount')
       ])
@@ -129,6 +130,7 @@ const elysiaApp = new Elysia()
         year: yearDiff,
         fieldOfStudy: c.fieldOfStudy || null,
         headTeacher: (c.teacher_first_name && c.teacher_last_name) ? `${c.teacher_first_name} ${c.teacher_last_name}` : null,
+        headTeacherAvatar: c.teacher_avatar || null,
         classroom: c.classroom || null,
         studentsCount: c.studentsCount || 0
       };
