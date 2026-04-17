@@ -134,9 +134,8 @@ import { TeachersAgendaTable } from './teachers_agenda'
 import { TeachersEquipmentTable } from './teachers_equipment'
 import { TeachersEvaluationsTable } from './teachers_evaluations'
 import { TeachersHistoryTable } from './teachers_history'
-
-
-
+import { SavedReportsTable } from './saved_reports'
+import { SavedReportSharesTable } from './saved_report_shares'
 
 export interface Database {
   absence: AbsenceTable
@@ -293,6 +292,8 @@ export interface Database {
   teachers_equipment: TeachersEquipmentTable
   teachers_evaluations: TeachersEvaluationsTable
   teachers_history: TeachersHistoryTable
+  saved_reports: SavedReportsTable
+  saved_report_shares: SavedReportSharesTable
 }
 
 

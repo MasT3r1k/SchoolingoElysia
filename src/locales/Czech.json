@@ -823,7 +823,8 @@
         "save": "Uložit",
         "saving": "Ukládání",
         "save_changes": "Uložit změny",
-        "reset": "Obnovit"
+        "reset": "Obnovit",
+        "done": "Hotovo"
     },
     "dropdown": {
         "child": {
@@ -2851,6 +2852,8 @@
     "reports": {
         "title": "Sestavy a tiskové výstupy",
         "subtitle": "Generování tiskových sestav ze systému",
+        "report_name": "Název sestavy",
+        "report_type": "Druh sestavy",
         "types": {
             "student_list": "Seznam žáků",
             "student_list_desc": "Vytiskne seznam žáků vybrané třídy.",
@@ -2860,6 +2863,23 @@
             "class_marks_desc": "Hromadný přehled klasifikace celé třídy.",
             "grade_overview": "Přehled za období",
             "grade_overview_desc": "Pololetní a závěrečná klasifikace (vysvědčení/katalog)."
+        },
+        "new_report": {
+            "title": "Vytvořit novou sestavu",
+            "description": "Vyberte si šablonu (typ) sestavy, kterou chcete vytvořit"
+        },
+        "edit_report": {
+            "title": "Upravit sestavu"
+        },
+        "share_report": {
+            "title": "Sdílet sestavu",
+            "search_user": "Hledat uživatele (jméno nebo uživatelské jméno)...",
+            "share": "Sdílet",
+            "shared": "Sdíleno"
+        },
+        "delete_report": {
+            "title": "Smazat sestavu",
+            "description": "Opravdu si přejete smazat sestavu %report_name%?"
         },
         "config": {
             "select_class": "Výběr třídy",
@@ -2877,6 +2897,12 @@
             "student": "Žák",
             "footer": "Dokument vygenerován systémem Schoolingo. Strana 1 / 1",
             "signature": "Razítko a podpis"
+        },
+        "alerts": {
+            "created": "Sestava byla úspěšně vytvořena.",
+            "saved": "Sestava byla úspěšně uložena.",
+            "deleted": "Sestava byla úspěšně smazána.",
+            "first_generate_data": "Nejdříve vygenerujte data pro sestavu kliknutím na \"Generovat sestavu\"."
         }
     }
 }

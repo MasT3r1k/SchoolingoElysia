@@ -60,6 +60,10 @@ const app = new Elysia()
       ]));
     }
 
+    if (role && role !== 'all') {
+      dbQuery = dbQuery.where('users.role', '=', role);
+    }
+
     // Filter by School
     if (user.school_id) {
         dbQuery = dbQuery.where('users.school_id', '=', user.school_id);
