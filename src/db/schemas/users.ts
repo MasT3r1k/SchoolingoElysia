@@ -7,6 +7,7 @@ export interface UsersTable {
   password_id: number
   login_type: 'local' | 'ldap'
   role: 'student'|'teacher'|'parent'|'admin_staff'|'management'|'personnel'|'maintenance'|'other'
+  active: Generated<boolean>;
   manager: number
   principal: boolean
   theme: number

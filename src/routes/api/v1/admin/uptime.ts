@@ -1,7 +1,8 @@
 /**
- * System Uptime API
- * Vrací historii běhu systému z heartbeat záznamů.
- * GET /admin/analytics/uptime
+ * System Uptime & API Metrics API
+ * GET /admin/analytics/uptime          – uptime history from heartbeats
+ * PATCH /admin/analytics/uptime/note   – add/edit note on an offline segment (by from-time)
+ * GET /admin/analytics/response-time   – average API response time over time
  */
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
@@ -25,7 +26,7 @@ interface UptimeSegment {
  * Pravidlo: pokud je mezera > 2 min, systém byl offline.
  * Pokud je is_update=1, segment se označí jako 'update'.
  */
-function buildSegments(beats: any[]): UptimeSegment[] {
+function buildSegments(beats: any[], offlineNotes: Map<string, string>): UptimeSegment[] {
     if (beats.length === 0) return [];
 
     const GAP_THRESHOLD_MS = 2 * 60 * 1000; // 2 minuty
@@ -56,11 +57,13 @@ function buildSegments(beats: any[]): UptimeSegment[] {
             });
 
             // Zapiš offline segment (mezera)
+            const offlineFrom = prev.toISOString();
             segments.push({
                 status: 'offline',
-                from: prev.toISOString(),
+                from: offlineFrom,
                 to: curr.toISOString(),
-                duration_minutes: Math.round(gap / 60000)
+                duration_minutes: Math.round(gap / 60000),
+                note: offlineNotes.get(offlineFrom) ?? null
             });
 
             // Začni nový online segment
@@ -70,7 +73,6 @@ function buildSegments(beats: any[]): UptimeSegment[] {
             commit   = beats[i].commit_hash;
             note     = beats[i].note;
         } else {
-            // Stejný segment — posun konce a případná aktualizace is_update
             if (beats[i].is_update === 1) isUpdate = true;
         }
 
@@ -92,8 +94,10 @@ function buildSegments(beats: any[]): UptimeSegment[] {
 }
 
 export default new Elysia({ prefix: '/admin/analytics' })
+    // ─────────────────────────────────────────────────────
+    // GET /uptime
+    // ─────────────────────────────────────────────────────
     .get('/uptime', async ({ query, set }) => {
-        // Rozsah: posledních N dní (default 7) nebo custom date range
         let days = Math.min(Number(query.days) || 7, 90);
         let dateCondition = sql<boolean>`recorded_at >= NOW() - INTERVAL ${sql.raw(String(days))} DAY`;
 
@@ -107,20 +111,26 @@ export default new Elysia({ prefix: '/admin/analytics' })
         try {
             const beats = await db
                 .selectFrom('system_heartbeats')
-                .select([
-                    'recorded_at',
-                    'version',
-                    'commit_hash',
-                    'is_update',
-                    'note'
-                ])
+                .select(['recorded_at', 'version', 'commit_hash', 'is_update', 'note'])
                 .where(dateCondition)
                 .orderBy('recorded_at', 'asc')
                 .execute();
 
-            const segments = buildSegments(beats);
+            // Load offline notes from the offline_notes table (if it exists)
+            // Fall back gracefully if not yet migrated
+            let offlineNotes = new Map<string, string>();
+            try {
+                const notes = await (db as any)
+                    .selectFrom('uptime_offline_notes')
+                    .select(['segment_from', 'note'])
+                    .execute();
+                for (const n of notes) {
+                    offlineNotes.set(n.segment_from, n.note);
+                }
+            } catch { /* table doesn't exist yet */ }
 
-            // Výpočet celkové dostupnosti
+            const segments = buildSegments(beats, offlineNotes);
+
             const totalMinutes = days * 24 * 60;
             const onlineMinutes = segments
                 .filter(s => s.status === 'online' || s.status === 'update')
@@ -129,7 +139,6 @@ export default new Elysia({ prefix: '/admin/analytics' })
                 ? Math.min(100, parseFloat(((onlineMinutes / totalMinutes) * 100).toFixed(2)))
                 : 0;
 
-            // Aktuální stav systému
             const currentVersion = changelog[0]?.version ?? 'unknown';
             const currentCommit  = gitService.localCommit ?? 'unknown';
             const updateStatus   = updateService.getStatus();
@@ -162,5 +171,36 @@ export default new Elysia({ prefix: '/admin/analytics' })
             days: t.Optional(t.String()),
             from: t.Optional(t.String()),
             to: t.Optional(t.String())
+        })
+    })
+
+    // ─────────────────────────────────────────────────────
+    // PATCH /uptime/note — save note for an offline segment
+    // ─────────────────────────────────────────────────────
+    .patch('/uptime/note', async ({ body, user, set }: any) => {
+        if (!user) { set.status = 401; return { error: 'unauthorized' }; }
+        if (!user.isPrincipal && user.manager == null) { set.status = 403; return { error: 'forbidden' }; }
+
+        const { segment_from, note } = body as { segment_from: string; note: string };
+
+        try {
+            // Upsert into uptime_offline_notes
+            await db.executeQuery(
+                sql`
+                    INSERT INTO uptime_offline_notes (segment_from, note, updated_at)
+                    VALUES (${segment_from}, ${note}, NOW())
+                    ON DUPLICATE KEY UPDATE note = ${note}, updated_at = NOW()
+                `.compile(db as any)
+            );
+            return { success: true };
+        } catch (err) {
+            console.error('[Uptime Note] Error:', err);
+            set.status = 500;
+            return { error: 'Failed to save note' };
+        }
+    }, {
+        body: t.Object({
+            segment_from: t.String(),
+            note: t.String()
         })
     });

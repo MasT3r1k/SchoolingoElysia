@@ -119,6 +119,27 @@ export default new Elysia({ prefix: '/admin/analytics' })
                 }));
             }
 
+            // Hourly activity (always computed, for heatmap)
+            const hourlyRaw = await db
+                .selectFrom('analytics_visits')
+                .select([
+                    sql<number>`HOUR(timestamp)`.as('hour'),
+                    sql<number>`count(*)`.as('count')
+                ])
+                .where(dateCondition)
+                .groupBy(sql`HOUR(timestamp)`)
+                .orderBy(sql`HOUR(timestamp)`)
+                .execute();
+
+            const hourlyActivity: { hour: string; count: number }[] = [];
+            for (let i = 0; i < 24; i++) {
+                const found = hourlyRaw.find((h: any) => Number(h.hour) === i);
+                hourlyActivity.push({
+                    hour: String(i).padStart(2, '0'),
+                    count: Number(found?.count || 0)
+                });
+            }
+
             // Top Pages
             const topPages = await db
                 .selectFrom('analytics_visits')
@@ -211,6 +232,7 @@ export default new Elysia({ prefix: '/admin/analytics' })
                 nb_actions: summary?.nb_actions || 0,
                 avg_time_on_site: Math.round(Number(summary?.avg_time_on_site || 0)),
                 chartData: chartData,
+                hourlyActivity: hourlyActivity,
                 pages: topPages.map(p => ({
                     ...p,
                     avg_time_on_page: Math.round(Number(p.avg_time_on_page || 0))
@@ -231,4 +253,62 @@ export default new Elysia({ prefix: '/admin/analytics' })
             from: t.Optional(t.String()),
             to: t.Optional(t.String())
         })
+    })
+    .get('/system-summary', async ({ user, school }: any) => {
+        if (!user) return { error: 'no_user' };
+
+        try {
+            const schoolId = user.school_id;
+
+            // Active students count
+            const studentCount = await db.selectFrom('students')
+                .innerJoin('users', 'users.person_id', 'students.person_id')
+                .select(sql<number>`COUNT(*)`.as('count'))
+                .where('students.status', '=', 'active')
+                .where('users.school_id', '=', schoolId)
+                .executeTakeFirst()
+                .then(r => Number(r?.count ?? 0));
+
+            // Teacher count
+            const teacherCount = await db.selectFrom('teachers')
+                .innerJoin('users', 'users.person_id', 'teachers.person_id')
+                .select(sql<number>`COUNT(*)`.as('count'))
+                .where('users.school_id', '=', schoolId)
+                .executeTakeFirst()
+                .then(r => Number(r?.count ?? 0));
+
+            // Class count
+            const classCount = await db.selectFrom('classes')
+                .select(sql<number>`COUNT(*)`.as('count'))
+                .innerJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
+                .where('scopes.school_id', '=', schoolId)
+                .executeTakeFirst()
+                .then(r => Number(r?.count ?? 0));
+
+            // Subject count
+            const subjectCount = await db.selectFrom('subjects')
+                .select(sql<number>`COUNT(*)`.as('count'))
+                .where('school_id', '=', schoolId)
+                .executeTakeFirst()
+                .then(r => Number(r?.count ?? 0));
+
+            // Total registered users for the school
+            const totalUsers = await db.selectFrom('users')
+                .select(sql<number>`COUNT(*)`.as('count'))
+                .where('school_id', '=', schoolId)
+                .where('active', '=', true)
+                .executeTakeFirst()
+                .then(r => Number(r?.count ?? 0));
+
+            return {
+                students: studentCount,
+                teachers: teacherCount,
+                classes: classCount,
+                subjects: subjectCount,
+                totalUsers
+            };
+        } catch (error) {
+            console.error('System summary error:', error);
+            return { error: 'failed' };
+        }
     });
