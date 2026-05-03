@@ -5,6 +5,7 @@ import pdf from 'html-pdf-node'
 import { db } from '../../database'
 import { sql } from 'kysely'
 import { format_person_by_id } from '../functions/format_person_by_id'
+import QRCode from 'qrcode'
 
 export async function renderPdf(
   templateName: string,
@@ -20,6 +21,10 @@ export async function renderPdf(
         return a + b;
     });
 
+    Handlebars.registerHelper('format_datum', function(datum_narozeni) {
+        return datum_narozeni.replaceAll('.', '').replaceAll(' ', '')
+    })
+
     Handlebars.registerHelper('getLessonClasses', function(lessons, lesson) {
       if (!lesson) return 'empty sub-lesson-hour';
       let classes = ['sub-lesson-hour'];
@@ -31,6 +36,14 @@ export async function renderPdf(
 
     Handlebars.registerHelper('eq', function (a, b) {
         return a === b;
+    });
+
+    Handlebars.registerHelper('lt', function (a, b) {
+        return a < b;
+    });
+
+    Handlebars.registerHelper('gt', function (a, b) {
+        return a > b;
     });
 
     Handlebars.registerHelper('lookupOrEmpty', function(obj, key) {
@@ -50,6 +63,16 @@ export async function renderPdf(
         return args.join('');
     });
 
+    Handlebars.registerHelper('split', function(str, delimiter) {
+        if (typeof str !== 'string') return [];
+        return str.split(delimiter);
+    });
+
+    Handlebars.registerHelper('uppercase', function(str) {
+        if (typeof str !== 'string') return str;
+        return str.toUpperCase()
+    })
+
   const templatePath = path.join(
     __dirname,
     'templates',
@@ -64,11 +87,70 @@ export async function renderPdf(
   ])
     const compiled = Handlebars.compile(html)
     
-    let processedData = data;
+    const school: any = await (db.selectFrom('schools') as any)
+        .leftJoin('addresses', 'addresses.address_id', 'schools.address_id')
+        .leftJoin('cities', 'cities.city_id', 'addresses.city_id')
+        .select([
+            'schools.name', 
+            'schools.ico', 
+            'schools.izo', 
+            'schools.red_izo',
+            'cities.city_name as city',
+            'addresses.street',
+            'addresses.house_number',
+            'cities.postcode'
+        ])
+        .executeTakeFirst();
+
+    const currentSchoolYearRecord = await db.selectFrom('school_years')
+        .select(['start', 'end'])
+        .where('current', '=', true)
+        .executeTakeFirst();
+
+    let schoolYearString = '';
+    if (currentSchoolYearRecord && currentSchoolYearRecord.start && currentSchoolYearRecord.end) {
+        schoolYearString = `${currentSchoolYearRecord.start.getFullYear()}/${currentSchoolYearRecord.end.getFullYear()}`;
+    }
+
+    // Generate QR Code for report card verification
+    let studentQRCode = '';
+    if (data.student) {
+        const qrData = JSON.stringify({
+            student: data.student.full_name,
+            school: school?.name,
+            year: schoolYearString,
+            verifyUrl: `https://schoolingo.cz/verify/${data.student.id}`
+        });
+        studentQRCode = await QRCode.toDataURL(qrData);
+    }
+
+    let processedMarks = Array.isArray(data.marks) ? [...data.marks] : [];
+    if (templateName === 'vysvedceni_ss' || templateName === 'vypis_vysvedceni_ss') {
+        // SS template has exactly 18 rows
+        while (processedMarks.length < 18) {
+            processedMarks.push({ subject_name: '', sem1: '', sem2: '' });
+        }
+    } else if (templateName === 'vysvedceni_zs' || templateName === 'vypis_vysvedceni_zs') {
+        // ZS template usually 15-16 rows, let's pad to 16
+        while (processedMarks.length < 16) {
+            processedMarks.push({ subject_name: '', sem1: '', sem2: '' });
+        }
+    }
+
+    let processedData = {
+        ...data,
+        school: school || { name: 'Neznámá škola' },
+        schoolYear: schoolYearString || '----/----',
+        studentQRCode: studentQRCode,
+        marks: processedMarks
+    };
     let landscape = false;
 
-    if (templateName === 'rozvrh') {
+    if (templateName === 'rozvrh' || templateName === 'potvrzeni_studia') {
         landscape = true;
+    }
+
+    if (templateName === 'rozvrh') {
         const days = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle'];
         let numDays = data.timetableData.timetable.length <= 6 && !data.timetableData.timetable[0] ? 6 : (data.timetableData.timetable[0] || data.timetableData.timetable.length > 6 ? 7 : 6);
 
@@ -167,8 +249,10 @@ export async function renderPdf(
 
     const content = compiled(processedData)
     const file = { content }
+    const format = templateName === 'potvrzeni_studia' ? 'A5' : 'A4';
+
     const pdfBuffer = await pdf.generatePdf(file, { 
-      format: 'A4', 
+      format: format, 
       landscape: landscape, 
       printBackground: true 
     })

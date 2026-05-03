@@ -202,6 +202,18 @@ const app = new Elysia()
     query: t.Object({
       scope_id: t.Optional(t.Number())
     })
+  })
+  
+  .get('/system/school-years', async ({ cookie }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+
+    const school_years = await db.selectFrom('school_years')
+      .selectAll()
+      .orderBy('start', 'desc')
+      .execute();
+
+    return school_years;
   });
 
 export default app;

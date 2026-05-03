@@ -115,9 +115,9 @@ const app = new Elysia()
 
         const { originalEmail, email, type, description } = body as any;
 
-        // Verify ownership of original
+        // Verify ownership and get current verification status
         const ownership = await db.selectFrom('emails')
-            .select('email')
+            .select(['email', 'is_verified'])
             .where('email', '=', originalEmail)
             .where('person_id', '=', user.person_id)
             .executeTakeFirst();
@@ -131,8 +131,10 @@ const app = new Elysia()
             if (!isApproved2FA) return createErrorResponse('invalid_2fa');
         }
 
+        const emailChanged = email !== originalEmail;
+
         // Check if new email is taken
-        if (email !== originalEmail) {
+        if (emailChanged) {
             const exists = await db.selectFrom('emails')
                 .select(['email', 'person_id'])
                 .where('email', '=', email)
@@ -144,37 +146,48 @@ const app = new Elysia()
             }
         }
 
-        const emailCode = Utils.randomstring(6, true).toUpperCase();
-        const codeExpiration = moment().add(20, 'minutes');
+        const updateData: any = {
+            email,
+            type,
+            description
+        };
+
+        let codeExpiration = null;
+
+        if (emailChanged) {
+            const emailCode = Utils.randomstring(6, true).toUpperCase();
+            codeExpiration = moment().add(20, 'minutes');
+            updateData.is_verified = false;
+            updateData.email_code = emailCode;
+            updateData.code_until = codeExpiration.toDate();
+
+            await Mailer.sendFromTemplate(
+                "add_email.html",
+                {
+                    to: email,
+                    subject: "Změna e-mailu - Schoolingo",
+                    data: {
+                        firstName: user.first_name || '',
+                        email: email,
+                        code: emailCode,
+                        validUntil: Utils.formatDate(codeExpiration)
+                    }
+                }
+            ).catch(err => console.error('Failed to send verification email:', err));
+        }
 
         await db.updateTable('emails')
-            .set({
-                email,
-                type,
-                description,
-                is_verified: false,
-                email_code: emailCode,
-                code_until: codeExpiration.toDate()
-            })
+            .set(updateData)
             .where('email', '=', originalEmail)
             .where('person_id', '=', user.person_id)
             .execute();
 
-        await Mailer.sendFromTemplate(
-            "add_email.html",
-            {
-                to: email,
-                subject: "Změna e-mailu - Schoolingo",
-                data: {
-                    firstName: user.first_name || '',
-                    email: email,
-                    code: emailCode,
-                    validUntil: Utils.formatDate(codeExpiration)
-                }
-            }
-        ).catch(err => console.error('Failed to send verification email:', err));
-
-        return createResponse({ success: true, code_valid_until: codeExpiration.toDate() }, cookie);
+        return createResponse({ 
+            success: true, 
+            code_valid_until: codeExpiration ? codeExpiration.toDate() : null,
+            verified: ownership.is_verified,
+            skip_verification: !emailChanged
+        }, cookie);
     }, {
         body: t.Object({
             originalEmail: t.String(),

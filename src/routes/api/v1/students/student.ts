@@ -234,6 +234,9 @@ const elysiaApp = new Elysia()
             'persons.first_name as firstName',
             'persons.last_name as lastName',
             'persons.gender',
+            'family_relations.legal_guardian_de_jure',
+            'family_relations.closest_legal_representative',
+            'family_relations.allowed_to_receive_information',
             sql<string>`(
               SELECT GROUP_CONCAT(d.shortcut ORDER BY d.weight SEPARATOR ', ')
               FROM degrees d
@@ -1267,6 +1270,51 @@ const elysiaApp = new Elysia()
     })
 
   })
+  
+  .patch('/student/:id/parent/:parentId/role', async ({ cookie, params: { id, parentId }, body }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return;
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_EDIT);
+    if (!perm) return { error: 'no_permission' };
+
+    try {
+      await db.updateTable('family_relations')
+        .set({
+          role: body.role as any,
+          legal_guardian_de_jure: body.legal_guardian_de_jure === 1,
+          closest_legal_representative: body.closest_legal_representative === 1,
+          allowed_to_receive_information: body.allowed_to_receive_information === 1
+        })
+        .where('source_id', '=', id)
+        .where('target_id', '=', parentId)
+        .execute();
+
+      await db.insertInto('student_history')
+        .values({
+          student_id: id,
+          teacher_id: user.person_id as number,
+          type: 'updated_parent',
+          data: JSON.stringify({ parent_id: parentId, changes: 'role_and_permissions' })
+        })
+        .execute();
+
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      return new Response(JSON.stringify({ error: 'Failed to update parent role', details: e }), { status: 500 });
+    }
+  }, {
+    params: t.Object({
+      id: t.Number(),
+      parentId: t.Number()
+    }),
+    body: t.Object({
+      role: t.String(),
+      legal_guardian_de_jure: t.Number(),
+      closest_legal_representative: t.Number(),
+      allowed_to_receive_information: t.Number()
+    })
+  })
 
   .patch('/student/:id/address', async ({ cookie, params: { id }, body }) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
@@ -1681,11 +1729,142 @@ const elysiaApp = new Elysia()
       console.error(e);
       return new Response(JSON.stringify({ error: 'Failed' }), { status: 500 });
     }
+  })
+
+  .get('/student/:id/topics', async ({ params: { id }, query: { syId }, cookie }) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    
+    // Permission check: either same person or has STUDENT_VIEW permission
+    if (user.person_id !== id) {
+       const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW);
+       if (!perm) return { error: 'no_permission' };
+    }
+
+    // Fetch school year to determine start and end date
+    let schoolYear;
+    if (syId) {
+      schoolYear = await db.selectFrom('school_years')
+        .select(['start', 'end'])
+        .where('sy_id', '=', syId)
+        .executeTakeFirst();
+    } else {
+      schoolYear = await db.selectFrom('school_years')
+        .select(['start', 'end'])
+        .where('start', '<=', moment().toDate())
+        .where('end', '>=', moment().toDate())
+        .executeTakeFirst();
+      
+      // Fallback if no current school year found
+      if (!schoolYear) {
+         schoolYear = await db.selectFrom('school_years')
+           .select(['start', 'end'])
+           .orderBy('start', 'desc')
+           .executeTakeFirst();
+      }
+    }
+
+    if (!schoolYear) return { error: 'invalid_school_year' };
+
+    const topics = await db.selectFrom('student_groups')
+      .innerJoin('classbook', 'student_groups.group_id', 'classbook.group_id')
+      .innerJoin('subjects', 'classbook.subject_id', 'subjects.subject_id')
+      .leftJoin('persons as teacher', 'classbook.teacher_id', 'teacher.person_id')
+      .leftJoin('absence', (join) => join
+        .onRef('absence.lesson_id', '=', 'classbook.classbook_id')
+        .on('absence.student_id', '=', id)
+      )
+      .select([
+        'classbook.classbook_id',
+        'classbook.date',
+        'classbook.day_hour',
+        'classbook.topic',
+        'classbook.note',
+        'classbook.subject_id',
+        'classbook.group_id',
+        'subjects.label as subject_name',
+        'subjects.shortcut as subject_shortcut',
+        'teacher.first_name as teacher_first_name',
+        'teacher.last_name as teacher_last_name',
+        'absence.type as absence_type',
+        'absence.minutes as absence_minutes',
+        'absence.reason as absence_reason'
+      ])
+      .where('student_groups.student_id', '=', id)
+      .where('classbook.date', '>=', schoolYear.start as Date)
+      .where('classbook.date', '<=', schoolYear.end as Date)
+      .where('classbook.date', '<=', moment().format('YYYY-MM-DD'))
+      .orderBy('classbook.date', 'desc')
+      .orderBy('classbook.day_hour', 'desc')
+      .limit(1000)
+      .execute();
+
+    if (topics.length === 0) return {};
+
+    const syStart = schoolYear.start;
+
+    // To calculate lesson numbers correctly, we need all classbook entries for these group/subjects since start of year
+    const groupIds = [...new Set(topics.map(t => t.group_id))];
+    const subjectIds = [...new Set(topics.map(t => t.subject_id as number))];
+
+    // Fetch counts or all records for calculation
+    const allRelevantLessons = await db.selectFrom('classbook')
+      .select(['classbook_id', 'group_id', 'subject_id', 'date', 'day_hour'])
+      .where('group_id', 'in', groupIds)
+      .where('subject_id', 'in', subjectIds)
+      .where('date', '>=', syStart as Date)
+      .where('date', '<=', schoolYear.end as Date)
+      .orderBy('date', 'asc')
+      .orderBy('day_hour', 'asc')
+      .execute();
+
+    // Map classbook_id to its ordinal number per (group, subject)
+    const lessonNumberMap = new Map<number, number>();
+    const counters: Record<string, number> = {};
+    allRelevantLessons.forEach(l => {
+      const key = `${l.group_id}-${l.subject_id}`;
+      counters[key] = (counters[key] || 0) + 1;
+      lessonNumberMap.set(l.classbook_id, counters[key]);
+    });
+
+    // Fetch homework
+    const homework = await db.selectFrom('homework')
+      .select(['homework_id', 'group_id', 'subject_id', 'assigned_at', 'headline', 'homework as content', 'due_date'])
+      .where('group_id', 'in', groupIds)
+      .where('subject_id', 'in', subjectIds)
+      .where('assigned_at', '>=', syStart as Date)
+      .where('assigned_at', '<=', schoolYear.end as Date)
+      .execute();
+
+    // Map homework and lesson numbers to topics
+    const topicsWithExtra = topics.map(t => {
+      const topicDate = moment(t.date).format('YYYY-MM-DD');
+      const relatedHomework = homework.filter(h => 
+        h.group_id === t.group_id && 
+        h.subject_id === t.subject_id && 
+        moment(h.assigned_at).format('YYYY-MM-DD') === topicDate
+      );
+
+      return {
+        ...t,
+        lesson_number: lessonNumberMap.get(t.classbook_id) || 0,
+        teacher_name: t.teacher_first_name ? `${t.teacher_last_name} ${t.teacher_first_name[0]}.` : '',
+        homework: relatedHomework
+      };
+    });
+
+    // Grouping by date for UI
+    const groupedTopics: Record<string, any[]> = {};
+    topicsWithExtra.forEach(t => {
+      const dateStr = moment(t.date).format('YYYY-MM-DD');
+      if (!groupedTopics[dateStr]) groupedTopics[dateStr] = [];
+      groupedTopics[dateStr].push(t);
+    });
+
+    return groupedTopics;
   }, {
-    params: t.Object({
-      id: t.Number(),
-      noteId: t.Number()
-    })
+    params: t.Object({ id: t.Number() }),
+    query: t.Object({ syId: t.Optional(t.Number()) })
   });
 
 export default elysiaApp;

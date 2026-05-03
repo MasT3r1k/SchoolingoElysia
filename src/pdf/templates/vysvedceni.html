@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Vysvědčení</title>
+    <style>
+        @page { size: A4; margin: 0; }
+        body { 
+            font-family: "Times New Roman", Times, serif; 
+            padding: 50px; 
+            line-height: 1.4; 
+            color: #000;
+            background-color: #fff;
+            position: relative;
+        }
+        .border-decorator {
+            position: absolute;
+            top: 20px; left: 20px; right: 20px; bottom: 20px;
+            border: 1px solid #ddd;
+            pointer-events: none;
+        }
+        .state-emblem {
+            margin: 0 auto 10px;
+            width: 80px;
+            height: 80px;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            text-align: center;
+            border-radius: 50%;
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 24px; text-transform: uppercase; margin: 0; letter-spacing: 2px; }
+        .header h2 { font-size: 20px; font-weight: bold; margin: 5px 0 0; letter-spacing: 4px; }
+        
+        .school-info { text-align: center; margin-bottom: 30px; font-size: 16px; font-weight: bold; }
+        
+        .student-box { 
+            margin: 20px auto; 
+            width: 90%; 
+            border-top: 2px solid #000; 
+            border-bottom: 2px solid #000;
+            padding: 15px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .student-box div { text-align: left; font-size: 14px; }
+        .student-box strong { display: inline-block; width: 140px; }
+
+        .marks-table { 
+            width: 90%; 
+            border-collapse: collapse; 
+            margin: 20px auto; 
+            font-size: 14px;
+        }
+        .marks-table th, .marks-table td { 
+            border: 1px solid #000; 
+            padding: 6px 10px; 
+        }
+        .marks-table th { background: #f9f9f9; text-align: center; text-transform: uppercase; font-size: 12px; }
+        .col-subject { text-align: left; }
+        .col-grade { text-align: center; font-weight: bold; width: 120px; }
+
+        .summary-section {
+            width: 90%;
+            margin: 20px auto;
+            text-align: left;
+            font-size: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .summary-box { border: 1px solid #000; padding: 10px; }
+        
+        .footer-signatures { 
+            margin-top: 60px; 
+            display: flex; 
+            justify-content: space-around; 
+            font-size: 14px;
+        }
+        .signature-line { 
+            border-top: 1px solid #000; 
+            width: 200px; 
+            text-align: center; 
+            padding-top: 5px;
+            margin-top: 40px;
+        }
+
+        .place-date { margin-top: 40px; text-align: left; margin-left: 5%; font-size: 14px; }
+
+        .qr-section {
+            position: absolute;
+            bottom: 50px;
+            right: 50px;
+            width: 100px;
+            height: 100px;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #999;
+        }
+        
+        .sevt-code {
+            position: absolute;
+            bottom: 30px;
+            left: 50px;
+            font-size: 10px;
+            color: #666;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 100px;
+            color: rgba(0,0,0,0.03);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="border-decorator"></div>
+    <div class="watermark">VYSVĚDČENÍ</div>
+
+    <div class="state-emblem">
+        MALÝ<br>STÁTNÍ<br>ZNAK
+    </div>
+
+    <div class="header">
+        <h1>Česká republika</h1>
+        <h2>VYSVĚDČENÍ</h2>
+    </div>
+    
+    <div class="school-info">
+        {{ school.name }}<br>
+        {{#if school.city}}Město: {{ school.city }}{{/if}}
+        {{#if school.ico}} | IČO: {{ school.ico }}{{/if}}
+    </div>
+
+    <div class="student-box">
+        <div><strong>Jméno a příjmení:</strong> {{ student.full_name }}</div>
+        <div><strong>Školní rok:</strong> {{ schoolYear }}</div>
+        <div><strong>Datum narození:</strong> {{ student.birthday }}</div>
+        <div><strong>Třída:</strong> {{ student.class_name }}</div>
+        <div style="grid-column: span 2;"><strong>Obor vzdělání:</strong> {{ student.field_of_study }}</div>
+    </div>
+
+    <table class="marks-table">
+        <thead>
+            <tr>
+                <th class="col-subject">Povinné předměty</th>
+                <th class="col-grade">Hodnocení</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each marks}}
+            <tr>
+                <td class="col-subject">{{ this.subject_name }}</td>
+                <td class="col-grade">
+                    {{#if (eq this.mark 1)}}výborný{{/if}}
+                    {{#if (eq this.mark 2)}}chvalitebný{{/if}}
+                    {{#if (eq this.mark 3)}}dobrý{{/if}}
+                    {{#if (eq this.mark 4)}}dostatečný{{/if}}
+                    {{#if (eq this.mark 5)}}nedostatečný{{/if}}
+                    {{#if (eq this.mark "-")}} - {{/if}}
+                </td>
+            </tr>
+            {{/each}}
+            {{#unless marks}}
+            <tr>
+                <td colspan="2" style="text-align: center; height: 100px; color: #999;">Nebyla nalezena žádná klasifikace</td>
+            </tr>
+            {{/unless}}
+        </tbody>
+    </table>
+
+    <div class="summary-section">
+        <div class="summary-box">
+            <strong>Chování:</strong> velmi dobré
+        </div>
+        <div class="summary-box">
+            <strong>Celkový prospěch:</strong> .......................
+        </div>
+    </div>
+
+    <div class="place-date">
+        V {{#if school.city}}{{ school.city }}{{else}}______{{/if}} dne: .......................
+    </div>
+
+    <div class="footer-signatures">
+        <div>
+            <div class="signature-line">Třídní učitel/ka</div>
+            <div style="text-align: center; font-size: 11px;">({{ student.teacher_name }})</div>
+        </div>
+        <div>
+            <div class="signature-line">Ředitel/ka školy</div>
+        </div>
+    </div>
+
+    <div class="qr-section">
+        QR KÓD<br>OVĚŘENÍ
+    </div>
+
+    <div class="sevt-code">
+        SEVT 49 830 0 | Bakaláři sestava ZSAV
+    </div>
+</body>
+</html>

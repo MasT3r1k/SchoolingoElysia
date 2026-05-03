@@ -542,8 +542,10 @@
             "subjects": "Přehled předmětů",
             "classbook": "Třídní kniha",
             "rewards": "Odměny",
+            "topics": "Probrané učivo",
             "tests": "Testy",
-            "my_class": "Správa třídy"
+            "my_class": "Správa třídy",
+            "thematic_plans": "Tématické plány"
         },
         "marks": {
             "main": "Hodnocení",
@@ -615,7 +617,11 @@
             "manage_messages": "Správa zpráv",
             "monitoring": "Monitorování",
             "auditlog": "Auditlog",
-            "reports": "Sestavy"
+            "reports": "Sestavy",
+            "svp": "ŠVP"
+        },
+        "admin": {
+            "svp": "ŠVP"
         },
         "architecture": {
             "title": "Architektura školy"
@@ -800,6 +806,7 @@
     },
     "buttons": {
         "add_email": "Přidat email",
+        "remove_email": "Odstranit e-mail",
         "add_phone": "Přidat telefon",
         "change_avatar": "Změnit avatara",
         "change_password": "Změnit heslo",
@@ -1157,14 +1164,14 @@
         "delete_reward_btn": "Odebrat odměnu"
     },
     "classbook": {
+        "lesson_topic": "Téma hodiny",
+        "placeholder_topic": "Zadejte téma hodiny...",
+        "placeholder_number": "Číslo hodiny",
         "class_service": "Pořádková služba",
         "write_lesson": "Zápis hodiny",
         "absence": "Docházka",
         "notes": "Poznámky",
         "lesson_number": "Číslo hodiny",
-        "placeholder_number": "Pro vložení čísla hodiny klikněte na šipku napravo od tohoto pole",
-        "lesson_topic": "Téma hodiny",
-        "placeholder_topic": "Napište téma hodiny",
         "lesson_note": "Poznámka k hodině",
         "placeholder_note": "Napište poznámku k hodině (nepovinné)",
         "lesson_teacher_note": "Učitelská poznámka k hodině",
@@ -2904,5 +2911,47 @@
             "deleted": "Sestava byla úspěšně smazána.",
             "first_generate_data": "Nejdříve vygenerujte data pro sestavu kliknutím na \"Generovat sestavu\"."
         }
+    },
+    "thematic_plans": {
+        "title": "Tématické plány",
+        "create_new": "Vytvořit nový plán",
+        "no_plans": "Žádné tématické plány",
+        "no_plans_desc": "Zatím jste si nevytvořil žádný tématický plán pro výuku.",
+        "name": "Název plánu",
+        "name_placeholder": "Např. Matematika - 1. ročník - 2024/25",
+        "topics": "Témata (osnova)",
+        "add_topic": "Přidat téma",
+        "period": "Období / Měsíc"
+    },
+    "svp": {
+        "title": "ŠVP (Školní vzdělávací program)",
+        "create_new": "Nový ŠVP",
+        "back_to_list": "Zpět na seznam",
+        "no_svp": "Žádné ŠVP",
+        "no_svp_desc": "Zatím nebyl definován žádný školní vzdělávací program.",
+        "name": "Název ŠVP",
+        "name_placeholder": "Např. ŠVP pro 1. stupeň",
+        "valid_from": "Platnost od",
+        "valid_to": "Platnost do",
+        "subjects_and_topics": "Předměty a osnovy",
+        "add_subject": "Přidat předmět",
+        "save_svp": "Uložit ŠVP",
+        "topic_name": "Téma / Učivo",
+        "outcomes": "Očekávané výstupy",
+        "hours": "Dotace (hod)"
+    },
+    "topics": {
+        "subtitle": "Historie probraného učiva ve vašich hodinách",
+        "empty_title": "Žádná témata",
+        "empty_desc": "Zatím nebyla zapsána žádná témata do třídní knihy.",
+        "tab_chronological": "Chronologicky",
+        "tab_by_subject": "Podle předmětu",
+        "count_suffix": "hodin",
+        "select_subject": "Vyberte předmět",
+        "col_hour": "Hodina",
+        "col_topic": "Téma hodiny",
+        "col_hour_day": "Hodin v den",
+        "choose_subject_hint": "Vyberte předmět pro zobrazení jeho historie.",
+        "no_topic_recorded": "Téma hodiny nebylo zapsáno"
     }
 }

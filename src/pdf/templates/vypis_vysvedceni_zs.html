@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Výpis z vysvědčení ZŠ</title>
+    <style>
+        @page { size: A4; margin: 0; }
+        body { 
+            font-family: "Times New Roman", Times, serif; 
+            padding: 50px; 
+            line-height: 1.4; 
+            color: #000;
+            background-color: #fff;
+        }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 18px; text-transform: uppercase; margin: 0; font-weight: normal; }
+        .header h2 { font-size: 24px; font-weight: bold; margin: 20px 0 5px; letter-spacing: 2px; }
+        .header .subtitle { font-size: 14px; margin-bottom: 20px; }
+        
+        .school-info { text-align: left; margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
+        
+        .student-box { 
+            margin: 20px 0; 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            font-size: 15px;
+        }
+        .student-box div { padding: 3px 0; }
+        .student-box strong { display: inline-block; width: 130px; font-weight: normal; }
+        .student-name { font-size: 20px; font-weight: bold; grid-column: span 2; margin-bottom: 10px; }
+
+        .marks-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 20px 0; 
+            font-size: 14px;
+        }
+        .marks-table th, .marks-table td { 
+            border: 1px solid #000; 
+            padding: 5px 10px; 
+        }
+        .marks-table th { background: #f5f5f5; font-weight: bold; }
+        .col-subject { text-align: left; }
+        .col-grade { text-align: center; font-weight: bold; width: 100px; }
+        .section-title { text-align: center; font-style: italic; background: #fafafa; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border: 1px solid #000;
+            margin-top: 20px;
+        }
+        .summary-item {
+            padding: 10px;
+            border: 0.5px solid #000;
+        }
+        .summary-item.full { grid-column: span 2; text-align: center; font-weight: bold; padding: 15px; }
+
+        .footer { margin-top: 40px; }
+        .footer-top { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        .footer-signatures { display: flex; justify-content: space-between; align-items: flex-end; }
+        .signature-box { text-align: center; width: 200px; }
+        .signature-line { border-top: 1px solid #000; margin-bottom: 5px; padding-top: 5px; }
+
+        .stamp-placeholder {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #ccc;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Česká republika</h1>
+        <div class="school-info">
+            <strong>{{ school.name }}</strong><br>
+            {{#if school.izo}}IZO: {{ school.izo }}{{/if}}
+        </div>
+        <h2>VÝPIS Z VYSVĚDČENÍ</h2>
+        <div class="subtitle">za první pololetí</div>
+    </div>
+
+    <div class="student-box">
+        <div class="student-name">Jméno a příjmení: <span>{{ student.full_name }}</span></div>
+        <div><strong>Datum narození:</strong> {{ student.birthday }}</div>
+        <div><strong>Rodné číslo:</strong> .......................</div>
+        <div><strong>Místo narození:</strong> .......................</div>
+        <div><strong>Státní občanství:</strong> Česká republika</div>
+        <div><strong>Třída:</strong> {{ student.class_name }}</div>
+        <div><strong>Školní rok:</strong> {{ schoolYear }}</div>
+    </div>
+
+    <table class="marks-table">
+        <thead>
+            <tr>
+                <th class="col-subject">Předmět</th>
+                <th class="col-grade">Hodnocení</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="section-title">
+                <td colspan="2">Prospěch v povinných předmětech</td>
+            </tr>
+            {{#each marks}}
+            <tr>
+                <td class="col-subject">{{ this.subject_name }}</td>
+                <td class="col-grade">
+                    {{#if (eq this.mark 1)}}1{{/if}}
+                    {{#if (eq this.mark 2)}}2{{/if}}
+                    {{#if (eq this.mark 3)}}3{{/if}}
+                    {{#if (eq this.mark 4)}}4{{/if}}
+                    {{#if (eq this.mark 5)}}5{{/if}}
+                    {{#if (eq this.mark "-")}} - {{/if}}
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    <div class="summary-grid">
+        <div class="summary-item">
+            <strong>Zameškané hodiny:</strong><br>
+            omluvené: 0 &nbsp;&nbsp; neomluvené: 0
+        </div>
+        <div class="summary-item">
+            <strong>Pochvaly a jiná ocenění:</strong><br>
+            .......................
+        </div>
+        <div class="summary-item full">
+            Celkové hodnocení: PROSPĚL(A) S VYZNAMENÁNÍM
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-top">
+            <div>V {{#if school.city}}{{ school.city }}{{else}}______{{/if}} dne: {{ currentDate }}</div>
+        </div>
+        
+        <div class="footer-signatures">
+            <div class="signature-box">
+                <div class="signature-line">Ředitel školy</div>
+            </div>
+            <div class="stamp-placeholder">KULATÉ RAZÍTKO</div>
+            <div class="signature-box">
+                <div class="signature-line">Třídní učitel</div>
+                <div style="font-size: 11px;">({{ student.teacher_name }})</div>
+            </div>
+        </div>
+    </div>
+
+    <div style="font-size: 9px; margin-top: 30px; color: #666;">
+        Tento výpis je úředním dokladem podle § 69 odst. 1 zákona č. 561/2004 Sb. (školský zákon).
+    </div>
+</body>
+</html>

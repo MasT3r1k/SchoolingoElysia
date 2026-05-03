@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Vysvědčení SŠ — SEVT 49 854 1</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Times New Roman", Times, serif;
+    color: #000; background: #fff;
+    font-size: 11pt; line-height: 1.2;
+  }
+
+  /* ─── PAGE SHELL ──────────────────────────────── */
+  .page {
+    width: 210mm; height: 297mm;
+    padding: 10mm 14mm 10mm 14mm;
+    position: relative; overflow: hidden;
+    page-break-after: always;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  .frame {
+    position: absolute;
+    top: 7mm; left: 7mm; right: 7mm; bottom: 7mm;
+    border: 0.75pt solid #999;
+    pointer-events: none;
+  }
+
+  /* ─── WATERMARK ───────────────────────────────── */
+  .watermark {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 130mm; height: 130mm;
+    opacity: 0.045;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .watermark svg { width: 100%; height: 100%; }
+
+  /* ─── CONTENT ABOVE WATERMARK ─────────────────── */
+  .content { position: relative; z-index: 1; height: 100%; }
+
+  /* ─── HEADER ──────────────────────────────────── */
+  .header-title {
+    text-align: center;
+    font-size: 14pt; font-weight: bold;
+    letter-spacing: 3px; text-transform: uppercase;
+    border-bottom: 0.5pt solid #000;
+    padding-bottom: 2mm; margin-bottom: 3mm;
+  }
+
+  /* ─── FIELD ROWS ──────────────────────────────── */
+  .field-row {
+    display: flex; align-items: baseline;
+    border-bottom: 0.5pt solid #555;
+    margin-bottom: 2mm; font-size: 10pt;
+    min-height: 6mm; padding-bottom: 0.5mm;
+  }
+  .field-row .lbl { white-space: nowrap; margin-right: 1mm; font-size: 9pt; }
+  .field-row .val { flex: 1; font-size: 10.5pt; }
+  .field-row .lbl2 { white-space: nowrap; margin: 0 1mm; font-size: 9pt; }
+  .field-row .val2 { width: 40mm; font-size: 10.5pt; }
+
+  .field-grid-2 { display: flex; gap: 5mm; margin-bottom: 2mm; }
+  .field-grid-2 .field-row { flex: 1; }
+
+  /* ─── REPORT TITLE ────────────────────────────── */
+  .report-title {
+    text-align: center;
+    font-size: 26pt; font-weight: bold;
+    letter-spacing: 8px;
+    margin: 5mm 0 4mm;
+  }
+
+  /* ─── GRADES TABLE ────────────────────────────── */
+  .grades-table {
+    width: 100%; border-collapse: collapse;
+    margin-top: 2mm;
+    font-size: 9.5pt;
+  }
+  .grades-table th, .grades-table td {
+    border: 0.5pt solid #000;
+    padding: 1.2mm 2mm;
+    height: 7.2mm;
+  }
+  .grades-table thead th {
+    background: #f0f0f0; text-align: center;
+    font-size: 8.5pt; text-transform: uppercase;
+    font-weight: bold;
+  }
+  .grades-table .col-subj { text-align: left; width: 52%; }
+  .grades-table .col-sem  { text-align: center; width: 24%; font-style: italic; }
+  .grades-table .section-divider td {
+    background: #e8e8e8; text-align: center;
+    font-weight: bold; font-size: 8pt;
+    text-transform: uppercase; letter-spacing: 1px;
+    height: 5.5mm;
+  }
+  .grades-table .chovani td { background: #fafafa; }
+
+  /* ─── SEVT FOOTER ─────────────────────────────── */
+  .sevt-tag {
+    position: absolute; bottom: 8.5mm; left: 14mm;
+    font-size: 7pt; font-family: Arial, sans-serif;
+    color: #444; letter-spacing: 0.5px;
+  }
+
+  /* ─────────────────────────────────────────────── */
+  /* ─── PAGE 2 ──────────────────────────────────── */
+  /* ─────────────────────────────────────────────── */
+
+  .back-block {
+    border: 0.5pt solid #000;
+    padding: 2mm 3mm; margin-bottom: 3mm;
+  }
+  .back-block-title {
+    font-size: 9pt; font-weight: bold;
+    border-bottom: 0.5pt solid #999;
+    padding-bottom: 1mm; margin-bottom: 2mm;
+  }
+
+  .two-col-section { display: flex; gap: 3mm; margin-bottom: 3mm; }
+  .two-col-section .back-block { flex: 1; }
+
+  .absence-grid {
+    display: grid;
+    grid-template-columns: 1fr 28mm 28mm;
+    border: 0.5pt solid #000;
+    margin-bottom: 3mm;
+  }
+  .absence-grid .cell {
+    border: 0.5pt solid #000; padding: 1.5mm 2mm;
+    font-size: 9pt;
+  }
+  .absence-grid .cell.head { background: #ececec; font-weight: bold; text-align: center; font-size: 8pt; }
+  .absence-grid .cell.center { text-align: center; }
+
+  .overall-grade {
+    text-align: center; font-size: 13pt; font-weight: bold;
+    border: 1.5pt solid #000; padding: 3mm; margin-bottom: 3mm;
+    letter-spacing: 1px;
+  }
+
+  .extra-box {
+    border: 0.5pt solid #000;
+    padding: 2mm 3mm; margin-bottom: 3mm;
+    min-height: 18mm;
+  }
+  .extra-box-title { font-size: 9pt; font-weight: bold; margin-bottom: 1mm; }
+
+  /* Signature area */
+  .sig-area {
+    display: flex; gap: 3mm; margin-bottom: 3mm; border: 0.5pt solid #000;
+  }
+  .sig-box {
+    flex: 1; padding: 3mm; border-right: 0.5pt solid #000; min-height: 45mm;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .sig-box:last-child { border-right: none; }
+  .sig-place { font-size: 9pt; margin-bottom: 2mm; }
+  .sig-stamp {
+    width: 22mm; height: 22mm; border: 0.4pt dashed #aaa;
+    border-radius: 50%; margin: 2mm auto;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7pt; color: #bbb;
+  }
+  .sig-dots { border-top: 0.5pt dotted #333; padding-top: 1mm; font-size: 8pt; text-align: center; margin-top: auto; }
+
+  /* Legend */
+  .legend-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 8pt; margin-top: 2mm;
+  }
+  .legend-table td, .legend-table th {
+    border: 0.5pt solid #000; padding: 1.5mm 2mm;
+    text-align: center;
+  }
+  .legend-table thead th {
+    background: #e8e8e8; font-weight: bold; letter-spacing: 1px;
+    font-size: 8pt; text-transform: uppercase;
+  }
+  .legend-table td:first-child { text-align: left; font-weight: bold; }
+
+  .qr-block {
+    position: absolute; bottom: 15mm; right: 14mm;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 1mm;
+  }
+  .qr-block img { width: 20mm; height: 20mm; }
+  .qr-block span { font-size: 6.5pt; color: #666; font-family: Arial, sans-serif; }
+
+  /* Grade text */
+  .g { font-style: italic; }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════  PAGE 1  ══════════════════════════ -->
+<div class="page">
+  <div class="frame"></div>
+  <div class="watermark">
+    <svg viewBox="0 0 440 560" xmlns="http://www.w3.org/2000/svg">
+      <path d="M220 0C220 0 440 37 440 149V334C440 446 314 520 220 560C126 520 0 446 0 334V149C0 37 220 0 220 0Z" fill="#D4141E"/>
+      <path d="M220 28C220 28 412 62 412 158V318C412 414 302 478 220 513C138 478 28 414 28 318V158C28 62 220 28 220 28Z" fill="#fff"/>
+      <!-- Lion body -->
+      <path d="M175 120 C155 130 145 155 150 180 C140 185 132 195 135 210 C128 215 124 230 132 245 C125 255 127 275 140 282 C142 300 150 315 165 322 C168 338 170 355 165 368 C178 375 195 372 202 362 C208 370 218 378 228 375 C235 382 248 385 258 378 C265 368 262 350 258 338 C272 330 280 315 278 298 C292 290 298 270 290 255 C298 245 298 225 288 215 C294 200 290 183 278 175 C280 155 270 133 255 122 C245 115 230 113 220 118 C212 110 196 112 185 118 Z" fill="#CC1020"/>
+      <!-- Crown -->
+      <path d="M175 105 L185 95 L195 108 L210 88 L220 102 L230 88 L245 108 L255 95 L265 105 L258 120 L175 120 Z" fill="#FFD700"/>
+      <!-- Tail -->
+      <path d="M258 338 C268 325 285 315 295 325 C305 335 302 355 292 360 C305 358 318 368 315 382 C312 395 298 398 288 392 C280 398 268 395 265 385 C258 390 248 388 245 378 Z" fill="#CC1020"/>
+      <!-- Paws/Claws -->
+      <path d="M152 310 C142 315 132 330 138 345 C132 342 122 348 125 360 C120 357 113 365 118 375 C128 378 138 370 142 360 C148 365 158 368 165 360 C162 375 168 385 178 385 C185 370 180 355 172 348 C178 342 178 328 170 320 Z" fill="#CC1020"/>
+    </svg>
+  </div>
+  <div class="content">
+
+    <div class="header-title">Česká republika</div>
+
+    <!-- School fields -->
+    <div class="field-row">
+      <span class="lbl">Obor vzdělání (kód a název):</span>
+      <span class="val">{{#if student.field_of_study}}{{student.field_of_study}}{{else}}&nbsp;{{/if}}</span>
+    </div>
+    <div class="field-row">
+      <span class="lbl">Zaměření:</span>
+      <span class="val">&nbsp;</span>
+    </div>
+    <div class="field-row">
+      <span class="lbl">Školní vzdělávací program:</span>
+      <span class="val">&nbsp;</span>
+    </div>
+
+    <div class="field-grid-2" style="margin-top:2mm;">
+      <div class="field-row">
+        <span class="lbl">Školní rok:</span>
+        <span class="val">{{ schoolYear }}</span>
+      </div>
+      <div class="field-row">
+        <span class="lbl">Třída nebo oddělení:</span>
+        <span class="val">{{ student.class_name }}</span>
+      </div>
+    </div>
+    <div class="field-grid-2">
+      <div class="field-row">
+        <span class="lbl">Forma vzdělávání:</span>
+        <span class="val">denní</span>
+      </div>
+      <div class="field-row">
+        <span class="lbl">IZO:</span>
+        <span class="val">{{ school.izo }}</span>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="report-title">VYSVĚDČENÍ</div>
+
+    <!-- Student info -->
+    <div class="field-row">
+      <span class="lbl">Jméno a příjmení:</span>
+      <span class="val"><strong>{{ student.full_name }}</strong></span>
+    </div>
+    <div class="field-grid-2">
+      <div class="field-row">
+        <span class="lbl">Datum narození:</span>
+        <span class="val">{{ student.birthday }}</span>
+      </div>
+      <div class="field-row">
+        <span class="lbl">Rodné číslo:</span>
+        <span class="val">&nbsp;</span>
+      </div>
+    </div>
+    <div class="field-grid-2">
+      <div class="field-row">
+        <span class="lbl">Místo narození:</span>
+        <span class="val">{{#if student.city_name}}{{student.city_name}}{{else}}&nbsp;{{/if}}</span>
+      </div>
+      <div class="field-row">
+        <span class="lbl">Číslo v třídním výkazu:</span>
+        <span class="val">&nbsp;</span>
+      </div>
+    </div>
+
+    <div class="field-row" style="margin-top:1mm;">
+      <span class="lbl">Hodnocení výsledků vzdělávání vyjádřené klasifikací za</span>
+      <span class="val" style="border-bottom:none;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <span class="lbl2">ročník</span>
+    </div>
+
+    <!-- Grade table -->
+    <table class="grades-table">
+      <thead>
+        <tr>
+          <th rowspan="2" class="col-subj">Vyučovací předmět</th>
+          <th colspan="2" style="text-align:center;">Hodnocení</th>
+        </tr>
+        <tr>
+          <th class="col-sem">I. pololetí</th>
+          <th class="col-sem">II. pololetí</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- Behavior -->
+        <tr class="chovani">
+          <td class="col-subj">Chování</td>
+          <td class="col-sem g">velmi dobré</td>
+          <td class="col-sem g">velmi dobré</td>
+        </tr>
+
+        <!-- Section divider -->
+        <tr class="section-divider"><td colspan="3">Povinné předměty</td></tr>
+
+        <!-- 18 subject rows -->
+        {{#each marks}}
+        <tr>
+          <td class="col-subj">{{ this.subject_name }}</td>
+          <td class="col-sem g">
+            {{#if (eq this.sem1 1)}}výborný{{/if}}
+            {{#if (eq this.sem1 2)}}chvalitebný{{/if}}
+            {{#if (eq this.sem1 3)}}dobrý{{/if}}
+            {{#if (eq this.sem1 4)}}dostatečný{{/if}}
+            {{#if (eq this.sem1 5)}}nedostatečný{{/if}}
+          </td>
+          <td class="col-sem g">
+            {{#if (eq this.sem2 1)}}výborný{{/if}}
+            {{#if (eq this.sem2 2)}}chvalitebný{{/if}}
+            {{#if (eq this.sem2 3)}}dobrý{{/if}}
+            {{#if (eq this.sem2 4)}}dostatečný{{/if}}
+            {{#if (eq this.sem2 5)}}nedostatečný{{/if}}
+          </td>
+        </tr>
+        {{/each}}
+
+      </tbody>
+    </table>
+
+  </div><!-- /content -->
+  <div class="sevt-tag">SEVT – 49 854 1 &nbsp; SŠ – 18 – klasifikace</div>
+</div>
+
+
+
+<!-- ═══════════════════════════  PAGE 2  ══════════════════════════ -->
+<div class="page">
+  <div class="frame"></div>
+  <div class="watermark">
+    <svg viewBox="0 0 440 560" xmlns="http://www.w3.org/2000/svg">
+      <path d="M220 0C220 0 440 37 440 149V334C440 446 314 520 220 560C126 520 0 446 0 334V149C0 37 220 0 220 0Z" fill="#D4141E"/>
+      <path d="M220 28C220 28 412 62 412 158V318C412 414 302 478 220 513C138 478 28 414 28 318V158C28 62 220 28 220 28Z" fill="#fff"/>
+      <path d="M175 120 C155 130 145 155 150 180 C140 185 132 195 135 210 C128 215 124 230 132 245 C125 255 127 275 140 282 C142 300 150 315 165 322 C168 338 170 355 165 368 C178 375 195 372 202 362 C208 370 218 378 228 375 C235 382 248 385 258 378 C265 368 262 350 258 338 C272 330 280 315 278 298 C292 290 298 270 290 255 C298 245 298 225 288 215 C294 200 290 183 278 175 C280 155 270 133 255 122 C245 115 230 113 220 118 C212 110 196 112 185 118 Z" fill="#CC1020"/>
+      <path d="M175 105 L185 95 L195 108 L210 88 L220 102 L230 88 L245 108 L255 95 L265 105 L258 120 L175 120 Z" fill="#FFD700"/>
+      <path d="M258 338 C268 325 285 315 295 325 C305 335 302 355 292 360 C305 358 318 368 315 382 C312 395 298 398 288 392 C280 398 268 395 265 385 C258 390 248 388 245 378 Z" fill="#CC1020"/>
+      <path d="M152 310 C142 315 132 330 138 345 C132 342 122 348 125 360 C120 357 113 365 118 375 C128 378 138 370 142 360 C148 365 158 368 165 360 C162 375 168 385 178 385 C185 370 180 355 172 348 C178 342 178 328 170 320 Z" fill="#CC1020"/>
+    </svg>
+  </div>
+  <div class="content">
+
+    <!-- Optional subjects – continuation table -->
+    <table class="grades-table" style="margin-bottom:3mm;">
+      <tbody>
+        <tr class="section-divider"><td colspan="3">Nepovinné předměty</td></tr>
+        <tr><td class="col-subj">&nbsp;</td><td class="col-sem"></td><td class="col-sem"></td></tr>
+        <tr><td class="col-subj">&nbsp;</td><td class="col-sem"></td><td class="col-sem"></td></tr>
+        <tr><td class="col-subj">&nbsp;</td><td class="col-sem"></td><td class="col-sem"></td></tr>
+      </tbody>
+    </table>
+
+    <!-- Overall + absence in one row -->
+    <div class="two-col-section">
+      <div class="back-block" style="flex:0 0 55mm;">
+        <div class="back-block-title">Celkové hodnocení</div>
+        <div style="text-align:center; font-size:11pt; font-weight:bold; padding-top:2mm;">
+          PROSPĚL(A)
+        </div>
+      </div>
+      <div style="flex:1;">
+        <div class="absence-grid">
+          <div class="cell head" style="grid-column: span 3; background:#e8e8e8;">Zameškané vyučovací hodiny</div>
+          <div class="cell">&nbsp;</div>
+          <div class="cell head" style="background:#f5f5f5;">I. pololetí</div>
+          <div class="cell head" style="background:#f5f5f5;">II. pololetí</div>
+          <div class="cell">Celkem</div>
+          <div class="cell center">{{ student.absence_total_sem1 }}</div>
+          <div class="cell center">{{ student.absence_total_sem2 }}</div>
+          <div class="cell">z toho neomluveno</div>
+          <div class="cell center">{{ student.absence_unexcused_sem1 }}</div>
+          <div class="cell center">{{ student.absence_unexcused_sem2 }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recognized prior education -->
+    <div class="extra-box">
+      <div class="extra-box-title">Uznané předchozí dosažené vzdělání:</div>
+    </div>
+
+    <!-- Awards -->
+    <div class="extra-box" style="min-height:14mm;">
+      <div class="extra-box-title">Ocenění:</div>
+    </div>
+
+    <!-- Signatures -->
+    <div class="sig-area">
+      <div class="sig-box">
+        <div class="sig-place" style="font-size:9pt;">V ....................................... dne .....................</div>
+        <div class="sig-stamp">RAZÍTKO</div>
+        <div class="sig-dots">...............................................................................<br>ředitel(ka) školy</div>
+        <div class="sig-dots" style="margin-top:3mm;">...............................................................................<br>třídní učitel(ka)</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-place" style="font-size:9pt;">V ....................................... dne .....................</div>
+        <div class="sig-stamp">RAZÍTKO</div>
+        <div class="sig-dots">...............................................................................<br>ředitel(ka) školy</div>
+        <div class="sig-dots" style="margin-top:3mm;">...............................................................................<br>třídní učitel(ka)</div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <table class="legend-table">
+      <thead>
+        <tr><th colspan="6" style="letter-spacing:2px;">STUPNĚ HODNOCENÍ</th></tr>
+        <tr style="font-style:italic; background:#f5f5f5;">
+          <th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Chování</td>
+          <td>velmi dobré</td>
+          <td>uspokojivé</td>
+          <td>neuspokojivé</td>
+          <td>–</td><td>–</td>
+        </tr>
+        <tr>
+          <td>Povinné a nepovinné předměty</td>
+          <td>výborný</td>
+          <td>chvalitebný</td>
+          <td>dobrý</td>
+          <td>dostatečný</td>
+          <td>nedostatečný</td>
+        </tr>
+        <tr>
+          <td>Celkové hodnocení</td>
+          <td colspan="2">prospěl(a) s vyznamenáním</td>
+          <td>prospěl(a)</td>
+          <td>neprospěl(a)</td>
+          <td>–</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- QR -->
+    <div class="qr-block">
+      <img src="{{ studentQRCode }}" alt="QR ověření">
+      <span>Ověření pravosti</span>
+    </div>
+
+  </div><!-- /content -->
+  <div class="sevt-tag">SEVT – 49 854 1 &nbsp; SŠ – 18 – klasifikace &nbsp;|&nbsp; Patisk zakázán</div>
+</div>
+
+</body>
+</html>

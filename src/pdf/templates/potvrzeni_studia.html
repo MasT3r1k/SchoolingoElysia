@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Potvrzení o studiu</title>
+    <style>
+        @page {
+            size: A5 landscape;
+            margin: 5mm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #000;
+            line-height: 1.1;
+            font-size: 10pt;
+        }
+
+        .container {
+            width: 200mm;
+            height: 138mm;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .header-school {
+            margin-top: 2mm;
+            margin-bottom: 2mm;
+            font-size: 10pt;
+        }
+
+        .header-school .value {
+            border-bottom: 1px dotted #000;
+            display: inline-block;
+            min-width: 155mm;
+        }
+
+        .document-title {
+            text-align: center;
+            font-size: 18pt;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin: 2mm 0;
+            text-transform: uppercase;
+        }
+
+        .form-panel {
+            background-color: #e6e6e6;
+            border-radius: 4px;
+            padding: 4mm;
+            box-sizing: border-box;
+        }
+
+        .row {
+            margin-bottom: 1.5mm;
+            display: flex;
+            align-items: center;
+        }
+
+        .label {
+            font-size: 10.5pt;
+            margin-right: 2mm;
+            white-space: nowrap;
+        }
+
+        .input-box {
+            border: 1px solid #000;
+            background-color: #fff;
+            padding: 2px 8px;
+            flex-grow: 1;
+            height: 6mm;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-box.multi {
+            height: 15mm;
+            align-items: flex-start;
+            padding-top: 2px;
+        }
+
+        .split {
+            display: flex;
+            gap: 4mm;
+        }
+
+        .split>div {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .segmented {
+            display: flex;
+            border: 1px solid #000;
+            background-color: #fff;
+            height: 6mm;
+            overflow: hidden;
+            padding: 0 4px;
+        }
+
+        .birth-number-box {
+            min-width: 45mm;
+            position: relative;
+            display: flex !important;
+            padding: 0 !important;
+            justify-content: space-around;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace; /* Monospace je klíčový pro přesnost */
+            font-size: 13pt;
+        }
+
+        .birthday-field {
+            display: flex !important;
+            padding: 0 !important;
+            justify-content: space-around;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace; /* Monospace je klíčový pro přesnost */
+            font-size: 13pt;
+        }
+
+        /* Samotná čísla */
+        .birthday-field span {
+            width: calc(100% / 8);
+            text-align: center;
+            z-index: 5;
+        }
+
+        .birth-number-box span {
+            /* width: calc(100% / 10 - 4px); */
+            text-align: center;
+            z-index: 5;
+        }
+
+        /* Definice tvých dělících čar */
+        .birthday-field .line, .birth-number-box .line {
+            position: absolute;
+            bottom: 0;
+            height: 8px;
+            width: 1px;
+            background-color: #000;
+            z-index: 1;
+        }
+
+        /* Malé čárky */
+        /* Velké čárky (oddělující den, měsíc, rok) */
+        .birthday-field .line.l2, .birthday-field .line.l4, .birth-number-box .l6  { height: 100%; }
+
+        /* Pozicování čar (rozdělení na 8 stejných částí) */
+        .birthday-field .l1 { left: 12.5%; }
+        .birthday-field .l2 { left: 25%; }
+        .birthday-field .l3 { left: 37.5%; }
+        .birthday-field .l4 { left: 50%; }
+        .birthday-field .l5 { left: 62.5%; }
+        .birthday-field .l6 { left: 75%; }
+        .birthday-field .l7 { left: 87.5%; }
+
+        .birth-number-box .l1 { left: 10% }
+        .birth-number-box .l2 { left: 20% }
+        .birth-number-box .l3 { left: 30% }
+        .birth-number-box .l4 { left: 40% }
+        .birth-number-box .l5 { left: 50% }
+        .birth-number-box .l6 { left: 60%;width: 2px; }
+        .birth-number-box .l7 { left: 70% }
+        .birth-number-box .l8 { left: 80% }
+        .birth-number-box .l9 { left: 90% }
+
+        /* Jednotlivá čísla */
+        .date-char {
+            flex: 1;
+            text-align: center;
+            font-size: 13pt;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        /* Dynamické vykreslení dělících čárek mezi čísly */
+        .date-char:not(:last-child) {
+            border-right: 0.5pt solid #000;
+        }
+
+        /* Zvýraznění silnější čáry po dni a měsíci (pokud chceš zachovat vizuální bloky DD MM YYYY) */
+        .date-char:nth-child(2),
+        .date-char:nth-child(4) {
+            border-right: 1.5pt solid #000;
+        }
+
+        .address-group {
+            display: flex;
+            gap: 4mm;
+            margin-top: 1mm;
+        }
+
+        .address-col {
+            flex: 1;
+        }
+
+        .address-label {
+            font-size: 9.5pt;
+            margin-bottom: 1mm;
+        }
+
+        .address-label span {
+            font-size: 8.5pt;
+            font-style: italic;
+        }
+
+        .inline-group {
+            display: flex;
+            gap: 2mm;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .small-box {
+            flex-grow: 0;
+            min-width: 25mm;
+        }
+
+        .smaller-box {
+            flex-grow: 0;
+            min-width: 15mm;
+        }
+
+        .medium-box {
+            flex-grow: 0;
+            min-width: 40mm;
+        }
+
+        .footer-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1mm;
+        }
+
+        .footer-left {
+            width: 55mm;
+        }
+
+        .stamp-area {
+            width: 75mm;
+            height: 20mm;
+            border: 1px solid #000;
+            background-color: #fff;
+            position: relative;
+        }
+
+        .stamp-text {
+            position: absolute;
+            bottom: 0mm;
+            width: 100%;
+            text-align: center;
+            font-size: 10pt;
+        }
+
+        .sevt-footer {
+            position: absolute;
+            bottom: 2mm;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 8pt;
+        }
+
+        .barcode-section {
+            text-align: right;
+        }
+
+        .itallic-label {
+            font-size: 9pt;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header-school">
+            Název a adresa školy: <span class="value">{{ school.name }}, {{ school.street }} {{ school.house_number }},
+                {{ school.city }} {{ school.postcode }}</span>
+        </div>
+
+        <div class="document-title">POTVRZENÍ O STUDIU</div>
+
+        <div class="form-panel">
+            <div class="row">
+                <div class="label">Jméno a příjmení:</div>
+                <div class="input-box">{{ uppercase student.full_name }}</div>
+            </div>
+
+            <div class="row split">
+                <div style="flex: 0 0 50%;">
+                    <div class="label">Datum narození:</div>
+                    <!-- Třída "birthday-field" zajistí správné rozestupy čísel -->
+                    <div class="input-box segmented birthday-field" style="min-width: 40mm; position: relative;">
+                        {{#each (split (format_datum student.birthday) "")}}<span>{{this}}</span>{{/each}}
+
+                        <div class="line l1"></div>
+                        <div class="line l2"></div>
+                        <div class="line l3"></div>
+                        <div class="line l4"></div>
+                        <div class="line l5"></div>
+                        <div class="line l6"></div>
+                        <div class="line l7"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="label">Rodné číslo:</div>
+                    <div class="input-box segmented birth-number-box">
+                        {{#each (split student.birthnum "")}}<span>{{this}}</span>{{/each}}
+                        <div class="line l1"></div>
+                        <div class="line l2"></div>
+                        <div class="line l3"></div>
+                        <div class="line l4"></div>
+                        <div class="line l5"></div>
+                        <div class="line l6"></div>
+                        <div class="line l7"></div>
+                        <div class="line l8"></div>
+                        <div class="line l9"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="label">Místo:</div>
+                <div class="input-box">{{ student.city_name }}</div>
+            </div>
+
+            <div class="address-group">
+                <div class="address-col">
+                    <div class="address-label">Adresa trvalého bydliště:</div>
+                    <div class="input-box multi">
+                        {{ student.street }} {{ student.house_number }}<br>
+                        {{ student.postcode }} {{ student.city_name }}
+                    </div>
+                </div>
+                <div class="address-col">
+                    <div class="address-label">Doručovací adresa <span>(liší-li se od adresy trvalého bydliště)</span>
+                    </div>
+                    <div class="input-box multi"></div>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 3mm;">
+                <div class="inline-group">
+                    <span>Je ve školním roce</span>
+                    <div class="input-box smaller-box">{{#each (split schoolYear "/")}}{{#if
+                        @first}}{{this}}{{/if}}{{/each}}</div>
+                    <span>/</span>
+                    <div class="input-box smaller-box" style="min-width: 12mm;">{{#each (split schoolYear
+                        "/")}}{{#unless @first}}{{this}}{{/unless}}{{/each}}</div>
+                    <span>studentem(kou)</span>
+                    <div class="input-box medium-box">{{ student.class_name }}</div>
+                    <span>třídy.</span>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 2mm;">
+                <div style="display: flex; flex-direction: column; min-width: 45mm;">
+                    <span>Studentovi/ce bylo přiznáno</span>
+                    <span class="itallic-label">stipendium ve výši (vypište slovy)</span>
+                </div>
+                <div class="input-box" style="margin: 0 5pt;"></div>
+                <span>Kč měsíčně.</span>
+            </div>
+
+            <div class="row" style="align-items: flex-start; margin-top: 2mm;">
+                <div style="display: flex; flex-direction: column; min-width: 45mm;">
+                    <span>Toto potvrzení se</span>
+                    <span>vydává jako doklad pro:</span>
+                </div>
+                <div class="input-box" style="height: 10mm;"></div>
+            </div>
+
+            <div class="footer-row" style="margin-top: 4mm;">
+                <div class="footer-left" style="display: flex; flex-direction: column; gap: 2mm;">
+                    <div style="display: flex; align-items: center;">
+                        <div class="label" style="min-width: 8mm;">V</div>
+                        <div class="input-box" style="min-width: 40mm; flex-grow: 0;">{{ school.city }}</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <div class="label" style="min-width: 8mm;">Dne</div>
+                        <div class="input-box" style="min-width: 40mm; flex-grow: 0;">{{ currentDate }}</div>
+                    </div>
+                </div>
+                <div class="stamp-area" style="height: 25mm; width: 85mm;">
+                    <div class="stamp-text">razítko školy, podpis</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

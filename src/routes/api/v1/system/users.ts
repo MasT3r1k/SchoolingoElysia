@@ -534,6 +534,20 @@ const app = new Elysia()
         .then(r => Number(r?.count ?? 0))
     ]);
 
+    // Counts for evidence tabs
+    const [messageCount, fileCount] = await Promise.all([
+      db.selectFrom('messages')
+        .select(sql`COUNT(*)`.as('count'))
+        .where('author_id', '=', userId)
+        .executeTakeFirst()
+        .then(r => Number(r?.count ?? 0)),
+      db.selectFrom('files')
+        .select(sql`COUNT(*)`.as('count'))
+        .where('owner_id', '=', userId)
+        .executeTakeFirst()
+        .then(r => Number(r?.count ?? 0))
+    ]);
+
     return Response.json({
       ...result,
       full_name,
@@ -541,7 +555,9 @@ const app = new Elysia()
       phones,
       login_history: loginHistory,
       logins_7days: loginStats[0],
-      failed_logins_7days: loginStats[1]
+      failed_logins_7days: loginStats[1],
+      message_count: messageCount,
+      file_count: fileCount
     });
   })
 
@@ -658,6 +674,108 @@ const app = new Elysia()
     body: t.Object({
       new_password: t.String()
     })
+  })
+
+  // GET /system/users/:userId/messages - User message history
+  .get('/system/users/:userId/messages', async ({ cookie, params, query }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.USERS_VIEW);
+    if (!perm) return { error: 'no_permission' };
+
+    const targetUserId = Number(params.userId);
+    const targetUser = await db.selectFrom('users').select('person_id').where('user_id', '=', targetUserId).executeTakeFirst();
+    if (!targetUser || !targetUser.person_id) return Response.json({ error: 'not_found' }, { status: 404 });
+
+    const { limit = 10, offset = 0 } = query;
+
+    const messages = await db
+      .selectFrom('messages')
+      .select([
+        'message_id',
+        'topic',
+        'message',
+        'sent_at as created_at',
+        'type'
+      ])
+      .where('author_id', '=', targetUser.person_id)
+      .where('deleted', '=', false)
+      .orderBy('sent_at', 'desc')
+      .limit(limit)
+      .offset(offset)
+      .execute();
+
+    const total = await db
+      .selectFrom('messages')
+      .select(sql<number>`count(*)`.as('total'))
+      .where('author_id', '=', targetUser.person_id)
+      .where('deleted', '=', false)
+      .executeTakeFirst();
+
+    return Response.json({
+      data: messages,
+      meta: {
+        total: Number(total?.total || 0),
+        page: Math.floor(offset / limit) + 1,
+        limit
+      }
+    });
+  }, {
+    query: t.Object({
+      limit: t.Optional(t.Numeric()),
+      offset: t.Optional(t.Numeric())
+    })
+  })
+
+  // GET /system/users/:userId/files - User file history
+  .get('/system/users/:userId/files', async ({ cookie, params, query }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.USERS_VIEW);
+    if (!perm) return { error: 'no_permission' };
+
+    const targetUserId = Number(params.userId);
+    const { limit = 10, offset = 0 } = query;
+
+    const files = await db
+      .selectFrom('files')
+      .select([
+        'file_id',
+        'file_uuid',
+        'name',
+        'real_file_name',
+        'file_size',
+        'mime_type',
+        'created_at'
+      ])
+      .where('owner_id', '=', targetUserId)
+      .where('deleted_at', 'is', null)
+      .orderBy('created_at', 'desc')
+      .limit(limit)
+      .offset(offset)
+      .execute();
+
+    const total = await db
+      .selectFrom('files')
+      .select(sql<number>`count(*)`.as('total'))
+      .where('owner_id', '=', targetUserId)
+      .where('deleted_at', 'is', null)
+      .executeTakeFirst();
+
+    return Response.json({
+      data: files,
+      meta: {
+        total: Number(total?.total || 0),
+        page: Math.floor(offset / limit) + 1,
+        limit
+      }
+    });
+  }, {
+    query: t.Object({
+      limit: t.Optional(t.Numeric()),
+      offset: t.Optional(t.Numeric())
+    })
   });
 
 export default app;
+

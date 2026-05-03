@@ -136,6 +136,11 @@ import { TeachersEvaluationsTable } from './teachers_evaluations'
 import { TeachersHistoryTable } from './teachers_history'
 import { SavedReportsTable } from './saved_reports'
 import { SavedReportSharesTable } from './saved_report_shares'
+import { SvpTable } from './svp'
+import { SvpSubjectsTable } from './svp_subjects'
+import { SvpTopicsTable } from './svp_topics'
+import { ThematicPlansTable } from './thematic_plans'
+import { ThematicPlanItemsTable } from './thematic_plan_items'
 
 export interface Database {
   absence: AbsenceTable
@@ -294,6 +299,11 @@ export interface Database {
   teachers_history: TeachersHistoryTable
   saved_reports: SavedReportsTable
   saved_report_shares: SavedReportSharesTable
+  svp: SvpTable
+  svp_subjects: SvpSubjectsTable
+  svp_topics: SvpTopicsTable
+  thematic_plans: ThematicPlansTable
+  thematic_plan_items: ThematicPlanItemsTable
 }
 
 

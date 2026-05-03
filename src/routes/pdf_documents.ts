@@ -16,9 +16,6 @@ export default new Elysia({ prefix: '/api/documents' })
       return pdf
     },
     {
-      body: t.Object({
-        type: t.Any(),
-        timetableData: t.Optional(t.Any())
-      })
+      body: t.Any()
     }
   )
