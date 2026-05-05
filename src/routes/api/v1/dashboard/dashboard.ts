@@ -8,7 +8,7 @@ const app = new Elysia()
     if (!user) return { error: 'no_user', details: 'unauthorized' };
 
     // Parallel execution for performance
-    const [unreadMessages, newNotifications, isCookie] = await Promise.all([
+    const [unreadMessages, newNotifications, isCookie, modulePositions] = await Promise.all([
         // Count of unread received messages
         db.selectFrom('messages_receivers')
             .leftJoin('messages', 'messages.message_id', 'messages_receivers.message_id')
@@ -32,10 +32,51 @@ const app = new Elysia()
             .select(['users.cookies'])
             .where('users.user_id', '=', user.user_id)
             .executeTakeFirst()
-            .then(r => r?.cookies)
+            .then(r => r?.cookies),
+
+        // Fetch dashboard module positions
+        db.selectFrom('user_dashboard_modules')
+            .select(['module_id', 'position'])
+            .where('user_id', '=', user.user_id)
+            .orderBy('position', 'asc')
+            .execute()
     ]);
     
-    return { unreadMessages, newNotifications, cookies: isCookie };
+    return { unreadMessages, newNotifications, cookies: isCookie, modulePositions };
+  })
+  .post('/dashboard/positions', async ({ user, body }: any) => {
+    // Auth Check
+    if (!user) return { error: 'no_user', details: 'unauthorized' };
+
+    const { positions } = body;
+    if (!Array.isArray(positions)) return { error: 'invalid_body' };
+
+    await db.transaction().execute(async (trx) => {
+        // Delete old positions
+        await trx.deleteFrom('user_dashboard_modules')
+            .where('user_id', '=', user.user_id)
+            .execute();
+
+        // Insert new positions
+        if (positions.length > 0) {
+            await trx.insertInto('user_dashboard_modules')
+                .values(positions.map((p: any) => ({
+                    user_id: user.user_id,
+                    module_id: p.module_id,
+                    position: p.position
+                })))
+                .execute();
+        }
+    });
+
+    return { success: true };
+  }, {
+    body: t.Object({
+        positions: t.Array(t.Object({
+            module_id: t.String(),
+            position: t.Number()
+        }))
+    })
   });
 
 export default app;

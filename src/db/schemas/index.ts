@@ -141,6 +141,7 @@ import { SvpSubjectsTable } from './svp_subjects'
 import { SvpTopicsTable } from './svp_topics'
 import { ThematicPlansTable } from './thematic_plans'
 import { ThematicPlanItemsTable } from './thematic_plan_items'
+import { UserDashboardModulesTable } from './user_dashboard_modules'
 
 export interface Database {
   absence: AbsenceTable
@@ -304,6 +305,7 @@ export interface Database {
   svp_topics: SvpTopicsTable
   thematic_plans: ThematicPlansTable
   thematic_plan_items: ThematicPlanItemsTable
+  user_dashboard_modules: UserDashboardModulesTable
 }
 
 
