@@ -7,6 +7,8 @@ export interface messagesTable {
   message: string;
   author_id: number;
   sent_at: Generated<Date>;
+  reply: number | null;
+  is_draft: boolean;
   deleted: Generated<boolean>;
   require_confirm: Generated<boolean>;
   excuse_date_from: Generated<Date | null>;

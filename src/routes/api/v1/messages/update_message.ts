@@ -16,16 +16,31 @@ const app = new Elysia()
 
     if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
-    const { message_id, read, confirm } = body;
+    const { message_id, read, confirm, suppress } = body;
     if (message_id == undefined) return { error: 'invalid_body' };
 
     try {
+      const msg_received = await db.selectFrom('messages_receivers')
+        .select([
+          'messages_receivers.read_at',
+          'messages_receivers.confirmed_at',
+          'messages_receivers.suppress_at'
+        ])
+        .where('message_id', '=', message_id)
+        .where('messages_receivers.receiver_id', '=', auth.person_id)
+        .limit(1)
+        .executeTakeFirst();
+
       let updateMessage: any = {};
-      if (read == true) {
+      if (read == true && msg_received?.read_at == null) {
         updateMessage.read_at = new Date();
       }
-      if (confirm == true) {
-        updateMessage.confirm = new Date();
+      if (confirm == true && msg_received?.confirmed_at == null) {
+        updateMessage.confirmed_at = new Date();
+      }
+      
+      if (suppress != null) {
+        updateMessage.suppress_at = suppress ? new Date() : null;
       }
 
       const message_receiver = await db.updateTable('messages_receivers')
@@ -43,7 +58,8 @@ const app = new Elysia()
     body: t.Object({
       message_id: t.Optional(t.Number()),
       read: t.Optional(t.Boolean()),
-      confirm: t.Optional(t.Boolean())
+      confirm: t.Optional(t.Boolean()),
+      suppress: t.Nullable(t.Boolean()),
     }),
   });
 

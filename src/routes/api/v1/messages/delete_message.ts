@@ -61,6 +61,11 @@ const app = new Elysia()
     try {
         await db.transaction().execute(async (trx) => {
             await trx
+            .deleteFrom('messages_files')
+            .where('message_id', '=', message_id)
+            .execute();
+
+            await trx
             .deleteFrom('messages_receivers')
             .where('message_id', '=', message_id)
             .execute();

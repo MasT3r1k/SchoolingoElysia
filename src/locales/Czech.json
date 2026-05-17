@@ -1030,6 +1030,7 @@
             "title": "Přidat zdravotní záznam"
         },
         "add_parent": {
+            "open_btn": "Přidat zákonné zástupce",
             "search": "Hledat",
             "title": "Přidat existující zákonné zástupce",
             "description": "Vyberte zástupce ze seznamu níže.",
@@ -1695,6 +1696,8 @@
         "attachments": "Přiložené soubory",
         "add_attachments": "Přiložit soubory",
         "suppress": "Potlačit",
+        "unsuppress": "Zrušit potlačení",
+        "is_suppress": "Zpráva je potlačená",
         "excuse_label": "Omluvit žáka na",
         "confirm_read": "Potvrdit přečtení",
         "delete": "Smazat zprávu",
@@ -1709,6 +1712,7 @@
         "no_receivers": "Žádní uživatelé k dispozici.",
         "selected_receivers": "Vybraní příjemci:",
         "no_selected_receivers": "Nemáte vybrané žádné příjemce.",
+        "select": "Vybrat zprávu",
         "select_all": "Vybrat vše",
         "deselect_all": "Odebrat vše",
         "add_group_members": "Vložit členy skupiny",
@@ -1810,7 +1814,7 @@
         "unsaved_changes": {
             "title": "Neuložené změny",
             "description": "Máte neuloženou zprávu nebo koncept. Pokud stránku opustíte, přijdete o neuložené změny.",
-            "leave_btn": "Opustit stránku",
+            "leave_btn": "Zahodit zprávu",
             "stay_btn": "Zůstat"
         },
         "drafts_confirm": {

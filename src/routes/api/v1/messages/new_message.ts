@@ -25,25 +25,20 @@ const app = new Elysia()
       .values({
             type: 1,
             topic,
+            is_draft: false,
             message,
             author_id: auth.person_id as number,
-        })
+        } as any)
       .executeTakeFirst();
 
       const messageId = Number(messageDB.insertId);
 
-      // Notify all users about the new noticeboard item
       const sender = await db.selectFrom('persons')
         .select(['first_name', 'last_name'])
         .where('person_id', '=', auth.person_id as number)
         .executeTakeFirst();
       
       const senderName = sender ? `${sender.first_name} ${sender.last_name}` : 'Nástěnka';
-
-      // For noticeboard, we probably want to broadcast or notify all students/teachers
-      // However, we don't have a list of recipients here. 
-      // If it's a general announcement, we might broadcast.
-      // For now, let's just return success.
 
       return { success: true, message_id: messageId };
     } catch(e) {
@@ -56,7 +51,7 @@ const app = new Elysia()
     }),
   })
   
-  .post('/messages/send', async ({ cookie, body }) => {
+ .post('/messages/send', async ({ cookie, body }) => {
     const token = cookie.token?.value as string;
     if (!token) return { error: 'no_user', details: 'no_cookie' };
 
@@ -70,41 +65,74 @@ const app = new Elysia()
 
     if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
 
-    const { topic, message, recipients, type, require_confirm, files, draft_id, copy_to_class_teacher, copy_to_parents, copy_to_students, 
-            excuse_date_from, excuse_date_to, excuse_hour_from, excuse_hour_to, excuse_all_day } = body;
+    const { 
+        topic, message, recipients, type, require_confirm, files, draft_id, 
+        copy_to_class_teacher, copy_to_parents, copy_to_students, 
+        excuse_date_from, excuse_date_to, excuse_hour_from, excuse_hour_to, 
+        excuse_all_day, is_draft 
+    } = body;
 
-    // Validation
-    if (!message || message.trim().length === 0) return { error: 'invalid_body', details: 'missing_message' };
-    if (!recipients || !Array.isArray(recipients) || recipients.length === 0) {
-        return { error: 'invalid_body', details: 'missing_recipients' };
+    const isDraft = is_draft === true;
+
+    // Striktní validace POUZE pokud zprávu reálně odesíláme (není to draft)
+    if (!isDraft) {
+        if (!message || message.trim().length === 0) {
+            return { error: 'invalid_body', details: 'missing_message' };
+        }
+        if (!recipients || !Array.isArray(recipients) || recipients.length === 0) {
+            return { error: 'invalid_body', details: 'missing_recipients' };
+        }
     }
 
     try {
         const result = await db.transaction().execute(async (trx) => {
-            // 1. Create message
-            const insertResult = await trx.insertInto('messages')
-                .values({
-                    type: type ?? 0,
-                    topic: topic || null,
-                    message,
-                    author_id: auth.person_id as number,
-                    require_confirm: require_confirm ? true : false,
-                    excuse_date_from: excuse_date_from || null,
-                    excuse_date_to: excuse_date_to || null,
-                    excuse_hour_from: excuse_hour_from || null,
-                    excuse_hour_to: excuse_hour_to || null,
-                    excuse_all_day: excuse_all_day ? true : false,
-                    message_rating_type: type === 3 ? (body as any).message_rating_type : null
-                } as any)
-                .executeTakeFirstOrThrow();
+            let messageId: number;
             
-            const messageId = Number(insertResult.insertId);
+            // Příprava dat (pokud je to draft a message je undefined, uloží se prázdný řetězec)
+            const messageValues = {
+                type: type ?? 0,
+                topic: topic || null,
+                message: message || '',
+                is_draft: isDraft, // Respektujeme příznak, zda ukládáme koncept nebo odesíláme
+                author_id: auth.person_id as number,
+                require_confirm: require_confirm ? true : false,
+                excuse_date_from: excuse_date_from ? new Date(excuse_date_from) : null,
+                excuse_date_to: excuse_date_to ? new Date(excuse_date_to) : null,
+                excuse_hour_from: excuse_hour_from || null,
+                excuse_hour_to: excuse_hour_to || null,
+                excuse_all_day: excuse_all_day ? true : false,
+                message_rating_type: type === 3 ? (body as any).message_rating_type : null
+            };
 
-            // 2. Add recipients
-            let expandedRecipients = new Set<number>(recipients);
+            // 1. Zpracování Zprávy
+            if (draft_id) {
+                const updateResult = await trx.updateTable('messages')
+                    .set(messageValues as any)
+                    .where('message_id', '=', draft_id)
+                    .where('author_id', '=', auth.person_id as number)
+                    .executeTakeFirst();
+                
+                if (Number(updateResult.numUpdatedRows) === 0) {
+                    throw new Error('draft_not_found_or_unauthorized');
+                }
+                
+                messageId = draft_id;
 
-            if (copy_to_class_teacher) {
-                // Class teachers of students in recipients
+                // Vyčištění starých asociací pro tento draft před vložením nových
+                await trx.deleteFrom('messages_receivers').where('message_id', '=', messageId).execute();
+                await trx.deleteFrom('messages_files').where('message_id', '=', messageId).execute();
+            } else {
+                const insertResult = await trx.insertInto('messages')
+                    .values(messageValues as any)
+                    .executeTakeFirstOrThrow();
+                
+                messageId = Number(insertResult.insertId);
+            }
+
+            // 2. Přidání příjemců (jen pokud nějací byli zasláni, u draftu může být pole prázdné)
+            let expandedRecipients = new Set<number>(recipients || []);
+
+            if (copy_to_class_teacher && recipients && recipients.length > 0) {
                 const sTeachers = await trx.selectFrom('students')
                     .innerJoin('classes', 'classes.class_id', 'students.class_id')
                     .select('classes.teacher_id')
@@ -112,7 +140,6 @@ const app = new Elysia()
                     .execute();
                 sTeachers.forEach(t => t.teacher_id && expandedRecipients.add(t.teacher_id));
 
-                // Class teachers of parents' children in recipients
                 const pTeachers = await trx.selectFrom('family_relations')
                     .innerJoin('students', 'students.person_id', 'family_relations.source_id')
                     .innerJoin('classes', 'classes.class_id', 'students.class_id')
@@ -122,8 +149,7 @@ const app = new Elysia()
                 pTeachers.forEach(t => t.teacher_id && expandedRecipients.add(t.teacher_id));
             }
 
-            if (copy_to_parents) {
-                // Parents of students in recipients
+            if (copy_to_parents && recipients && recipients.length > 0) {
                 const parents = await trx.selectFrom('family_relations')
                     .select('target_id')
                     .where('source_id', 'in', recipients)
@@ -131,8 +157,7 @@ const app = new Elysia()
                 parents.forEach(p => expandedRecipients.add(p.target_id));
             }
 
-            if (copy_to_students) {
-                // Students of parents in recipients
+            if (copy_to_students && recipients && recipients.length > 0) {
                 const students = await trx.selectFrom('family_relations')
                     .select('source_id')
                     .where('target_id', 'in', recipients)
@@ -141,20 +166,24 @@ const app = new Elysia()
             }
 
             const filteredRecipients = Array.from(expandedRecipients).filter(id => id !== (auth.person_id as number));
-            if (filteredRecipients.length === 0) {
-                return { success: false, error: 'no_recipients' };
+            
+            // Pojistka: Pokud se zpráva reálně odesílá a nezbyli žádní příjemci, zruš to.
+            if (filteredRecipients.length === 0 && !isDraft) {
+                throw new Error('no_recipients');
             }
 
-            const receiverValues = filteredRecipients.map(recipientId => ({
-                message_id: messageId,
-                receiver_id: recipientId
-            }));
+            if (filteredRecipients.length > 0) {
+                const receiverValues = filteredRecipients.map(recipientId => ({
+                    message_id: messageId,
+                    receiver_id: recipientId
+                }));
 
-            await trx.insertInto('messages_receivers')
-                .values(receiverValues)
-                .execute();
+                await trx.insertInto('messages_receivers')
+                    .values(receiverValues)
+                    .execute();
+            }
 
-            // 3. Add files if any
+            // 3. Přidání souborů
             if (files && files.length > 0) {
                 const fileValues = files.map(fileId => ({
                     message_id: messageId,
@@ -165,19 +194,11 @@ const app = new Elysia()
                     .execute();
             }
 
-            // 4. Delete draft if it was a draft
-            if (draft_id) {
-                await trx.deleteFrom('messages_drafts')
-                    .where('draft_id', '=', draft_id)
-                    .where('author_id', '=', auth.person_id as number)
-                    .execute();
-            }
-
-            return { success: true, message_id: messageId, filteredRecipients };
+            return { success: true, message_id: messageId, filteredRecipients, isDraft };
         });
 
-        if (result.success && result.filteredRecipients) {
-            // Send notifications outside of transaction to avoid long-running locks
+        // 4. Odeslání notifikací (POUZE pokud to není draft)
+        if (result.success && !result.isDraft && result.filteredRecipients) {
             const sender = await db.selectFrom('persons')
                 .select(['first_name', 'last_name'])
                 .where('person_id', '=', auth.person_id as number)
@@ -185,37 +206,42 @@ const app = new Elysia()
             
             const senderName = sender ? `${sender.first_name} ${sender.last_name}` : 'Uživatel';
 
-            // Get user IDs for recipients (since recipients are person_ids)
-            const recipientUsers = await db.selectFrom('users')
-                .select(['user_id', 'person_id'])
-                .where('person_id', 'in', result.filteredRecipients)
-                .execute();
+            if (result.filteredRecipients.length) {
+                const recipientUsers = await db.selectFrom('users')
+                    .select(['user_id', 'person_id'])
+                    .where('person_id', 'in', result.filteredRecipients)
+                    .execute();
 
-            for (const recipient of recipientUsers) {
-                await notificationService.sendNotification('new_message', recipient.user_id, {
-                    senderName,
-                    subject: topic || 'Bez předmětu',
-                    messageId: result.message_id
-                });
+                for (const recipient of recipientUsers) {
+                    await notificationService.sendNotification('new_message', recipient.user_id, {
+                        senderName,
+                        subject: topic || 'Bez předmětu',
+                        messageId: result.message_id
+                    });
+                }
             }
         }
 
-        return result;
-    } catch (e) {
-        console.error('Failed to send message:', e);
+        return { success: true, message_id: result.message_id };
+    } catch (e: any) {
+        console.error('Failed to send/save message:', e);
+        if (e.message === 'draft_not_found_or_unauthorized' || e.message === 'no_recipients') {
+            return { success: false, error: e.message };
+        }
         return { success: false, error: 'db_error' };
     }
   }, {
     body: t.Object({
-      topic: t.Optional(t.Nullable(t.String())),
-      message: t.String(),
-      recipients: t.Array(t.Number()),
+      topic: t.Optional(t.Nullable(t.String({ default: '' }))),
+      message: t.Optional(t.String({ default: '' })), // Umožní odeslat prázdný string/undefined pro draft
+      recipients: t.Optional(t.Array(t.Number(), { default: [] })), // Pole už není povinné
       type: t.Optional(t.Number()),
       require_confirm: t.Optional(t.Boolean()),
       copy_to_class_teacher: t.Optional(t.Boolean()),
       copy_to_parents: t.Optional(t.Boolean()),
       copy_to_students: t.Optional(t.Boolean()),
       files: t.Optional(t.Array(t.Number())),
+      is_draft: t.Optional(t.Boolean({ default: false })), // Toto nyní reálně řídí chování (ukládání draftu vs odeslání)
       draft_id: t.Optional(t.Nullable(t.Number())),
       excuse_date_from: t.Optional(t.Nullable(t.String())),
       excuse_date_to: t.Optional(t.Nullable(t.String())),

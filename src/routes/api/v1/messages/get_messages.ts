@@ -19,9 +19,14 @@ const app = new Elysia()
     if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
     const queryFilters = JSON.parse(query.filters ?? '{}');
 
+    /* 
+      ZMĚNA ZDE: 
+      Začínáme u tabulky 'messages' a připojujeme 'messages_receivers' pomocí LEFT JOIN.
+      Díky tomu se načtou i zprávy (např. drafty), které nemají žádný záznam v messages_receivers.
+    */
     let baseQuery = db
-      .selectFrom('messages_receivers')
-      .leftJoin('messages', 'messages.message_id', 'messages_receivers.message_id')
+      .selectFrom('messages')
+      .leftJoin('messages_receivers', 'messages_receivers.message_id', 'messages.message_id')
       .leftJoin('persons', 'messages.author_id', 'persons.person_id')
       .leftJoin('users', 'users.person_id', 'persons.person_id')
       .select([
@@ -32,12 +37,14 @@ const app = new Elysia()
         'persons.first_name',
         'persons.last_name',
         'messages.sent_at',
+        'messages.is_draft',
         'messages.deleted',
         'messages.require_confirm',
         'users.avatar'
       ])
       .groupBy('messages.message_id')
       .where('messages.type', 'not in', [1])
+      .where('messages.is_draft', '=', query.is_draft ? true : false);
 
     if (query.receiver_id) {
       baseQuery = baseQuery.where('messages_receivers.receiver_id', '=', query.receiver_id);
@@ -98,17 +105,16 @@ const app = new Elysia()
       );
     }
 
-    console.log(queryFilters)
+    console.log(queryFilters);
 
     if (queryFilters.order) {
-      baseQuery = baseQuery.orderBy('messages.message_id', queryFilters.order == 'oldest_to_newest' ? 'asc' : 'desc')
+      baseQuery = baseQuery.orderBy('messages.message_id', queryFilters.order == 'oldest_to_newest' ? 'asc' : 'desc');
     } else {
-      baseQuery = baseQuery.orderBy('messages.message_id', 'desc')
+      baseQuery = baseQuery.orderBy('messages.message_id', 'desc');
     }
 
-
     if (!queryFilters.show_suppress) {
-      baseQuery = baseQuery.where('messages_receivers.suppress_at', 'is', null)
+      baseQuery = baseQuery.where('messages_receivers.suppress_at', 'is', null);
     }
 
     const messagesDB = await baseQuery
@@ -160,24 +166,36 @@ const app = new Elysia()
             'messages_receivers.receiver_id',
             'users.avatar',
             'messages_receivers.read_at',
-            'messages_receivers.confirmed_at'
+            'messages_receivers.confirmed_at',
+            'messages_receivers.suppress_at'
         ])
         .where('messages_receivers.message_id', 'in', messageIds)
         .execute();
 
-    /* Full names request */
-    const people_ids = [...new Set(messagesDB.map(m => m.author_id!)), ...new Set(receiversDB.map(m => m.receiver_id))];
+    /* 
+      ZMĚNA ZDE: 
+      Odfiltrování null hodnot. Pokud má draft 0 příjemců, receiver_id by vyhazoval null 
+      a mohl by dělat problémy ve format_person_map_by_ids.
+    */
+    const people_ids = [
+      ...new Set(messagesDB.map(m => m.author_id).filter(id => id !== null)), 
+      ...new Set(receiversDB.map(m => m.receiver_id).filter(id => id !== null))
+    ] as number[];
+    
     const people = await format_person_map_by_ids(people_ids);
 
     const receiverMap = new Map<number, any[]>();
     receiversDB.forEach(m => {
+        if (!m.receiver_id) return; // Ignorujeme, pokud není receiver
+        
         if (!receiverMap.has(m.message_id)) receiverMap.set(m.message_id, []);
         receiverMap.get(m.message_id)!.push({
             person_id: m.receiver_id,
             full_name: people.get(m.receiver_id),
             avatar: m.avatar,
             read_at: m.read_at,
-            confirm_at: m.confirmed_at
+            confirm_at: m.confirmed_at,
+            suppress_at: m.suppress_at
         });
     });
 
@@ -199,6 +217,7 @@ const app = new Elysia()
     };
   }, {
     query: t.Object({
+      is_draft: t.Optional(t.Boolean({ default: false })),
       limit: t.Optional(t.Number({ minimum: 1, maximum: 100, default: 15 })),
       from_id: t.Optional(t.Number()),
       receiver_id: t.Optional(t.Number()),
