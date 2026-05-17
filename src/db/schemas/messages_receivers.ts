@@ -5,4 +5,5 @@ export interface messages_receiversTable {
   receiver_id: number;
   read_at: Generated<Date | null>;
   confirmed_at: Generated<Date | null>;
+  suppress_at: Generated<Date | null>;
 }

@@ -56,6 +56,10 @@ export const GlobalPermissions = {
   TIMETABLE_VIEW: 'timetable.view',
   TIMETABLE_EDIT: 'timetable.edit',
 
+  // Messages
+  MESSAGES_LIST: 'messages.list',
+  MESSAGES_DELETE: 'messages.delete',
+
   // School
   SCHOOL_EDIT: 'school.edit',
 

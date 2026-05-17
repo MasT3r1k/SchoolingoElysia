@@ -17,6 +17,7 @@ const app = new Elysia()
       .executeTakeFirst();
 
     if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
+    const queryFilters = JSON.parse(query.filters ?? '{}');
 
     let baseQuery = db
       .selectFrom('messages_receivers')
@@ -33,8 +34,6 @@ const app = new Elysia()
         'messages.sent_at',
         'messages.deleted',
         'messages.require_confirm',
-        'messages_receivers.read_at',
-        'messages_receivers.confirmed_at',
         'users.avatar'
       ])
       .groupBy('messages.message_id')
@@ -44,26 +43,26 @@ const app = new Elysia()
       baseQuery = baseQuery.where('messages_receivers.receiver_id', '=', query.receiver_id);
     }
 
-    /* 🔹 cursor pagination */
+    /* Cursor pagination */
     if (query.from_id) {
       baseQuery = baseQuery.where('messages.message_id', '<', query.from_id);
     }
 
-    /* 🔹 odesílatelé */
+    /* Authors */
     if (query.author_ids?.length) {
         baseQuery = baseQuery.where(
-            'messages.author_id', 'in', query.author_ids
+          'messages.author_id', 'in', query.author_ids
         );
     }
 
-    /* 🔹 text zprávy */
+    /* Text message */
     if (query.q) {
       baseQuery = baseQuery.where(
         sql<any>`LOWER(messages.message) LIKE ${'%' + query.q.toLowerCase() + '%'}`
       );
     }
 
-    /* 🔹 přílohy */
+    /* Has files */
     if (query.has_attachments !== undefined) {
       baseQuery = baseQuery.where(
         sql<any>`
@@ -82,7 +81,7 @@ const app = new Elysia()
       );
     }
 
-    /* 🔹 datum */
+    /* Date */
     if (query.sent_after) {
       baseQuery = baseQuery.where(
         'messages.sent_at',
@@ -99,10 +98,20 @@ const app = new Elysia()
       );
     }
 
-    console.log(baseQuery)
+    console.log(queryFilters)
+
+    if (queryFilters.order) {
+      baseQuery = baseQuery.orderBy('messages.message_id', queryFilters.order == 'oldest_to_newest' ? 'asc' : 'desc')
+    } else {
+      baseQuery = baseQuery.orderBy('messages.message_id', 'desc')
+    }
+
+
+    if (!queryFilters.show_suppress) {
+      baseQuery = baseQuery.where('messages_receivers.suppress_at', 'is', null)
+    }
 
     const messagesDB = await baseQuery
-      .orderBy('messages.message_id', 'desc')
       .limit(query.limit ?? 20)
       .execute();
 
@@ -112,11 +121,7 @@ const app = new Elysia()
       return { messages: [], next_from_id: null };
     }
 
-    /* 🔹 autoři */
-    const people_ids = [...new Set(messagesDB.map(m => m.author_id!))];
-    const people = await format_person_map_by_ids(people_ids);
-
-    /* 🔹 přílohy */
+    /* Files */
     const messageIds = messagesDB.map(m => m.message_id);
     const filesDB = await db
         .selectFrom('messages_files')
@@ -139,10 +144,40 @@ const app = new Elysia()
         filesMap.get(f.message_id)!.push({
             file_id: f.file_id,
             file_uuid: f.file_uuid,
-            name: f.name,
+            file_name: f.name,
             file_format: f.file_format,
             file_size: f.file_size,
             mime_type: f.mime_type
+        });
+    });
+
+    /* Receivers */
+    const receiversDB = await db
+        .selectFrom('messages_receivers')
+        .leftJoin('users', 'users.person_id', 'messages_receivers.receiver_id')
+        .select([
+            'messages_receivers.message_id',
+            'messages_receivers.receiver_id',
+            'users.avatar',
+            'messages_receivers.read_at',
+            'messages_receivers.confirmed_at'
+        ])
+        .where('messages_receivers.message_id', 'in', messageIds)
+        .execute();
+
+    /* Full names request */
+    const people_ids = [...new Set(messagesDB.map(m => m.author_id!)), ...new Set(receiversDB.map(m => m.receiver_id))];
+    const people = await format_person_map_by_ids(people_ids);
+
+    const receiverMap = new Map<number, any[]>();
+    receiversDB.forEach(m => {
+        if (!receiverMap.has(m.message_id)) receiverMap.set(m.message_id, []);
+        receiverMap.get(m.message_id)!.push({
+            person_id: m.receiver_id,
+            full_name: people.get(m.receiver_id),
+            avatar: m.avatar,
+            read_at: m.read_at,
+            confirm_at: m.confirmed_at
         });
     });
 
@@ -154,7 +189,8 @@ const app = new Elysia()
         full_name: people.get(m.author_id as number),
         avatar: m.avatar
       },
-      files: filesMap.get(m.message_id as number) || []
+      files: filesMap.get(m.message_id as number) || [],
+      receivers: receiverMap.get(m.message_id as number) || [],
     }));
 
     return {
@@ -170,7 +206,8 @@ const app = new Elysia()
       q: t.Optional(t.String()),
       has_attachments: t.Optional(t.Boolean()),
       sent_after: t.Optional(t.String()),
-      sent_before: t.Optional(t.String())
+      sent_before: t.Optional(t.String()),
+      filters: t.Optional(t.String())
     })
   });
 

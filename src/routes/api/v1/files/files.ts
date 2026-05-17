@@ -33,6 +33,7 @@ const app = new Elysia({ prefix: '/files' })
 
         let filesQuery = db.selectFrom('files')
         .leftJoin('users', 'users.person_id', 'files.owner_id')
+        .leftJoin('persons', 'persons.person_id', 'users.person_id')
         .where('users.school_id', '=', auth.school_id)
         .select([
             'files.file_id',
@@ -44,7 +45,8 @@ const app = new Elysia({ prefix: '/files' })
             'files.file_size',
             'files.storage_path',
             'files.owner_id',
-            'files.created_at'
+            'files.created_at',
+            'persons.avatar'
         ])
         .offset(query.offset)
         .limit(query.limit)
@@ -72,12 +74,17 @@ const app = new Elysia({ prefix: '/files' })
             }
         }
 
+        filesQuery = filesQuery.where('files.deleted_at', 'is', null);
+
         const filesData = await filesQuery.execute();
 
         const files = await Promise.all(
             filesData.map(async (file) => ({
                 ...file,
-                owner: await format_person_by_id(file.owner_id!)
+                owner: {
+                    name: await format_person_by_id(file.owner_id!),
+                    avatar: file.avatar
+                }
             }))
         );
 
@@ -92,7 +99,7 @@ const app = new Elysia({ prefix: '/files' })
         })
     })
 
-    // GET /:id - Get details (questions)
+    // GET /stats - Get stats
     .get('/stats', async ({ cookie }) => {
         const token = cookie.token?.value as string;
         if (!token) return { error: 'no_user', details: 'no_cookie' };
@@ -125,6 +132,7 @@ const app = new Elysia({ prefix: '/files' })
             sql<number>`COUNT(DISTINCT ${eb.ref('files.owner_id')})`.as('unique_owners')
         ])
         .where('users.school_id', '=', auth.school_id)
+        .where('files.deleted_at', 'is', null)
         .executeTakeFirst();
 
         return {
@@ -134,5 +142,69 @@ const app = new Elysia({ prefix: '/files' })
             storage_limit: Number(storage_limit?.total_storage_limit) ?? 0,
         };
     })
+
+    // DELETE /delete - Delete file
+    .delete('/delete', async ({ cookie, body }) => {
+        const token = cookie.token?.value as string;
+        if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+        const auth = await db.selectFrom('tokens')
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id', 'users.manager', 'users.principal', 'users.school_id'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
+
+        const hasAccess = auth.manager === -1 || auth.principal;
+        if (!hasAccess) {
+            return { error: 'no_permission' };
+        }
+
+        await db.updateTable('files')
+            .set({ deleted_at: new Date() })
+            .where('file_id', '=', body.file_id)
+            .execute();
+
+        return { success: true };
+    }, {
+        body: t.Object({
+            file_id: t.Number()
+        })
+    })
+
+    // POST /rename - Rename file
+    .post('/rename', async ({ cookie, body }) => {
+        const token = cookie.token?.value as string;
+        if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+        const auth = await db.selectFrom('tokens')
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['users.person_id', 'users.manager', 'users.principal', 'users.school_id'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+
+        if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
+
+        const hasAccess = auth.manager === -1 || auth.principal;
+        if (!hasAccess) {
+            return { error: 'no_permission' };
+        }
+
+        await db.updateTable('files')
+            .set({ real_file_name: body.name })
+            .where('file_id', '=', body.file_id)
+            .execute();
+
+        return { success: true };
+    }, {
+        body: t.Object({
+            file_id: t.Number(),
+            name: t.String()
+        })
+    })
+
 
 export default app;

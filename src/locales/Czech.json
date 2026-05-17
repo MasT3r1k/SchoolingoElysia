@@ -89,6 +89,11 @@
             "message": "Vaše heslo expirovalo. Pro pokračování si prosím nastavte nové heslo."
         }
     },
+    "orders": {
+        "order": "Seřazení",
+        "newest_to_oldest": "Od nejnovějších",
+        "oldest_to_newest": "Od nejstarších"
+    },
     "form": {
         "required": "Povinné",
         "minLength": "Minimální délka %min%",
@@ -1669,7 +1674,7 @@
         "message_placeholder": "Zde zadejte vzkaz Vaší zprávy",
         "send_description": "Posílejte zprávy mezi uživateli systému Schoolingo – studenty, učiteli, rodiči i dalšími členy školy – jednoduše a na jednom místě.",
         "select_message": "Žádná zpráva není vybrána",
-        "select_message_desc": "Zvolte některou z příchozích zpráv vlevo a zobrazí se zde její obsah.",
+        "select_message_desc": "Zvolte některou z zpráv vlevo a zobrazí se zde její obsah.",
         "no_messages": "Žádné zprávy nebyly nalezeny.",
         "topic": "Titulek",
         "receiver": "Příjemce zprávy",
@@ -1677,12 +1682,13 @@
         "seen_by": "Vidělo",
         "confirmed_by": "Potvrdilo",
         "recipients_list": "Seznam příjemců",
-        "read_at": "Přečteno",
-        "confirmed_at": "Potvrzeno",
+        "sent_at": "Posláno v ",
+        "read_at": "Přečteno v ",
+        "confirmed_at": "Potvrzeno v ",
         "not_read_yet": "Dosud nepřečteno",
         "not_confirmed_yet": "Dosud nepotvrzeno",
         "student": "Žák",
-        "search_messages": "Vyhledat podle autora",
+        "search_messages": "Prohledávat zprávy",
         "findreceiver": "Vyhledejte jméno přijemce",
         "findstudent": "Vyhledejte jméno žáka",
         "no_selected": "Nevybrali jste žádného příjemce",
@@ -1691,6 +1697,9 @@
         "suppress": "Potlačit",
         "excuse_label": "Omluvit žáka na",
         "confirm_read": "Potvrdit přečtení",
+        "delete": "Smazat zprávu",
+        "reply": "Odpovědět",
+        "forward": "Přeposlat",
         "no_type_available": "Nemáš k dispozici žádné možnosti",
         "no_type_access": "Nemáte oprávnění poslat tento druh zprávy",
         "child": "Dítě",
@@ -1706,6 +1715,8 @@
         "hide_selected_receivers": "Vybrat další příjemce (%count%)",
         "show_selected_receivers": "Zobrazit vybrané příjemce (%count%)",
         "file_limit_info": "Máte vybráno %count% souborů z %limit%.",
+        "filter": "Filtrování zpráv",
+        "show_suppress_messages": "Zobrazit potlačené zprávy",
         "rating": {
             "main": "Ohodnocení",
             "positive": "Pochvala",
@@ -1777,14 +1788,42 @@
         "select_draft": "Žádný koncept není vybrán",
         "select_draft_desc": "Vyberte koncept vlevo pro zobrazení podrobností nebo pokračování v psaní.",
         "continue_writing": "Pokračovat v psaní",
-        "draft_hint": "Tato zpráva ještě nebyla odeslána.",
+        "draft_hint": "Tato zpráva ještě nebyla odeslána",
+        "draft_last_save": "poslední změna",
         "draft_saved": "Koncept byl úspěšně uložen.",
         "no_subject": "(Bez předmětu)",
+        "select_receivers": {
+            "available_users": "Dostupní uživatelé",
+            "selected_users": "Vámi vybraní příjemci",
+            "group": "Skupina",
+            "select_group": "Rychle přidat skupinu...",
+            "no_groups": "Žádné skupiny k dispozici",
+            "insert": "Vložit",
+            "save_selection_as_group": "Uložit aktuální výběr jako skupinu",
+            "remove_group": "Smazat vybranou skupinu",
+            "save_group": "Uložit skupinu",
+            "group_name": "Název skupiny",
+            "group_name_placeholder": "Např. Vedení školy",
+            "group_create_hint": "Tento výběr uvidíte v seznamu skupin.",
+            "select_button": "Vybrat přijemce"
+        },
+        "unsaved_changes": {
+            "title": "Neuložené změny",
+            "description": "Máte neuloženou zprávu nebo koncept. Pokud stránku opustíte, přijdete o neuložené změny.",
+            "leave_btn": "Opustit stránku",
+            "stay_btn": "Zůstat"
+        },
         "drafts_confirm": {
             "delete_confirm": "Opravdu chcete smazat tento koncept?",
-            "delete_title": "Smažat rozpracovaný koncept?",
+            "delete_title": "Smazat rozpracovaný koncept?",
             "delete_desc": "Opravdu si přejete smazat tento koncept? Tato akce je nevratná.",
             "delete_btn": "Smazat koncept"
+        },
+        "message_confirm": {
+            "delete_confirm": "Opravdu chcete smazat tuto zprávu?",
+            "delete_title": "Smazat odeslanou zprávu?",
+            "delete_desc": "Opravdu si přejete smazat tuto zprávu? Tato akce je nevratná.",
+            "delete_btn": "Smazat zprávu"
         }
     },
     "settings": {

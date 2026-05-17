@@ -41,12 +41,14 @@ const app = new Elysia()
       .leftJoin('grades_columns', 'grades_columns.column_id', 'grades.column_id')
       .leftJoin('subjects', 'subjects.subject_id', 'grades_columns.subject_id')
       .leftJoin('persons as teacher', 'teacher.person_id', 'grades.teacher_id')
+      .leftJoin('users as teacherUser', 'teacher.person_id', 'teacherUser.person_id')
       .select([
         'grades.mark',
         'grades.column_id',
         'grades.teacher_id',
         'teacher.first_name as teacher_first_name',
         'teacher.last_name as teacher_last_name',
+        'teacherUser.avatar',
         'grades_columns.created',
         'grades_columns.topic',
         'grades_columns.weight',
