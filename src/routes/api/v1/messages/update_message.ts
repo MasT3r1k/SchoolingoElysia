@@ -59,7 +59,7 @@ const app = new Elysia()
       message_id: t.Optional(t.Number()),
       read: t.Optional(t.Boolean()),
       confirm: t.Optional(t.Boolean()),
-      suppress: t.Nullable(t.Boolean()),
+      suppress: t.Optional(t.Nullable(t.Boolean())),
     }),
   });
 

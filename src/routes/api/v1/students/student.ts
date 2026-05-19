@@ -1420,24 +1420,47 @@ const elysiaApp = new Elysia()
     })
   })
 
-  .get('/student/:id/history', async ({ params: { id }, body, cookie }) => {
+  .get('/student/:id/history', async ({ params: { id }, query, cookie }) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'no_permission' };
 
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW);
     if (!perm) return { error: 'no_permission' };
 
-    const student_id = parseInt(id);
+    const student_id = parseInt(id as any);
 
-    const history = await db.selectFrom('student_history')
+    let dbQuery = db.selectFrom('student_history')
       .select([
         'student_history.teacher_id',
         'student_history.type',
         'student_history.data',
         'student_history.created_at'
       ])
-      .where('student_history.student_id', '=', student_id)
+      .where('student_history.student_id', '=', student_id);
+
+    if (query?.type) {
+      const types = query.type.split(',').map(t => t.trim());
+      dbQuery = dbQuery.where('student_history.type', 'in', types);
+    }
+    
+    if (query?.dateFrom) {
+      dbQuery = dbQuery.where('student_history.created_at', '>=', new Date(query.dateFrom));
+    }
+    
+    if (query?.dateTo) {
+      // Set to end of day
+      const dateTo = new Date(query.dateTo);
+      dateTo.setHours(23, 59, 59, 999);
+      dbQuery = dbQuery.where('student_history.created_at', '<=', dateTo);
+    }
+
+    const limit = query?.limit ? parseInt(query.limit) : 20;
+    const offset = query?.offset ? parseInt(query.offset) : 0;
+
+    const history = await dbQuery
       .orderBy('created_at', 'desc')
+      .limit(limit)
+      .offset(offset)
       .execute();
 
     const teacherNames = await format_person_map_by_ids(history.map((h) => h.teacher_id));
@@ -1448,9 +1471,7 @@ const elysiaApp = new Elysia()
       let dataObj: any = {};
 
       try {
-        // 1. Ošetření divného formátu (znaky jako klíče)
-        if (h.data && typeof h.data === 'object' && h.data['0']) {
-          // Poskládáme string z očíslovaných klíčů
+        if (h.data && typeof h.data === 'object' && (h.data as any)['0']) {
           const jsonString = Object.values(h.data).join('');
           dataObj = JSON.parse(jsonString);
         } else if (typeof h.data === 'string') {
@@ -1465,7 +1486,6 @@ const elysiaApp = new Elysia()
 
       let parent_full_name = null;
 
-      // 2. Kontrola parent_id (může to být string i number, podle toho JSONu výše je to "33")
       if (dataObj?.parent_id) {
         parent_full_name = await format_person_by_id(parseInt(dataObj.parent_id));
       }
@@ -1475,11 +1495,22 @@ const elysiaApp = new Elysia()
         full_name: teacher_name,
         data: {
           ...dataObj,
-          parent_full_name // Teď už tam bude skutečné jméno místo null
+          parent_full_name
         }
       };
     }));
     return enrichedHistory;
+  }, {
+    params: t.Object({
+      id: t.String()
+    }),
+    query: t.Optional(t.Object({
+      type: t.Optional(t.String()),
+      dateFrom: t.Optional(t.String()),
+      dateTo: t.Optional(t.String()),
+      limit: t.Optional(t.String()),
+      offset: t.Optional(t.String())
+    }))
   })
 
   .patch('/student/:id/personal', async ({ cookie, params: { id }, body }) => {

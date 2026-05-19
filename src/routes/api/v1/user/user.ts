@@ -160,6 +160,7 @@ const app = new Elysia()
     user.emails = await db.selectFrom("emails")
     .select([
       'emails.email',
+      'emails.type',
       'emails.is_verified',
       'emails.description',
       'emails.code_until'

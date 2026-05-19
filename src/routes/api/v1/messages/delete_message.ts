@@ -1,6 +1,5 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
-import { permissions } from '../../../../middleware/permission.middleware';
 import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
 
@@ -18,74 +17,85 @@ const app = new Elysia()
       .executeTakeFirst();
 
     if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
-    const message_id = query.message_id;
-    if (message_id == undefined) return { error: 'no_message_id' }
 
-    let baseQuery = await db
+    // 1. Získání pole ID zpráv (přejmenováno na message_ids pro jasnost)
+    const message_ids = query.message_ids;
+    if (!message_ids || message_ids.length === 0) return { error: 'no_message_ids' };
+
+    // 2. Získání VŠECH zpráv, které se mají smazat
+    const messagesToDelete = await db
       .selectFrom('messages')
       .select([
         'messages.message_id',
         'messages.author_id'
       ])
-      .where('messages.message_id', '=', message_id)
+      .where('messages.message_id', 'in', message_ids)
       .where('messages.type', 'not in', [1])
-      .limit(1)
       .execute();
 
-    if (!baseQuery.length) {
-        return { error: 'message_not_found' }
+    if (!messagesToDelete.length) {
+        return { error: 'messages_not_found' };
     }
 
-    const msg = baseQuery[0];
-    const isAuthor = msg.author_id === auth.user_id;
     const hasAdminAccess = await PermissionService.hasPermission(auth.user_id, GlobalPermissions.MESSAGES_DELETE);
 
-    if (!isAuthor && !hasAdminAccess) {
-        return { error: 'no_permission' };
+    // 3. Bezpečnostní ověření pro běžného uživatele
+    if (!hasAdminAccess) {
+        // Uživatel musí být autorem VŠECH zpráv, které se snaží smazat
+        const isAuthorOfAll = messagesToDelete.every(msg => msg.author_id === auth.user_id);
+        if (!isAuthorOfAll) {
+            return { error: 'no_permission', details: 'not_author_of_all_messages' };
+        }
     }
 
-    const receivers = await db.selectFrom('messages_receivers')
-    .select(
-        db.fn.count("messages_receivers.message_id").as("count")
-    )
-    .where('messages_receivers.read_at', 'is not', null)
-    .where('messages_receivers.message_id', '=', message_id)
-    .executeTakeFirst();
+    // Filtrujeme jen reálně nalezená ID v databázi (prevence proti smazání neexistujících)
+    const validMessageIds = messagesToDelete.map(msg => msg.message_id);
 
-    const receiverCount = Number(receivers?.count ?? 0);
+    // 4. Kontrola přečtení u příjemců (pokud není admin)
+    if (!hasAdminAccess) {
+        const readReceivers = await db.selectFrom('messages_receivers')
+            .select(['message_id'])
+            .where('read_at', 'is not', null)
+            .where('message_id', 'in', validMessageIds)
+            .limit(1) // Stačí najít jednu jedinou přečtenou zprávu a zamítneme to
+            .execute();
 
-    if (receiverCount && !hasAdminAccess) {
-        return { error: 'cannot_delete_message' }
+        if (readReceivers.length > 0) {
+            return { error: 'cannot_delete_message', details: 'some_messages_already_read' };
+        }
     }
 
+    // 5. Samotné hromadné mazání v transakci
     try {
         await db.transaction().execute(async (trx) => {
             await trx
             .deleteFrom('messages_files')
-            .where('message_id', '=', message_id)
+            .where('message_id', 'in', validMessageIds)
             .execute();
 
             await trx
             .deleteFrom('messages_receivers')
-            .where('message_id', '=', message_id)
+            .where('message_id', 'in', validMessageIds)
             .execute();
 
             await trx
             .deleteFrom('messages')
-            .where('message_id', '=', message_id)
+            .where('message_id', 'in', validMessageIds)
             .execute();
         });
 
         return {
             success: true,
+            deleted_count: validMessageIds.length
         };
     } catch (error) {
-        console.error("Chyba při mazání zprávy:", error);
+        console.error("Chyba při mazání zpráv:", error);
         return { error: 'database_error', details: 'failed_to_delete' };
     }
   }, {
+    // Používáme t.Array(t.Numeric()), což správně převede stringy z URL query na čísla
     query: t.Object({
-      message_id: t.Optional(t.Number())
+      message_ids: t.Array(t.Numeric())
     })
   });
 

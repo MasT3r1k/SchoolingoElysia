@@ -104,6 +104,18 @@
         "passwords_is_same": "Hesla jsou stejná",
         "passwords_not_same": "Hesla nejsou stejná"
     },
+    "birthnum": {
+        "errors": {
+            "too_short": "Rodné číslo je příliš krátké",
+            "too_long": "Rodné číslo je příliš dlouhé",
+            "not_a_number": "Rodné číslo není číslo",
+            "wrong_checksum": "Kontrolní součet rodného čísla nesedí",
+            "wrong_gender": "Rodné číslo nesedí s pohlavím",
+            "invalid_input_dob": "Neplatný datum narození",
+            "wrong_date": "Rodné číslo nesedí s datumem narození",
+            "date_non_existent": "Datum narození není možný"
+        }
+    },
     "schools": {
         "errors": {
             "429": "Přiliš mnoho požadavků, zkuste to znova za pár minut"
@@ -822,6 +834,7 @@
         "jump_to_2FA_settings": "Přejít do nastavení 2FA",
         "upload_files": "Nahrát soubory",
         "add_reward": "Přidat odměnu",
+        "choose": "Vyberte",
         "back": "Zpátky",
         "cancel": "Zrušit",
         "edit": "Upravit",
@@ -1700,6 +1713,8 @@
         "is_suppress": "Zpráva je potlačená",
         "excuse_label": "Omluvit žáka na",
         "confirm_read": "Potvrdit přečtení",
+        "mark_read_confirm": "Označit jako přečtené a potvrdit",
+        "mark_read": "Označit jako přečtené, nepotvrzovat",
         "delete": "Smazat zprávu",
         "reply": "Odpovědět",
         "forward": "Přeposlat",
@@ -1789,6 +1804,7 @@
         "draft": "Koncept",
         "drafts": "Koncepty",
         "no_drafts": "Nemáte žádné uložené koncepty.",
+        "delete_drafts": "Smazat koncepty",
         "select_draft": "Žádný koncept není vybrán",
         "select_draft_desc": "Vyberte koncept vlevo pro zobrazení podrobností nebo pokračování v psaní.",
         "continue_writing": "Pokračovat v psaní",

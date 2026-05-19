@@ -2,32 +2,57 @@ import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database'
 
 const elysiaApp = new Elysia()
-    .get('/timetable_scheme/:scope_id/:year', async ({ params }) => {
-        const scopeId = Number(params.scope_id);
-        const year = Number(params.year);
+    .get('/timetable_scheme/:scope_id/:year', async ({ params, cookie }) => {
+      const token = cookie.token?.value as string;
+      if (!token) return { error: 'no_user', details: 'no_cookie' };
 
-        if (Number.isNaN(scopeId) || Number.isNaN(year)) {
-            return Response.json({error: 'Invalid scope_id or year'}, 400);
-        }
+      const auth = await db
+        .selectFrom('tokens')
+        .leftJoin('users', 'users.user_id', 'tokens.user_id')
+        .select(['tokens.user_id', 'users.person_id'])
+        .where('tokens.token', '=', token)
+        .where('tokens.expires', '>=', new Date())
+        .executeTakeFirst();
 
-        const timetableScheme = await db
-            .selectFrom('timetable_schemas')
-            .select([
-                'day',
-                'hour',
-                'type'
-            ])
-            .where('scope_id', '=', scopeId)
-            .where((eb) => eb.or([
-                eb('year', '=', year),
-                eb('year', '=', -1)
-            ]))
-            .execute();
+      if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
+      
+      const scopeId = Number(params.scope_id);
+      const year = Number(params.year);
 
-        return timetableScheme;
+      if (Number.isNaN(scopeId) || Number.isNaN(year)) {
+          return Response.json({error: 'Invalid scope_id or year'}, 400);
+      }
+
+      const timetableScheme = await db
+          .selectFrom('timetable_schemas')
+          .select([
+              'day',
+              'hour',
+              'type'
+          ])
+          .where('scope_id', '=', scopeId)
+          .where((eb) => eb.or([
+              eb('year', '=', year),
+              eb('year', '=', -1)
+          ]))
+          .execute();
+
+      return timetableScheme;
     })
 
-.post('/timetable_scheme', async ({ body, user }) => {
+.post('/timetable_scheme', async ({ body, cookie }) => {
+    const token = cookie.token?.value as string;
+    if (!token) return { error: 'no_user', details: 'no_cookie' };
+
+    const auth = await db
+      .selectFrom('tokens')
+      .leftJoin('users', 'users.user_id', 'tokens.user_id')
+      .select(['tokens.user_id', 'users.person_id'])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', new Date())
+      .executeTakeFirst();
+
+    if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
     const { scopeId, year, scheme } = body;
 
     /** DELETE old scheme */
@@ -52,7 +77,7 @@ const elysiaApp = new Elysia()
           day: dayIndex,
           hour: hourIndex,
           type,
-          assign_by: user.userId
+          assign_by: auth.user_id
         }))
       )
     );
