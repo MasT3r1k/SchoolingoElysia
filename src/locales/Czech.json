@@ -336,10 +336,35 @@
         "select_teacher": "Vybrat učitele",
         "no_teachers_assigned": "Žádní učitelé nejsou přiřazeni k tomuto předmětu",
         "manage_users": {
+            "tabs": {
+                "overview": "Přehled",
+                "personal": "Osobní údaje",
+                "security": "Zabezpečení",
+                "activity": "Aktivita na účtě",
+                "messages": "Správa zpráv",
+                "files": "Správa souborů"
+            },
             "login_method": {
                 "title": "Způsob přihlášení",
-                "local": "Lokální přihlášení (Schoolingo Auth)",
+                "local": "Lokální přihlášení",
                 "ldap": "Pomocí LDAP protokolu"
+            },
+            "reset_password": {
+                "title": "Obnovení hesla účtu",
+                "last_change_date": "Heslo bylo naposledy změněno dne %date%",
+                "only_option": "Jediná možnost",
+                "jump_student": "Přejít na podrobnosti žáka",
+                "jump_teacher": "Přejít na podrobnosti učitele",
+                "options": {
+                    "email": {
+                        "title": "Poslat nové heslo na email",
+                        "description": "Uživateli přijde nové heslo na e-mailovou adresu. Vy jako admin to neuvidíte. Dosavadní heslo nebude fungovat."
+                    },
+                    "show": {
+                        "title": "Zobrazit nové heslo",
+                        "description": "Uživateli nepřijde žádným způsobem nové heslo, uvidíte ho pouze Vy, uživatel se nebude moci přihlásit pomocí dosavadního hesla."
+                    }
+                }
             }
         }
     },
@@ -849,6 +874,7 @@
         "saving": "Ukládání",
         "save_changes": "Uložit změny",
         "reset": "Obnovit",
+        "try_again": "Zkusit znovu",
         "done": "Hotovo"
     },
     "dropdown": {
@@ -980,6 +1006,10 @@
         "edit_personal_description": "Upravte osobní údaje studenta, jako je jméno, příjmení, třída, pohlaví nebo datum narození.",
         "basic_info": "Základní informace",
         "insurance": "Pojišťovna",
+        "load_error": {
+            "title": "Uživatele se nepodařilo načíst",
+            "description": "Profil, který se snažíš zobrazit, buď neexistuje, nebo se stala chyba na serveru."
+        },
         "save_history": {
             "title": "Typ uložení změn",
             "description": "Chcete změnu uložit k určitému datu v historii, nebo jen opravit aktuální data?",
@@ -1855,6 +1885,7 @@
             "429": "Přiliš mnoho pokusů o změnu hesla, zkuste to později",
             "old_password": "Staré heslo",
             "new_password": "Nové heslo",
+            "reset_password": "Obnovit heslo",
             "again_new_password": "Znova nové heslo",
             "success_changed": "Heslo bylo úspěšně změněno!",
             "invalid_new_password": "Nemůžete zvolit tohle heslo"
@@ -1920,6 +1951,10 @@
             "validSince": "Aktivní od %date% v %time%",
             "methods": {
                 "mobile_app": "Mobilní aplikace"
+            },
+            "status": {
+                "activated": "Aktivní",
+                "deactivated": "Neaktivní"
             },
             "title": "Dvoufázové ověřování",
             "description": "Dvoufázové ověřování slouží k lepšímu zabezpečení Vašeho účtu, při každé kritické akci to bude po Vás vyžadovat ověřovací kód z Vaší authorizační aplikace v telefonu.",

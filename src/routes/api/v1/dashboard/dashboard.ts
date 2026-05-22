@@ -8,7 +8,7 @@ const app = new Elysia()
     if (!user) return { error: 'no_user', details: 'unauthorized' };
 
     // Parallel execution for performance
-    const [unreadMessages, newNotifications, isCookie, modulePositions] = await Promise.all([
+    const [unreadMessages, newNotifications, userinfo, modulePositions] = await Promise.all([
         // Count of unread received messages
         db.selectFrom('messages_receivers')
             .leftJoin('messages', 'messages.message_id', 'messages_receivers.message_id')
@@ -29,10 +29,13 @@ const app = new Elysia()
 
         // Check if cookies is accepted
         db.selectFrom('users')
-            .select(['users.cookies'])
+            .select([
+                'users.cookies',
+                'users.password_changed',
+                'users.recommend_change_password'
+            ])
             .where('users.user_id', '=', user.user_id)
-            .executeTakeFirst()
-            .then(r => r?.cookies),
+            .executeTakeFirst(),
 
         // Fetch dashboard module positions
         db.selectFrom('user_dashboard_modules')
@@ -42,7 +45,7 @@ const app = new Elysia()
             .execute()
     ]);
     
-    return { unreadMessages, newNotifications, cookies: isCookie, modulePositions };
+    return { unreadMessages, newNotifications, cookies: userinfo?.cookies, modulePositions, last_password_changed: userinfo?.password_changed, recommend_change_password: userinfo?.recommend_change_password };
   })
   .post('/dashboard/positions', async ({ user, body }: any) => {
     // Auth Check

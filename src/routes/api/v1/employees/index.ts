@@ -354,6 +354,7 @@ const employeesRouter = new Elysia({ prefix: '/employees' })
           'teachers.person_id',
           'persons.first_name',
           'persons.last_name',
+          'users.avatar',
           'teachers.role',
           'teachers.cabinet_id',
           'teachers.department',

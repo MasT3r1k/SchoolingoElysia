@@ -142,6 +142,7 @@ import { SvpTopicsTable } from './svp_topics'
 import { ThematicPlansTable } from './thematic_plans'
 import { ThematicPlanItemsTable } from './thematic_plan_items'
 import { UserDashboardModulesTable } from './user_dashboard_modules'
+import { educationMeasureTemplatesTable } from './education_measure_templates'
 
 export interface Database {
   absence: AbsenceTable
@@ -165,6 +166,8 @@ export interface Database {
   degrees: DegreesTable
   districts: DistrictsTable
   education_measures: educationMeasuresTable
+  education_measures_templates: educationMeasureTemplatesTable
+  education_measures_types: educationMeasureTypesTable
   emails: emailsTable
   email_config: EmailConfigTable
   emergency_events: emergency_eventsTable
@@ -292,7 +295,6 @@ export interface Database {
   message_recipient_group_members: MessageRecipientGroupMemberTable
   avatar_history: AvatarHistoryTable
   student_subject_exemptions: StudentSubjectExemptionsTable
-  education_measure_types: educationMeasureTypesTable
   teachers_education: TeachersEducationTable
   teachers_agenda: TeachersAgendaTable
   teachers_equipment: TeachersEquipmentTable

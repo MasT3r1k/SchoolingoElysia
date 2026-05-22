@@ -270,9 +270,9 @@ const app = new Elysia()
         }
 
         const types = await db
-            .selectFrom('education_measure_types')
+            .selectFrom('education_measures_types')
             .selectAll()
-            .orderBy('order', 'asc')
+            .orderBy('order_index', 'asc')
             .execute();
 
         return Response.json({ types });
@@ -298,12 +298,12 @@ const app = new Elysia()
         }
 
         const result = await db
-            .insertInto('education_measure_types')
+            .insertInto('education_measures_types')
             .values({
                 shortcut: body.shortcut,
                 label_1st: body.label_1st,
                 label_4th: body.label_4th,
-                order: body.order || 0
+                order_index: body.order || 0
             })
             .execute();
 
@@ -337,7 +337,7 @@ const app = new Elysia()
         }
 
         await db
-            .deleteFrom('education_measure_types')
+            .deleteFrom('education_measures_types')
             .where('emt_id', '=', parseInt(params.id))
             .execute();
 
@@ -368,12 +368,12 @@ const app = new Elysia()
         }
 
         await db
-            .updateTable('education_measure_types')
+            .updateTable('education_measures_types')
             .set({
                 shortcut: body.shortcut,
                 label_1st: body.label_1st,
                 label_4th: body.label_4th,
-                order: body.order
+                order_index: body.order
             })
             .where('emt_id', '=', parseInt(params.id))
             .execute();
@@ -389,6 +389,34 @@ const app = new Elysia()
             label_4th: t.Optional(t.String()),
             order: t.Optional(t.Number())
         })
-    });
+    })
+
+    // List education measure types
+    .get('/measure/templates', async ({ cookie }) => {
+        const token = cookie.token?.value as string;
+        if (!token) {
+            return Response.json({ error: 'unauthorized' }, { status: 401 });
+        }
+
+        const auth = await db
+            .selectFrom('tokens')
+            .leftJoin('users', 'users.user_id', 'tokens.user_id')
+            .select(['tokens.user_id', 'users.role'])
+            .where('tokens.token', '=', token)
+            .where('tokens.expires', '>=', new Date())
+            .executeTakeFirst();
+
+        if (!auth) {
+            return Response.json({ error: 'unauthorized' }, { status: 401 });
+        }
+
+        const types = await db
+            .selectFrom('education_measures_templates')
+            .selectAll()
+            .orderBy('template_id', 'asc')
+            .execute();
+
+        return Response.json({ types });
+    })
 
 export default app;

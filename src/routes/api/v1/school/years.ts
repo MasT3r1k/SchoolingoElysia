@@ -1,6 +1,8 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { getAuthUser } from '../../../../../src/utils/auth';
+import { PermissionService } from '../../../../functions/permission.service';
+import { GlobalPermissions } from '../../../../config/permissions.config';
 
 const elysiaApp = new Elysia()
   .get('/school/years', async ({ cookie }) => {
@@ -17,7 +19,9 @@ const elysiaApp = new Elysia()
   .post('/school/years', async ({ body, cookie, school }) => {
     const auth = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!auth) return new Response('Unauthorized', { status: 401 });
-    // TODO: Add permission check for admin
+
+    const hasAccess = await PermissionService.hasPermission(auth.user_id, GlobalPermissions.ADMIN_PANEL)
+    if (!hasAccess) return { error: 'no_permission' };
 
     const { start, end, midterm, current } = body as any;
 
@@ -62,6 +66,9 @@ const elysiaApp = new Elysia()
   .delete('/school/years/:id', async ({ params: { id }, cookie }) => {
     const auth = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!auth) return new Response('Unauthorized', { status: 401 });
+
+    const hasAccess = await PermissionService.hasPermission(auth.user_id, GlobalPermissions.ADMIN_PANEL)
+    if (!hasAccess) return { error: 'no_permission' };
 
     await db.deleteFrom('school_years')
         .where('sy_id', '=', parseInt(id))

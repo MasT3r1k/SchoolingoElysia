@@ -543,6 +543,7 @@ const elysiaApp = new Elysia()
           .innerJoin('persons', 'persons.person_id', 'messages.author_id')
           .select([
             'messages.message_id',
+            'messages.author_id',
             'messages.topic',
             'messages.message',
             'messages.sent_at',
@@ -554,6 +555,13 @@ const elysiaApp = new Elysia()
           .where('messages_receivers.receiver_id', '=', id)
           .orderBy('messages.sent_at', 'desc')
           .execute();
+
+          result.evaluations = await Promise.all(
+            result.evaluations.map(async (msg: any) => ({
+              ...msg,
+              full_name: await format_person_by_id(msg.author_id)
+            }))
+          );
       }
 
       return Response.json(result);
