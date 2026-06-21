@@ -45,6 +45,7 @@ const app = new Elysia()
               'users.avatar',
               'users.password_changed',
               'users.manager',
+              'users.principal',
               'users.role',
               'users.school_id',
               'users.locale',

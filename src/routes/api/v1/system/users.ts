@@ -7,6 +7,7 @@ import moment from 'moment';
 import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
 import { getAuthUser } from '../../../../utils/auth';
+import bcrypt from 'bcryptjs';
 
 const app = new Elysia()
   // GET /system/users - List users with cursor-based pagination
@@ -47,6 +48,7 @@ const app = new Elysia()
         'persons.avatar',
         'users.created_at',
         'users.updated_at',
+        'users.active',
         'login_history.created as last_login',
         'login_history.ip as last_login_ip',
         'login_history.user_agent as last_login_user_agent'
@@ -62,6 +64,14 @@ const app = new Elysia()
 
     if (role && role !== 'all') {
       dbQuery = dbQuery.where('users.role', '=', role);
+    }
+
+    if (status && status !== 'all') {
+      if (status === 'active') {
+        dbQuery = dbQuery.where('users.active', '=', true);
+      } else if (status === 'inactive') {
+        dbQuery = dbQuery.where('users.active', '=', false);
+      }
     }
 
     // Filter by School
@@ -92,7 +102,8 @@ const app = new Elysia()
 
     const users = results.map(r => ({
       ...r,
-      full_name: r.person_id ? formattedNames.get(r.person_id) : `${r.first_name} ${r.last_name}`
+      full_name: r.person_id ? formattedNames.get(r.person_id) : `${r.first_name} ${r.last_name}`,
+      status: r.active ? 'active' : 'inactive'
     }));
 
     return Response.json({
@@ -479,6 +490,7 @@ const app = new Elysia()
         'users.password_changed',
         'users.created_at',
         'users.updated_at',
+        'users.active',
         'persons.first_name',
         'persons.last_name',
         'persons.avatar',
@@ -550,6 +562,7 @@ const app = new Elysia()
 
     return Response.json({
       ...result,
+      status: result.active ? 'active' : 'inactive',
       full_name,
       emails,
       phones,
@@ -580,12 +593,13 @@ const app = new Elysia()
 
     if (!targetUser) return Response.json({ error: 'not_found' }, { status: 404 });
 
-    const { username, first_name, last_name, role, birthday, gender } = body;
+    const { username, first_name, last_name, role, birthday, gender, active } = body;
 
     // Update users table
     const userUpdates: any = {};
     if (username !== undefined) userUpdates.username = username;
     if (role !== undefined) userUpdates.role = role;
+    if (active !== undefined) userUpdates.active = active ? 1 : 0;
 
     if (Object.keys(userUpdates).length > 0) {
       await db.updateTable('users')
@@ -618,7 +632,8 @@ const app = new Elysia()
       last_name: t.Optional(t.String()),
       role: t.Optional(t.String()),
       birthday: t.Optional(t.Nullable(t.String())),
-      gender: t.Optional(t.String())
+      gender: t.Optional(t.String()),
+      active: t.Optional(t.Union([t.Boolean(), t.Number()]))
     })
   })
 
@@ -641,14 +656,19 @@ const app = new Elysia()
 
     if (!targetUser) return Response.json({ error: 'not_found' }, { status: 404 });
 
-    const { new_password } = body;
-    if (!new_password || new_password.length < 8) {
+    let new_password = '';
+    let generated = false;
+
+    if (!new_password) {
+      const { Utils } = await import('../../../../utils/utils');
+      new_password = Utils.randomstring(8, true) + 'aA1!';
+      generated = true;
+    } else if (new_password.length < 8) {
       return Response.json({ error: 'password_too_short' }, { status: 400 });
     }
 
     // Hash password with bcrypt
-    const bcrypt = await import('bcryptjs');
-    const hashedPassword = await bcrypt.hash(new_password, 12);
+    const hashedPassword = bcrypt.hashSync(new_password, 12);
 
     const password_id = await db.insertInto('passwords')
     .values({
@@ -658,22 +678,20 @@ const app = new Elysia()
 
     await db.updateTable('users')
       .set({ 
-        password_id: Number(password_id.insertId),
-        password_changed: moment().format('YYYY-MM-DD')
+        recommend_change_password: true,
+        password_id: parseInt(password_id.insertId?.toString()!),
+        password_changed: sql`NOW()`
       })
       .where('user_id', '=', userId)
       .execute();
 
     // Invalidate all tokens for this user
-    await db.deleteFrom('tokens')
+    await db.updateTable('tokens')
+      .set('tokens.expires', new Date())
       .where('user_id', '=', userId)
       .execute();
 
-    return Response.json({ success: true });
-  }, {
-    body: t.Object({
-      new_password: t.String()
-    })
+    return Response.json({ success: true, generated_password: generated ? new_password : null });
   })
 
   // GET /system/users/:userId/messages - User message history
@@ -775,6 +793,37 @@ const app = new Elysia()
       limit: t.Optional(t.Numeric()),
       offset: t.Optional(t.Numeric())
     })
+  })
+
+  // DELETE /system/users/:userId - Delete user
+  .delete('/system/users/:userId', async ({ cookie, params }: any) => {
+    const user = await getAuthUser(cookie?.token?.value as string, cookie);
+    if (!user) return { error: 'no_permission' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.USERS_EDIT);
+    if (!perm) return { error: 'no_permission' };
+
+    const userId = Number(params.userId);
+    if (isNaN(userId)) return Response.json({ error: 'invalid_id' }, { status: 400 });
+
+    // Verify user belongs to same school
+    const targetUser = await db.selectFrom('users')
+      .select(['users.user_id', 'users.school_id'])
+      .where('users.user_id', '=', userId)
+      .where('users.school_id', '=', user.school_id)
+      .executeTakeFirst();
+
+    if (!targetUser) return Response.json({ error: 'not_found' }, { status: 404 });
+    if (targetUser.user_id === user.user_id) return Response.json({ error: 'cannot_delete_self' }, { status: 400 });
+
+    try {
+      await db.deleteFrom('users')
+        .where('user_id', '=', userId)
+        .execute();
+      return Response.json({ success: true });
+    } catch (err: any) {
+      console.error('Delete user error:', err);
+      return Response.json({ error: 'delete_failed', details: err.message }, { status: 500 });
+    }
   });
 
 export default app;

@@ -2,6 +2,7 @@ import { Elysia, t } from 'elysia';
 import moment from 'moment';
 import { db } from '../../../../../database';
 import { sql } from 'kysely';
+import { PermissionService } from '../../../../functions/permission.service';
 
 const app = new Elysia()
   .get('/marks/teacher/list', async ({ cookie, query }) => {
@@ -27,7 +28,9 @@ const app = new Elysia()
       return Response.json({ error: 'no_user', details: 'no_db' });
     }
 
-    if (auth.role != "teacher") {
+    const hasPerm = await PermissionService.hasPermission(auth.user_id, 'teacher');
+
+    if (!hasPerm) {
       return Response.json({ error: 'no_permission' });
     }
 

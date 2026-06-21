@@ -176,7 +176,6 @@ class MailerModule {
         }
 
         const messageId = crypto.randomUUID();
-        console.log(payload)
 
         try {
             await this.transporter.sendMail({

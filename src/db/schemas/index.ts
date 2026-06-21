@@ -43,9 +43,6 @@ import { messagesTable } from './messages'
 import { messages_receiversTable } from './messages_receivers'
 import { messages_draftsTable } from './messages_drafts'
 import { passwordsTable } from './passwords'
-import { payments_classesTable } from './payments_classes'
-import { payments_columnsTable } from './payments_columns'
-import { payments_paymentsTable } from './payments_payments'
 import { Persons } from './persons'
 import { persons_degreeTable } from './persons_degree'
 import { phone_numbersTable } from './phone_numbers'
@@ -143,6 +140,7 @@ import { ThematicPlansTable } from './thematic_plans'
 import { ThematicPlanItemsTable } from './thematic_plan_items'
 import { UserDashboardModulesTable } from './user_dashboard_modules'
 import { educationMeasureTemplatesTable } from './education_measure_templates'
+import { PaymentsAccountsTable, PaymentsAssignedFeesTable, PaymentsAuditlogTable, PaymentsCategoriesTable, PaymentsFeesMethodTable, PaymentsFeesNotificationTable, PaymentsFeesTable, PaymentsManagersTable, PaymentsPaymentsTable, PaymentsRegularTable, PaymentsRegularUsersTable, PaymentsTransfersTable } from './payments'
 
 export interface Database {
   absence: AbsenceTable
@@ -205,9 +203,18 @@ export interface Database {
   notification_rules: notificationRulesTable
   push_subscriptions: pushSubscriptionsTable
   passwords: passwordsTable
-  payments_classes: payments_classesTable
-  payments_columns: payments_columnsTable
-  payments_payments: payments_paymentsTable
+  payments_accounts: PaymentsAccountsTable
+  payments_assigned_fees: PaymentsAssignedFeesTable
+  payments_auditlog: PaymentsAuditlogTable
+  payments_categories: PaymentsCategoriesTable
+  payments_fees: PaymentsFeesTable
+  payments_fees_method: PaymentsFeesMethodTable
+  payments_fees_notification: PaymentsFeesNotificationTable
+  payments_managers: PaymentsManagersTable
+  payments_payments: PaymentsPaymentsTable
+  payments_regular: PaymentsRegularTable
+  payments_regular_users: PaymentsRegularUsersTable
+  payments_transfers: PaymentsTransfersTable
   persons: Persons
   persons_degree: persons_degreeTable
   phone_numbers: phone_numbersTable

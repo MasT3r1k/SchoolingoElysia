@@ -66,11 +66,10 @@ const elysiaApp = new Elysia()
       }
 
       if (user['2fa'] && user['2fa_secret']) {
-        if (!TFA) {
-          return Response.json({ error: ["Missing 2FA"] });
-        }
+        if (!TFA) return Response.json({ error: ["Missing 2FA"] });
 
         const isApproved2FA = await verifyTFA(TFA, user.user_id);
+        
         if (!isApproved2FA) return Response.json({ error: ['Invalid TFA code'] });
       }
 

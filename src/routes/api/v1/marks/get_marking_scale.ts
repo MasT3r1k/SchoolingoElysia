@@ -1,6 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
 import { MainConfig } from '../../../../config/main.config';
+import { PermissionService } from '../../../../functions/permission.service';
 
 const app = new Elysia()
   .get('/marks/teacher/marking_scale', async ({ cookie, query }) => {
@@ -25,6 +26,8 @@ const app = new Elysia()
       .executeTakeFirst();
 
     if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
+    const hasPerm = await PermissionService.hasPermission(auth.user_id, 'teacher');
+    
     if (auth.role == 'student') {
       const studentGroupPerm = await db.selectFrom('student_groups')
       .select([
@@ -35,7 +38,7 @@ const app = new Elysia()
       .executeTakeFirst();
       if (!studentGroupPerm) return { error: 'no_permission' };
     }
-    else if (auth.role != "teacher") return { error: 'no_permission' };
+    else if (!hasPerm) return { error: 'no_permission' };
 
     /** 1️⃣ Najdeme MS pro skupinu + předmět */
     let msg = await db

@@ -4,7 +4,16 @@ import moment from 'moment';
 import { sql } from 'kysely';
 
 const elysiaApp = new Elysia()
-  .get('/school/', async ({ school, set }: any) => {
+  .get('/school/', async ({ school, set, request }: any) => {
+    let origin = '';
+    if (request.headers.get('origin')) {
+      origin = request.headers.get('origin')!;
+    }
+    if (request.headers.get('host')) {
+      origin = request.headers.get('host')!;
+    }
+    const domain = origin.replace(/^https?:\/\//, '');
+    
     if (!school) {
         set.status = 412;
         return { error: 'School not configured' };

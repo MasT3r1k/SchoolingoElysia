@@ -3,6 +3,7 @@ import { db } from '../../../../../database';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import { MainConfig } from '../../../../config/main.config';
 import moment from 'moment';
+import { PermissionService } from '../../../../functions/permission.service';
 
 const app = new Elysia()
   .post('/marks/teacher/group', async ({ cookie, body }: any) => {
@@ -30,7 +31,11 @@ const app = new Elysia()
       .executeTakeFirst();
 
     if (!auth) return { error: 'no_user', details: 'no_db' };
-    if (auth.role != "teacher") return { error: 'no_permission' };
+
+    const hasPerm = await PermissionService.hasPermission(auth.user_id, 'teacher');
+    
+
+    if (!hasPerm) return { error: 'no_permission' };
 
     const students_ids_rows = await db
       .selectFrom('student_groups')

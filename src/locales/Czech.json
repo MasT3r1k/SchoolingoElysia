@@ -81,6 +81,7 @@
             "429": "Přiliš mnoho pokusů o přihlášení, zkuste to znova za pár minut",
             "longLoadingQR": "Načítání QR kódu trvá déle než by mělo, omlouváme se za komplikace",
             "invalid_username": "Uživatel nenalezen",
+            "user_not_active": "Uživatel nedostupný",
             "invalid_password": "Špatné heslo",
             "invalid_tfa": "Špatný kód"
         },
@@ -607,7 +608,8 @@
             "noticeboard": "Nástěnka"
         },
         "payments": {
-            "main": "Platby",
+            "main": "Školní pokladna",
+            "overview": "Přehled",
             "class_fund": "Třídní fond",
             "graduate_class_fund": "Třídní fond absolventů",
             "listing": "Zpracování výpisů",
@@ -899,6 +901,71 @@
             "anketa": "Vytvořit anketu",
             "request": "Vytvořit požadavek",
             "company": "Přidat firmu do praxí"
+        }
+    },
+    "payments": {
+        "errors": {
+            "required": "Povinné",
+            "cant_be_lower_than_0": "Nemůže být menší než 0",
+            "cant_be_zero": "Nemůže být 0",
+            "cant_be_before": "Příbliš brzo"
+        },
+        "confirm_payment": {
+            "title": "Potvrdit platbu",
+            "methods": {
+                "bank": "Platbu jsem provedl/a bankovním převodem",
+                "cash": "Platbu předám třídnímu učiteli v hotovosti",
+                "card": "Zaplatit online kartou",
+                "account": "Zaplatit přes účet"
+            }
+        },
+        "new_payment": {
+            "title": "Nový poplatek",
+            "name": "Název poplatku",
+            "description": "Popis poplatku",
+            "amount": "Vyžadovaná částka",
+            "date_due": "Datum splatnosti",
+            "button": "Nový poplatek"
+        },
+        "add_account": {
+            "title": "Přidat účet",
+            "types": {
+                "bank": "Bankovní účet",
+                "cash": "Pokladna"
+            },
+            "action": "Vytvořit nový účet"
+        },
+        "accounts": {
+            "empty_title": "Stále nemáte vytvořený účet?",
+            "empty_description": "Účet potřebujete pro správu peněz na různé akce, výlety nebo placení obědů či učebnic.",
+            "total_balance": "Celkový zůstatek na účtech",
+            "total_balance_sub": "Zahrnuje všechny bankovní účty i hotovostní pokladny",
+            "active_accounts": "Aktivní účty",
+            "active_accounts_sub": "Z toho %bank% bankovní a %cash% pokladna",
+            "add_another_account": "Přidat další účet"
+        },
+        "regular_payments": {
+            "new_payment": {
+                "title": "Nová pravidelná platba",
+                "name": "Název pravidelné platby",
+                "amount": "Vyžadovaná částka",
+                "frequency": "Frekvence",
+                "recipients": "Příjemci",
+                "button": "Nová pravidelná platba"
+            },
+            "list": {
+                "name": "Název",
+                "amount": "Částka",
+                "frequency": "Frekvence",
+                "recipients": "Příjemci",
+                "recipients_list": "%count% žáků",
+                "state": "Stav"
+            }
+        },
+        "methods": {
+            "bank": "Bankovní převod",
+            "cash": "Hotovost",
+            "card": "Platba kartou"
         }
     },
     "schedule": {
@@ -1888,7 +1955,12 @@
             "reset_password": "Obnovit heslo",
             "again_new_password": "Znova nové heslo",
             "success_changed": "Heslo bylo úspěšně změněno!",
-            "invalid_new_password": "Nemůžete zvolit tohle heslo"
+            "invalid_new_password": "Nemůžete zvolit tohle heslo",
+            "password_changed": "Heslo bylo úspěšně resetováno.",
+            "new_password_is": "Nové heslo",
+            "password_copied": "Heslo zkopírováno",
+            "copy_password": "Kopírovat",
+            "failed_to_reset": "Nepodařilo se resetovat heslo"
         },
         "language": "Jazyk",
         "languages": {

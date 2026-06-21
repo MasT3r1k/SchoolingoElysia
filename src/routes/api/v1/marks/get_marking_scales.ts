@@ -1,5 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../../../../database';
+import { PermissionService } from '../../../../functions/permission.service';
 
 const app = new Elysia()
   .get('/marks/teacher/marking_scales', async ({ cookie, query }: any) => {
@@ -20,7 +21,8 @@ const app = new Elysia()
       .executeTakeFirst();
 
     if (!auth?.person_id) return { error: 'no_user', details: 'no_db' };
-    if (auth.role != "teacher") return { error: 'no_permission' };
+    const hasPerm = await PermissionService.hasPermission(auth.user_id, 'teacher');
+    if (!hasPerm) return { error: 'no_permission' };
 
     // --- 1️⃣ Celkový počet škál učitele ---
     const total_rows_result = await db

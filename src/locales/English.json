@@ -1580,7 +1580,12 @@
             "new_password": "New password",
             "again_new_password": "New password again",
             "success_changed": "Password successfully changed!",
-            "invalid_new_password": "You cannot choose this password"
+            "invalid_new_password": "You cannot choose this password",
+            "password_changed": "Password successfully reset.",
+            "new_password_is": "New password",
+            "password_copied": "Password copied",
+            "copy_password": "Copy",
+            "failed_to_reset": "Failed to reset password"
         },
         "language": "Language",
         "languages": {

@@ -10,8 +10,7 @@ export default new Elysia({ prefix: '/api/documents' })
       const pdf = await generateDocument(body.type, body)
 
       set.headers['content-type'] = 'application/pdf'
-      set.headers['content-disposition'] =
-        'inline; filename="document.pdf"'
+      set.headers['content-disposition'] = 'inline; filename="document.pdf"'
 
       return pdf
     },

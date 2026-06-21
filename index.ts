@@ -16,6 +16,11 @@ import { getAuthUser } from './src/utils/auth';
 import { uploadAPI } from './upload';
 import { Mailer } from "./mailer.module";
 import { ldapRoutes } from './src/functions/ldap.service';
+const { domainService } = await import('./src/functions/domain.service');
+const { heartbeatService } = await import('./src/functions/heartbeat.service');
+const { db } = await import('./database');
+const { backupService } = await import('./src/functions/backup.service');
+const { updateService } = await import('./src/functions/update.service');
 
 const UPLOAD_DIR = './uploads';
 
@@ -58,7 +63,7 @@ export const app = new Elysia({
       return false;
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Domain', 'Host'],
     credentials: true,
   }))
   .use(helmet({
@@ -75,10 +80,15 @@ export const app = new Elysia({
   // Authentication & Context Derivation
   .derive(async ({ request, cookie }) => {
     // 1. Domain Resolution
-    const origin = request.headers.get('origin') || request.headers.get('host') || '';
+    let origin = '';
+    if (request.headers.get('origin')) {
+      origin = request.headers.get('origin')!;
+    }
+    if (request.headers.get('host')) {
+      origin = request.headers.get('host')!;
+    }
     const domain = origin.replace(/^https?:\/\//, '');
     
-    const { domainService } = await import('./src/functions/domain.service');
     const school = await domainService.getSchoolByDomain(domain);
 
     // 2. User Authentication
@@ -111,29 +121,34 @@ async function loadFolder(folder: string = modulePath) {
         let relativePath = fullPath.replace(modulePath, '');
         relativePath = relativePath.split(path.sep).join('/');
         
-        console.log('[🦊 Elysia]: Loading ' + file);
+        // console.log('[🦊 Elysia]: Loading ' + file);
 
-        const mod = await import(fullPath);
-        const routeApp: Elysia = mod.default;
+        try {
+          const mod = await import(fullPath);
+          const routeApp: Elysia = mod.default;
 
-        if (!routeApp || typeof routeApp !== 'object' || typeof routeApp.handle !== 'function') {
-          console.warn(`File ${file} does not export a valid Elysia instance`);
-          continue;
+          if (!routeApp || typeof routeApp !== 'object' || typeof routeApp.handle !== 'function') {
+            console.warn(`File ${file} does not export a valid Elysia instance`);
+            continue;
+          }
+
+          let prefix = "";
+          const parts = relativePath.split('/');
+          
+          if (parts.length > 2 && parts[1] === 'api') {
+            prefix = `/api/${parts[2]}`;
+          }
+          
+          const wrapper = new Elysia({ prefix })
+          .use(routeApp);
+          app.use(wrapper);
+
+          const end = Date.now();
+          console.log(`[🦊 Elysia]: Loaded ${file} at ${prefix} in ${end - start}ms`);
+        } catch(e) {
+          logger.log(`Failed loading file ${file}.`)
+          logger.log(e as string);
         }
-
-        let prefix = "";
-        const parts = relativePath.split('/');
-        
-        if (parts.length > 2 && parts[1] === 'api') {
-          prefix = `/api/${parts[2]}`;
-        }
-        
-        const wrapper = new Elysia({ prefix })
-        .use(routeApp);
-        app.use(wrapper);
-
-        const end = Date.now();
-        console.log(`[🦊 Elysia]: Loaded ${file} at ${prefix} in ${end - start}ms`);
       } else {
         await loadFolder(fullPath);
       }
@@ -173,8 +188,6 @@ async function loadFolder(folder: string = modulePath) {
 
     // Initialize Backup Scheduler
     try {
-        const { backupService } = await import('./src/functions/backup.service');
-        const { db } = await import('./database');
         const school = await db.selectFrom('schools')
             .select('backup_interval')
             .executeTakeFirst();
@@ -192,13 +205,11 @@ async function loadFolder(folder: string = modulePath) {
 
     // Initialize Update Scheduler
     try {
-        const { db } = await import('./database');
         const autoUpdate = await db.selectFrom('schools')
             .select(['auto_update', 'auto_update_interval'])
             .executeTakeFirst();
         
         if (autoUpdate && autoUpdate.auto_update) {
-            const { updateService } = await import('./src/functions/update.service');
             updateService.startScheduler(autoUpdate.auto_update_interval);
         }
     } catch (err) {
@@ -207,7 +218,6 @@ async function loadFolder(folder: string = modulePath) {
 
     // Initialize Heartbeat Service
     try {
-        const { heartbeatService } = await import('./src/functions/heartbeat.service');
         await heartbeatService.start();
 
         // Graceful shutdown

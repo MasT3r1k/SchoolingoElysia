@@ -116,7 +116,6 @@ const elysiaApp = new Elysia()
       const ipData = await getIPData(ip);
 
       const userAgent = request.headers.get("user-agent") || null;
-      console.log(ipData.ip)
 
       // 1. Check IP rate limit (Total attempts from this IP)
       const ipAttemptsCount = await db.selectFrom('login_history')
@@ -128,8 +127,6 @@ const elysiaApp = new Elysia()
         .where('created', '>', moment().subtract(SecurityConfig.IP_RATE_LIMIT_MINUTES, 'minutes').toDate())
         .executeTakeFirst();
 
-      console.log(ipAttemptsCount)
-
       if (ipAttemptsCount && Number(ipAttemptsCount.count) >= SecurityConfig.IP_RATE_LIMIT_MAX_ATTEMPTS) {
         return Response.json({ error: [`Too many attempts from this IP. Please try again in ${SecurityConfig.IP_RATE_LIMIT_MINUTES} minutes.`] }, { status: 429 });
       }
@@ -138,6 +135,7 @@ const elysiaApp = new Elysia()
         .leftJoin("persons", "persons.person_id", "users.person_id")
         .innerJoin("passwords", "passwords.password_id", 'users.password_id')
         .select([
+          'users.active',
           "users.user_id",
           "users.username",
           "users.login_type",
@@ -153,6 +151,10 @@ const elysiaApp = new Elysia()
         .where('users.school_id', '=', school.school_id)
         .limit(1)
         .executeTakeFirst()
+
+      if (!user?.active) {
+        return { error: ['User not active'] };
+      }
 
       if (!user) {
         // Record failed attempt for IP even if user doesn't exist

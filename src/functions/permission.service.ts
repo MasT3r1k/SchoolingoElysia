@@ -20,6 +20,10 @@ export class PermissionService {
       if (user.manager == -1 || user.principal == true || user.principal == 1 || user.isPrincipal == true || user.is_principal == true || user.role == 'admin_staff') {
         return true;
       }
+
+      if (user.role == permission) {
+        return true;
+      }
     }
 
     // 1. Check direct user permissions

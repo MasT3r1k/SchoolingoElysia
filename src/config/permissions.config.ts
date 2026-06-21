@@ -1,4 +1,10 @@
 export const GlobalPermissions = {
+  // roles
+  TEACHER: 'teacher',
+  ADMIN: 'admin_staff',
+  STUDENT: 'student',
+  PARENT: 'parent',
+
   // User Management
   USERS_VIEW: 'users.view',
   USERS_EDIT: 'users.edit',
@@ -62,6 +68,14 @@ export const GlobalPermissions = {
 
   // School
   SCHOOL_EDIT: 'school.edit',
+
+  // Payments
+  PAYMENTS_ADD: 'payments.add_payment',
+  PAYMENTS_OVERVIEW: 'payments.overview',
+  PAYMENTS_REGULAR_ADMIN_VIEW: 'payments.admin.view_regular_payments',
+  PAYMENTS_REGULAR_ADMIN_EDIT: 'payments.admin.edit_regular_payments',
+  PAYMENTS_REGULAR_ADMIN_CREATE: 'payments.admin.add_regular_payments',
+  PAYMENTS_REGULAR_ADMIN_DELETE: 'payments.admin.delete_regular_payments',
 
   // Traineeship
   TRAINEESHIP_REMOVE_COMPANY: 'manager:traineeship:removeCompany',
