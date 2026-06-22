@@ -908,7 +908,9 @@
             "required": "Povinné",
             "cant_be_lower_than_0": "Nemůže být menší než 0",
             "cant_be_zero": "Nemůže být 0",
-            "cant_be_before": "Příbliš brzo"
+            "cant_be_before": "Příbliš brzo",
+            "unknown_value": "Neznámá hodnota",
+            "wrong_iban": "Neplatný IBAN"
         },
         "confirm_payment": {
             "title": "Potvrdit platbu",
@@ -929,6 +931,9 @@
         },
         "add_account": {
             "title": "Přidat účet",
+            "account_name": "Název účtu",
+            "account_type": "Druh účtu",
+            "iban": "IBAN",
             "types": {
                 "bank": "Bankovní účet",
                 "cash": "Pokladna"
@@ -942,7 +947,11 @@
             "total_balance_sub": "Zahrnuje všechny bankovní účty i hotovostní pokladny",
             "active_accounts": "Aktivní účty",
             "active_accounts_sub": "Z toho %bank% bankovní a %cash% pokladna",
-            "add_another_account": "Přidat další účet"
+            "add_another_account": "Přidat další účet",
+            "account_status": {
+                "active": "Aktivní",
+                "inactive": "Deaktivovaný"
+            }
         },
         "regular_payments": {
             "new_payment": {
