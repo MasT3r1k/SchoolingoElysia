@@ -13,12 +13,12 @@ export interface PaymentsAccountsTable {
   owner_id: number; // FK do persons
   type: Generated<AccountType>;
   name: string;
-  balance: Generated<string>; // decimal se v JS/TS typicky vrací jako string kvůli přesnosti
+  balance: Generated<number>; // decimal se v JS/TS typicky vrací jako string kvůli přesnosti
   iban: string | null;
-  is_active: Generated<number>; // tinyint(1) -> 0 nebo 1
+  is_active: Generated<boolean>; // tinyint(1) -> 0 nebo 1
   created_by: number; // FK do users
   created_at: Generated<Date>;
-  deleted_at: Date | null;
+  deleted_at: Generated<Date | null>;
 }
 
 export interface PaymentsAssignedFeesTable {
@@ -137,7 +137,10 @@ export interface PaymentsTransfersTable {
   payment_log_id: Generated<number>;
   source_id: number;
   target_id: number;
-  amount: Generated<string>; // decimal
+  source_balance: Generated<number>;
+  target_balance: Generated<number>;
+  type: Generated<'in' | 'out'>;
+  amount: Generated<number>;
   description: string | null;
   created_by: number; // FK do users
   created_at: Generated<Date>;

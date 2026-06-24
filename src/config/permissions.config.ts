@@ -72,6 +72,8 @@ export const GlobalPermissions = {
   // Payments
   PAYMENTS_ADD: 'payments.add_payment',
   PAYMENTS_OVERVIEW: 'payments.overview',
+  PAYMENTS_CREATE_ACCOUNT: 'payments.create_account',
+  PAYMENTS_ADMIN_VIEW_ACCOUNT: 'payments.admin.view_account',
   PAYMENTS_REGULAR_ADMIN_VIEW: 'payments.admin.view_regular_payments',
   PAYMENTS_REGULAR_ADMIN_EDIT: 'payments.admin.edit_regular_payments',
   PAYMENTS_REGULAR_ADMIN_CREATE: 'payments.admin.add_regular_payments',

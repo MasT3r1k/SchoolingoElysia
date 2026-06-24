@@ -940,6 +940,18 @@
             },
             "action": "Vytvořit nový účet"
         },
+        "detail_account": {
+            "title": "Podrobnosti o účtě %name%",
+            "transaction_history": "Historie transakcí",
+            "account_settings": "Nastavení účtu",
+            "transfer_payment": "Přeposlat platbu",
+            "search_transfer": "Hledat podle názvu transakce",
+            "filter_type": {
+                "all": "Vše",
+                "in": "Vklady",
+                "out": "Výdaje"
+            }
+        },
         "accounts": {
             "empty_title": "Stále nemáte vytvořený účet?",
             "empty_description": "Účet potřebujete pro správu peněz na různé akce, výlety nebo placení obědů či učebnic.",
