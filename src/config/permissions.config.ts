@@ -92,7 +92,12 @@ export const GlobalPermissions = {
 
   // GDPR
   GDPR_VIEW: 'gdpr.view',
-  GDPR_MANAGE: 'gdpr.manage'
+  GDPR_MANAGE: 'gdpr.manage',
+
+  // Canteen
+  CANTEEN_VIEW: 'canteen.view',
+  CANTEEN_MANAGE: 'canteen.manage',
+  CANTEEN_ISSUE: 'canteen.issue'
 } as const;
 
 export type PermissionKey = typeof GlobalPermissions[keyof typeof GlobalPermissions];

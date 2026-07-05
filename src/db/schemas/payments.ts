@@ -21,6 +21,14 @@ export interface PaymentsAccountsTable {
   deleted_at: Generated<Date | null>;
 }
 
+export interface PaymentsAccountSettingsTable {
+  payment_account_id: number;
+  low_balance_threshold: number | null;
+  notify_every_transaction: Generated<number>; // tinyint
+  notify_monthly_summary: Generated<number>; // tinyint
+  share_with_guardians: Generated<number>; // tinyint
+}
+
 export interface PaymentsAssignedFeesTable {
   payment_assign_id: Generated<number>;
   payment_fee_id: number;
@@ -142,6 +150,7 @@ export interface PaymentsTransfersTable {
   type: Generated<'in' | 'out'>;
   amount: Generated<number>;
   description: string | null;
+  category: string | null;
   created_by: number; // FK do users
   created_at: Generated<Date>;
 }

@@ -45,10 +45,18 @@ const elysiaApp = new Elysia()
   })
   .get('/student/:id', async ({ params: { id }, query, cookie }) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
-    if (!user) return { error: 'no_permission' };
-    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW);
-    if (!perm) {
-      return { error: 'no_permission' };
+    if (!user) return { error: 'unauthorized' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW); // TEACHER PERM
+    const is_student = user.user_id === id; // IS ME
+    if (!perm && !is_student) {
+      const is_parent = await db.selectFrom('family_relations')
+      .select('family_relations.allowed_to_receive_information')
+      .where('family_relations.source_id', '=', id)
+      .where('family_relations.target_id', '=', user.person_id)
+      .executeTakeFirst()
+      if (!is_parent || !is_parent?.allowed_to_receive_information) {
+        return { error: 'no_permission' };
+      }
     }
     try {
       const time = moment(query.time);
@@ -840,11 +848,20 @@ const elysiaApp = new Elysia()
 
   .get('/student/:id/medical', async ({ cookie, params: { id } }) => {
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
-    if (!user) return;
-    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW);
-    if (!perm) {
-      return { error: 'no_permission' };
+    if (!user) return { error: 'unauthorized' };
+    const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW); // TEACHER PERM
+    const is_student = user.user_id === id; // IS ME
+    if (!perm && !is_student) {
+      const is_parent = await db.selectFrom('family_relations')
+      .select('family_relations.allowed_to_receive_information')
+      .where('family_relations.source_id', '=', id)
+      .where('family_relations.target_id', '=', user.person_id)
+      .executeTakeFirst()
+      if (!is_parent || !is_parent?.allowed_to_receive_information) {
+        return { error: 'no_permission' };
+      }
     }
+
     return await db.selectFrom('student_medical_records')
       .selectAll()
       .where('student_id', '=', id)
@@ -1759,8 +1776,8 @@ const elysiaApp = new Elysia()
 
     try {
       await db.deleteFrom('student_notes')
-        .where('note_id', '=', noteId)
-        .where('student_id', '=', id)
+        .where('note_id', '=', Number(noteId))
+        .where('student_id', '=', Number(id))
         .execute();
 
       return { success: true };

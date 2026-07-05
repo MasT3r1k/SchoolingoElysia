@@ -140,7 +140,8 @@ import { ThematicPlansTable } from './thematic_plans'
 import { ThematicPlanItemsTable } from './thematic_plan_items'
 import { UserDashboardModulesTable } from './user_dashboard_modules'
 import { educationMeasureTemplatesTable } from './education_measure_templates'
-import { PaymentsAccountsTable, PaymentsAssignedFeesTable, PaymentsAuditlogTable, PaymentsCategoriesTable, PaymentsFeesMethodTable, PaymentsFeesNotificationTable, PaymentsFeesTable, PaymentsManagersTable, PaymentsPaymentsTable, PaymentsRegularTable, PaymentsRegularUsersTable, PaymentsTransfersTable } from './payments'
+import { PaymentsAccountsTable, PaymentsAccountSettingsTable, PaymentsAssignedFeesTable, PaymentsAuditlogTable, PaymentsCategoriesTable, PaymentsFeesMethodTable, PaymentsFeesNotificationTable, PaymentsFeesTable, PaymentsManagersTable, PaymentsPaymentsTable, PaymentsRegularTable, PaymentsRegularUsersTable, PaymentsTransfersTable } from './payments'
+import { CanteenAccountsTable, CanteenMealsTable, CanteenMenusTable, CanteenOrdersTable, CanteenSettingsTable } from './canteen'
 
 export interface Database {
   absence: AbsenceTable
@@ -204,6 +205,7 @@ export interface Database {
   push_subscriptions: pushSubscriptionsTable
   passwords: passwordsTable
   payments_accounts: PaymentsAccountsTable
+  payments_account_settings: PaymentsAccountSettingsTable
   payments_assigned_fees: PaymentsAssignedFeesTable
   payments_auditlog: PaymentsAuditlogTable
   payments_categories: PaymentsCategoriesTable
@@ -315,6 +317,11 @@ export interface Database {
   thematic_plans: ThematicPlansTable
   thematic_plan_items: ThematicPlanItemsTable
   user_dashboard_modules: UserDashboardModulesTable
+  canteen_accounts: CanteenAccountsTable
+  canteen_meals: CanteenMealsTable
+  canteen_menus: CanteenMenusTable
+  canteen_orders: CanteenOrdersTable
+  canteen_settings: CanteenSettingsTable
 }
 
 
