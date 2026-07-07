@@ -2159,6 +2159,7 @@
         }
     },
     "timetable": {
+        "prev_week": "Předchozí týden",
         "this_week": "Tento týden",
         "next_week": "Příští týden",
         "actual": "Aktuální rozvrh",
@@ -3190,7 +3191,6 @@
         "title": "Jídelna",
         "subtitle": "Modul školního systému",
         "orders": "Objednávky",
-        "meals_and_menus": "Jídla & menu",
         "payment_history": "Historie plateb",
         "food_issue": "Výdej obědů",
         "settings": "Nastavení modulu",
@@ -3238,6 +3238,9 @@
         "allergens": "Alergeny (čárkami oddělená čísla)",
         "allergens_hint": "Uveďte čísla alergenů: 1 (lepek), 2 (korýši), 3 (vejce), 4 (ryby), 5 (arašídy), 6 (sójové boby), 7 (mléko), 8 (skořápkové plody), 9 (celer), 10 (hořčice), 11 (sezamová semena), 12 (osid siřičitý a siřičitany), 13 (vlčí bob), 14 (měkkýši)",
         "allergen_label": "Alergen",
+        "choose_allergen": "Vyberte alergeny, na které máte alergii. Jídla obsahující tyto alergeny budou ve výběru zřetelně označena.",
+        "change_allergens": "Změnit alergeny",
+        "save_allergens": "Uložit alergeny",
         "save_meal": "Uložit jídlo",
         "save_assign": "Uložit přiřazení",
         "assign_hint": "Přiřazujete oběd pro variantu Oběd %variant% na den %date%.",

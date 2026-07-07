@@ -476,9 +476,9 @@ const elysiaApp = new Elysia()
         result.substitution = substitution;
       }
       if (show.includes('medical')) {
-        result.medical_records = await db.selectFrom('student_medical_records')
+        result.medical_records = await db.selectFrom('medical_records')
           .selectAll()
-          .where('student_id', '=', id)
+          .where('person_id', '=', id)
           .orderBy('created_at', 'desc')
           .execute();
       }
@@ -850,7 +850,7 @@ const elysiaApp = new Elysia()
     const user = await getAuthUser(cookie?.token?.value as string, cookie);
     if (!user) return { error: 'unauthorized' };
     const perm = await PermissionService.hasPermission(user.user_id, GlobalPermissions.STUDENT_VIEW); // TEACHER PERM
-    const is_student = user.user_id === id; // IS ME
+    const is_student = user.person_id === id; // IS ME
     if (!perm && !is_student) {
       const is_parent = await db.selectFrom('family_relations')
       .select('family_relations.allowed_to_receive_information')
@@ -862,9 +862,9 @@ const elysiaApp = new Elysia()
       }
     }
 
-    return await db.selectFrom('student_medical_records')
+    return await db.selectFrom('medical_records')
       .selectAll()
-      .where('student_id', '=', id)
+      .where('person_id', '=', id)
       .orderBy('created_at', 'desc')
       .execute();
   }, {
@@ -881,9 +881,9 @@ const elysiaApp = new Elysia()
       return { error: 'no_permission' };
     }
     try {
-      const result = await db.insertInto('student_medical_records')
+      const result = await db.insertInto('medical_records')
         .values({
-          student_id: id,
+          person_id: id,
           type: body.type,
           title: body.title,
           description: body.description || null,
@@ -921,7 +921,7 @@ const elysiaApp = new Elysia()
       return { error: 'no_permission' };
     }
     try {
-      await db.updateTable('student_medical_records')
+      await db.updateTable('medical_records')
         .set({
           type: body.type,
           title: body.title,
@@ -932,7 +932,7 @@ const elysiaApp = new Elysia()
 
         })
         .where('record_id', '=', recordId)
-        .where('student_id', '=', id)
+        .where('person_id', '=', id)
         .execute();
 
       return { success: true };
@@ -963,9 +963,9 @@ const elysiaApp = new Elysia()
       return { error: 'no_permission' };
     }
     try {
-      await db.deleteFrom('student_medical_records')
+      await db.deleteFrom('medical_records')
         .where('record_id', '=', recordId)
-        .where('student_id', '=', id)
+        .where('person_id', '=', id)
         .execute();
 
       return { success: true };

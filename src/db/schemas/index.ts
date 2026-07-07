@@ -108,7 +108,7 @@ import { SupervisionPlacesTable } from './supervision_places'
 import { InventoryTable } from './inventory'
 import { InventoryLogsTable } from './inventory_logs'
 import { SystemHeartbeatsTable } from './system_heartbeats'
-import { StudentMedicalRecordsTable } from './student_medical_records'
+import { MedicalRecordsTable } from './medical_records'
 import { PermissionsTable } from './permissions'
 import { RolesTable } from './roles'
 import { RolePermissionsTable } from './role_permissions'
@@ -279,7 +279,6 @@ export interface Database {
   inventory: InventoryTable
   inventory_logs: InventoryLogsTable
   system_heartbeats: SystemHeartbeatsTable
-  student_medical_records: StudentMedicalRecordsTable
   permissions: PermissionsTable
   roles: RolesTable
   role_permissions: RolePermissionsTable
@@ -300,6 +299,7 @@ export interface Database {
   gdpr_reports: GdprReportsTable
   gdpr_reviews: GdprReviewsTable
   report_cards: ReportCardsTable
+  medical_records: MedicalRecordsTable
   message_recipient_groups: MessageRecipientGroupTable
   message_recipient_group_members: MessageRecipientGroupMemberTable
   avatar_history: AvatarHistoryTable

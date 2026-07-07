@@ -61,6 +61,64 @@ const app = new Elysia()
     })
 
     // ═══════════════════════════════════════════════════════════════════════
+    // ALLERGENS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    .get('/canteen/allergens', async({ cookie }) => {
+        const auth = await getAuthUser(cookie.token?.value as string, cookie);
+        if (!auth) return Response.json({ error: 'unauthorized' }, { status: 401 });
+
+        const allergens = await db.selectFrom('medical_records')
+        .select([
+            'allergen_codes',
+        ])
+        .where('person_id', '=', auth.person_id)
+        .where('is_food_allergy', '=', true)
+        .execute()
+
+        let allergenList: string[] = [];
+
+        Object.values(allergens).forEach((allergen) => {
+            allergenList.push(...allergen.allergen_codes!.split(','))
+        })
+
+        return allergenList;
+    })
+
+    .post('/canteen/allergens', async({ cookie, body }) => {
+        const auth = await getAuthUser(cookie.token?.value as string, cookie);
+        if (!auth) return Response.json({ error: 'unauthorized' }, { status: 401 });
+
+        if (!auth.person_id || auth.person_id == null) return { error: 'failed_to_get_person_id' }
+
+        if (!body.allergen) {
+            return { error: 'Missing allergen body' }
+        }
+
+        const transaction = await db.transaction().execute(async (trx) => {
+            // Remove allergens
+            const allergens = trx.deleteFrom('medical_records')
+            .where('person_id', '=', auth.person_id)
+            .where('is_food_allergy', '=', true)
+            .executeTakeFirstOrThrow()
+
+            // Add new allergens
+            return await trx.insertInto('medical_records')
+            .values({
+                person_id: auth.person_id!,
+                is_food_allergy: true,
+                allergen_codes: body.allergen.join(',')
+            })
+            .returningAll()
+            .executeTakeFirst()
+        })
+
+        return { success: true }
+    }, { body: t.Object({
+        allergen: t.Array(t.String())
+    }) })
+
+    // ═══════════════════════════════════════════════════════════════════════
     // MEALS (Jídla v katalogu)
     // ═══════════════════════════════════════════════════════════════════════
 
@@ -181,7 +239,7 @@ const app = new Elysia()
         const auth = await getAuthUser(cookie.token?.value as string, cookie);
         if (!auth || !auth.person_id) return Response.json({ error: 'unauthorized' }, { status: 401 });
 
-        const { selections, account_id } = body as any;
+        const { selections } = body as any;
 
         const dates = selections.map((s: any) => s.date);
         
@@ -206,42 +264,6 @@ const app = new Elysia()
             }
         }
 
-        // Kontrola zůstatku
-        if (totalCost > 0) {
-            if (!account_id) return Response.json({ error: 'no_account' }, { status: 400 });
-
-            const acc = await db.selectFrom('payments_accounts')
-                .select(['payment_account_id', 'balance', 'owner_id', 'is_active'])
-                .where('payment_account_id', '=', parseInt(account_id))
-                .executeTakeFirst();
-
-            if (!acc || !acc.is_active || acc.owner_id !== auth.person_id) return Response.json({ error: 'invalid_account' }, { status: 400 });
-            
-            const currentBalance = parseFloat(acc.balance as any) || 0;
-            if (currentBalance < totalCost) return Response.json({ error: 'insufficient_funds' }, { status: 400 });
-
-            // Stržení peněz
-            const newBalance = currentBalance - totalCost;
-            await db.updateTable('payments_accounts')
-                .set({ balance: newBalance })
-                .where('payment_account_id', '=', parseInt(account_id))
-                .execute();
-
-            await db.insertInto('payments_transfers')
-                .values({
-                    source_id: parseInt(account_id),
-                    target_id: 0,
-                    source_balance: newBalance,
-                    target_balance: 0,
-                    type: 'out',
-                    amount: totalCost,
-                    description: `Objednávka obědů (${mealsToOrder.length} porcí)`,
-                    created_by: auth.user_id,
-                })
-                .execute();
-        }
-
-        // Zrušíme případné předchozí objednávky v těchto dnech
         for (const date of dates) {
             await db.updateTable('canteen_orders')
                 .set({ status: 'cancelled', cancelled_at: moment().toDate() })
@@ -269,8 +291,7 @@ const app = new Elysia()
             selections: t.Array(t.Object({
                 date: t.String(),
                 menu_id: t.Nullable(t.Number())
-            })),
-            account_id: t.Optional(t.Nullable(t.Union([t.Number(), t.String()])))
+            }))
         })
     })
 
@@ -520,6 +541,8 @@ const app = new Elysia()
             dates.push(moment(start_date).add(i, 'days').format('YYYY-MM-DD'));
         }
 
+        const usedMealsOnDay = Array.from({ length: daysToGenerate }, () => new Set<number>());
+
         // Helper to find a combination of 5 meals with calorie limit
         const findCombination = (availableMeals: typeof meals, limitKcal: number): typeof meals | null => {
             let bestCombination: typeof meals | null = null;
@@ -590,10 +613,53 @@ const app = new Elysia()
                 }
             }
 
+            // --- REORDER TO AVOID CONFLICTS ON SAME DAY ---
+            let bestArrangement = [...chosenMeals];
+            let minConflicts = Infinity;
+
+            const evaluate = (arr: any[]) => {
+                let conflicts = 0;
+                for (let i = 0; i < daysToGenerate; i++) {
+                    if (usedMealsOnDay[i].has(arr[i].meal_id)) {
+                        conflicts++;
+                    }
+                }
+                if (conflicts < minConflicts) {
+                    minConflicts = conflicts;
+                    bestArrangement = [...arr];
+                }
+            };
+
+            // 1. Try rotations
+            for (let r = 0; r < chosenMeals.length; r++) {
+                const rotated = [];
+                for (let i = 0; i < chosenMeals.length; i++) {
+                    rotated.push(chosenMeals[(i + r) % chosenMeals.length]);
+                }
+                evaluate(rotated);
+                if (minConflicts === 0) break;
+            }
+
+            // 2. Try random shuffles if conflicts > 0
+            if (minConflicts > 0) {
+                for (let attempt = 0; attempt < 50; attempt++) {
+                    const shuffled = [...chosenMeals];
+                    for (let i = shuffled.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                    }
+                    evaluate(shuffled);
+                    if (minConflicts === 0) break;
+                }
+            }
+
+            chosenMeals = bestArrangement;
+
             // Save to DB and add to selected list
             for (let i = 0; i < daysToGenerate; i++) {
                 const meal = chosenMeals[i];
                 selectedMealIdsSet.add(meal.meal_id);
+                usedMealsOnDay[i].add(meal.meal_id);
 
                 await db.insertInto('canteen_menus')
                     .values({
