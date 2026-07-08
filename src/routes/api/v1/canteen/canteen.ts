@@ -4,6 +4,8 @@ import moment from 'moment';
 import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
 import { getAuthUser } from '../../../../utils/auth';
+import { notificationService } from '../../../../functions/notification.service';
+import { CanteenService } from '../../../../functions/canteen.service';
 
 async function getSetting(key: string, defaultValue: string = ''): Promise<string> {
     const res = await db.selectFrom('canteen_settings')
@@ -22,42 +24,88 @@ const app = new Elysia()
     .get('/canteen/credit', async ({ cookie }) => {
         const auth = await getAuthUser(cookie.token?.value as string, cookie);
         if (!auth) return Response.json({ error: 'unauthorized' }, { status: 401 });
+        if (!auth.person_id) return Response.json({ credit: 0, account_id: null });
 
-        const canteen_account = await db.selectFrom('canteen_accounts')
-        .select(['canteen_accounts.account_id'])
-        .where('canteen_accounts.person_id', '=', auth.person_id)
-        .executeTakeFirst()
+        const creditData = await CanteenService.getCredit(auth.person_id);
+        
+        return creditData;
+    })
 
-        const accounts = await db.selectFrom('payments_accounts')
-            .select(['payment_account_id', 'balance'])
+    .post('/canteen/account', async ({ cookie, body }) => {
+        const auth = await getAuthUser(cookie.token?.value as string, cookie);
+        if (!auth) return Response.json({ error: 'unauthorized' }, { status: 401 });
+        if (!auth.person_id) return Response.json({ error: 'no_person' }, { status: 400 });
+
+        const { account_id } = body as { account_id: number };
+        if (!account_id) return Response.json({ error: 'missing_account_id' }, { status: 400 });
+
+        // Verify account belongs to user
+        const account = await db.selectFrom('payments_accounts')
+            .select('payment_account_id')
+            .where('payment_account_id', '=', account_id)
+            .where('owner_id', '=', auth.person_id)
+            .executeTakeFirst();
+            
+        if (!account) return Response.json({ error: 'invalid_account' }, { status: 403 });
+
+        const existing = await db.selectFrom('canteen_accounts')
+            .select('canteen_account_id')
+            .where('person_id', '=', auth.person_id)
+            .executeTakeFirst();
+
+        if (existing) {
+            await db.updateTable('canteen_accounts')
+                .set({ account_id })
+                .where('canteen_account_id', '=', existing.canteen_account_id)
+                .execute();
+        } else {
+            await db.insertInto('canteen_accounts')
+                .values({ person_id: auth.person_id, account_id })
+                .execute();
+        }
+
+        return { success: true };
+    })
+
+    .get('/canteen/history', async ({ cookie }) => {
+        const auth = await getAuthUser(cookie.token?.value as string, cookie);
+        if (!auth || !auth.person_id) return Response.json({ error: 'unauthorized' }, { status: 401 });
+
+        // Get user's active canteen accounts
+        const creditData = await CanteenService.getCredit(auth.person_id);
+        const accountIds = Array.isArray(creditData.account_id) ? creditData.account_id : [creditData.account_id];
+        
+        if (!accountIds.length || !accountIds[0]) {
+            return Response.json([]);
+        }
+
+        const transfers = await db.selectFrom('payments_transfers')
+            .selectAll()
             .where((eb) => eb.or([
-                eb('owner_id', '=', auth.person_id),
-                eb('payment_account_id', '=', canteen_account?.account_id ?? 0)
+                eb('source_id', 'in', accountIds),
+                eb('target_id', 'in', accountIds)
             ]))
-            .where('is_active', '=', true)
-            .execute()
+            .where('category', '=', 'canteen')
+            .orderBy('created_at', 'desc')
+            .limit(50)
+            .execute();
 
-        let account = null;
-        if (canteen_account) {
-            account = accounts.find((acc) => acc.payment_account_id == canteen_account?.account_id)
-        }
+        const history = transfers.map(t => {
+            const isSource = accountIds.includes(t.source_id);
+            const type = isSource ? 'payment' : 'refund';
+            const amountStr = isSource ? `-${t.amount}` : `+${t.amount}`;
+            
+            return {
+                date: moment(t.created_at).format('YYYY-MM-DDTHH:mm:ssZ'),
+                desc: t.description || (isSource ? 'Platba za oběd' : 'Refundace oběda'),
+                type,
+                amount: parseFloat(amountStr),
+                status: 'paid', // For transfers it's usually complete
+                doc: false
+            };
+        });
 
-        if (!accounts.length) {
-            return { credit: 0, account_id: [] }
-        }
-
-        const credit = Number(
-            canteen_account
-                ? account?.balance
-                : accounts.reduce((sum, d) => sum + (d.balance || 0), 0)
-            )
-
-        const account_id = canteen_account ? canteen_account.account_id : accounts.map((acc) => (acc.payment_account_id))
-
-        return { 
-            credit,
-            account_id
-        }
+        return Response.json(history);
     })
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -229,6 +277,23 @@ const app = new Elysia()
             menu: menuItemsMapped,
             orders: orders
         });
+    })
+    .get('/canteen/menu/:menu_id/users', async ({ cookie, params }) => {
+        const auth = await getAuthUser(cookie.token?.value as string, cookie);
+        if (!auth) return Response.json({ error: 'unauthorized' }, { status: 401 });
+        
+        const perm = await PermissionService.hasPermission(auth.user_id, GlobalPermissions.CANTEEN_MANAGE);
+        if (!perm && !auth.is_principal) return Response.json({ error: 'unauthorized_canteen' }, { status: 403 });
+
+        const users = await db.selectFrom('canteen_orders')
+            .innerJoin('users', 'users.person_id', 'canteen_orders.person_id')
+            .innerJoin('persons', 'persons.person_id', 'users.person_id')
+            .select(['users.user_id', 'persons.first_name', 'persons.last_name'])
+            .where('canteen_orders.menu_id', '=', parseInt(params.menu_id))
+            .where('canteen_orders.status', '!=', 'cancelled')
+            .execute();
+
+        return Response.json(users);
     })
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -403,10 +468,8 @@ const app = new Elysia()
         const perm = await PermissionService.hasPermission(auth.user_id, GlobalPermissions.CANTEEN_ISSUE);
         if (!perm && !auth.is_principal) return Response.json({ error: 'unauthorized_canteen' }, { status: 403 });
 
-        await db.updateTable('canteen_orders')
-            .set({ status: 'issued', issued_at: moment().toDate() })
-            .where('order_id', '=', parseInt(params.order_id))
-            .execute();
+        const res = await CanteenService.issueMeal(parseInt(params.order_id), auth.user_id);
+        if (!res.success) return Response.json(res, { status: 400 });
 
         return Response.json({ success: true });
     })
@@ -423,12 +486,13 @@ const app = new Elysia()
             return Response.json({ success: true });
         }
 
-        await db.updateTable('canteen_orders')
-            .set({ status: 'issued', issued_at: moment().toDate() })
-            .where('order_id', 'in', b.order_ids)
-            .execute();
+        const results = [];
+        for (const order_id of b.order_ids) {
+            const res = await CanteenService.issueMeal(order_id, auth.user_id);
+            results.push({ order_id, ...res });
+        }
 
-        return Response.json({ success: true });
+        return Response.json({ success: true, results });
     }, {
         body: t.Object({
             order_ids: t.Array(t.Number())
@@ -488,22 +552,61 @@ const app = new Elysia()
         const perm = await PermissionService.hasPermission(auth.user_id, GlobalPermissions.CANTEEN_MANAGE);
         if (!perm && !auth.is_principal) return Response.json({ error: 'unauthorized_canteen' }, { status: 403 });
 
-        const { date, variant_index, meal_id } = body as any;
+        const { date, variant_index, meal_id, limit_count } = body as any;
 
-        // Delete existing variant on this date
-        await db.deleteFrom('canteen_menus')
+        // Find existing menu to see if it exists
+        const existing = await db.selectFrom('canteen_menus')
             .where('date', '=', date)
             .where('variant_index', '=', parseInt(variant_index))
-            .execute();
+            .select(['menu_id', 'meal_id'])
+            .executeTakeFirst();
 
         if (meal_id) {
-            await db.insertInto('canteen_menus')
-                .values({
-                    date: date,
-                    variant_index: parseInt(variant_index),
-                    meal_id: parseInt(meal_id),
-                    created_by: auth.user_id
-                })
+            if (existing) {
+                // Update
+                await db.updateTable('canteen_menus')
+                    .set({
+                        meal_id: parseInt(meal_id),
+                        limit_count: limit_count !== undefined ? limit_count : null
+                    })
+                    .where('menu_id', '=', existing.menu_id)
+                    .execute();
+
+                if (existing.meal_id !== parseInt(meal_id)) {
+                    // Send notification to users
+                    const users = await db.selectFrom('canteen_orders')
+                        .innerJoin('users', 'users.person_id', 'canteen_orders.person_id')
+                        .innerJoin('persons', 'persons.person_id', 'users.person_id')
+                        .select(['users.user_id', 'users.username'])
+                        .where('canteen_orders.menu_id', '=', existing.menu_id)
+                        .where('canteen_orders.status', '!=', 'cancelled')
+                        .execute();
+
+                    const newMeal = await db.selectFrom('canteen_meals').select('name').where('meal_id', '=', parseInt(meal_id)).executeTakeFirst();
+
+                    for (const u of users) {
+                        await notificationService.notify('canteen_meal_changed', u.user_id, {
+                            date: date,
+                            dateFormatted: moment(date).format('DD.MM.YYYY'),
+                            newMealName: newMeal?.name || 'Neznámé jídlo'
+                        });
+                    }
+                }
+            } else {
+                // Insert
+                await db.insertInto('canteen_menus')
+                    .values({
+                        date: date,
+                        variant_index: parseInt(variant_index),
+                        meal_id: parseInt(meal_id),
+                        limit_count: limit_count !== undefined ? limit_count : null,
+                        created_by: auth.user_id
+                    })
+                    .execute();
+            }
+        } else if (existing) {
+            await db.deleteFrom('canteen_menus')
+                .where('menu_id', '=', existing.menu_id)
                 .execute();
         }
 
@@ -512,7 +615,8 @@ const app = new Elysia()
         body: t.Object({
             date: t.String(),
             variant_index: t.Number(),
-            meal_id: t.Nullable(t.Number())
+            meal_id: t.Nullable(t.Number()),
+            limit_count: t.Optional(t.Nullable(t.Number()))
         })
     })
 
@@ -784,7 +888,8 @@ const app = new Elysia()
             'canteen_flat_price_enabled',
             'canteen_flat_price',
             'canteen_payment_account',
-            'canteen_auto_refund'
+            'canteen_auto_refund',
+            'canteen_overdraft_limit'
         ];
 
         await db.deleteFrom('canteen_settings')

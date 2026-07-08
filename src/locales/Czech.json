@@ -83,7 +83,8 @@
             "invalid_username": "Uživatel nenalezen",
             "user_not_active": "Uživatel nedostupný",
             "invalid_password": "Špatné heslo",
-            "invalid_tfa": "Špatný kód"
+            "invalid_tfa": "Špatný kód",
+            "timeout": "Přihlášení trvá příliš dlouho. Zkuste to prosím znovu později."
         },
         "expired_password": {
             "title": "Změna hesla",
@@ -3311,6 +3312,11 @@
         "status_no_order_long": "Nemá zvolený žádný oběd",
 
         "btn_issue": "Vydat",
+        "issue_all_filtered": "Vydat zobrazené",
+        "filter_all": "Vše",
+        "filter_ordered": "Čekající",
+        "filter_issued": "Vydáno",
+        "filter_cancelled": "Zrušeno",
         "search_student": "Vyhledat studenta",
         "search_student_placeholder": "Jméno studenta...",
         "already_issued": "Uživatel si již tento oběd vyzvedl.",

@@ -3,19 +3,30 @@ import { db } from '../../database';
 import webpush from 'web-push';
 import { MainConfig } from '../config/main.config';
 
+import moment from 'moment';
+import { Mailer } from '../../mailer.module';
+
 // Notification types
 export type NotificationType = 
     | 'new_grade'
+    | 'grade_new'
     | 'new_homework'
+    | 'homework_new'
     | 'new_message'
+    | 'message_new'
     | 'new_absence'
+    | 'absence_new'
     | 'new_login'
     | 'new_substitution'
+    | 'substitution_new'
     | 'new_reward'
+    | 'reward_new'
     | 'announcement'
     | 'leave_reaction'
     | 'leave_request'
-    | 'leave_balance_low';
+    | 'leave_balance_low'
+    | 'canteen_meal_changed'
+    | 'canteen_balance_negative';
 
 export interface NotificationPayload {
     type: string;
@@ -24,6 +35,12 @@ export interface NotificationPayload {
     data?: Record<string, any>;
     url?: string;
     icon?: string;
+    email?: {
+        template?: string;
+        subject: string;
+        text?: string;
+        data?: Record<string, string | number>;
+    };
 }
 
 // Configure web-push (you need to generate VAPID keys)
@@ -70,7 +87,12 @@ class NotificationService {
             await this.sendPushNotification(user_id, notification);
         }
 
-        // 4. Store notification in database for notification center
+        // 4. Send email notification if specified
+        if (notification.email) {
+            await this.sendEmailNotification(user_id, notification.email);
+        }
+
+        // 5. Store notification in database for notification center
         await this.storeNotification(user_id, notification);
     }
 
@@ -92,217 +114,101 @@ class NotificationService {
     }
 
     /**
-     * Send a notification by type (Generic entry point)
+     * Unified notification sender
      */
-    async sendNotification(type: string, user_id: number, data: any): Promise<void> {
+    async notify(type: NotificationType, target: number | number[], data?: any): Promise<void> {
+        const userIds = Array.isArray(target) ? target : [target];
+        if (userIds.length === 0) return;
+
         let payload: NotificationPayload | null = null;
 
         switch (type) {
             case 'new_grade':
             case 'grade_new':
-                payload = {
-                    type,
-                    data: data,
-                    url: '/marks/interm',
-                    icon: 'star'
-                };
+                payload = { type, data, url: '/marks/interm', icon: 'star' };
                 break;
             case 'new_homework':
             case 'homework_new':
-                payload = {
-                    type,
-                    data: data,
-                    url: '/teach/homeworks',
-                    icon: 'book-2'
-                };
+                payload = { type, data, url: '/teach/homeworks', icon: 'book-2' };
                 break;
             case 'new_message':
             case 'message_new':
-                payload = {
-                    type,
-                    data: data,
-                    url: `/messages/received?id=${data.messageId}`,
-                    icon: 'message'
-                };
+                payload = { type, data, url: `/messages/received?id=${data?.messageId}`, icon: 'message' };
                 break;
             case 'new_absence':
             case 'absence_new':
-                payload = {
-                    type,
-                    data: data,
-                    url: '/teach/absence',
-                    icon: 'calendar-x'
-                };
+                payload = { type, data, url: '/teach/absence', icon: 'calendar-x' };
                 break;
             case 'new_substitution':
             case 'substitution_new':
-                payload = {
-                    type,
-                    data: data,
-                    url: '/teach/timetable',
-                    icon: 'calendar-event'
-                };
+                payload = { type, data, url: '/teach/timetable', icon: 'calendar-event' };
                 break;
             case 'new_reward':
             case 'reward_new':
-                payload = {
-                    type,
-                    data: data,
-                    url: '/teach/rewards',
-                    icon: 'trophy'
-                };
+                payload = { type, data, url: '/teach/rewards', icon: 'trophy' };
                 break;
             case 'leave_reaction':
-                payload = {
-                    type,
-                    data: data,
-                    url: '/teach/leave',
-                    icon: data.status === 'approved' ? 'check' : 'x'
-                };
+                payload = { type, data, url: '/teach/leave', icon: data?.status === 'approved' ? 'check' : 'x' };
                 break;
             case 'leave_request':
-                payload = {
-                    type,
-                    data: data,
-                    url: `/system/employees/vacations?id=${data.requestId}`,
-                    icon: 'file-text'
-                };
+                payload = { type, data, url: `/system/employees/vacations?id=${data?.requestId}`, icon: 'file-text' };
                 break;
             case 'leave_balance_low':
-                payload = {
-                    type,
-                    data: data,
-                    url: '/teach/leave',
-                    icon: 'alert-triangle'
-                };
+                payload = { type, data, url: '/teach/leave', icon: 'alert-triangle' };
                 break;
             case 'announcement':
+                payload = { type, data, url: data?.url, icon: 'bullhorn' };
+                break;
+            case 'new_login':
                 payload = {
                     type,
-                    data: data,
-                    url: data.url,
-                    icon: 'bullhorn'
+                    title: 'Nové přihlášení',
+                    body: `Nové přihlášení z neznámého zařízení: ${data?.city ? data.city + ', ' : ''}${data?.country || 'Neznámé místo'}`,
+                    data: {
+                        id: data?.id,
+                        city: data?.city,
+                        ip: data?.ip,
+                        country: data?.country,
+                        country_code: data?.country_code
+                    },
+                    icon: 'shield',
+                    email: {
+                        template: 'new_login.html',
+                        subject: 'Nové přihlášení z neznámého zařízení',
+                        data: {
+                            location: `${data?.city || 'Neznámé místo'}, ${data?.country || ''}`,
+                            security_url: "https://localhost:4200", // TODO: Config
+                            device: data?.device,
+                            ip: data?.ip,
+                            time: data?.time
+                        }
+                    }
+                };
+                break;
+            case 'canteen_meal_changed':
+                payload = {
+                    type,
+                    title: 'Změna jídla',
+                    body: `Vaše jídlo na den ${data?.dateFormatted} bylo změněno na: ${data?.newMealName}`,
+                    data: {
+                        date: data?.date,
+                        newMealName: data?.newMealName
+                    },
+                    icon: 'soup',
+                    url: '/canteen/meals',
+                    email: {
+                        subject: 'Změna jídla ve školní jídelně',
+                        text: `Dobrý den,\nVaše jídlo na den ${data?.dateFormatted} bylo změněno na: ${data?.newMealName}.\n\nDěkujeme,\nSchoolingo`
+                    }
                 };
                 break;
             default:
-                payload = {
-                    type,
-                    data: data
-                }
+                payload = { type, data };
         }
 
         if (payload) {
-            await this.sendToUser(user_id, payload);
+            await Promise.all(userIds.map(userId => this.sendToUser(userId, payload!)));
         }
-    }
-
-    /**
-     * Send notification when a new grade is added
-     */
-    async notifyNewGrade(studentuser_id: number, data: {
-        subject: string;
-        grade: string;
-        weight: number;
-        topic?: string;
-        teacherName: string;
-    }): Promise<void> {
-        await this.sendNotification('new_grade', studentuser_id, data);
-    }
-
-    /**
-     * Send notification when homework is assigned
-     */
-    async notifyNewHomework(studentUserIds: number[], data: {
-        subject: string;
-        title: string;
-        dueDate: Date;
-        teacherName: string;
-    }): Promise<void> {
-        await Promise.all(studentUserIds.map(userId => this.sendNotification('new_homework', userId, data)));
-    }
-
-    /**
-     * Send notification for new message
-     */
-    async notifyNewMessage(recipientuser_id: number, data: {
-        senderName: string;
-        subject: string;
-        preview?: string;
-        messageId: number;
-    }): Promise<void> {
-        await this.sendNotification('new_message', recipientuser_id, data);
-    }
-
-    /**
-     * Send notification for absence
-     */
-    async notifyAbsence(studentuser_id: number, parentUserIds: number[], data: {
-        date: Date;
-        hours: number;
-        type: 'unexcused' | 'excused' | 'late';
-    }): Promise<void> {
-        const enrichedData = { ...data, absenceType: data.type };
-        await this.sendNotification('new_absence', studentuser_id, enrichedData);
-        await Promise.all(parentUserIds.map(userId => this.sendNotification('new_absence', userId, enrichedData)));
-    }
-
-    /**
-     * Send notification for schedule change
-     */
-    async notifyScheduleChange(userIds: number[], data: {
-        date: Date;
-        originalSubject?: string;
-        newSubject?: string;
-        changeType: 'cancelled' | 'substitution' | 'room_change';
-        description?: string;
-    }): Promise<void> {
-        await Promise.all(userIds.map(userId => this.sendNotification('new_substitution', userId, data)));
-    }
-
-    /**
-     * Send notification for new reward
-     */
-    async notifyNewReward(studentuser_id: number, data: {
-        title: string;
-        type: 'financial' | 'certificate' | 'prize' | 'other';
-        amount?: number;
-    }): Promise<void> {
-        await this.sendNotification('new_reward', studentuser_id, data);
-    }
-
-    /**
-     * Send notification for leave reaction (approval/rejection)
-     */
-    async notifyLeaveReaction(teacheruser_id: number, data: {
-        status: 'approved' | 'rejected';
-        startDate: Date;
-        endDate: Date;
-        approverName: string;
-        comment?: string;
-    }): Promise<void> {
-        await this.sendNotification('leave_reaction', teacheruser_id, data);
-    }
-
-    /**
-     * Send notification for new leave request to HR/Managers
-     */
-    async notifyNewLeaveRequest(recipientUserIds: number[], data: {
-        employeeName: string;
-        startDate: Date;
-        endDate: Date;
-        requestId: number;
-    }): Promise<void> {
-        await Promise.all(recipientUserIds.map(userId => this.sendNotification('leave_request', userId, data)));
-    }
-
-    /**
-     * Send notification for low vacation balance
-     */
-    async notifyLowLeaveBalance(user_id: number, data: {
-        balance: number;
-        threshold: number;
-    }): Promise<void> {
-        await this.sendNotification('leave_balance_low', user_id, data);
     }
 
     /**
@@ -351,6 +257,46 @@ class NotificationService {
             }
         } catch (err) {
             console.error('[Push] Failed to send push notification:', err);
+        }
+    }
+
+    /**
+     * Send email notification
+     */
+    private async sendEmailNotification(user_id: number, emailPayload: NonNullable<NotificationPayload['email']>): Promise<void> {
+        try {
+            const user = await db
+                .selectFrom('users')
+                .select('person_id')
+                .where('user_id', '=', user_id)
+                .executeTakeFirst();
+            
+            if (!user?.person_id) return;
+
+            const emails = await db
+                .selectFrom('emails')
+                .select('email')
+                .where('person_id', '=', user.person_id)
+                .where('is_verified', '=', true)
+                .execute();
+
+            for (const record of emails) {
+                if (emailPayload.template) {
+                    await Mailer.sendFromTemplate(emailPayload.template, {
+                        to: record.email,
+                        subject: emailPayload.subject,
+                        data: emailPayload.data
+                    });
+                } else if (emailPayload.text) {
+                    await Mailer.send({
+                        to: record.email,
+                        subject: emailPayload.subject,
+                        text: emailPayload.text
+                    });
+                }
+            }
+        } catch (err) {
+            console.error('[Email] Failed to send email notification:', err);
         }
     }
 

@@ -9,6 +9,7 @@ import { SecurityConfig } from '../../config/security.config';
 import { Mailer } from '../../../mailer.module';
 import { Utils } from '../../utils/utils';
 import { ldapLogin, parseLdapError, ldapChangePassword } from '../../functions/ldap.service';
+import { notificationService } from '../../functions/notification.service';
 
 export async function authenticateUser(user_id: number, cookie: any, userAgent: string | null, ip: string | null) {
   try {
@@ -297,50 +298,15 @@ const elysiaApp = new Elysia()
           .executeTakeFirst();
 
         if (!checkIP) {
-          await db.insertInto("notifications")
-          .values({
-            user_id: user.user_id,
-            type: 'new_login',
-            data: JSON.stringify({
-              id: Number(loginHistory.insertId),
-              city: ipData?.city ?? null,
-              ip: ipData.ip,
-              country: ipData?.country ?? null,
-              country_code: ipData?.country_code ?? null,
-            })
-          })
-          .execute();
-
-          const emails = await db.selectFrom('emails')
-          .select([
-            'emails.email'
-          ])
-          .where('emails.person_id', '=', user.person_id)
-          .where('emails.is_verified', '=', true)
-          .execute();
-
-          // Email notification is optional - don't fail login if email fails
-          for(const email of emails) {
-            try {
-              await Mailer.sendFromTemplate(
-                "new_login.html",
-                {
-                  to: email.email,
-                  subject: "Nové přihlášení z neznámého zařízení",
-                  data: {
-                    location: `${ipData?.city}, ${ipData?.country}`,
-                    security_url: "https://localhost:4200",
-                    device: `${Utils.getBrowser(userAgent)}, ${Utils.getOS(userAgent)}`,
-                    ip: ipData.ip ?? ip,
-                    time: moment().format('DD. MM. YYYY HH:mm')
-                  }
-                }
-              );
-            } catch (mailError) {
-              // Log but don't fail the login if email sending fails
-              console.warn('[Login] Failed to send new login email notification:', mailError instanceof Error ? mailError.message : 'Unknown error');
-            }
-          }
+          await notificationService.notify('new_login', user.user_id, {
+            id: Number(loginHistory.insertId),
+            city: ipData?.city ?? null,
+            ip: ipData?.ip ?? ip ?? 'Neznámá IP',
+            country: ipData?.country ?? null,
+            country_code: ipData?.country_code ?? null,
+            device: `${Utils.getBrowser(userAgent)}, ${Utils.getOS(userAgent)}`,
+            time: moment().format('DD. MM. YYYY HH:mm')
+          });
         }
 
 

@@ -21,6 +21,7 @@ const { heartbeatService } = await import('./src/functions/heartbeat.service');
 const { db } = await import('./database');
 const { backupService } = await import('./src/functions/backup.service');
 const { updateService } = await import('./src/functions/update.service');
+import { canteenCron } from './src/crons/canteen.cron';
 
 const UPLOAD_DIR = './uploads';
 
@@ -103,7 +104,8 @@ export const app = new Elysia({
   })
   
   .use(ws)
-  .use(locales);
+  .use(locales)
+  .use(canteenCron);
 
 // Routing Automation
 const modulePath: string = path.join(__dirname, '/src/routes');

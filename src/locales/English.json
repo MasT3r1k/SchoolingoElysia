@@ -86,7 +86,8 @@
             "longLoadingQR": "Loading the QR code is taking longer than expecting, we apologize for the inconvenience",
             "invalid_username": "User not found",
             "invalid_password": "Incorrect password",
-            "invalid_tfa": "Incorrect code"
+            "invalid_tfa": "Incorrect code",
+            "timeout": "Login is taking too long. Please try again later."
         }
     },
     "form": {
@@ -2680,6 +2681,11 @@
         "status_no_order_long": "No meal selected",
 
         "btn_issue": "Issue",
+        "issue_all_filtered": "Issue visible",
+        "filter_all": "All",
+        "filter_ordered": "Waiting",
+        "filter_issued": "Issued",
+        "filter_cancelled": "Cancelled",
         "search_student": "Search for a student",
         "search_student_placeholder": "Student's name...",
         "already_issued": "The user has already collected this meal.",

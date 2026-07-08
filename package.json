@@ -21,6 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@elysiajs/cors": "latest",
+    "@elysiajs/cron": "^1.4.2",
     "@elysiajs/static": "^1.4.7",
     "@elysiajs/swagger": "latest",
     "@simplewebauthn/server": "^13.1.1",
