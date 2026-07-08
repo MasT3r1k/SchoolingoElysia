@@ -411,6 +411,30 @@ const app = new Elysia()
         return Response.json({ success: true });
     })
 
+    .post('/canteen/issue/bulk', async ({ cookie, body }) => {
+        const auth = await getAuthUser(cookie.token?.value as string, cookie);
+        if (!auth) return Response.json({ error: 'unauthorized' }, { status: 401 });
+
+        const perm = await PermissionService.hasPermission(auth.user_id, GlobalPermissions.CANTEEN_ISSUE);
+        if (!perm && !auth.is_principal) return Response.json({ error: 'unauthorized_canteen' }, { status: 403 });
+
+        const b = body as { order_ids: number[] };
+        if (!b.order_ids || !Array.isArray(b.order_ids) || b.order_ids.length === 0) {
+            return Response.json({ success: true });
+        }
+
+        await db.updateTable('canteen_orders')
+            .set({ status: 'issued', issued_at: moment().toDate() })
+            .where('order_id', 'in', b.order_ids)
+            .execute();
+
+        return Response.json({ success: true });
+    }, {
+        body: t.Object({
+            order_ids: t.Array(t.Number())
+        })
+    })
+
     .put('/canteen/meal/:meal_id', async ({ cookie, params, body }) => {
         const auth = await getAuthUser(cookie.token?.value as string, cookie);
         if (!auth) return Response.json({ error: 'unauthorized' }, { status: 401 });

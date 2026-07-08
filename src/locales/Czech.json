@@ -876,11 +876,15 @@
         "save": "Uložit",
         "saving": "Ukládání",
         "save_changes": "Uložit změny",
+        "go_back": "Vrátit zpět",
         "reset": "Obnovit",
         "try_again": "Zkusit znovu",
         "done": "Hotovo"
     },
     "dropdown": {
+        "default": {
+            "no_options": "Žádné možnosti k dispozici"
+        },
         "child": {
             "empty": "Nemáte žádné dítě",
             "label": "Vyberte dítě",
@@ -3188,6 +3192,17 @@
         "no_topic_recorded": "Téma hodiny nebylo zapsáno"
     },
     "canteen": {
+        "payment_account": {
+            "title": "Upravit platební účet",
+            "description": "Vyberte platební účet, ze kterého se budou strhávat peníze za obědy.",
+            "payment_account": "Platební účet",
+            "account_detail": "Detaily účtu"
+
+        },
+        "add-credit": {
+            "title": "Dobít kredit"
+        },
+
         "title": "Jídelna",
         "subtitle": "Modul školního systému",
         "orders": "Objednávky",
@@ -3202,6 +3217,13 @@
         "catalog_title": "Katalog jídel",
         "no_meals": "Žádná jídla neodpovídají filtrům nebo je katalog prázdný.",
         "search_placeholder": "Hledat jídlo…",
+        "not_selected": "Jídlo nevybráno",
+        "meal_soldout": "Tento oběd je již vyprodán a nelze jej zvolit.",
+        "meal_pastdue": "Nelze upravovat obědy pro aktuální nebo uplynulé dny.",
+        "order_saved": "Objednávky jsou uloženy",
+        "order_failed": "Chyba při ukládání objednávky",
+        "not_order_saved": "Máte neuložené změny v objednávkách",
+        "no_lunch": "Bez oběda",
         "filter_all": "Vše",
         "filter_meat": "Masité",
         "filter_veg": "Vegetariánské",
@@ -3224,6 +3246,7 @@
         "num_variants": "Počet variant menu",
         "variant_option_1": "1 varianta (Oběd 1)",
         "variant_option_2": "2 varianty (Oběd 1, Oběd 2)",
+        "variant_option_3": "3 varianty (Oběd 1, Oběd 2, Oběd 3)",
         "run_generation": "Spustit generování",
         "meal_name": "Název jídla",
         "meal_name_placeholder": "Např. Svíčková na smetaně...",
@@ -3235,7 +3258,7 @@
         "price": "Cena (Kč)",
         "calories": "Kalorická hodnota (kcal)",
         "calories_placeholder": "Např. 600",
-        "allergens": "Alergeny (čárkami oddělená čísla)",
+        "allergens": "Alergeny",
         "allergens_hint": "Uveďte čísla alergenů: 1 (lepek), 2 (korýši), 3 (vejce), 4 (ryby), 5 (arašídy), 6 (sójové boby), 7 (mléko), 8 (skořápkové plody), 9 (celer), 10 (hořčice), 11 (sezamová semena), 12 (osid siřičitý a siřičitany), 13 (vlčí bob), 14 (měkkýši)",
         "allergen_label": "Alergen",
         "choose_allergen": "Vyberte alergeny, na které máte alergii. Jídla obsahující tyto alergeny budou ve výběru zřetelně označena.",
@@ -3326,13 +3349,6 @@
         "settings_saved_success": "Nastavení bylo úspěšně uloženo.",
         "role_manager": "Správce",
         "role_cook": "Kuchař",
-        "day_monday": "Pondělí",
-        "day_tuesday": "Úterý",
-        "day_wednesday": "Středa",
-        "day_thursday": "Čtvrtek",
-        "day_friday": "Pátek",
-        "day_saturday": "Sobota",
-        "day_sunday": "Neděle",
         "credit_account": "Kreditní účet",
         "class_fund_account": "Třídní fond"
     }

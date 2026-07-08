@@ -2616,6 +2616,7 @@
         "num_variants": "Number of menu variants",
         "variant_option_1": "1 variant (Lunch 1)",
         "variant_option_2": "2 variants (Lunch 1, Lunch 2)",
+        "variant_option_3": "3 variants (Lunch 1, Lunch 2, Lunch 3)",
         "run_generation": "Run generation",
         "meal_name": "Meal name",
         "meal_name_placeholder": "e.g. Sirloin in cream sauce...",
