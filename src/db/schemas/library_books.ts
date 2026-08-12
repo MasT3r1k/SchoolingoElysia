@@ -3,7 +3,7 @@ import { Generated } from "kysely";
 export interface library_booksTable {
   book_id: Generated<number>;
   title: string;
-  year_publication: number;
+  author: string;
   genre_id: number;
   isbn: Generated<string | null>;
   publisher: Generated<string | null>;

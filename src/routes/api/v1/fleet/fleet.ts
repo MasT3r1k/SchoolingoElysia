@@ -7,7 +7,7 @@ import { db } from '../../../../../database';
 import { Database } from '../../../../db/schemas';
 import { ValueExpression } from 'kysely';
 
-const app = new Elysia()
+const app = new Elysia({ prefix: '/fleet' })
     // ==================== VEHICLES ====================
     
     // List all vehicles
@@ -279,13 +279,15 @@ const app = new Elysia()
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
 
-        const { vehicleId, purpose, start_location, end_location, distance } = body;
+        const { vehicleId, purpose, start_location, end_location, distance, start_date, end_date } = body;
 
         const result = await db
             .insertInto('fleetvehicles_trips')
             .values({
                 vehicle_id: vehicleId,
                 driver_id: auth.person_id,
+                start_date: start_date ? new Date(start_date) : undefined,
+                end_date: end_date ? new Date(end_date) : null,
                 purpose,
                 start_location,
                 end_location,
@@ -301,7 +303,9 @@ const app = new Elysia()
             purpose: t.String(),
             start_location: t.String(),
             end_location: t.String(),
-            distance: t.Optional(t.Number())
+            distance: t.Optional(t.Number()),
+            start_date: t.Optional(t.String()),
+            end_date: t.Optional(t.String())
         })
     })
 

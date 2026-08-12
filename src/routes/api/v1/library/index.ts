@@ -15,6 +15,30 @@ interface OpenLibraryBook {
 }
 
 export default new Elysia({ prefix: '/library' })
+    .get('/stats', async ({ user, set }: any) => {
+        if (!user) { set.status = 401; return { error: "Unauthorized" }; }
+        
+        const totalBooks = await db.selectFrom('library_books')
+            .select(db.fn.count('book_id').as('count'))
+            .executeTakeFirst();
+            
+        const activeLoans = await db.selectFrom('library_loans')
+            .where('status', '=', 'active')
+            .select(db.fn.count('loan_id').as('count'))
+            .executeTakeFirst();
+            
+        const overdueLoans = await db.selectFrom('library_loans')
+            .where('status', '=', 'active')
+            .where('due_date', '<', new Date())
+            .select(db.fn.count('loan_id').as('count'))
+            .executeTakeFirst();
+            
+        return {
+            totalBooks: Number(totalBooks?.count || 0),
+            activeLoans: Number(activeLoans?.count || 0),
+            overdueLoans: Number(overdueLoans?.count || 0)
+        };
+    })
     .get('/lookup', async ({ query, set, user }: any) => {
         if (!user) {
             set.status = 401;
@@ -22,23 +46,27 @@ export default new Elysia({ prefix: '/library' })
         }
         
         const isbn = query.isbn;
+        const title = query.title;
         
-        if (!isbn) {
+        if (!isbn && !title) {
             set.status = 400;
-            return { error: "ISBN is required" };
+            return { error: "ISBN or Title is required" };
         }
 
         try {
-            const response = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=data&format=json`);
+            let url = '';
+            if (isbn) url = `https://openlibrary.org/search.json?isbn=${isbn}&fields=title,author_name,first_publish_year,cover_i,publisher,number_of_pages_median`;
+            else url = `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&fields=title,author_name,first_publish_year,cover_i,publisher,number_of_pages_median`;
+            
+            const response = await fetch(url);
             
             if (!response.ok) {
                 set.status = 502;
                 return { error: "Failed to fetch from Open Library" };
             }
 
-            const data = await response.json() as Record<string, OpenLibraryBook>;
-            const bookKey = `ISBN:${isbn}`;
-            const bookData = data[bookKey];
+            const data = await response.json() as any;
+            const bookData = data.docs?.[0];
 
             if (!bookData) {
                 set.status = 404;
@@ -47,16 +75,15 @@ export default new Elysia({ prefix: '/library' })
 
             // Normalize Data
             return {
-                isbn: isbn,
+                isbn: isbn || "",
                 title: bookData.title,
-                author: bookData.authors?.map(a => a.name).join(", ") || "",
-                publisher: bookData.publishers?.[0]?.name || "",
-                published_year: bookData.publish_date ? parseInt(bookData.publish_date.match(/\d{4}/)?.[0] || "0") : null,
-                pages: bookData.number_of_pages || null,
-                description: bookData.excerpts?.[0]?.text || bookData.notes || "",
-                coverUrl: bookData.cover?.large || bookData.cover?.medium || null,
+                author: bookData.author_name?.[0] || "",
+                publisher: bookData.publisher?.[0] || "",
+                published_year: bookData.first_publish_year || null,
+                pages: bookData.number_of_pages_median || null,
+                description: "",
+                coverUrl: bookData.cover_i ? `https://covers.openlibrary.org/b/id/${bookData.cover_i}-L.jpg` : null,
             };
-
         } catch (error) {
             console.error("Open Library Lookup Error:", error);
             set.status = 500;
@@ -64,7 +91,8 @@ export default new Elysia({ prefix: '/library' })
         }
     }, {
         query: t.Object({
-            isbn: t.String()
+            isbn: t.Optional(t.String()),
+            title: t.Optional(t.String())
         })
     })
     .get('/genres', async ({ user, set }: any) => {
@@ -84,7 +112,11 @@ export default new Elysia({ prefix: '/library' })
                 eb.selectFrom('library_copies')
                     .whereRef('library_copies.book_id', '=', 'library_books.book_id')
                     .select(eb.fn.countAll<number>().as('count'))
-                    .as('total_copies')
+                    .as('total_copies'),
+                eb.selectFrom('library_book_ratings')
+                    .whereRef('library_book_ratings.book_id', '=', 'library_books.book_id')
+                    .select(eb.fn.avg<number>('rating').as('avg'))
+                    .as('rating')
             ])
             .orderBy('created_at', 'desc')
             .execute();
@@ -99,9 +131,9 @@ export default new Elysia({ prefix: '/library' })
                 .values({
                     ...bookData,
                     title: body.title,
+                    author: body.author,
                     isbn: body.isbn,
                     publisher: body.publisher,
-                    published_year: published_year,
                     year_publication: published_year || new Date().getFullYear(),
                     genre_id: genreId || 1, // Default to first genre
                     pages: pages || 0,
@@ -151,6 +183,79 @@ export default new Elysia({ prefix: '/library' })
             copies: t.Number({ minimum: 0, default: 0 })
         })
     })
+    .get('/reservations', async ({ user, set }: any) => {
+        if (!user) { set.status = 401; return { error: "Unauthorized" }; }
+        return await db.selectFrom('library_reservations')
+            .innerJoin('library_books', 'library_books.book_id', 'library_reservations.book_id')
+            .innerJoin('persons', 'persons.person_id', 'library_reservations.person_id')
+            .select([
+                'reservation_id', 'reservation_date', 'status', 'created',
+                'library_books.book_id', 'library_books.title', 'library_books.author',
+                'persons.person_id', 'persons.first_name', 'persons.last_name'
+            ])
+            .orderBy('created', 'desc')
+            .execute();
+    })
+    .post('/reservations/:id/cancel', async ({ params, set, user }: any) => {
+        if (!user) { set.status = 401; return { error: "Unauthorized" }; }
+        await db.updateTable('library_reservations')
+            .set({ status: 'cancelled' })
+            .where('reservation_id', '=', parseInt(params.id))
+            .execute();
+        return { message: "Reservation cancelled" };
+    })
+    .post('/reservations/:id/fulfill', async ({ params, body, set, user }: any) => {
+        if (!user) { set.status = 401; return { error: "Unauthorized" }; }
+        const { copyId } = body;
+        
+        try {
+            const reservation = await db.selectFrom('library_reservations')
+                .selectAll()
+                .where('reservation_id', '=', parseInt(params.id))
+                .executeTakeFirst();
+                
+            if (!reservation || reservation.status !== 'pending') {
+                set.status = 400; return { error: "Invalid reservation" };
+            }
+
+            const copy = await db.selectFrom('library_copies')
+                .select(['status', 'book_id'])
+                .where('copy_id', '=', copyId)
+                .executeTakeFirst();
+                
+            if (!copy || copy.status !== 'available' || copy.book_id !== reservation.book_id) {
+                set.status = 400; return { error: "Copy not available or mismatch" };
+            }
+
+            await db.insertInto('library_loans')
+                .values({
+                    copy_id: copyId,
+                    reader_id: reservation.person_id,
+                    loan_date: new Date(),
+                    due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                    status: 'ongoing',
+                    notes: ''
+                })
+                .execute();
+
+            await db.updateTable('library_copies')
+                .set({ status: 'checked_out' })
+                .where('copy_id', '=', copyId)
+                .execute();
+
+            await db.updateTable('library_reservations')
+                .set({ status: 'fulfilled' })
+                .where('reservation_id', '=', parseInt(params.id))
+                .execute();
+
+            return { message: "Reservation fulfilled" };
+        } catch (e) {
+            console.error(e);
+            set.status = 500; return { error: "Processing failed" };
+        }
+    }, {
+        body: t.Object({ copyId: t.Number() })
+    })
     .get('/loans', async ({ user, set }: any) => {
         if (!user) { set.status = 401; return { error: "Unauthorized" }; }
         return await db.selectFrom('library_loans')
@@ -161,6 +266,105 @@ export default new Elysia({ prefix: '/library' })
             .where('reader_id', '=', user.user_id)
             .where('library_loans.status', '=', 'ongoing')
             .orderBy('due_date', 'asc')
+            .execute();
+    })
+    .get('/loans/all', async ({ user, set }: any) => {
+        if (!user) { set.status = 401; return { error: "Unauthorized" }; }
+        return await db.selectFrom('library_loans')
+            .innerJoin('library_copies', 'library_copies.copy_id', 'library_loans.copy_id')
+            .innerJoin('library_books', 'library_books.book_id', 'library_copies.book_id')
+            .innerJoin('persons', 'persons.person_id', 'library_loans.reader_id')
+            .select(['library_loans.loan_id', 'library_loans.due_date', 'library_loans.status', 'library_loans.loan_date', 'library_loans.return_date',
+                     'library_books.title', 'library_books.cover_url',
+                     'library_copies.copy_number', 'library_copies.barcode',
+                     'persons.first_name', 'persons.last_name', 'persons.person_id'])
+            .orderBy('loan_date', 'desc')
+            .execute();
+    })
+    .get('/inventory', async ({ user, set }: any) => {
+        if (!user) { set.status = 401; return { error: "Unauthorized" }; }
+        const copies = await db.selectFrom('library_copies')
+            .innerJoin('library_books', 'library_books.book_id', 'library_copies.book_id')
+            .leftJoin('library_loans', (join) => 
+                join.onRef('library_loans.copy_id', '=', 'library_copies.copy_id')
+                    .on('library_loans.status', '=', 'ongoing')
+            )
+            .leftJoin('persons', 'persons.person_id', 'library_loans.reader_id')
+            .select([
+                'library_copies.copy_id', 'library_copies.barcode', 'library_copies.copy_number', 'library_copies.status as copy_status', 'library_copies.condition',
+                'library_books.title', 'library_books.author', 'library_books.isbn',
+                'library_loans.loan_id', 'library_loans.due_date', 
+                'persons.first_name', 'persons.last_name', 'persons.person_id'
+            ])
+            .orderBy('library_books.title', 'asc')
+            .execute();
+        return copies;
+    })
+    .get('/users', async ({ user, set }: any) => {
+        if (!user) { set.status = 401; return { error: "Unauthorized" }; }
+        const users = await db.selectFrom('persons')
+            .select(['person_id', 'first_name', 'last_name', 'type'])
+            .where('deleted', '=', 0)
+            .orderBy('last_name', 'asc')
+            .execute();
+        return users;
+    })
+    .post('/loans/:id/notify', async ({ params, set, user }: any) => {
+        if (!user) { set.status = 401; return { error: "Unauthorized" }; }
+        try {
+            const loan = await db.selectFrom('library_loans')
+                .innerJoin('library_copies', 'library_copies.copy_id', 'library_loans.copy_id')
+                .innerJoin('library_books', 'library_books.book_id', 'library_copies.book_id')
+                .select(['library_loans.reader_id', 'library_books.title', 'library_loans.due_date'])
+                .where('loan_id', '=', parseInt(params.id))
+                .executeTakeFirst();
+                
+            if (!loan) { set.status = 404; return { error: "Loan not found" }; }
+
+            // Insert notification
+            await db.insertInto('notifications').values({
+                user_id: loan.reader_id,
+                type: 'library_overdue',
+                data: JSON.stringify({ title: 'Upomínka z knihovny', message: `Upomínka pro knihu: ${loan.title}. Termín vrácení byl: ${loan.due_date ? new Date(loan.due_date).toLocaleDateString('cs-CZ') : 'Neznámý'}. Vraťte ji prosím.` }),
+                url: '/library'
+            }).execute();
+
+            return { message: "Notification sent" };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { error: "Failed to send notification" };
+        }
+    })
+    .post('/books/:id/rate', async ({ params, body, set, user }: any) => {
+        if (!user) { set.status = 401; return { error: "Unauthorized" }; }
+        try {
+            await db.insertInto('library_book_ratings')
+                .values({
+                    book_id: parseInt(params.id),
+                    reader_id: user.user_id,
+                    rating: body.rating,
+                    review_text: body.review_text || null,
+                    created_at: new Date()
+                })
+                .execute();
+            return { message: "Rating added" };
+        } catch (e) {
+            console.error(e);
+            set.status = 500; return { error: "Failed to add rating" };
+        }
+    }, {
+        body: t.Object({
+            rating: t.Number({ minimum: 1, maximum: 5 }),
+            review_text: t.Optional(t.String())
+        })
+    })
+    .get('/books/:id/ratings', async ({ params, set }: any) => {
+        return await db.selectFrom('library_book_ratings')
+            .innerJoin('persons', 'persons.person_id', 'library_book_ratings.reader_id')
+            .select(['rating_id', 'rating', 'review_text', 'created_at', 'persons.first_name', 'persons.last_name'])
+            .where('book_id', '=', parseInt(params.id))
+            .orderBy('created_at', 'desc')
             .execute();
     })
     .post('/copies', async ({ body, set, user }: any) => {
@@ -196,6 +400,33 @@ export default new Elysia({ prefix: '/library' })
         body: t.Object({
             bookId: t.Number(),
             count: t.Number()
+        })
+    })
+    .post('/reserve', async ({ body, set, user }: any) => {
+        if (!user) { set.status = 401; return { error: "Unauthorized" }; }
+        const { bookId, date } = body;
+
+        try {
+            await db.insertInto('library_reservations')
+                .values({
+                    book_id: bookId,
+                    person_id: user.user_id,
+                    reservation_date: new Date(date),
+                    status: 'pending',
+                    created: new Date()
+                })
+                .execute();
+
+            return { message: "Book reserved successfully" };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { error: "Reservation failed" };
+        }
+    }, {
+        body: t.Object({
+            bookId: t.Number(),
+            date: t.String()
         })
     })
     .post('/borrow', async ({ body, set, user }: any) => {
@@ -253,7 +484,7 @@ export default new Elysia({ prefix: '/library' })
         try {
             // Find active loan for this copy
             const loan = await db.selectFrom('library_loans')
-                .select('loan_id')
+                .select(['loan_id', 'due_date'])
                 .where('copy_id', '=', copyId)
                 .where('status', '=', 'ongoing')
                 .executeTakeFirst();
@@ -278,7 +509,18 @@ export default new Elysia({ prefix: '/library' })
                 .where('copy_id', '=', copyId)
                 .execute();
 
-            return { message: "Book returned successfully" };
+            // Calculate late fee if applicable
+            let lateFee = 0;
+            if (new Date(loan.due_date) < new Date()) {
+                const diffTime = Math.abs(new Date().getTime() - new Date(loan.due_date).getTime());
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const settings = await db.selectFrom('library_settings').selectAll().where('setting_id', '=', 1).executeTakeFirst();
+                if (settings && Number(settings.late_fee_per_day) > 0) {
+                    lateFee = diffDays * Number(settings.late_fee_per_day);
+                }
+            }
+
+            return { message: "Book returned successfully", lateFee };
 
         } catch (error) {
             console.error(error);

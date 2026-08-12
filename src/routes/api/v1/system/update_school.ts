@@ -20,7 +20,8 @@ const app = new Elysia()
       gdpr_firstname, gdpr_lastname, gdpr_phone, gdpr_email, gdpr_mobile, gdpr_databox, gdpr_web,
       msg_max_length, msg_attachments_max_count, msg_attachments_max_size, msg_type_private_active, msg_type_official_active, msg_type_noticeboard_active, noticeboard_max_length,
       employee_vacation_days_default, employee_vacation_requests_enabled, employee_attendance_enabled, employee_salaries_enabled,
-      documents_enabled, traineeship_enabled, online_enabled, noticeboard_student_enabled, noticeboard_teacher_enabled, tests_enabled, rewards_enabled, demo_enabled
+      documents_enabled, traineeship_enabled, online_enabled, noticeboard_student_enabled, noticeboard_teacher_enabled, tests_enabled, rewards_enabled, demo_enabled,
+      library_enabled, library_fee_period, library_fee_amount, library_late_fee_per_day, library_damage_fee
     } = body;
 
     // Parse lesson_start (HH:MM) to hours and minutes
@@ -81,7 +82,12 @@ const app = new Elysia()
         noticeboard_teacher_enabled: noticeboard_teacher_enabled ? 1 : 0,
         tests_enabled: tests_enabled ? 1 : 0,
         rewards_enabled: rewards_enabled ? 1 : 0,
-        demo_enabled: demo_enabled ? 1 : 0
+        demo_enabled: demo_enabled ? 1 : 0,
+        library_enabled: library_enabled ? 1 : 0,
+        library_fee_period: library_fee_period ?? 'monthly',
+        library_fee_amount: library_fee_amount ?? 0,
+        library_late_fee_per_day: library_late_fee_per_day ?? 0,
+        library_damage_fee: library_damage_fee ?? 0
       })
       .where('school_id', '=', school.school_id)
       .execute();

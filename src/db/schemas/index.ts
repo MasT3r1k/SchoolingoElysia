@@ -38,6 +38,8 @@ import { library_copiesTable } from './library_copies'
 import { library_genresTable } from './library_genres'
 import { library_loansTable } from './library_loans'
 import { library_reservationsTable } from './library_reservations'
+import { library_book_ratingsTable } from './library_book_ratings'
+import { library_settingsTable } from './library_settings'
 import { login_historyTable } from './login_history'
 import { messagesTable } from './messages'
 import { messages_receiversTable } from './messages_receivers'
@@ -193,6 +195,8 @@ export interface Database {
   library_genres: library_genresTable
   library_loans: library_loansTable
   library_reservations: library_reservationsTable
+  library_book_ratings: library_book_ratingsTable
+  library_settings: library_settingsTable
   login_history: login_historyTable
   marking_scales: marking_scalesTable
   marking_scales_groups: marking_scales_groupsTable

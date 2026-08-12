@@ -65,4 +65,10 @@ export interface schoolsTable {
   tests_enabled: number;
   rewards_enabled: number;
   demo_enabled: number;
+  // Library settings
+  library_enabled: number; // boolean
+  library_fee_period: string;
+  library_fee_amount: number;
+  library_late_fee_per_day: number;
+  library_damage_fee: number;
 }
