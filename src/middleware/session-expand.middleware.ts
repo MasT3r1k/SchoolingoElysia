@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { db } from '../../database';
+import { db } from '@database';
 import { SecurityConfig } from '../config/security.config';
 import moment from 'moment';
 

@@ -1,9 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from "../../../../../database";
-import { rateLimit } from 'elysia-rate-limit';
-import { app } from '../../../../../index';
-import moment from 'moment';
-
+import { db } from '@database';
 import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
 import { getAuthUser } from '../../../../utils/auth';
@@ -18,49 +14,55 @@ const elysiaApp = new Elysia()
     // === VALIDACE QUERY ===
     const { subject_id, group_id, title, note } = body;
     if (
-           subject_id == undefined
-        || group_id == undefined
-        || title == undefined
-        || note == undefined) return { error: 'bad_query' };
+      subject_id === undefined ||
+      group_id === undefined ||
+      title === undefined ||
+      note === undefined
+    ) {
+      return { error: 'bad_query' };
+    }
 
     try {
-        const noteDB = await db.insertInto('classbook_notes')
+      const noteDB = await db
+        .insertInto('classbook_notes')
         .values({
-            subject_id,
-            group_id,
-            title,
-            note,
-            created_by: user.person_id
+          subject_id,
+          group_id,
+          title,
+          note,
+          created_by: user.person_id ?? user.user_id,
         })
         .executeTakeFirst();
 
-        if (!noteDB) return { success: false }
+      if (!noteDB) return { success: false };
 
-        const newNote = await db.selectFrom('classbook_notes')
+      const newNote = await db
+        .selectFrom('classbook_notes')
         .select([
-            'classbook_notes.classbook_note_id',
-            'classbook_notes.title',
-            'classbook_notes.note',
-            'classbook_notes.created_at'
+          'classbook_notes.classbook_note_id',
+          'classbook_notes.title',
+          'classbook_notes.note',
+          'classbook_notes.created_at',
         ])
         .where('classbook_notes.classbook_note_id', '=', Number(noteDB.insertId))
         .executeTakeFirst();
 
-        if (!newNote) return { success: false }
+      if (!newNote) return { success: false };
 
-        return { success: true, note: newNote };
-    } catch(e) {
-        return { success: false }
+      return {
+        success: true,
+        note: newNote,
+      };
+    } catch (e) {
+      return { success: false, error: 'database_error' };
     }
-
-
   }, {
     body: t.Object({
-      subject_id: t.Optional(t.Number()),
-      group_id: t.Optional(t.Number()),
-      title: t.Optional(t.Nullable(t.String())),
-      note: t.Optional(t.String())
-    })
+      subject_id: t.Number(),
+      group_id: t.Number(),
+      title: t.String(),
+      note: t.String(),
+    }),
   });
 
 export default elysiaApp;

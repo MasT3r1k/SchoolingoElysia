@@ -14,8 +14,24 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": false,
     "allowSyntheticDefaultImports": true,
-    "types": ["bun-types"]
+    "types": ["bun-types"],
+    "baseUrl": ".",
+    "paths": {
+      "@core": ["src/core/index.ts"],
+      "@core/*": ["src/core/*"],
+      "@modules/*": ["src/modules/*"],
+      "@database": ["src/core/database/connection.ts"],
+      "@database/*": ["src/core/database/*"],
+      "@config/*": ["src/core/config/*"],
+      "@errors": ["src/core/errors/index.ts"],
+      "@errors/*": ["src/core/errors/*"],
+      "@middleware/*": ["src/core/middleware/*"],
+      "@plugins/*": ["src/core/plugins/*"],
+      "@utils/*": ["src/core/utils/*"],
+      "@functions/*": ["src/functions/*"],
+      "@db/*": ["src/db/*"]
+    }
   },
   "include": ["**/*.ts", "src/ai/index.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }

@@ -2680,6 +2680,7 @@
     },
     "canteen": {
         "title": "Canteen",
+        "locked": "Locked",
         "subtitle": "School system module",
         "orders": "Orders",
         "meals_and_menus": "Meals & menu",
@@ -2832,5 +2833,17 @@
         "day_sunday": "Sunday",
         "credit_account": "Credit Account",
         "class_fund_account": "Class Fund"
+    },
+    "attendance_widget": {
+        "my_attendance": "My Attendance",
+        "class_attendance": "Class",
+        "vacation_remaining": "Vacation",
+        "vacation_days": "%remaining% / %total% days",
+        "days_used": "used",
+        "class_today_absence": "Class (%class%) - Today's Absence",
+        "no_absence_today": "All students are present",
+        "no_absence_desc": "No absences recorded today in this class.",
+        "write_absence": "Record absence to classbook",
+        "waiting_excuse": "Awaiting excuse"
     }
 }

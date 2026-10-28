@@ -1,236 +1,224 @@
+import * as Sentry from '@sentry/elysia';
 import { Elysia } from 'elysia';
 import { ip } from 'elysia-ip';
 import { helmet } from 'elysia-helmet';
-import * as fs from 'fs';
-import path from 'path';
-import 'dotenv/config';
 import cors from '@elysiajs/cors';
-import { config } from './src/config/app.config';
-import { errorHandler } from './src/middleware/error.middleware';
-import { rateLimit } from './src/middleware/rate-limit.middleware';
-import { logger, requestLogger } from './src/utils/logger';
-import locales from './src/infrastructure/locale';
-import { version } from './version';
-import { ws } from './websocket';
-import { getAuthUser } from './src/utils/auth';
-import { uploadAPI } from './upload';
-import { Mailer } from "./mailer.module";
-import { ldapRoutes } from './src/functions/ldap.service';
-const { domainService } = await import('./src/functions/domain.service');
-const { heartbeatService } = await import('./src/functions/heartbeat.service');
-const { db } = await import('./database');
-const { backupService } = await import('./src/functions/backup.service');
-const { updateService } = await import('./src/functions/update.service');
+import * as fs from 'node:fs';
+import path from 'node:path';
+import 'dotenv/config';
+
+import {
+  env,
+  db,
+  checkDatabaseHealth,
+  closeDatabaseConnection,
+  initSentry,
+  sentryPlugin,
+  swaggerPlugin,
+  errorPlugin,
+  loggerPlugin,
+  globalRateLimiter,
+  authContext,
+  schoolGuard,
+  wsRouter,
+  Mailer,
+} from '@core';
+import { appRouter } from '@modules/app.router';
 import { canteenCron } from './src/crons/canteen.cron';
+import { ldapRoutes } from '@functions/ldap.service';
+import locales from './src/infrastructure/locale';
 
-const UPLOAD_DIR = './uploads';
+// Initialize Sentry first
+initSentry();
 
-export const app = new Elysia({
+export const app = Sentry.withElysia(
+  new Elysia({
     serve: {
       idleTimeout: 30,
-      maxRequestBodySize: 1024 * 1024 * 5000 
+      maxRequestBodySize: 1024 * 1024 * 500, // 500MB max payload
     },
   })
-  // Security Headers
-.use(cors({
-    origin: (request) => {
-      const origin = request.headers.get('origin');
-      
-      // Allow requests with no origin
-      if (!origin) {
-        return true;
-      }
-      
-      // Allow any localhost origin or Capacitor/Ionic
-      if (origin.startsWith('http://localhost:') || 
-          origin.startsWith('https://localhost:') || 
+)
+  // 1. Core Plugins & Telemetry
+  .use(sentryPlugin)
+  .use(loggerPlugin)
+  .use(errorPlugin)
+  .use(swaggerPlugin)
+
+  // 2. Security Middleware
+  .use(
+    cors({
+      origin: (request) => {
+        const origin = request.headers.get('origin');
+        if (!origin) return true;
+
+        if (
+          origin.startsWith('http://localhost:') ||
+          origin.startsWith('https://localhost:') ||
           origin.startsWith('http://127.0.0.1:') ||
-          origin.startsWith('capacitor://') || 
-          origin.startsWith('ionic://')) {
-        return true;
-      }
+          origin.startsWith('capacitor://') ||
+          origin.startsWith('ionic://')
+        ) {
+          return true;
+        }
 
-      const allowedOrigins = [
-        'http://localhost:4200', 
-        'http://localhost:4222', 
-        'http://localhost:5173', 
-        'http://localhost:8100', 
-        'http://127.0.0.1:4200',
-        'capacitor://localhost', 
-        'ionic://localhost'
-      ];
-      
-      if (allowedOrigins.includes(origin)) return true;
-      return false;
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Domain', 'Host'],
-    credentials: true,
-  }))
-  .use(helmet({
-    contentSecurityPolicy: false,
-  }))
+        const allowedOrigins = [
+          'http://localhost:4200',
+          'http://localhost:4222',
+          'http://localhost:5173',
+          'http://localhost:8100',
+          'http://127.0.0.1:4200',
+          'capacitor://localhost',
+          'ionic://localhost',
+        ];
+
+        return allowedOrigins.includes(origin);
+      },
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Domain', 'Host', 'X-School-Domain'],
+      exposeHeaders: ['X-Session-Expires', 'Retry-After'],
+      credentials: true,
+    })
+  )
+  .use(
+    helmet({
+      contentSecurityPolicy: false,
+    })
+  )
   .use(ip())
-  .use(errorHandler)
-  .use(requestLogger)
-  .use(rateLimit)
-  .use(uploadAPI)
-  .use(ldapRoutes)
-  .use(version)
-  
-  // Authentication & Context Derivation
-  .derive(async ({ request, cookie }) => {
-    // 1. Domain Resolution
-    let origin = '';
-    if (request.headers.get('origin')) {
-      origin = request.headers.get('origin')!;
-    }
-    if (request.headers.get('host')) {
-      origin = request.headers.get('host')!;
-    }
-    const domain = origin.replace(/^https?:\/\//, '');
-    
-    const school = await domainService.getSchoolByDomain(domain);
+  .use(globalRateLimiter)
 
-    // 2. User Authentication
-    const user = await getAuthUser(cookie?.token?.value as string, cookie);
-    
-    // 3. School Validation
-    if (user && school && user.school_id !== school.school_id) {
-       return { user: null, school };
-    }
+  // 3. Guards & Context
+  .use(schoolGuard)
+  .use(authContext)
 
-    return { user, school };
-  })
-  
-  .use(ws)
+  // 4. Domain & App Routers
+  .use(appRouter)
+  .use(wsRouter)
   .use(locales)
+  .use(ldapRoutes)
   .use(canteenCron);
 
-// Routing Automation
+// 5. Dynamic Route Loader for Existing API Modules
 const modulePath: string = path.join(__dirname, '/src/routes');
 
 async function loadFolder(folder: string = modulePath) {
   try {
     const files = await fs.promises.readdir(folder);
-    for (const [index, file] of files.entries()) {
+    for (const file of files) {
       const fullPath = path.join(folder, file);
-      
+
       if (file.includes('.')) {
         if (!file.endsWith('.ts') || file.endsWith('.d.ts')) continue;
-        
-        const start = Date.now();
+
         let relativePath = fullPath.replace(modulePath, '');
         relativePath = relativePath.split(path.sep).join('/');
-        
-        // console.log('[🦊 Elysia]: Loading ' + file);
 
         try {
           const mod = await import(fullPath);
           const routeApp: Elysia = mod.default;
 
           if (!routeApp || typeof routeApp !== 'object' || typeof routeApp.handle !== 'function') {
-            console.warn(`File ${file} does not export a valid Elysia instance`);
             continue;
           }
 
-          let prefix = "";
+          let prefix = '';
           const parts = relativePath.split('/');
-          
+
           if (parts.length > 2 && parts[1] === 'api') {
             prefix = `/api/${parts[2]}`;
           }
-          
-          const wrapper = new Elysia({ prefix })
-          .use(routeApp);
-          app.use(wrapper);
 
-          const end = Date.now();
-          console.log(`[🦊 Elysia]: Loaded ${file} at ${prefix} in ${end - start}ms`);
-        } catch(e) {
-          logger.log(`Failed loading file ${file}.`)
-          logger.log(e as string);
+          const wrapper = new Elysia({ prefix }).use(routeApp);
+          app.use(wrapper);
+        } catch (e) {
+          console.error(`[Router]: Failed loading route file: ${file}`, e);
         }
       } else {
         await loadFolder(fullPath);
       }
     }
-
   } catch (err: any) {
     if (err?.code === 'ENOENT') {
       await fs.promises.mkdir(folder, { recursive: true });
-      logger.log('[📁 FileManager] Created /routes folder.');
     } else {
-      logger.log('ERROR: ' + err);
+      console.error('[Router]: Error scanning route folder:', err);
     }
   }
 }
 
-(async () => {
-  try {
-    logger.log('Database tables initialized successfully');
+// Pre-load all routes before starting or testing
+await loadFolder(modulePath);
 
-    await loadFolder(modulePath);
-    const port = parseInt(config.PORT);
-    await app.listen(port);
-    logger.log(`[🦊 Elysia]: Running at http://${app.server?.hostname}:${port}`);
-    logger.log(`[🌍 Environment]: ${config.NODE_ENV}`);
-
-
-    Mailer.init({
-      enabled: config.STMP_ENABLED == "true" ? true : false,
-      host: config.STMP_HOST || '',
-      port: parseInt(config.STMP_PORT || '587'),
-      secure: parseInt(config.STMP_PORT || '587') == 465,
-      user: config.STMP_USER || '',
-      pass: config.STMP_PASS || '',
-      fromName: config.STMP_NAME || 'Schoolingo',
-      debug: true
-    });
-
-    // Initialize Backup Scheduler
+// 6. Application Lifecycle Bootstrap (runs only when started directly, not under test)
+if (process.env.NODE_ENV !== 'test') {
+  (async () => {
     try {
-        const school = await db.selectFrom('schools')
-            .select('backup_interval')
-            .executeTakeFirst();
-        
+      const isDbHealthy = await checkDatabaseHealth();
+      if (!isDbHealthy) {
+        console.warn('[⚠️ Database]: Connection check failed during startup');
+      } else {
+        console.log('[📦 Database]: Pool connected and healthy');
+      }
+
+      const port = env.PORT;
+      await app.listen(port);
+      console.log(`[🦊 Elysia]: Running at http://${app.server?.hostname}:${port}`);
+      console.log(`[📚 Documentation]: Interactive Scalar API docs at http://${app.server?.hostname}:${port}/docs`);
+      console.log(`[🌍 Environment]: ${env.NODE_ENV}`);
+
+      // Initialize Mailer
+      Mailer.init();
+
+      // Initialize Services (Backup, Auto-Update, Heartbeat)
+      try {
+        const { backupService } = await import('@functions/backup.service');
+        const school = await db.selectFrom('schools').select('backup_interval').executeTakeFirst();
+
         if (school && school.backup_interval !== null) {
-            let hours = 24;
-            if (school.backup_interval === 1) hours = 168;
-            if (school.backup_interval === 2) hours = 720;
-            await backupService.updateInterval(hours);
+          let hours = 24;
+          if (school.backup_interval === 1) hours = 168;
+          if (school.backup_interval === 2) hours = 720;
+          await backupService.updateInterval(hours);
         }
         await backupService.startScheduler();
-    } catch (err) {
-        console.warn('[Backup] Scheduler init failed (likely missing column):', err);
-    }
+      } catch (err) {
+        console.warn('[Backup]: Scheduler init skipped:', err);
+      }
 
-    // Initialize Update Scheduler
-    try {
-        const autoUpdate = await db.selectFrom('schools')
-            .select(['auto_update', 'auto_update_interval'])
-            .executeTakeFirst();
-        
+      try {
+        const { updateService } = await import('@functions/update.service');
+        const autoUpdate = await db
+          .selectFrom('schools')
+          .select(['auto_update', 'auto_update_interval'])
+          .executeTakeFirst();
+
         if (autoUpdate && autoUpdate.auto_update) {
-            updateService.startScheduler(autoUpdate.auto_update_interval);
+          updateService.startScheduler(autoUpdate.auto_update_interval);
         }
-    } catch (err) {
-        console.warn('[Update] Scheduler init failed (likely missing column):', err);
-    }
+      } catch (err) {
+        console.warn('[Update]: Scheduler init skipped:', err);
+      }
 
-    // Initialize Heartbeat Service
-    try {
+      try {
+        const { heartbeatService } = await import('@functions/heartbeat.service');
         await heartbeatService.start();
 
-        // Graceful shutdown
-        process.on('SIGTERM', async () => { await heartbeatService.stop(); process.exit(0); });
-        process.on('SIGINT',  async () => { await heartbeatService.stop(); process.exit(0); });
-    } catch (err) {
-        console.warn('[Heartbeat] Service init failed:', err);
-    }
+        const shutdown = async () => {
+          console.log('\n[Server]: Graceful shutdown initiated...');
+          await heartbeatService.stop();
+          await closeDatabaseConnection();
+          process.exit(0);
+        };
 
-  } catch (error) {
-    logger.log('Failed to start application:' + error);
-    process.exit(1);
-  }
-})();
+        process.on('SIGTERM', shutdown);
+        process.on('SIGINT', shutdown);
+      } catch (err) {
+        console.warn('[Heartbeat]: Service init skipped:', err);
+      }
+    } catch (error) {
+      console.error('[Fatal Error]: Failed to start application:', error);
+      process.exit(1);
+    }
+  })();
+}

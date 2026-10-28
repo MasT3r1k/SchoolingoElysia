@@ -27,7 +27,7 @@ describe('API Endpoints', () => {
             );
             
             expect(response.status).toBe(200);
-            const data = await response.json();
+            const data: any = await response.json();
             expect(Array.isArray(data) || typeof data === 'object').toBe(true);
         });
     });
@@ -131,7 +131,7 @@ describe('Notifications API', () => {
                 })
             );
             
-            const data = await response.json();
+            const data: any = await response.json();
             expect(data.error).toBeDefined();
         });
     });

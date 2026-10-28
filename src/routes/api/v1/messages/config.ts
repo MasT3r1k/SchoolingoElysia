@@ -1,6 +1,6 @@
 import { Elysia } from 'elysia';
 import { MessagesConfig } from '../../../../config/message.config';
-import { db } from '../../../../../database';
+import { db } from '@database';
 
 const app = new Elysia()
   .get('/messages/config', async ({ cookie, school }: any) => {

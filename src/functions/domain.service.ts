@@ -1,4 +1,4 @@
-import { db } from '../../database';
+import { db } from '@database';
 import { ConflictError, InternalServerError, NotFoundError } from '../utils/errors';
 import bcrypt from 'bcryptjs';
 import { sql } from 'kysely';

@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 import moment from 'moment';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 
 const app = new Elysia()
@@ -46,10 +46,10 @@ const app = new Elysia()
         'grades.mark',
         'grades.column_id',
         'grades.teacher_id',
+        'grades.created',
         'teacher.first_name as teacher_first_name',
         'teacher.last_name as teacher_last_name',
         'teacherUser.avatar',
-        'grades_columns.created',
         'grades_columns.topic',
         'grades_columns.weight',
         'grades_columns.max_points',
@@ -61,7 +61,7 @@ const app = new Elysia()
       ])
       .where('grades.student_id', '=', student_id)
       .where('grades_columns.status', '=', 'active')
-      .orderBy('grades_columns.created', 'desc')
+      .orderBy('grades.created', 'desc')
 
     // Použij limit pouze pokud je > 0
     if (query?.limit && query.limit > 0) {

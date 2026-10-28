@@ -1,5 +1,5 @@
 import { Context } from 'elysia';
-import { db } from '../../database';
+import { db } from '@database';
 import moment from 'moment';
 
 /**

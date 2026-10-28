@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 import moment from 'moment';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { unlink } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { existsSync } from 'node:fs';

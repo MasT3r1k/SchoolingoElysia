@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from "../../../../../database"
+import { db } from '@database'
 import { getAuthUser } from '../../../../utils/auth';
 import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';

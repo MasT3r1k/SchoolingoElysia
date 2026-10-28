@@ -3,7 +3,7 @@
  * Manage student educational measures (praise, reprimand, warnings, etc.)
  */
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { validateBody, createEducationMeasureSchema } from '../../../../utils/validation.schemas';
 import { MainConfig } from '../../../../config/main.config';
 import { sql } from 'kysely';

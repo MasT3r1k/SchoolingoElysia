@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { PermissionService } from '../../../../functions/permission.service';
 import { GlobalPermissions } from '../../../../config/permissions.config';
 import moment from 'moment';
@@ -748,7 +748,7 @@ const app = new Elysia()
 
             await trx.insertInto('payments_transfers')
                 .values({
-                    source_id: null,          // null = vnější zdroj (hotovost/banka)
+                    source_id: 0,             // 0 = vnější zdroj (hotovost/banka)
                     target_id: target_account_id,
                     source_balance: 0,
                     target_balance: newBalance,
@@ -804,7 +804,7 @@ const app = new Elysia()
             await trx.insertInto('payments_transfers')
                 .values({
                     source_id: source_account_id,
-                    target_id: null,
+                    target_id: 0,             // 0 = vnější cíl
                     source_balance: newBalance,
                     target_balance: 0,
                     type: 'out',

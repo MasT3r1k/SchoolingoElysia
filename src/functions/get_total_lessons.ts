@@ -1,4 +1,4 @@
-import { db } from "../../database";
+import { db } from '@database';
 
 export async function get_total_lessons(start: moment.Moment, end: moment.Moment, group_id: number, subject_id: number): Promise<number> {
     let evenCount = 0;

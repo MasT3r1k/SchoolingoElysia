@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { PermissionService } from '../../../../functions/permission.service';
 
 const app = new Elysia()

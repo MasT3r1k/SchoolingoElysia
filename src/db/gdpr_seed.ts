@@ -1,4 +1,4 @@
-import { db } from '../../database';
+import { db } from '@database';
 
 async function seed() {
     console.log('--- SEEDING GDPR DATA ---');

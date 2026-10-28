@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { sql } from 'kysely';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import moment from 'moment';
@@ -127,8 +127,8 @@ const app = new Elysia()
             .selectAll('class_service')
             .select(['persons.first_name', 'persons.last_name'])
             .where('class_service.student_id', 'in', studentIds)
-            .where('class_service.start', '<=', new Date())
-            .where('class_service.end', '>=', new Date())
+            .where('class_service.start', '<=', new Date().toISOString().split('T')[0])
+            .where('class_service.end', '>=', new Date().toISOString().split('T')[0])
             .execute();
         
         const currentServices = currentServicesResult.map(s => ({
@@ -142,7 +142,7 @@ const app = new Elysia()
             .selectAll('class_service')
             .select(['persons.first_name', 'persons.last_name'])
             .where('class_service.student_id', 'in', studentIds)
-            .where('class_service.start', '>', new Date())
+            .where('class_service.start', '>', new Date().toISOString().split('T')[0])
             .orderBy('class_service.start', 'asc')
             .execute();
         
@@ -157,7 +157,7 @@ const app = new Elysia()
             .selectAll('class_service')
             .select(['persons.first_name', 'persons.last_name'])
             .where('class_service.student_id', 'in', studentIds)
-            .where('class_service.end', '<', new Date())
+            .where('class_service.end', '<', new Date().toISOString().split('T')[0])
             .orderBy('class_service.end', 'desc')
             .limit(20)
             .execute();
@@ -251,8 +251,8 @@ const app = new Elysia()
         await db.insertInto('class_service')
             .values({
                 student_id: studentId,
-                start: new Date(start),
-                end: new Date(end)
+                start: typeof start === 'string' ? start : (start as any).toISOString().split('T')[0],
+                end: typeof end === 'string' ? end : (end as any).toISOString().split('T')[0]
             })
             .execute();
 
@@ -308,8 +308,8 @@ const app = new Elysia()
              await db.insertInto('class_service')
             .values({
                 student_id: s.person_id,
-                start: new Date(start),
-                end: new Date(end)
+                start: typeof start === 'string' ? start : (start as any).toISOString().split('T')[0],
+                end: typeof end === 'string' ? end : (end as any).toISOString().split('T')[0]
             })
             .execute();
         }

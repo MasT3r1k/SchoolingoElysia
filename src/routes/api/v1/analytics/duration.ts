@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 
 export default new Elysia({ prefix: '/analytics' })
     .post('/duration', async ({ body, set }: any) => {

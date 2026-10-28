@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { sql } from 'kysely';
 import moment from 'moment';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';

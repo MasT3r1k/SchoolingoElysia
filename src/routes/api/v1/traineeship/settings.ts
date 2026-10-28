@@ -3,7 +3,7 @@
  * Manage traineeship configuration and companies
  */
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 
 const app = new Elysia()
     // Get traineeship config
@@ -54,10 +54,10 @@ const app = new Elysia()
         await db
             .updateTable('traineeship_config')
             .set({
-                isActivated: isActivated ?? undefined,
-                manager: manager ?? undefined,
-                defaultIgnoreDays: defaultIgnoreDays ?? undefined,
-                allowMap: allowMap ?? undefined
+                is_activated: isActivated ?? undefined,
+                manager_id: manager ?? undefined,
+                default_ignore_days: defaultIgnoreDays ?? undefined,
+                allow_map: allowMap ?? undefined
             })
             .execute();
 
@@ -129,23 +129,23 @@ const app = new Elysia()
         // Get company scopes
         const scopes = await db
             .selectFrom('traineeship_company_scopes')
-            .leftJoin('scopes', 'scopes.scope', 'traineeship_company_scopes.scope')
-            .select(['scopes.scope', 'scopes.name'])
-            .where('traineeship_company_scopes.company', '=', companyId)
+            .leftJoin('scopes', 'scopes.scope_id', 'traineeship_company_scopes.scope_id')
+            .select(['scopes.scope_id', 'scopes.name'])
+            .where('traineeship_company_scopes.company_id', '=', companyId)
             .execute();
 
         // Get company instructors
         const instructors = await db
             .selectFrom('traineeship_instructors')
             .selectAll()
-            .where('company', '=', companyId)
+            .where('company_id', '=', companyId)
             .execute();
 
         // Get ratings
         const ratings = await db
             .selectFrom('traineeship_company_rating')
             .selectAll()
-            .where('company', '=', companyId)
+            .where('company_id', '=', companyId)
             .orderBy('created_at', 'desc')
             .limit(10)
             .execute();
@@ -173,20 +173,28 @@ const app = new Elysia()
             return Response.json({ error: 'forbidden' }, { status: 403 });
         }
 
-        const { name, address, city, phone, email, website, note, maxStudents } = body;
+        const { name, phone, email, website, note } = body;
 
         const result = await db
             .insertInto('traineeship_companies')
             .values({
                 name,
-                address: address || null,
-                city: city || null,
+                address_office: 0,
+                address_trainee: 0,
+                country_code: 'CZ',
+                ico: '',
+                dic: '',
+                vat_id: '',
+                web: website || null,
                 phone: phone || null,
                 email: email || null,
-                website: website || null,
-                note: note || null,
-                max_students: maxStudents || 5,
-                isActivated: true
+                description: note || null,
+                contact: null,
+                rp_first_name: null,
+                rp_last_name: null,
+                activity: null,
+                equipment: null,
+                status: 'approved'
             })
             .execute();
 

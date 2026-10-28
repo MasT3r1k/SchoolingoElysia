@@ -1,4 +1,4 @@
-import { db } from '../../database';
+import { db } from '@database';
 import { sql } from 'kysely';
 
 async function run() {

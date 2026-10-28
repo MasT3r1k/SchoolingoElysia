@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from "../../../../../database"
+import { db } from '@database'
 import moment from 'moment';
 import { sql } from 'kysely';
 import { PermissionService } from '../../../../functions/permission.service';
@@ -15,7 +15,7 @@ const elysiaApp = new Elysia()
 
     const userRoles = await PermissionService.getUserRoles(user.user_id);
     const roleIds = userRoles.map(r => r.role_id);
-    const isSuperUser = user.manager === -1 || user.principal === true || user.role === 'admin_staff';
+    const isSuperUser = user.manager === -1 || user.is_principal === true || (user as any).principal === true || user.role === 'admin_staff';
 
     try {
 

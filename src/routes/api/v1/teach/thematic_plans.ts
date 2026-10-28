@@ -1,11 +1,11 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { getAuthUser } from '../../../../../src/utils/auth';
 
 const elysiaApp = new Elysia()
   .get('/teach/thematic-plans', async ({ cookie }) => {
     const auth = await getAuthUser(cookie?.token?.value as string, cookie);
-    if (!auth || auth.type !== 'teacher') return new Response('Unauthorized', { status: 401 });
+    if (!auth || (auth.role !== 'teacher' && (auth as any).type !== 'teacher')) return new Response('Unauthorized', { status: 401 });
 
     const plans = await db.selectFrom('thematic_plans')
         .leftJoin('subjects', 'subjects.subject_id', 'thematic_plans.subject_id')
@@ -27,7 +27,7 @@ const elysiaApp = new Elysia()
   })
   .post('/teach/thematic-plans', async ({ body, cookie }) => {
     const auth = await getAuthUser(cookie?.token?.value as string, cookie);
-    if (!auth || auth.type !== 'teacher') return new Response('Unauthorized', { status: 401 });
+    if (!auth || (auth.role !== 'teacher' && (auth as any).type !== 'teacher')) return new Response('Unauthorized', { status: 401 });
 
     const { name, subject_id, group_id, school_year_id, svp_subject_id } = body as any;
 

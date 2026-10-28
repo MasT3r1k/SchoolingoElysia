@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from "../../../../../database"
+import { db } from '@database'
 import moment from 'moment';
 import { DocumentPermissionService } from '../../../../functions/document_permission.service';
 

@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { sql } from 'kysely';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import { PermissionService } from '../../../../functions/permission.service';
@@ -161,7 +161,7 @@ const app = new Elysia()
     }
 
     // Execute Data Query
-    const results = await db.selectFrom(combinedSource.as('combined_logs'))
+    const results = await (db.selectFrom(combinedSource.as('combined_logs')) as any)
        .selectAll()
        .orderBy('timestamp', 'desc')
        .limit(limit)
@@ -169,13 +169,13 @@ const app = new Elysia()
        .execute();
 
     // Execute Count Query
-    const countResult: any = await db.selectFrom(combinedSource.as('combined_logs'))
+    const countResult: any = await (db.selectFrom(combinedSource.as('combined_logs')) as any)
        .select(sql<number>`count(*)`.as('total'))
        .executeTakeFirst();
        
     const total = Number(countResult?.total || 0);
 
-    const personIds = Array.from(new Set(results.map((r: any) => r.person_id).filter((id): id is number => id !== null)));
+    const personIds = Array.from(new Set(results.map((r: any) => r.person_id).filter((id: any): id is number => id !== null)));
     const formattedNames = await format_person_map_by_ids(personIds as number[]);
 
     return Response.json({

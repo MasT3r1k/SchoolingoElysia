@@ -359,7 +359,7 @@
                 "options": {
                     "email": {
                         "title": "Poslat nové heslo na email",
-                        "description": "Uživateli přijde nové heslo na e-mailovou adresu. Vy jako admin to neuvidíte. Dosavadní heslo nebude fungovat."
+                        "description": "Uživateli přijde nové heslo na e-mailovou adresu. Vy jako admin to neuvidíte. Dosavadní heslo přestane nadále fungovat."
                     },
                     "show": {
                         "title": "Zobrazit nové heslo",
@@ -533,16 +533,18 @@
         "residence": "Adresa bydliště"
     },
     "absence": {
+        "missed": "Zameškáno hodin",
         "absence": "Absence",
         "excused": "Omluvená absence",
-        "excluded": "Vyloučená Absence",
+        "excluded": "Vyloučená absence",
         "unexcused": "Neomluvená absence",
         "non_count": "Nezapočítaná absence",
         "late": "Pozdní příchod",
         "early": "Dřívejší odchod",
         "distance": "Distanční výuka",
         "trash": "Odebrat absenci",
-        "overview_absence": "Přehled absence"
+        "overview_absence": "Přehled absence",
+        "attendance_rate": "Účast"
     },
     "working_mode": {
         "inability_to_work": "Pracovní neschopnost",
@@ -576,7 +578,7 @@
         "schedule": {
             "main": "Správa rozvrhu",
             "template_timetable": "Schéma rozvrhu",
-            "template_subject": "Šablony předměty",
+            "template_subject": "Šablony předmětů",
             "builder": "Správa rozvrhu",
             "supervision": "Správa dozoru"
         },
@@ -588,6 +590,7 @@
             "tutoring": "Doučování",
             "subjects": "Přehled předmětů",
             "classbook": "Třídní kniha",
+            "check_classbook": "Kontrola třídní knihy",
             "rewards": "Odměny",
             "topics": "Probrané učivo",
             "tests": "Testy",
@@ -925,6 +928,8 @@
         "manage": {
             "empty_title": "Žádné účty",
             "empty_description": "V systému nejsou zaregistrovány žádné účty rodičů.",
+            "source_account": "Zdrojový účet",
+            "target_account": "Cílový účet",
             "deposit_title": "Vložit prostředky na účet %name%",
             "deposit_amount": "Částka",
             "deposit_desc": "Popis transakce (volitelný)",
@@ -1131,6 +1136,7 @@
         "email": "Emailová adresa",
         "parent": "Rodič",
         "add_student": "Přidat studenta",
+        "add_students": "Hromadné přidání studentů",
         "search_student": "Hledat studenta",
         "student_filter": "Filtrování studentů",
         "filter": "Filtrování",
@@ -1362,6 +1368,10 @@
         "write_lesson": "Zápis hodiny",
         "absence": "Docházka",
         "notes": "Poznámky",
+        "BOZP": "BOZP",
+        "hospitalization": "Hospitalizace",
+        "specific": "Specifické",
+        "related": "Související",
         "lesson_number": "Číslo hodiny",
         "lesson_note": "Poznámka k hodině",
         "placeholder_note": "Napište poznámku k hodině (nepovinné)",
@@ -2177,7 +2187,7 @@
         "free_time": "Volná hodina",
         "end_class": "Konec vyučování",
         "no_class": "Žádná výuka",
-        "no_class_desc": "Tento den není důvod chodit do školy.",
+        "no_class_desc": "Tento den není důvod chodit do školy",
         "timetable_working_mode": "Pracovní režim",
         "room_timetable": "Rozvrh místnosti",
         "generating_pdf": "Probíhá generování pdf dokument",
@@ -2191,9 +2201,9 @@
         }
     },
     "modules": {
-        "attendance": "Docházka",
+        "attendance": "Moje Docházka",
         "timetable": "Rozvrh",
-        "marks": "Přehled známek",
+        "marks": "Poslední známky",
         "announcements": "Oznámení",
         "homework": "Domácí úkoly",
         "events": "Plán akcí",
@@ -2550,6 +2560,7 @@
         "add_class": "Přidat třídu",
         "search_class": "Hledat třídu",
         "name_class": "Název třídy",
+        "whole_class": "Celá třída",
         "year_class": "Ročník",
         "no_classteacher": "Nepřiřazeno",
         "field_of_study": "Obor studia",
@@ -3269,6 +3280,7 @@
         },
 
         "title": "Jídelna",
+        "locked": "Uzavřeno",
         "subtitle": "Modul školního systému",
         "orders": "Objednávky",
         "payment_history": "Historie plateb",
@@ -3420,5 +3432,17 @@
         "role_cook": "Kuchař",
         "credit_account": "Kreditní účet",
         "class_fund_account": "Třídní fond"
+    },
+    "attendance_widget": {
+        "my_attendance": "Moje docházka",
+        "class_attendance": "Třídnictví",
+        "vacation_remaining": "Dovolená",
+        "vacation_days": "%remaining% / %total% dní",
+        "days_used": "vyčerpáno",
+        "class_today_absence": "Třídnictví (%class%) - Dnešní absence",
+        "no_absence_today": "Všichni žáci jsou přítomni",
+        "no_absence_desc": "Dnes nebyla zaznamenána žádná absence.",
+        "write_absence": "Zapsat absenci do hodiny",
+        "waiting_excuse": "Čeká na omluvenku"
     }
 }

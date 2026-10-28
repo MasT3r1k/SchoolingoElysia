@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 
 const app = new Elysia()
     .get('/messages/receiver_groups', async ({ cookie }) => {

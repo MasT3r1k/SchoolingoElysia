@@ -8,9 +8,9 @@
  *   - kdy probíhal update
  *   - jakou verzi měl v daném čase
  */
-import { db } from '../../database';
+import { db } from '@database';
 import { sql } from 'kysely';
-import { gitService } from '../../version';
+import { gitService } from '@modules/system/system.service';
 import { changelog } from '../data/changelog.data';
 import { updateService } from './update.service';
 

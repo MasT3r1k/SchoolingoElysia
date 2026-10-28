@@ -1,4 +1,4 @@
-import { db } from '../../database';
+import { db } from '@database';
 import { degree } from './format_person_by_id';
 
 export async function format_person_map_by_ids(person_ids: number[]): Promise<Map<number, string>> {

@@ -1,7 +1,7 @@
 
 import { Elysia, t } from 'elysia';
 import { domainService, InstallationData } from '../../../../functions/domain.service';
-import { db } from '../../../../../database';
+import { db } from '@database';
 
 const setupRoutes = new Elysia({ prefix: '/setup' })
     .get('/ares/:ico', async ({ params: { ico } }) => {

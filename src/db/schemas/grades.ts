@@ -6,4 +6,5 @@ export interface gradesTable {
   mark: number;
   student_id: number;
   teacher_id: number;
+  created: Generated<Date>
 }

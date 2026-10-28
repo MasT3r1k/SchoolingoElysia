@@ -3,12 +3,12 @@
  * View messages sent by the current user
  */
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { sql } from 'kysely';
 
 const app = new Elysia()
     // Get sent messages
-    .get('/sent', async ({ query, user }) => {
+    .get('/sent', async ({ query, user }: any) => {
         // Use user from derive context (authentication check)
         if (!user) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
@@ -93,7 +93,7 @@ const app = new Elysia()
     })
 
     // Get single sent message
-    .get('/sent/:id', async ({ params, user }) => {
+    .get('/sent/:id', async ({ params, user }: any) => {
         if (!user) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }
@@ -136,7 +136,7 @@ const app = new Elysia()
     })
 
     // Delete sent message
-    .delete('/sent/:id', async ({ params, user }) => {
+    .delete('/sent/:id', async ({ params, user }: any) => {
         if (!user) {
             return Response.json({ error: 'unauthorized' }, { status: 401 });
         }

@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from "../../../../../database"
+import { db } from '@database'
 import { sql } from 'kysely';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 import { getAuthUser } from '../../../../utils/auth';
@@ -18,6 +18,7 @@ const elysiaApp = new Elysia()
     let queryBuilder = db.selectFrom('students')
       .leftJoin('users', 'users.person_id', 'students.person_id')
       .leftJoin('classes', 'students.class_id', 'classes.class_id')
+      .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
       .where((eb) => eb.or([
         eb('users.school_id', '=', school.school_id),
         eb('scopes.school_id', '=', school.school_id)
@@ -26,7 +27,6 @@ const elysiaApp = new Elysia()
       .leftJoin('addresses', 'persons.address_id', 'addresses.address_id')
       .leftJoin('cities', 'addresses.city_id', 'cities.city_id')
       .leftJoin('school_years', 'school_years.sy_id', 'classes.year_id')
-      .leftJoin('scopes', 'scopes.scope_id', 'classes.scope_id')
       .select([
         'users.user_id',
         'persons.person_id',

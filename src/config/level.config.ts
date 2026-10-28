@@ -1,7 +1,5 @@
-import z from "zod";
-
-export namespace LevelConfig {
-    export const LEVEL_START_XP = z.number().default(50);
-    export const LEVEL_MAX_XP = z.number().default(100);
-    export const LEVEL_GROWTH_RATE = z.number().default(2.5);
-} 
+export const LevelConfig = {
+  LEVEL_START_XP: 50,
+  LEVEL_MAX_XP: 100,
+  LEVEL_GROWTH_RATE: 2.5,
+} as const;

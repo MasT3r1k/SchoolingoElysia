@@ -1,10 +1,10 @@
 import { wsClientManager } from './ws-client-manager';
-import { db } from '../../database';
+import { db } from '@database';
 import webpush from 'web-push';
 import { MainConfig } from '../config/main.config';
 
 import moment from 'moment';
-import { Mailer } from '../../mailer.module';
+import { Mailer } from '@core/mailer/mailer.service';
 
 // Notification types
 export type NotificationType = 
@@ -116,6 +116,10 @@ class NotificationService {
     /**
      * Unified notification sender
      */
+    async sendNotification(type: NotificationType, target: number | number[], data?: any): Promise<void> {
+        return this.notify(type, target, data);
+    }
+
     async notify(type: NotificationType, target: number | number[], data?: any): Promise<void> {
         const userIds = Array.isArray(target) ? target : [target];
         if (userIds.length === 0) return;

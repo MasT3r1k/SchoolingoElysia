@@ -1,4 +1,4 @@
-import { db } from "../../database";
+import { db } from '@database';
 import { PermissionKey } from "../config/permissions.config";
 
 export class PermissionService {

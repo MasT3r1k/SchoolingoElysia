@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { getAuthUser } from '../../../../utils/auth';
 
 const app = new Elysia()

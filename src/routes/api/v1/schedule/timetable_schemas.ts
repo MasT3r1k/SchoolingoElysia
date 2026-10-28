@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database'
+import { db } from '@database'
 
 const elysiaApp = new Elysia()
     .get('/timetable_scheme/:scope_id/:year', async ({ params, cookie }) => {

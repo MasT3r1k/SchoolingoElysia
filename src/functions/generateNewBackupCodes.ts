@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { db } from "../../database";
+import { db } from '@database';
 import { SecurityConfig } from "../config/security.config";
 
 const CHARSET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // Bez O, I, L, 0, 1

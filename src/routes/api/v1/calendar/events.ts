@@ -3,7 +3,7 @@
  * Manage school events, holidays, exams, and meetings
  */
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 
 const app = new Elysia()
     // Get events for a date range

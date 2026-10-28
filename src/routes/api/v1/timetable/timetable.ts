@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from "../../../../../database"
+import { db } from '@database'
 import { sql } from 'kysely';
 import moment from 'moment';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
@@ -302,8 +302,8 @@ const elysiaApp = new Elysia()
             .select(['subject_id', 'valid_from', 'valid_to', 'note'])
             .where('student_id', '=', targetId)
             .where((eb) => eb.and([
-                eb.or([eb('valid_to', 'is', null), eb('valid_to', '>=', time.startOf('isoWeek').format('YYYY-MM-DD'))]),
-                eb('valid_from', '<=', time.endOf('isoWeek').format('YYYY-MM-DD'))
+                eb.or([eb('valid_to', 'is', null), eb('valid_to', '>=', time.startOf('isoWeek').toDate())]),
+                eb('valid_from', '<=', time.endOf('isoWeek').toDate())
             ]))
             .execute()
         ]);

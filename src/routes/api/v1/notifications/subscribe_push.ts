@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 
 const app = new Elysia()
   .post('/notifications/push/subscribe', async ({ cookie, body }) => {
@@ -19,7 +19,7 @@ const app = new Elysia()
       .where('tokens.expires', '>=', new Date())
       .executeTakeFirst();
 
-    if (!user?.person) return { error: 'no_user', details: 'no_db' };
+    if (!user?.person_id) return { error: 'no_user', details: 'no_db' };
 
     const { endpoint, p256dh, auth } = body as {
       endpoint: string;

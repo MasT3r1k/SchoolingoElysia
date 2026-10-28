@@ -1,5 +1,5 @@
 import moment from "moment";
-import { db } from "../../database";
+import { db } from '@database';
 
 export async function get_classbook_lesson_number(classbook_id: number): Promise<number> {
     // === Získání informací o třídní knize ===

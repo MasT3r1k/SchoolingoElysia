@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import { db } from "../../../../../database";
+import { db } from '@database';
 
 // Define Open Library Response Type (Partial)
 interface OpenLibraryBook {
@@ -23,12 +23,12 @@ export default new Elysia({ prefix: '/library' })
             .executeTakeFirst();
             
         const activeLoans = await db.selectFrom('library_loans')
-            .where('status', '=', 'active')
+            .where('status', '=', 'ongoing')
             .select(db.fn.count('loan_id').as('count'))
             .executeTakeFirst();
             
         const overdueLoans = await db.selectFrom('library_loans')
-            .where('status', '=', 'active')
+            .where('status', '=', 'ongoing')
             .where('due_date', '<', new Date())
             .select(db.fn.count('loan_id').as('count'))
             .executeTakeFirst();
@@ -115,7 +115,7 @@ export default new Elysia({ prefix: '/library' })
                     .as('total_copies'),
                 eb.selectFrom('library_book_ratings')
                     .whereRef('library_book_ratings.book_id', '=', 'library_books.book_id')
-                    .select(eb.fn.avg<number>('rating').as('avg'))
+                    .select(sub => sub.fn.avg('library_book_ratings.rating').as('avg'))
                     .as('rating')
             ])
             .orderBy('created_at', 'desc')
@@ -303,9 +303,9 @@ export default new Elysia({ prefix: '/library' })
     .get('/users', async ({ user, set }: any) => {
         if (!user) { set.status = 401; return { error: "Unauthorized" }; }
         const users = await db.selectFrom('persons')
-            .select(['person_id', 'first_name', 'last_name', 'type'])
-            .where('deleted', '=', 0)
-            .orderBy('last_name', 'asc')
+            .leftJoin('users', 'users.person_id', 'persons.person_id')
+            .select(['persons.person_id', 'persons.first_name', 'persons.last_name', 'users.role as type'])
+            .orderBy('persons.last_name', 'asc')
             .execute();
         return users;
     })

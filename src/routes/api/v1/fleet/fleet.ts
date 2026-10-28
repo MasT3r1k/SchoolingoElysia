@@ -3,7 +3,7 @@
  * CRUD for vehicles, trips, expenses
  */
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { Database } from '../../../../db/schemas';
 import { ValueExpression } from 'kysely';
 

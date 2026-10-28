@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
 import { config } from '../config/app.config';
-import { db } from '../../database';
+import { db } from '@database';
 
 const execAsync = promisify(exec);
 
@@ -107,17 +107,17 @@ class DatabaseBackupService {
 
                 dumpProcess.stdout.pipe(fileStream);
 
-                dumpProcess.stderr.on('data', (data) => {
+                dumpProcess.stderr.on('data', (data: any) => {
                     // Log stderr but don't fail immediately unless exit code is non-zero
                     // mysqldump often writes info to stderr
                     console.log(`[Backup] mysqldump stderr: ${data}`);
                 });
 
-                dumpProcess.on('error', (err) => {
+                dumpProcess.on('error', (err: any) => {
                     reject(err);
                 });
 
-                dumpProcess.on('close', (code) => {
+                dumpProcess.on('close', (code: any) => {
                     if (code === 0) {
                         resolve();
                     } else {
@@ -125,7 +125,7 @@ class DatabaseBackupService {
                     }
                 });
                 
-                fileStream.on('error', (err) => {
+                fileStream.on('error', (err: any) => {
                     reject(err);
                 });
             });

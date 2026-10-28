@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { sql } from 'kysely';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { format_person_by_id } from '../../../../functions/format_person_by_id';
 
 const app = new Elysia({ prefix: '/polls' })

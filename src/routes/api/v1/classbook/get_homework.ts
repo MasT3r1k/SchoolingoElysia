@@ -1,6 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from "../../../../../database";
-import { rateLimit } from 'elysia-rate-limit';
+import { db } from '@database';
 import { app } from '../../../../../index';
 import moment from 'moment';
 

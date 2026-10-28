@@ -3,7 +3,8 @@
  * View historical/archived data
  */
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { sql } from 'kysely';
+import { db } from '@database';
 
 const app = new Elysia()
     // Get archived school years
@@ -148,7 +149,7 @@ const app = new Elysia()
                 'auditlog.data',
                 'auditlog.ip',
                 'auditlog.created',
-                db.fn('concat', ['persons.first_name', db.val(' '), 'persons.last_name']).as('userName')
+                sql<string>`concat(persons.first_name, ' ', persons.last_name)`.as('userName')
             ])
             .orderBy('auditlog.created', 'desc')
             .offset(offset)

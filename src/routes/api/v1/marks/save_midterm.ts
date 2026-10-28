@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 import moment from 'moment';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { MainConfig, MainConfigSchema } from '../../../../config/main.config';
 
 const app = new Elysia()

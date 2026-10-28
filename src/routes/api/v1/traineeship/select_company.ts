@@ -1,7 +1,6 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import moment from 'moment';
-
 
 const app = new Elysia()
   .post(
@@ -22,7 +21,7 @@ const app = new Elysia()
         .limit(1)
         .executeTakeFirst();
 
-        if (!auth) {
+        if (!auth || !auth.person_id) {
             return Response.json({ error: 'no_user', details: 'no_db' });
         }
 
@@ -61,11 +60,10 @@ const app = new Elysia()
             return Response.json({ error: 'invalid_company' });
         }
 
-
         const traineeshipExists = await db
             .selectFrom('traineeship_weeks')
-            .select(({ fn }) => fn.count<number>('trWeekId').as('count'))
-            .where('trWeekId', '=', traineeship)
+            .select(({ fn }) => fn.count<number>('tr_week_id').as('count'))
+            .where('tr_week_id', '=', traineeship)
             .executeTakeFirst();
 
         if (!traineeshipExists || traineeshipExists.count === 0) {
@@ -95,31 +93,33 @@ const app = new Elysia()
 
         const isSelectedCompany = await db.selectFrom('traineeship_students')
         .select([
-            'company',
-            'instructor',
+            'company_id',
+            'instructor_id',
             'student_id',
-            'traineeship',
+            'traineeship_id',
         ])
         .where('student_id', '=', auth.person_id)
-        .where('traineeship', '=', traineeship)
+        .where('traineeship_id', '=', traineeship)
         .executeTakeFirst();
 
         try {
             if (!isSelectedCompany) {
                 await db.insertInto('traineeship_students')
                 .values({
-                    traineeship,
-                    studentId: auth.person_id!,
-                    company: companyId,
-                    instructor: instructorId
+                    traineeship_id: traineeship,
+                    student_id: auth.person_id,
+                    company_id: companyId,
+                    instructor_id: instructorId ?? null
                 })
+                .execute();
             } else {
                 await db.updateTable('traineeship_students')
-                .set('company', companyId)
-                .set('instructor', instructorId)
-                .where('traineeship', '=', traineeship)
-                .where('student_id', '=', auth.person_id!)
-                .limit(1)
+                .set({
+                    company_id: companyId,
+                    instructor_id: instructorId ?? null
+                })
+                .where('traineeship_id', '=', traineeship)
+                .where('student_id', '=', auth.person_id)
                 .execute();
             }
 

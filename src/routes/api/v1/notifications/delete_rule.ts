@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 
 const app = new Elysia()
   .delete('/notifications/rules/:id', async ({ cookie, params }) => {

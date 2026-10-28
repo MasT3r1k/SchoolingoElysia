@@ -1,20 +1,24 @@
-import { Elysia, t } from 'elysia'
-import { generateDocument } from '../pdf'
-import { DocumentType } from '../pdf/types'
+import { Elysia, t } from 'elysia';
+import { generateDocument } from '../pdf';
+import type { DocumentType } from '../pdf/types';
 
 export default new Elysia({ prefix: '/api/documents' })
-
   .post(
     '/generate',
-    async ({ body, set }) => {
-      const pdf = await generateDocument(body.type, body)
+    async ({ body, set }: { body: any; set: any }) => {
+      const pdf = await generateDocument(body.type as DocumentType, body);
 
-      set.headers['content-type'] = 'application/pdf'
-      set.headers['content-disposition'] = 'inline; filename="document.pdf"'
+      set.headers['content-type'] = 'application/pdf';
+      set.headers['content-disposition'] = 'inline; filename="document.pdf"';
 
-      return pdf
+      return pdf;
     },
     {
-      body: t.Any()
+      body: t.Object(
+        {
+          type: t.String(),
+        },
+        { additionalProperties: true }
+      ),
     }
-  )
+  );

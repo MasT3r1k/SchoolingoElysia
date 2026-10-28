@@ -1,4 +1,4 @@
-import { db } from '../../database';
+import { db } from '@database';
 
 async function run() {
     await db.schema.alterTable('documents')

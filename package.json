@@ -24,6 +24,7 @@
     "@elysiajs/cron": "^1.4.2",
     "@elysiajs/static": "^1.4.7",
     "@elysiajs/swagger": "latest",
+    "@sentry/elysia": "^11.9.0",
     "@simplewebauthn/server": "^13.1.1",
     "@sinclair/typebox": "^0.34.41",
     "@types/html-pdf-node": "^1.0.2",

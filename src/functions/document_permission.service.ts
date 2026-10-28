@@ -1,4 +1,4 @@
-import { db } from "../../database"
+import { db } from '@database'
 import { PermissionService } from "./permission.service";
 
 export class DocumentPermissionService {

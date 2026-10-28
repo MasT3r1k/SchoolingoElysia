@@ -5,9 +5,9 @@
  * GET /admin/analytics/response-time   – average API response time over time
  */
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { sql } from 'kysely';
-import { gitService } from '../../../../../version';
+import { gitService } from '@modules/system/system.service';
 import { changelog } from '../../../../data/changelog.data';
 import { updateService } from '../../../../functions/update.service';
 

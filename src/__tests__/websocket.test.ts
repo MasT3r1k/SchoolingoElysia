@@ -3,7 +3,7 @@
  * Tests for WebSocket connections, QR code generation, and notifications
  */
 import { describe, expect, it, beforeAll, afterAll } from 'bun:test';
-import { validateQRCode } from '../../websocket';
+import { validateQRCode } from '@core/websocket/ws-qr.service';
 import { QRConfig } from '../config/qr.config';
 import { createHmac } from 'crypto';
 

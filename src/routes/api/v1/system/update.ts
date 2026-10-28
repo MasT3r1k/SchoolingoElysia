@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 import { updateService } from "../../../../functions/update.service";
-import { db } from "../../../../../database";
+import { db } from '@database';
 
 export const update = new Elysia({ prefix: "/system/update" })
     .get("/status", () => {

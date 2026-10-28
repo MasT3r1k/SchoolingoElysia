@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 import moment from 'moment';
-import { db } from '../../../../../database';
+import { db } from '@database';
 
 const app = new Elysia()
   .get('/marks/midterm/student', async ({ cookie, query }: any) => {

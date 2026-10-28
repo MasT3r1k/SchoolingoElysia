@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { getAuthUser } from '../../../../utils/auth';
 import { format_person_by_id } from '../../../../functions/format_person_by_id'; // Assuming this exists given index.ts used it
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';

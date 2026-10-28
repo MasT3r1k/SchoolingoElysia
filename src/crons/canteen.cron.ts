@@ -1,6 +1,6 @@
 import { cron } from '@elysiajs/cron';
 import { notificationService } from '../functions/notification.service';
-import { db } from '../../database';
+import { db } from '@database';
 
 export const canteenCron = cron({
     name: 'canteen-negative-balance-warning',
@@ -28,7 +28,7 @@ export const canteenCron = cron({
             for (const user of users) {
                 await notificationService.notify(
                     'canteen_balance_negative',
-                    { userId: user.user_id },
+                    user.user_id,
                     {
                         title: 'Záporný zůstatek v jídelně',
                         body: `Váš zůstatek v jídelně je ${account.balance} Kč. Prosíme, dobijte si kredit co nejdříve.`,

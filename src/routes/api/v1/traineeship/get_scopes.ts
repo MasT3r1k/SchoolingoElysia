@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import moment from 'moment';
 
 const app = new Elysia()

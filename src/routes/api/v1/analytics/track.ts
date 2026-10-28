@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { getIPData } from '../../../../functions/get_ip_data';
 import { ip } from 'elysia-ip';
 

@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import moment from 'moment';
 
 const app = new Elysia()
@@ -9,24 +9,23 @@ const app = new Elysia()
       const token = cookie.token?.value as string;
 
       if (!token) {
-        return Response.json({ error: 'no_user', details: 'no_cookie' });
+          return Response.json({ error: 'no_user', details: 'no_cookie' });
       }
 
       const auth = await db
-        .selectFrom('tokens')
-        .leftJoin('users', 'tokens.user_id', 'users.user_id')
-        .select(['tokens.user_id', 'users.person_id', 'users.role'])
-        .where('tokens.token', '=', token)
-        .where('tokens.expires', '>=', moment().toDate())
-        .limit(1)
-        .executeTakeFirst();
+      .selectFrom('tokens')
+      .leftJoin('users', 'tokens.user_id', 'users.user_id')
+      .select(['tokens.user_id', 'users.manager'])
+      .where('tokens.token', '=', token)
+      .where('tokens.expires', '>=', moment().toDate())
+      .limit(1)
+      .executeTakeFirst();
 
       if (!auth) {
-        return Response.json({ error: 'no_user', details: 'no_db' });
+          return Response.json({ error: 'no_user', details: 'no_db' });
       }
 
-      // Check permissions
-      if (auth.role !== 'admin_staff' && auth.role !== 'management') {
+      if (auth.manager !== -1) {
           return Response.json({ error: 'permission_denied' });
       }
 
@@ -40,7 +39,7 @@ const app = new Elysia()
         await db
           .updateTable('traineeship_instructors')
           .set({
-            first_name,
+            firstname,
             lastname,
             email,
             phone,
@@ -65,9 +64,9 @@ const app = new Elysia()
         email: t.Optional(t.String()),
         phone: t.Optional(t.String()),
         role: t.Optional(t.String()),
-        status: t.Optional(t.String())
-      }),
-    },
+        status: t.Optional(t.UnionEnum(['active', 'deleted'])),
+      })
+    }
   );
 
 export default app;

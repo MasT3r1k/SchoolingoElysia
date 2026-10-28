@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 import moment from 'moment';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { MainConfig } from '../../../../config/main.config';
 import { notificationService } from '../../../../functions/notification.service';
 

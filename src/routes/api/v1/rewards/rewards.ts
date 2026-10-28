@@ -3,7 +3,7 @@
  * CRUD operations for student rewards
  */
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { notificationService } from '../../../../functions/notification.service';
 import { format_person_map_by_ids } from '../../../../functions/format_person_by_ids';
 

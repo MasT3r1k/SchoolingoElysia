@@ -1,5 +1,5 @@
 import * as OTPAuth from "otpauth";
-import { db } from "../../database";
+import { db } from '@database';
 import { SecurityConfig } from "../config/security.config";
 
 export async function verifyTFA(code: string, user_id: number, allow_backup_codes: boolean = true, check_if_enabled_2FA: boolean = true): Promise<boolean> {

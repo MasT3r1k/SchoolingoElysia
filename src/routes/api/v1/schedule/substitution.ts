@@ -3,7 +3,7 @@
  * Manage lesson substitutions and changes
  */
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { sql } from 'kysely';
 import { validateBody, createSubstitutionSchema } from '../../../../utils/validation.schemas';
 import { notificationService } from '../../../../functions/notification.service';

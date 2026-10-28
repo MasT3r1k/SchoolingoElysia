@@ -3,7 +3,7 @@
  * Manual backup management endpoints for administrators
  */
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { backupService } from '../../../../functions/backup.service';
 
 const app = new Elysia()

@@ -1,4 +1,4 @@
-import { db } from "../../database";
+import { db } from '@database';
 import { degree } from "./format_person_by_id";
 
 export async function format_person(name: string, degree_ids: (string | number)[] = []): Promise<string> {

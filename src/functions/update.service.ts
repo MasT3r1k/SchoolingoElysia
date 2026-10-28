@@ -6,10 +6,10 @@ import { exec, spawn } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
-import { db } from '../../database';
+import { db } from '@database';
 import { config } from '../config/app.config';
 import { backupService } from './backup.service';
-import { gitService } from '../../version';
+import { gitService } from '@modules/system/system.service';
 
 import { sql } from 'kysely';
 

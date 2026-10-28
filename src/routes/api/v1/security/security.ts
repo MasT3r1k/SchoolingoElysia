@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import moment from 'moment';
 import { verifyTFA } from '../../../../functions/verifyTFA';
 import { authenticator } from 'otplib';

@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 import moment from 'moment';
-import { db } from '../../../../../database';
+import { db } from '@database';
 import { sql } from 'kysely';
 import { randomUUID } from 'crypto';
 import { DocumentPermissionService } from '../../../../functions/document_permission.service';
