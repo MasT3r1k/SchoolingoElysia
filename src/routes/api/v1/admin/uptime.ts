@@ -98,8 +98,8 @@ export default new Elysia({ prefix: '/admin/analytics' })
     // GET /uptime
     // ─────────────────────────────────────────────────────
     .get('/uptime', async ({ query, set }) => {
-        let days = Math.min(Number(query.days) || 7, 90);
-        let dateCondition = sql<boolean>`recorded_at >= NOW() - INTERVAL ${sql.raw(String(days))} DAY`;
+        let days = Math.max(1, Math.min(Number(query.days) || 7, 90));
+        let dateCondition = sql<boolean>`recorded_at >= DATE_SUB(NOW(), INTERVAL ${days} DAY)`;
 
         if (query.from && query.to) {
             dateCondition = sql<boolean>`DATE(recorded_at) >= ${query.from} AND DATE(recorded_at) <= ${query.to}`;

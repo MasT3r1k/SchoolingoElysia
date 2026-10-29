@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 import { QRConfig } from '../../config/qr.config';
-import { generateRandomString } from '../utils/crypto.util';
+import { generateRandomString, safeCompare } from '../utils/crypto.util';
 
 const qrValidationAttempts = new Map<string, { count: number; resetAt: number }>();
 
@@ -55,7 +55,7 @@ export function validateQRCode(fullCode: string, ip: string) {
     .digest('hex')
     .substring(0, 16);
 
-  if (expected !== signature) {
+  if (!safeCompare(expected, signature)) {
     return { valid: false, error: 'invalid_signature' };
   }
 

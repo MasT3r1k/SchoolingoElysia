@@ -374,7 +374,8 @@ const app = new Elysia()
     try {
       const importedUsers = [];
       const bcrypt = await import('bcryptjs');
-      const dummyPasswordHash = await bcrypt.hash(Math.random().toString(36), 12);
+      const crypto = await import('node:crypto');
+      const dummyPasswordHash = await bcrypt.hash(crypto.randomUUID(), 12);
       
       for (const u of users) {
         const existing = await db.selectFrom('users').select('username').where('username', '=', u.username).executeTakeFirst();

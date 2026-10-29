@@ -1,4 +1,5 @@
 import moment from "moment";
+import crypto from "node:crypto";
 
 export namespace Utils {
 /**
@@ -21,15 +22,15 @@ export namespace Utils {
   }
 
   export function randomstring(length: number, numbers = true): string {
-
     let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     if (numbers) {
-      chars += "0123456789";
+      chars += '0123456789';
     }
 
+    const bytes = crypto.randomBytes(length);
     let text = '';
     for (let i = 0; i < length; i++) {
-      text += chars.charAt(Math.floor(Math.random() * chars.length));
+      text += chars.charAt(bytes[i] % chars.length);
     }
 
     return text;

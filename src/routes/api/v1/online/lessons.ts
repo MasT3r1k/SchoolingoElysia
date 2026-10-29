@@ -118,7 +118,7 @@ const app = new Elysia()
                     start: { dateTime: new Date(start).toISOString() },
                     end: { dateTime: new Date(end).toISOString() },
                     conferenceData: {
-                        createRequest: { requestId: Math.random().toString(36).substring(7) }
+                        createRequest: { requestId: crypto.randomUUID() }
                     }
                 };
                 

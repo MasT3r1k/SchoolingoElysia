@@ -84,7 +84,7 @@ class DatabaseBackupService {
             // Prepare arguments for spawn
             const args = [
                 '-h', config.DB_HOST,
-                '-P', config.DB_PORT,
+                '-P', String(config.DB_PORT),
                 '-u', config.DB_USER,
                 config.DB_NAME,
                 '--single-transaction',
@@ -92,18 +92,17 @@ class DatabaseBackupService {
                 '--triggers'
             ];
             
-            // Add password if exists (be careful with process listing)
-            // Note: passing password in args is insecure in shared environments, 
-            // but config file is also an option. For now sticking to args to match previous logic
+            // Pass password safely via environment variable instead of command-line args
+            const childEnv = { ...process.env };
             if (config.DB_PASS) {
-                args.push(`-p${config.DB_PASS}`);
+                childEnv['MYSQL_PWD'] = config.DB_PASS;
             }
 
             // Create write stream
             const fileStream = fs.createWriteStream(filepath);
 
             await new Promise<void>((resolve, reject) => {
-                const dumpProcess = spawn(config.MYSQLDUMP_PATH, args);
+                const dumpProcess = spawn(config.MYSQLDUMP_PATH, args, { env: childEnv });
 
                 dumpProcess.stdout.pipe(fileStream);
 
@@ -259,6 +258,11 @@ class DatabaseBackupService {
      * Delete a specific backup
      */
     async deleteBackup(filename: string): Promise<void> {
+        // Prevent path traversal
+        if (!filename || path.basename(filename) !== filename || filename.includes('..')) {
+            throw new Error('Invalid backup filename');
+        }
+
         const filepath = path.join(this.backupDir, filename);
         
         if (!fs.existsSync(filepath)) {
@@ -283,6 +287,11 @@ class DatabaseBackupService {
      * Restore database from backup
      */
     async restoreBackup(filename: string): Promise<void> {
+        // Prevent path traversal
+        if (!filename || path.basename(filename) !== filename || filename.includes('..')) {
+            throw new Error('Invalid backup filename');
+        }
+
         const filepath = path.join(this.backupDir, filename);
         
         if (!fs.existsSync(filepath)) {
@@ -296,14 +305,41 @@ class DatabaseBackupService {
             
             // Decompress if needed
             if (filename.endsWith('.gz')) {
-                await execAsync(`gunzip -k "${filepath}"`);
-                sqlFile = filepath.replace('.gz', '');
+                const zlib = await import('zlib');
+                const decompressedPath = filepath.replace(/\.gz$/, '');
+                await new Promise<void>((resolve, reject) => {
+                    const gunzip = zlib.createGunzip();
+                    const input = fs.createReadStream(filepath);
+                    const output = fs.createWriteStream(decompressedPath);
+                    input.pipe(gunzip).pipe(output).on('finish', () => resolve()).on('error', reject);
+                });
+                sqlFile = decompressedPath;
             }
 
-            // Restore using mysql
-            const passFlag = config.DB_PASS ? `-p${config.DB_PASS}` : '';
-            const restoreCmd = `"${config.MYSQL_PATH}" -h ${config.DB_HOST} -P ${config.DB_PORT} -u ${config.DB_USER} ${passFlag} ${config.DB_NAME} < "${sqlFile}"`;
-            await execAsync(restoreCmd);
+            // Restore safely using spawn without shell invocation
+            const args = [
+                '-h', config.DB_HOST,
+                '-P', String(config.DB_PORT),
+                '-u', config.DB_USER,
+                config.DB_NAME,
+            ];
+            const childEnv = { ...process.env };
+            if (config.DB_PASS) {
+                childEnv['MYSQL_PWD'] = config.DB_PASS;
+            }
+
+            await new Promise<void>((resolve, reject) => {
+                const { spawn } = require('child_process');
+                const mysqlProcess = spawn(config.MYSQL_PATH, args, { env: childEnv });
+                const readStream = fs.createReadStream(sqlFile);
+                readStream.pipe(mysqlProcess.stdin);
+
+                mysqlProcess.on('error', reject);
+                mysqlProcess.on('close', (code: number) => {
+                    if (code === 0) resolve();
+                    else reject(new Error(`MySQL restore exited with code ${code}`));
+                });
+            });
 
             // Clean up decompressed file if it was compressed
             if (filename.endsWith('.gz') && fs.existsSync(sqlFile)) {

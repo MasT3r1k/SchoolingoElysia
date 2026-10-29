@@ -2,20 +2,21 @@ import { Client, Change, Attribute, type SearchOptions } from "ldapts";
 import { Database } from "bun:sqlite";
 import crypto from "node:crypto";
 import { Elysia } from "elysia";
+import { env } from "@config/env.config";
 
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12; // Standard pro GCM
 const AUTH_TAG_LENGTH = 16;
 // Generujeme si v paměti klíč o délce přesně 32 bajtů pro AES-256-GCM
-const ENCRYPTION_KEY = crypto.createHash('sha256').update(process.env.LDAP_SECRET || "default_schoolingo_ldap_secret_key").digest('base64').substring(0, 32);
+const ENCRYPTION_KEY = crypto.createHash('sha256').update(env.LDAP_SECRET || "default_schoolingo_ldap_secret_key").digest('base64').substring(0, 32);
 
 function encrypt(text: string): string {
     const iv = crypto.randomBytes(IV_LENGTH);
-    const cipher = crypto.createCipheriv(ALGORITHM, Buffer.from(ENCRYPTION_KEY), iv);
+    const cipher = crypto.createCipheriv(ALGORITHM, Buffer.from(ENCRYPTION_KEY), iv, { authTagLength: AUTH_TAG_LENGTH });
     let encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    const authTag = cipher.getAuthTag().toString('hex');
-    return `${iv.toString('hex')}:${authTag}:${encrypted}`;
+    const authTag = cipher.getAuthTag();
+    return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
 }
 
 function decrypt(encryptedText: string): string {
@@ -24,11 +25,21 @@ function decrypt(encryptedText: string): string {
     const iv = Buffer.from(parts[0], 'hex');
     const authTag = Buffer.from(parts[1], 'hex');
     const encrypted = Buffer.from(parts[2], 'hex');
-    const decipher = crypto.createDecipheriv(ALGORITHM, Buffer.from(ENCRYPTION_KEY), iv);
-    decipher.setAuthTag(authTag);
-    let decrypted = decipher.update(encrypted, undefined, 'utf8');
-    decrypted += decipher.final('utf8');
-    return decrypted;
+
+    // Ověření správné délky IV i autentizačního tagu pro ochranu proti ciphertext forgery
+    if (iv.length !== IV_LENGTH || authTag.length !== AUTH_TAG_LENGTH) {
+        return encryptedText;
+    }
+
+    try {
+        const decipher = crypto.createDecipheriv(ALGORITHM, Buffer.from(ENCRYPTION_KEY), iv, { authTagLength: AUTH_TAG_LENGTH });
+        decipher.setAuthTag(authTag);
+        let decrypted = decipher.update(encrypted, undefined, 'utf8');
+        decrypted += decipher.final('utf8');
+        return decrypted;
+    } catch {
+        return encryptedText;
+    }
 }
 
 // Inicializace SQLite databáze běžící na file systému aplikaci k uchování LDAP konfigurace

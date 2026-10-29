@@ -4,8 +4,10 @@
  */
 import { Elysia } from 'elysia';
 import { createHmac, randomBytes } from 'crypto';
+import { env } from '@config/env.config';
+import { safeCompare } from '@core/utils/crypto.util';
 
-const CSRF_SECRET = process.env.CSRF_SECRET || 'schoolingo-csrf-secret-change-in-production';
+const CSRF_SECRET = env.CSRF_SECRET || 'schoolingo-csrf-secret-change-in-production';
 const CSRF_TOKEN_EXPIRY_MS = 3600000; // 1 hour
 
 /**
@@ -55,7 +57,7 @@ export function validateCSRFToken(token: string, sessionId: string): boolean {
             .digest('hex')
             .substring(0, 32);
 
-        return signature === expectedSignature;
+        return safeCompare(signature, expectedSignature);
     } catch {
         return false;
     }

@@ -18,6 +18,7 @@ import { ldapChangePassword } from '@functions/ldap.service';
 import { maskEmail } from '@functions/mask_email';
 import { SecurityConfig } from '@config/security.config';
 import { Mailer } from '@core/mailer/mailer.service';
+import { generateRandomString, generateSecureToken } from '@core/utils/crypto.util';
 import {
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
@@ -207,7 +208,7 @@ export const authRouter = new Elysia({ name: 'AuthRouter' })
           }
 
           const email_token = crypto.randomUUID();
-          const otp_code = Math.random().toString(36).substring(2, 10).toUpperCase();
+          const otp_code = generateRandomString(8).toUpperCase();
           const expires_at = moment().add(SecurityConfig.RESET_PASSWORD_EXPIRES_MINUTES, 'minutes').toDate();
 
           await db
@@ -283,8 +284,7 @@ export const authRouter = new Elysia({ name: 'AuthRouter' })
           if (!emails[selectedEmail]) return { error: ['Invalid selectedEmail'] };
 
           const chosenEmail = emails[selectedEmail].email;
-          const newOtp = Math.random().toString(36).substring(2, 10).toUpperCase();
-
+          const newOtp = generateRandomString(8).toUpperCase();
           await db
             .updateTable('users_resetpassword')
             .set({ email: chosenEmail, otp_code: newOtp })
@@ -596,7 +596,7 @@ export const authRouter = new Elysia({ name: 'AuthRouter' })
             'https://www.googleapis.com/auth/userinfo.email',
             'https://www.googleapis.com/auth/userinfo.profile',
           ];
-          const state = Math.random().toString(36).substring(7);
+          const state = generateSecureToken(16);
           const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${config.GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(
             'http://localhost:3000/api/v1/auth/google/callback'
           )}&response_type=code&scope=${encodeURIComponent(scopes.join(' '))}&access_type=offline&prompt=consent&state=${state}`;

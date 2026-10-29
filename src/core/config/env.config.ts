@@ -22,6 +22,8 @@ const envSchema = z.object({
   RATE_LIMIT_AUTH_MAX: z.coerce.number().default(30), // 30 auth attempts per window
   SESSION_SECRET: z.string().default('schoolingo-secure-session-key-random-bytes-32'),
   QR_SECRET: z.string().default('schoolingo-qr-secret-change-in-production'),
+  CSRF_SECRET: z.string().default('schoolingo-csrf-secret-change-in-production'),
+  LDAP_SECRET: z.string().default('default_schoolingo_ldap_secret_key'),
 
   // Sentry
   SENTRY_DSN: z.string().optional().default('https://03784c4290d57b97a9a9ddcd33e601e4@o4511418028392448.ingest.de.sentry.io/4512334581006416'),
